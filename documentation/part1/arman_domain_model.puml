@@ -1,0 +1,59 @@
+@startuml
+
+Admin "1" -- "*" HotelOwner : manages >
+Admin "1" -- "*" Customer : manages >
+HotelOwner "1" -- "*" Hotel : manages >
+HotelOwner "1" -- "*" Hotelier : creates >
+Hotel "1" -- "*" HotelAmenities : has >
+Hotel "1" -- "*" Policies : follows >
+Hotel "1" -- "1" RoomCatalogue : has >
+RoomCatalogue "1" -- "*" RoomSpecification : contains >
+RoomSpecification "1" -- "1" HotelRoom : describes >
+Hotel "1" -- "*" HotelRoom : contains >
+Hotelier "*" -- "*" HotelRoom : manages >
+Hotelier "*" -- "*" Booking : view and manage >
+HotelOwner "1" -- "*" Hotels : manages >
+Customer "1" -- "*" Booking : makes >
+Booking "1" -- "*" HotelRoom : contains >
+HotelRoom "1" -- "*" RoomAmenities : has >
+
+
+
+
+class Admin {
+}
+
+class HotelOwner {
+}
+
+class Hotelier {
+}
+
+class Customer {
+}
+
+class Hotel {
+}
+
+class HotelRoom {
+}
+
+class Booking {
+}
+
+class HotelAmenities {
+}
+
+class RoomAmenities {
+}
+
+class Policies {
+}
+
+class RoomSpecification {
+}
+
+class RoomCatalogue {
+}
+
+@enduml
