@@ -34,9 +34,9 @@ package "Hotel Booking Application" {
     usecase "Manage FAQs" as ManageFAQs
 }
 
-Admin --> LoginLogout
-Admin --> ManageRoleBasedAccessConfiguration
-Admin --> ChangeAccountPassword
+LoginLogout <-- Admin
+ManageRoleBasedAccessConfiguration <-- Admin
+ChangeAccountPassword <-- Admin
 HotelGroupAdmin --> LoginLogout
 HotelGroupAdmin --> Register
 HotelGroupAdmin --> ViewBooking
