@@ -1,0 +1,75 @@
+@startuml
+
+left to right direction
+
+actor Customer
+actor HotelGroupAdmin
+
+actor Hotelier
+actor PlatformAdmin
+
+package "Hotel Booking Application" {
+    usecase "Login/Logout" as LoginLogout
+    usecase "Register/Sign Up" as Register
+    usecase "Search Hotels" as SearchHotels
+    usecase "View Hotel/Room Details" as ViewHotelAndRoomDetails
+    usecase "Make Booking" as MakeBooking
+    usecase "Modify Booking" as ModifyBooking
+    usecase "Delete Booking" as DeleteBooking
+    usecase "View Booking" as ViewBooking
+    usecase "Create Hotel" as CreateHotel
+    usecase "Delete Hotel" as DeleteHotel
+    usecase "Modify Hotel Details" as ModifyHotelDetails
+    usecase "Create Room" as CreateRoom
+    usecase "Delete Room" as DeleteRoom
+    usecase "Modify Room Details" as ModifyRoomDetails
+    usecase "Add Hotelier" as AddHotelier
+    usecase "Manage Role-Based Access Configuration" as ManageRoleBasedAccessConfiguration
+    usecase "Update Profile" as UpdateProfile
+    usecase "Change Account Password" as ChangeAccountPassword
+    usecase "Filter Search Results" as FilterSearchResults
+    usecase "Sort Search Results" as SortSearchResults
+    usecase "Manage Hotel Cancellation Policy" as ManageHotelCancellationPolicy
+    usecase "View FAQs" as ViewFAQs
+    usecase "Manage FAQs" as ManageFAQs
+}
+
+Admin --> LoginLogout
+Admin --> ManageRoleBasedAccessConfiguration
+Admin --> ChangeAccountPassword
+HotelGroupAdmin --> LoginLogout
+HotelGroupAdmin --> Register
+HotelGroupAdmin --> ViewBooking
+HotelGroupAdmin --> CreateHotel
+HotelGroupAdmin --> ModifyHotelDetails
+HotelGroupAdmin --> DeleteHotel
+HotelGroupAdmin --> CreateRoom
+HotelGroupAdmin --> ModifyRoomDetails
+HotelGroupAdmin --> DeleteRoom
+HotelGroupAdmin --> AddHotelier
+HotelGroupAdmin --> UpdateProfile
+HotelGroupAdmin --> ChangeAccountPassword
+HotelGroupAdmin --> ManageHotelCancellationPolicy
+Hotelier --> LoginLogout
+Hotelier --> ModifyBooking
+Hotelier --> DeleteBooking
+Hotelier --> ViewBooking
+Hotelier --> UpdateProfile
+Hotelier --> ChangeAccountPassword
+Hotelier --> ManageFAQs
+Customer --> LoginLogout
+Customer --> Register
+Customer --> SearchHotels
+Customer --> ViewHotelAndRoomDetails
+Customer --> MakeBooking
+Customer --> ModifyBooking
+Customer --> DeleteBooking
+Customer --> ViewBooking
+Customer --> UpdateProfile
+Customer --> ChangeAccountPassword
+Customer --> FilterSearchResults
+Customer --> SortSearchResults
+Customer --> ViewFAQs
+
+
+@enduml
