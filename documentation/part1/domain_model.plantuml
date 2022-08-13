@@ -1,9 +1,6 @@
 @startuml
-    class "PlatformAdmin" as PlatformAdmin {
-'        implement as singleton?
-    }
-    PlatformAdmin -- HotelGroupAdmin: manage >
-    PlatformAdmin -- Customer: manage >
+    PlatformAdmin "1" -- "0..*" HotelGroupAdmin: manage >
+    PlatformAdmin "1" -- "0..*" Customer: manage >
 
     HotelGroupAdmin "1" -- "1..*" Hotel: owns >
     HotelGroupAdmin "1" -- "1..*" Hotelier: employs >
@@ -14,8 +11,8 @@
     RoomSpecification "1" -- "1..*" Feature: includes >
 
     Hotel "1" -- "*" Amenity: has >
-    Hotel "1" -- "1..*" Policy: manages >
-    Hotelier "1" -- "1..*" RoomSpecification: manages >
+    Hotel "1" -- "1..*" Policy: has >
+    Hotelier "1" -- "1..*" RoomSpecification: curates >
 
     Customer "1" -- "0..*" Itinerary: builds >
     Itinerary "1" -- "1..*" Booking: includes >
