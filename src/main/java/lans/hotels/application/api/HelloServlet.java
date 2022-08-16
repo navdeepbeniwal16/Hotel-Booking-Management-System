@@ -19,7 +19,7 @@ public class HelloServlet extends HttpServlet {
         System.out.println("HelloServlet constructor()");
     }
     public void init() {
-        hello = "Hello World!";
+        hello = "Hello, LANS Hotels!";
         System.out.println("HelloServlet.init()");
     }
 
