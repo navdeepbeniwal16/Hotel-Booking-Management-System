@@ -1,4 +1,6 @@
-package lans.hotels;
+package lans.hotels.application.api;
+
+import lans.hotels.datasource.DBConnection;
 
 import java.io.*;
 import java.sql.Connection;
@@ -7,24 +9,29 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
+import javax.servlet.ServletContext;
 @WebServlet(name = "helloServlet", value = "")
 public class HelloServlet extends HttpServlet {
     private String hello;
 
+    public HelloServlet() {
+        super();
+        System.out.println("HelloServlet constructor()");
+    }
     public void init() {
         hello = "Hello World!";
-        System.out.println("HelloServlet initialised");
+        System.out.println("HelloServlet.init()");
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        DBConnection dbConnection = (DBConnection) getServletContext().getAttribute("DBConnection");
 
         String message = "No items in database";
         try {
-            Connection conn = DBConnection.connection();
+            Connection conn = dbConnection.connection();
             Statement stmt = conn.createStatement();
             String stmtStr = "SELECT MAX(column1) FROM test_table";
             ResultSet rs = stmt.executeQuery(stmtStr);
-            System.out.println(rs.toString());
             if (rs.next()) {
                 Integer column1Row1 = rs.getInt(1);
                 message = "Highest number in the database: " + column1Row1;

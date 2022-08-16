@@ -1,0 +1,65 @@
+package lans.hotels.environment;
+
+import java.net.URISyntaxException;
+import java.util.Map;
+
+public class Environment {
+    private Map<String, String> envVars;
+    private Stage stage;
+    private DBConfiguration dbConfiguration;
+
+    public Environment(Map<String, String> envVars) throws InvalidEnvironmentException {
+        this.envVars = envVars;
+        checkHasAllRequiredEnvironmentVariables();
+        setStage();
+        setDB();
+    }
+
+    private void setStage() throws InvalidEnvironmentException {
+        String envVarStage = envVars.get(VariableName.STAGE.name());
+        if (envVarStage.equals(Stage.DEVELOPMENT.name())) {
+            stage = Stage.DEVELOPMENT;
+        } else if (envVarStage.equals(Stage.PRODUCTION.name())) {
+            stage = Stage.PRODUCTION;
+        } else {
+            throw new InvalidEnvironmentException("FATAL ERROR: invalid environment variable STAGE=" + envVarStage);
+        }
+    }
+
+    private void setDB() throws InvalidEnvironmentException {
+        String url = envVars.get(VariableName.DB_URL.name());
+        String username = envVars.get(VariableName.DB_USERNAME.name());
+        String password = envVars.get(VariableName.DB_PASSWORD.name());
+        if (inDevelopment()) {
+            dbConfiguration = new DevelopmentConfiguration(url, username, password);
+        } else {
+            try {
+                dbConfiguration = new HerokuConfiguration(url);
+            } catch (URISyntaxException uriSyntaxException){
+                throw new InvalidEnvironmentException(uriSyntaxException.getMessage());
+            }
+        }
+    }
+
+    private void checkHasAllRequiredEnvironmentVariables() throws InvalidEnvironmentException {
+        for (VariableName envVar: VariableName.values()) {
+            checkEnvVar(envVar, "FATAL ERROR: " + envVar.name() + " has not been set!");
+        }
+    }
+
+    private void checkEnvVar(VariableName envVar, String errorMessage) throws InvalidEnvironmentException {
+        if (envVars.get(envVar.name()) == null) throw new InvalidEnvironmentException(errorMessage);
+    }
+
+    public Boolean inDevelopment() {
+        return stage.equals(Stage.DEVELOPMENT);
+    }
+
+    public Boolean inProduction() {
+        return stage.equals(Stage.PRODUCTION);
+    }
+
+    public DBConfiguration getDBConfiguration() {
+        return dbConfiguration;
+    }
+}
