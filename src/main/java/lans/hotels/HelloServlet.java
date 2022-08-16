@@ -7,12 +7,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
-@WebServlet(name = "helloServlet", value = "/hello-servlet")
+@WebServlet(name = "helloServlet", value = "")
 public class HelloServlet extends HttpServlet {
     private String hello;
 
     public void init() {
         hello = "Hello World!";
+        System.out.println("HelloServlet initialised");
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
