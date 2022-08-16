@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
-import javax.servlet.ServletContext;
 @WebServlet(name = "helloServlet", value = "")
 public class HelloServlet extends HttpServlet {
     private String hello;
