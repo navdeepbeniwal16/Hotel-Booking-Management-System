@@ -3,7 +3,7 @@ package lans.hotels.environment;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-public class Environment {
+public class Environment implements EnvironmentI {
     private Map<String, String> envVars;
     private Stage stage;
     private DBConfiguration dbConfiguration;
@@ -30,7 +30,7 @@ public class Environment {
         String url = envVars.get(VariableName.DB_URL.name());
         String username = envVars.get(VariableName.DB_USERNAME.name());
         String password = envVars.get(VariableName.DB_PASSWORD.name());
-        if (inDevelopment()) {
+        if (isInDevelopment()) {
             dbConfiguration = new DevelopmentConfiguration(url, username, password);
         } else {
             try {
@@ -51,11 +51,11 @@ public class Environment {
         if (envVars.get(envVar.name()) == null) throw new InvalidEnvironmentException(errorMessage);
     }
 
-    public Boolean inDevelopment() {
+    protected Boolean isInDevelopment() {
         return stage.equals(Stage.DEVELOPMENT);
     }
 
-    public Boolean inProduction() {
+    protected Boolean isInProduction() {
         return stage.equals(Stage.PRODUCTION);
     }
 

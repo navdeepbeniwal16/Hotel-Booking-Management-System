@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,8 +68,8 @@ class EnvironmentTest {
             Environment env = new Environment(mockEnvVars);
 
             // Assert
-            Assertions.assertTrue(env.inDevelopment());
-            Assertions.assertFalse(env.inProduction());
+            Assertions.assertTrue(env.isInDevelopment());
+            Assertions.assertFalse(env.isInProduction());
         } catch (InvalidEnvironmentException invalidEnvironmentException) {
             System.out.println(invalidEnvironmentException.getMessage());
             fail();
@@ -88,8 +87,8 @@ class EnvironmentTest {
             Environment env = new Environment(mockEnvVars);
 
             // Assert
-            Assertions.assertTrue(env.inProduction());
-            Assertions.assertFalse(env.inDevelopment());
+            Assertions.assertTrue(env.isInProduction());
+            Assertions.assertFalse(env.isInDevelopment());
         } catch (InvalidEnvironmentException invalidEnvironmentException) {
             System.out.println(invalidEnvironmentException.getMessage());
             fail();

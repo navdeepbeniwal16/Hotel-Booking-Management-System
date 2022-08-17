@@ -1,2 +1,5 @@
-package lans.hotels.environment;public interface EnvironmentI {
+package lans.hotels.environment;
+
+public interface EnvironmentI {
+    DBConfiguration getDBConfiguration();
 }
