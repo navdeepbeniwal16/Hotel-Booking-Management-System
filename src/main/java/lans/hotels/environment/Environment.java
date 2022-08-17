@@ -1,5 +1,7 @@
 package lans.hotels.environment;
 
+import lans.hotels.datasource.DBConfiguration;
+
 import java.net.URISyntaxException;
 import java.util.Map;
 

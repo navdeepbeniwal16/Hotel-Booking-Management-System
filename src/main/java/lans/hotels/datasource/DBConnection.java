@@ -1,7 +1,5 @@
 package lans.hotels.datasource;
 
-import lans.hotels.environment.DBConfiguration;
-
 import java.sql.Connection;
 
 public abstract class DBConnection {

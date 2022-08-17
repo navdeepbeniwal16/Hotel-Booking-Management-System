@@ -1,4 +1,4 @@
-package lans.hotels.environment;
+package lans.hotels.datasource;
 
 public abstract class DBConfiguration {
     protected String url;
