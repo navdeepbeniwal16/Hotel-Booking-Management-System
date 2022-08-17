@@ -27,7 +27,7 @@ public class Environment implements EnvironmentI {
     }
 
     private void setDB() throws InvalidEnvironmentException {
-        String url = envVars.get(VariableName.DB_URL.name());
+        String url = envVars.get(VariableName.DATABASE_URL.name());
         String username = envVars.get(VariableName.DB_USERNAME.name());
         String password = envVars.get(VariableName.DB_PASSWORD.name());
         if (isInDevelopment()) {

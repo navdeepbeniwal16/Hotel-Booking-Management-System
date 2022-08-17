@@ -24,7 +24,7 @@ class EnvironmentTest {
         mockEnvVars = new HashMap<>();
         // Default env vars - override for specific tests
         mockEnvVars.put(VariableName.STAGE.name(), Stage.DEVELOPMENT.name());
-        mockEnvVars.put(VariableName.DB_URL.name(), "jdbc:postgresql://localhost:5432/lans_hotels");
+        mockEnvVars.put(VariableName.DATABASE_URL.name(), "jdbc:postgresql://localhost:5432/lans_hotels");
         mockEnvVars.put(VariableName.DB_USERNAME.name(), "postgres");
         mockEnvVars.put(VariableName.DB_PASSWORD.name(), "postgres");
     }
@@ -81,7 +81,7 @@ class EnvironmentTest {
         try {
             // Arrange
             mockEnvVars.put(VariableName.STAGE.name(), Stage.PRODUCTION.name());
-            mockEnvVars.put(VariableName.DB_URL.name(), dummyHerokuPostgresURI);
+            mockEnvVars.put(VariableName.DATABASE_URL.name(), dummyHerokuPostgresURI);
 
             // Act
             Environment env = new Environment(mockEnvVars);
@@ -98,7 +98,7 @@ class EnvironmentTest {
     @Test
     void Env_fails_without_db_URL() {
         // Arrange
-        mockEnvVars.remove(VariableName.DB_URL.name());
+        mockEnvVars.remove(VariableName.DATABASE_URL.name());
 
         // Act
         InvalidEnvironmentException thrown =
@@ -106,7 +106,7 @@ class EnvironmentTest {
                         () -> new Environment(mockEnvVars));
 
         // Assert
-        assertEquals("FATAL ERROR: DB_URL has not been set!", thrown.getMessage());
+        assertEquals("FATAL ERROR: DATABASE_URL has not been set!", thrown.getMessage());
     }
 
     @Test
