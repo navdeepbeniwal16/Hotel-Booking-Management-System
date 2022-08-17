@@ -5,7 +5,7 @@ function App() {
   const [number, setNumber] = useState(0);
   useEffect(() => {
       const fetchData = async () => {
-          const res = await fetch('api/test', {
+          const res = await fetch('/api/test', {
               headers : {
                   'Content-Type': 'application/json',
                   'Accept': 'application/json'
