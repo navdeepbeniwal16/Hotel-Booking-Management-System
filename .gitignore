@@ -29,3 +29,10 @@ hs_err_pid*
 
 **/yarn.lock
 **/package-lock.json
+**/node_modules
+/src/main/frontend/build
+
+.classpath
+.project
+.settings/
+target/
