@@ -1,6 +1,7 @@
 package lans.hotels.application;
 
 import lans.hotels.datasource.DBConnection;
+import lans.hotels.datasource.PostgresConnection;
 import lans.hotels.environment.Environment;
 import lans.hotels.environment.InvalidEnvironmentException;
 
@@ -18,7 +19,7 @@ public class AppContext implements ServletContextListener {
         Environment environment;
         try {
             environment = new Environment(System.getenv());
-            DBConnection dbConnection = new DBConnection(environment.getDBConfiguration());
+            DBConnection dbConnection = new PostgresConnection(environment.getDBConfiguration());
             ctx.setAttribute("DBConnection", dbConnection);
         } catch (InvalidEnvironmentException invalidEnvironmentException) {
             System.out.println(invalidEnvironmentException);
