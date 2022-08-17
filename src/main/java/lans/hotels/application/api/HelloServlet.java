@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 @WebServlet(name = "helloServlet", value = "")
@@ -22,7 +24,7 @@ public class HelloServlet extends HttpServlet {
         System.out.println("HelloServlet.init()");
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         DBConnection dbConnection = (DBConnection) getServletContext().getAttribute("DBConnection");
 
         String message = "No items in database";
@@ -42,12 +44,14 @@ public class HelloServlet extends HttpServlet {
         response.setContentType("text/html");
 
         // Hello
-        PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>" + hello + "</h1>");
-        out.println("<p>" + message + "</p>");
-        out.println("</body></html>");
-
+//        PrintWriter out = response.getWriter();
+//        out.println("<html><body>");
+//        out.println("<h1>" + hello + "</h1>");
+//        out.println("<p>" + message + "</p>");
+//        out.println("</body></html>");
+        RequestDispatcher dispatch = getServletContext().getRequestDispatcher("/index.html");
+        dispatch.forward(request, response);
+//        response.sendRedirect("static/index.html");
 
     }
 
