@@ -5,4 +5,8 @@ public class Hotel {
     public Hotel(String name) {
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
 }
