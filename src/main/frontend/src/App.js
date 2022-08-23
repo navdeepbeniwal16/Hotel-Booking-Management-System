@@ -12,9 +12,6 @@ function App() {
               }
           })
           const json = await res.json()
-          setTimeout(() => {
-              setNumber(json.number)
-          }, 1500)
       }
       fetchData()
   }, [])
