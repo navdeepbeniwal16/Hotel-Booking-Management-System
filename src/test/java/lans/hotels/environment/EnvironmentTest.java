@@ -69,6 +69,7 @@ class EnvironmentTest {
 
             // Assert
             Assertions.assertTrue(env.isInDevelopment());
+            Assertions.assertFalse(env.isInStaging());
             Assertions.assertFalse(env.isInProduction());
         } catch (InvalidEnvironmentException invalidEnvironmentException) {
             System.out.println(invalidEnvironmentException.getMessage());
@@ -88,6 +89,27 @@ class EnvironmentTest {
 
             // Assert
             Assertions.assertTrue(env.isInProduction());
+            Assertions.assertFalse(env.isInStaging());
+            Assertions.assertFalse(env.isInDevelopment());
+        } catch (InvalidEnvironmentException invalidEnvironmentException) {
+            System.out.println(invalidEnvironmentException.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    void Env_configured_with_STAGING_STAGE_is_in_production() {
+        try {
+            // Arrange
+            mockEnvVars.put(VariableName.STAGE.name(), Stage.STAGING.name());
+            mockEnvVars.put(VariableName.DATABASE_URL.name(), dummyHerokuPostgresURI);
+
+            // Act
+            Environment env = new Environment(mockEnvVars);
+
+            // Assert
+            Assertions.assertFalse(env.isInProduction());
+            Assertions.assertTrue(env.isInStaging());
             Assertions.assertFalse(env.isInDevelopment());
         } catch (InvalidEnvironmentException invalidEnvironmentException) {
             System.out.println(invalidEnvironmentException.getMessage());

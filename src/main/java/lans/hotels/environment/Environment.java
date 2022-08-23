@@ -23,6 +23,8 @@ public class Environment implements EnvironmentI {
             stage = Stage.DEVELOPMENT;
         } else if (envVarStage.equals(Stage.PRODUCTION.name())) {
             stage = Stage.PRODUCTION;
+        } else if (envVarStage.equals(Stage.STAGING.name())) {
+            stage = Stage.STAGING;
         } else {
             throw new InvalidEnvironmentException("FATAL ERROR: invalid environment variable STAGE=" + envVarStage);
         }
@@ -57,10 +59,9 @@ public class Environment implements EnvironmentI {
         return stage.equals(Stage.DEVELOPMENT);
     }
 
-    protected Boolean isInProduction() {
-        return stage.equals(Stage.PRODUCTION);
-    }
+    protected Boolean isInProduction() { return stage.equals(Stage.PRODUCTION); }
 
+    protected Boolean isInStaging() { return stage.equals(Stage.STAGING); }
     public DBConfiguration getDBConfiguration() {
         return dbConfiguration;
     }
