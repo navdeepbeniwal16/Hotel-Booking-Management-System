@@ -1,31 +1,20 @@
 package lans.hotels.domain.hotel;
 
-import lans.hotels.domain.EntityI;
+import lans.hotels.domain.Entity;
 
 import java.util.UUID;
 
-public class Hotel implements EntityI {
+public class Hotel extends Entity {
     private String name;
-    private UUID uuid;
-    public Hotel(Integer UUID, String name) {
+    public Hotel(UUID UUID, String name) {
+        super.uuid = UUID;
         this.name = name;
-        this.UUID = UUID;
     }
     public String getName() {
         return name;
     }
 
-    public boolean is(Hotel other) {
-        return isSameEntity(other);
-    }
-
-    @Override
-    public java.util.UUID getUUID() {
-        return null;
-    }
-
-    @Override
-    public boolean isSameEntity(EntityI otherEntity) {
-        return this.uuid == otherEntity.getUUID();
+    public UUID getUuid() {
+        return this.uuid;
     }
 }
