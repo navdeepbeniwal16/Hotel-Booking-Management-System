@@ -12,6 +12,7 @@ function App() {
               }
           })
           const json = await res.json()
+          setNumber(json.number)
       }
       fetchData()
   }, [])
