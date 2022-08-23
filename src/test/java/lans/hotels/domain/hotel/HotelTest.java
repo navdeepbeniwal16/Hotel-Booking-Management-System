@@ -25,9 +25,9 @@ class HotelTest {
         Hotel hotel1 = new Hotel(12345, sameName);
         Hotel hotel2 = new Hotel(67890, sameName);
         // Act
-        boolean isHotel1Hotel1 = hotel1.isHotel(hotel1);
-        boolean isHotel1Hotel2 = hotel1.isHotel(hotel2);
-        boolean isHotel2Hotel1= hotel2.isHotel(hotel1);
+        boolean isHotel1Hotel1 = hotel1.is(hotel1);
+        boolean isHotel1Hotel2 = hotel1.is(hotel2);
+        boolean isHotel2Hotel1= hotel2.is(hotel1);
 
         // Assert
         Assertions.assertTrue(isHotel1Hotel1);

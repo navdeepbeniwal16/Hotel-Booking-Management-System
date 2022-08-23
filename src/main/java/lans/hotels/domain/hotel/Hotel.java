@@ -1,8 +1,12 @@
 package lans.hotels.domain.hotel;
 
-public class Hotel {
+import lans.hotels.domain.EntityI;
+
+import java.util.UUID;
+
+public class Hotel implements EntityI {
     private String name;
-    private Integer UUID;
+    private UUID uuid;
     public Hotel(Integer UUID, String name) {
         this.name = name;
         this.UUID = UUID;
@@ -11,7 +15,17 @@ public class Hotel {
         return name;
     }
 
-    public boolean isHotel(Hotel other) {
-        return this.UUID == other.UUID;
+    public boolean is(Hotel other) {
+        return isSameEntity(other);
+    }
+
+    @Override
+    public java.util.UUID getUUID() {
+        return null;
+    }
+
+    @Override
+    public boolean isSameEntity(EntityI otherEntity) {
+        return this.uuid == otherEntity.getUUID();
     }
 }
