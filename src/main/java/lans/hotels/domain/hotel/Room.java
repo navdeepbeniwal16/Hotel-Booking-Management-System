@@ -1,2 +1,4 @@
-package lans.hotels.domain.hotel;public class Room {
+package lans.hotels.domain.hotel;
+
+public class Room {
 }
