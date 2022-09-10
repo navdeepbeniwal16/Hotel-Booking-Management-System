@@ -4,9 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import java.sql.Connection;
+import java.sql.Statement;
 
 class RoomMapperTest {
-    @InjectMocks private Connection dbConnection;
+    @InjectMocks private Connection mockDbConnection;
+    @Mock private Statement mockStatement;
 
     protected static final String findStatement = "SELECT " +
     " room_number, room_floor, isActive, room_spec_id " +
@@ -15,7 +17,7 @@ class RoomMapperTest {
     @Test
     void find_statement_is_correct() {
         // Arrange
-        RoomMapper roomMapper = new RoomMapper();
+        RoomMapper roomMapper = new RoomMapper(mockDbConnection);
 
         // Act
         String statement = roomMapper.findStatement();

@@ -6,15 +6,11 @@ import java.util.UUID;
 
 public class Hotel extends Entity {
     private String name;
-    public Hotel(UUID UUID, String name) {
-        super.uuid = UUID;
+    public Hotel(int id, String name) {
+        super(id);
         this.name = name;
     }
     public String getName() {
         return name;
-    }
-
-    public UUID getUuid() {
-        return this.uuid;
     }
 }

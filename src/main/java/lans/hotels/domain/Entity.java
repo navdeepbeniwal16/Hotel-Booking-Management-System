@@ -1,11 +1,15 @@
 package lans.hotels.domain;
 
-import java.util.UUID;
+public abstract class Entity implements IDomainObject {
+    protected int id;
 
-public abstract class Entity {
-    protected UUID uuid;
-    public abstract UUID getUuid();
+    protected Entity(int id) {
+        this.id = id;
+    }
+    public int getId() {
+        return id;
+    }
     public boolean is(Entity otherEntity) {
-        return uuid.compareTo(otherEntity.getUuid()) == 0;
+        return this.id == otherEntity.getId();
     }
 }
