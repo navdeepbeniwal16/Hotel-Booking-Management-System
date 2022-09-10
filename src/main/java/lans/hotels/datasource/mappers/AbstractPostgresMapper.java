@@ -10,24 +10,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.sql.Connection;
-public abstract class AbstractPostgresMapper implements IDataMapper<IDomainObject> {
+public abstract class AbstractPostgresMapper<DomainObjectImp extends IDomainObject> implements IDataMapper<DomainObjectImp> {
     protected Connection connection;
-    protected Map<Integer, IDomainObject> loadedMap = new HashMap();
+    protected Map<Integer, DomainObjectImp> loadedMap = new HashMap();
     abstract protected String findStatement();
 
     protected AbstractPostgresMapper(Connection connection) {
         this.connection = connection;
     }
 
-    protected IDomainObject abstractGetById(int id) throws SQLException {
-        IDomainObject result = loadedMap.get(id);
+    protected DomainObjectImp abstractGetById(int id) throws SQLException {
+        DomainObjectImp result = loadedMap.get(id);
         if (result == null) {
             result = getFromDb(id);
         }
         return result;
     }
 
-    private IDomainObject getFromDb(int id) throws SQLException {
+    private DomainObjectImp getFromDb(int id) throws SQLException {
         try (PreparedStatement findStatement = connection.prepareStatement(findStatement())){
             findStatement.setInt(1, id);
             ResultSet resultSet = findStatement.executeQuery();
@@ -36,9 +36,9 @@ public abstract class AbstractPostgresMapper implements IDataMapper<IDomainObjec
         }
     }
 
-    protected IDomainObject load(ResultSet resultSet) throws SQLException {
+    protected DomainObjectImp load(ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt(1);
-        IDomainObject result = loadedMap.get(id);
+        DomainObjectImp result = loadedMap.get(id);
         if (result == null) {
             result = doLoad(id, resultSet);
             loadedMap.put(id, result);
@@ -46,6 +46,6 @@ public abstract class AbstractPostgresMapper implements IDataMapper<IDomainObjec
         return result;
     }
 
-    abstract protected IDomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
-    abstract public IDomainObject getById(int id);
+    abstract protected DomainObjectImp doLoad(int id, ResultSet resultSet) throws SQLException;
+    abstract public DomainObjectImp getById(int id);
 }
