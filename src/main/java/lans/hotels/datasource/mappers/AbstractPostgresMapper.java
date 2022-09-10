@@ -2,6 +2,7 @@ package lans.hotels.datasource.mappers;
 
 
 import lans.hotels.domain.IDomainObject;
+import lans.hotels.domain.hotel.Room;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,35 +11,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.sql.Connection;
-public abstract class AbstractPostgresMapper<DomainObjectImp extends IDomainObject> implements IDataMapper<DomainObjectImp> {
+public abstract class AbstractPostgresMapper<DomainObject extends IDomainObject> implements IDataMapper<DomainObject> {
     protected Connection connection;
-    protected Map<Integer, DomainObjectImp> loadedMap = new HashMap();
+    protected String table;
+    protected Map<Integer, DomainObject> loadedMap = new HashMap();
     abstract protected String findStatement();
+    abstract protected String insertStatement();
+    abstract protected DomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
+    abstract protected DomainObject concreteCreate(DomainObject domainObject);
 
-    protected AbstractPostgresMapper(Connection connection) {
+    protected AbstractPostgresMapper(Connection connection, String table) {
         this.connection = connection;
+        this.table = table;
     }
 
-    protected DomainObjectImp abstractGetById(int id) throws SQLException {
-        DomainObjectImp result = loadedMap.get(id);
+    protected DomainObject abstractGetById(int id) throws SQLException {
+        DomainObject result = loadedMap.get(id);
         if (result == null) {
             result = getFromDb(id);
         }
         return result;
     }
 
-    private DomainObjectImp getFromDb(int id) throws SQLException {
+    public DomainObject getById(int id) {
+        try {
+            return abstractGetById(id);
+        } catch (SQLException e) {
+            System.out.println("getById(): " + e.getMessage());
+            // TODO: do not return null!
+            return null;
+        }
+    }
+
+    private DomainObject getFromDb(int id) throws SQLException {
         try (PreparedStatement findStatement = connection.prepareStatement(findStatement())){
             findStatement.setInt(1, id);
             ResultSet resultSet = findStatement.executeQuery();
-            resultSet.next();
             return load(resultSet);
         }
     }
 
-    protected DomainObjectImp load(ResultSet resultSet) throws SQLException {
-        int id = resultSet.getInt(1);
-        DomainObjectImp result = loadedMap.get(id);
+    protected DomainObject load(ResultSet resultSet) throws SQLException {
+        if (!resultSet.next()) return null;
+
+        int id = resultSet.getInt("id");
+        DomainObject result = loadedMap.get(id);
         if (result == null) {
             result = doLoad(id, resultSet);
             loadedMap.put(id, result);
@@ -46,6 +63,9 @@ public abstract class AbstractPostgresMapper<DomainObjectImp extends IDomainObje
         return result;
     }
 
-    abstract protected DomainObjectImp doLoad(int id, ResultSet resultSet) throws SQLException;
-    abstract public DomainObjectImp getById(int id);
+    public DomainObject create(DomainObject domainObject) {
+        DomainObject newDomainObject = concreteCreate(domainObject);
+        if (newDomainObject != null) loadedMap.put(newDomainObject.getId(), newDomainObject);
+        return newDomainObject;
+    }
 }
