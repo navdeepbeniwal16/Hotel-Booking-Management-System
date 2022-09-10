@@ -48,9 +48,9 @@ VALUES
 ;
 
 INSERT INTO
-    room(room_spec_id, floor, number, is_active)
+    room(hotel_id, room_spec_id, floor, number, is_active)
 VALUES
-    (1, 0, 1, true),
-    (1, 0, 2, true),
-    (2, 1, 3, true)
+    (1, 1, 0, 1, true),
+    (1, 1, 0, 2, true),
+    (1, 2, 1, 3, true)
 ;

@@ -2,6 +2,7 @@ package lans.hotels.datasource.mappers;
 
 
 import lans.hotels.domain.IDomainObject;
+import lans.hotels.domain.hotel.Room;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,11 +13,16 @@ import java.util.Map;
 import java.sql.Connection;
 public abstract class AbstractPostgresMapper<DomainObject extends IDomainObject> implements IDataMapper<DomainObject> {
     protected Connection connection;
+    protected String table;
     protected Map<Integer, DomainObject> loadedMap = new HashMap();
     abstract protected String findStatement();
+    abstract protected String insertStatement();
+    abstract protected DomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
+    abstract protected DomainObject concreteCreate(DomainObject domainObject);
 
-    protected AbstractPostgresMapper(Connection connection) {
+    protected AbstractPostgresMapper(Connection connection, String table) {
         this.connection = connection;
+        this.table = table;
     }
 
     protected DomainObject abstractGetById(int id) throws SQLException {
@@ -25,6 +31,16 @@ public abstract class AbstractPostgresMapper<DomainObject extends IDomainObject>
             result = getFromDb(id);
         }
         return result;
+    }
+
+    public DomainObject getById(int id) {
+        try {
+            return abstractGetById(id);
+        } catch (SQLException e) {
+            System.out.println("getById(): " + e.getMessage());
+            // TODO: do not return null!
+            return null;
+        }
     }
 
     private DomainObject getFromDb(int id) throws SQLException {
@@ -47,6 +63,9 @@ public abstract class AbstractPostgresMapper<DomainObject extends IDomainObject>
         return result;
     }
 
-    abstract protected DomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
-    abstract public DomainObject getById(int id);
+    public DomainObject create(DomainObject domainObject) {
+        DomainObject newDomainObject = concreteCreate(domainObject);
+        if (newDomainObject != null) loadedMap.put(newDomainObject.getId(), newDomainObject);
+        return newDomainObject;
+    }
 }
