@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.sql.Connection;
-public abstract class AbstractPostgresMapper implements IDataMapper {
+public abstract class AbstractPostgresMapper implements IDataMapper<IDomainObject> {
     protected Connection connection;
     protected Map<Integer, IDomainObject> loadedMap = new HashMap();
     abstract protected String findStatement();
@@ -47,4 +47,5 @@ public abstract class AbstractPostgresMapper implements IDataMapper {
     }
 
     abstract protected IDomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
+    abstract public IDomainObject getById(int id);
 }

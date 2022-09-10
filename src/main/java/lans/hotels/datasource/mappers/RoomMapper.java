@@ -19,6 +19,7 @@ public class RoomMapper extends AbstractPostgresMapper {
                 " WHERE room_id = ? ";
     }
 
+    @Override
     public Room getById(int id) {
         try {
             return (Room) abstractGetById(id);
