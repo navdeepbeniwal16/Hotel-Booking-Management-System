@@ -19,10 +19,10 @@ public abstract class AbstractPostgresMapper implements IDataMapper {
         this.connection = connection;
     }
 
-    protected IDomainObject abstractGetById(int id) {
+    protected IDomainObject abstractGetById(int id) throws SQLException {
         IDomainObject result = loadedMap.get(id);
         if (result == null) {
-            result = getFromDb(int id);
+            result = getFromDb(id);
         }
         return result;
     }

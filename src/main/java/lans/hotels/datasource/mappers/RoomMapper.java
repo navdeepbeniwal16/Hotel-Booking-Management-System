@@ -1,5 +1,4 @@
 package lans.hotels.datasource.mappers;
-import lans.hotels.domain.IDomainObject;
 import lans.hotels.domain.hotel.Room;
 
 import java.sql.Connection;
@@ -13,6 +12,7 @@ public class RoomMapper extends AbstractPostgresMapper {
         super(connection);
     }
 
+    @Override
     protected String findStatement() {
         return "SELECT " + COLUMNS +
                 " FROM room " +
@@ -20,8 +20,15 @@ public class RoomMapper extends AbstractPostgresMapper {
     }
 
     public Room getById(int id) {
-        this.connection.createStatement(findStatement());
+        try {
+            return (Room) abstractGetById(id);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            // TODO: do not return null!
+            return null;
+        }
     }
+
     @Override
     protected Room doLoad(int id, ResultSet resultSet) throws SQLException {
         int specificationId = resultSet.getInt("room_spec_id");
@@ -30,4 +37,4 @@ public class RoomMapper extends AbstractPostgresMapper {
         boolean isActive = resultSet.getBoolean("is_active");
         return new Room(id, specificationId, roomNumber, roomFloor, isActive);
     }
-}}
+}
