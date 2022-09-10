@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class RoomMapper extends AbstractPostgresMapper {
+public class RoomMapper extends AbstractPostgresMapper<Room> {
     private static final String COLUMNS = " room_number, room_floor, isActive, room_spec_id ";
 
     public RoomMapper(Connection connection) {
@@ -22,7 +22,7 @@ public class RoomMapper extends AbstractPostgresMapper {
     @Override
     public Room getById(int id) {
         try {
-            return (Room) abstractGetById(id);
+            return abstractGetById(id);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             // TODO: do not return null!
