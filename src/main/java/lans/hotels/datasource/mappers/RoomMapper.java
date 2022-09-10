@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class RoomMapper extends AbstractPostgresMapper<Room> {
-    private static final String COLUMNS = " room_number, room_floor, isActive, room_spec_id ";
+    private static final String COLUMNS = " id, number, floor, is_active, room_spec_id ";
 
     public RoomMapper(Connection connection) {
         super(connection);
@@ -16,7 +16,7 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
     protected String findStatement() {
         return "SELECT " + COLUMNS +
                 " FROM room " +
-                " WHERE room_id = ? ";
+                " WHERE id = ? ";
     }
 
     @Override
@@ -24,7 +24,7 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
         try {
             return abstractGetById(id);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("RoomMapper.getById(): " + e.getMessage());
             // TODO: do not return null!
             return null;
         }
@@ -33,8 +33,8 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
     @Override
     protected Room doLoad(int id, ResultSet resultSet) throws SQLException {
         int specificationId = resultSet.getInt("room_spec_id");
-        int roomNumber = resultSet.getInt("room_number");
-        int roomFloor = resultSet.getInt("room_floor");
+        int roomNumber = resultSet.getInt("number");
+        int roomFloor = resultSet.getInt("floor");
         boolean isActive = resultSet.getBoolean("is_active");
         return new Room(id, specificationId, roomNumber, roomFloor, isActive);
     }
