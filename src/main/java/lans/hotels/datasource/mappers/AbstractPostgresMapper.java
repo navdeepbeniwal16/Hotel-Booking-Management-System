@@ -2,7 +2,7 @@ package lans.hotels.datasource.mappers;
 
 
 import lans.hotels.datasource.IDataMapper;
-import lans.hotels.domain.IReferenceObject;
+import lans.hotels.domain.IDomainObject;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.sql.Connection;
-public abstract class AbstractPostgresMapper<DomainObject extends IReferenceObject<Integer>>
+public abstract class AbstractPostgresMapper<DomainObject extends IDomainObject<Integer>>
         implements IDataMapper<DomainObject> {
     protected Connection connection;
     protected String table;
@@ -68,7 +68,7 @@ public abstract class AbstractPostgresMapper<DomainObject extends IReferenceObje
 
     public DomainObject create(DomainObject domainObject) {
         DomainObject newDomainObject = concreteCreate(domainObject);
-        if (newDomainObject != null) loadedMap.put(newDomainObject.getUid(), newDomainObject);
+        if (newDomainObject != null) loadedMap.put(newDomainObject.getId(), newDomainObject);
         return newDomainObject;
     }
 }

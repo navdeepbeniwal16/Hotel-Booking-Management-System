@@ -1,5 +1,6 @@
 package lans.hotels.domain;
 
-public interface IValueObject {
+public interface IDomainObject<Id> {
+    Id getId();
     boolean equals(Object other);
 }

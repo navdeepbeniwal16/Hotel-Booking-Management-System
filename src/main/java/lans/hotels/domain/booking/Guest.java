@@ -1,9 +1,9 @@
 package lans.hotels.domain.booking;
 
-import lans.hotels.domain.IValueObject;
+import lans.hotels.domain.ValueObject;
 import lans.hotels.domain.utils.Name;
 
-public class Guest implements IValueObject {
+public class Guest implements ValueObject {
     Name name;
 
     public Guest(Name name) {

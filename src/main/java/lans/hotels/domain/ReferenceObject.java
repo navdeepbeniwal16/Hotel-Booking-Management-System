@@ -3,7 +3,7 @@ package lans.hotels.domain;
 
 import lans.hotels.domain.exceptions.ReferenceObjectException;
 
-public abstract class ReferenceObject implements IReferenceObject<Integer> {
+public abstract class ReferenceObject implements IDomainObject<Integer> {
     public static final Integer NOT_SET = null;
     protected Integer uid;
     private boolean isNew;
@@ -14,6 +14,10 @@ public abstract class ReferenceObject implements IReferenceObject<Integer> {
     }
     protected ReferenceObject(int id) {
         try { setUid(id); }  catch (ReferenceObjectException ignored) {}
+    }
+
+    public Integer getId() {
+        return getUid();
     }
 
     public Integer getUid() {

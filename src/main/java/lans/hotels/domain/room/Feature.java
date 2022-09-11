@@ -1,9 +1,9 @@
 package lans.hotels.domain.room;
 
-import lans.hotels.domain.IValueObject;
+import lans.hotels.domain.ValueObject;
 
 
-public class Feature implements IValueObject {
+public class Feature extends ValueObject {
     String name;
     String description;
 

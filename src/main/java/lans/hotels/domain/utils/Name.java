@@ -1,8 +1,8 @@
 package lans.hotels.domain.utils;
 
-import lans.hotels.domain.IValueObject;
+import lans.hotels.domain.ValueObject;
 
-public class Name implements IValueObject {
+public class Name implements ValueObject {
     String title;
     String firstName;
     String lastName;
