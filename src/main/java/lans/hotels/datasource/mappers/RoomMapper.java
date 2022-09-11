@@ -1,6 +1,6 @@
 package lans.hotels.datasource.mappers;
 import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.hotel.Room;
+import lans.hotels.domain.room.Room;
 
 import java.sql.*;
 
@@ -36,7 +36,7 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
 
     private Integer prepareAndExecuteInsertion(Room room) {
         try (PreparedStatement insertStatement = connection.prepareStatement(insertStatement())){
-            insertStatement.setInt(1, room.getHotel().getId());
+            insertStatement.setInt(1, room.getHotel().getUid());
             insertStatement.setInt(2, room.getRoomNumber());
             insertStatement.setInt(3, room.getRoomFloor());
             insertStatement.setBoolean(4, true);

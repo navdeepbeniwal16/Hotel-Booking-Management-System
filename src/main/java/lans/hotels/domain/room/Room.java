@@ -1,6 +1,7 @@
-package lans.hotels.domain.hotel;
+package lans.hotels.domain.room;
 
 import lans.hotels.domain.Entity;
+import lans.hotels.domain.hotel.Hotel;
 
 public class Room extends Entity {
     private Hotel hotel;

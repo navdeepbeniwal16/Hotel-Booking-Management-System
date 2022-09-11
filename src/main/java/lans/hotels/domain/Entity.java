@@ -1,19 +1,19 @@
 package lans.hotels.domain;
 
 public abstract class Entity implements IDomainObject {
-    protected int id;
+    protected int uid;
 
     protected Entity() {
-        this.id = -1;
+        this.uid = -1;
     }
     protected Entity(int id) {
-        this.id = id;
+        this.uid = id;
     }
 
-    public int getId() {
-        return id;
+    public int getUid() {
+        return uid;
     }
     public boolean is(Entity otherEntity) {
-        return this.id == otherEntity.getId();
+        return this.uid == otherEntity.getUid();
     }
 }

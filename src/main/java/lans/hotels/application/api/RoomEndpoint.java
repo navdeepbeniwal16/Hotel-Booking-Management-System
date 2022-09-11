@@ -1,10 +1,9 @@
 package lans.hotels.application.api;
 
 import lans.hotels.datasource.DBConnection;
-import lans.hotels.datasource.mappers.HotelMapper;
 import lans.hotels.datasource.mappers.RoomMapper;
 import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.hotel.Room;
+import lans.hotels.domain.room.Room;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 @WebServlet(name = "RoomEndpoint", value = "/api/room/*")
 public class RoomEndpoint extends HttpServlet {
@@ -48,7 +46,7 @@ public class RoomEndpoint extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", room.getId());
+            jsonObject.put("id", room.getUid());
             jsonObject.put("floor_number", room.getRoomFloor());
             jsonObject.put("room_number", room.getRoomNumber());
             out.println(jsonObject);
@@ -96,7 +94,7 @@ public class RoomEndpoint extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", room.getId());
+            jsonObject.put("id", room.getUid());
             jsonObject.put("floor_number", room.getRoomFloor());
             jsonObject.put("room_number", room.getRoomNumber());
             out.println(jsonObject);

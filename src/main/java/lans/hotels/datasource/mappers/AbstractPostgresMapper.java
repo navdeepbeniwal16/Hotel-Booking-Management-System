@@ -2,7 +2,6 @@ package lans.hotels.datasource.mappers;
 
 
 import lans.hotels.domain.IDomainObject;
-import lans.hotels.domain.hotel.Room;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,7 +64,7 @@ public abstract class AbstractPostgresMapper<DomainObject extends IDomainObject>
 
     public DomainObject create(DomainObject domainObject) {
         DomainObject newDomainObject = concreteCreate(domainObject);
-        if (newDomainObject != null) loadedMap.put(newDomainObject.getId(), newDomainObject);
+        if (newDomainObject != null) loadedMap.put(newDomainObject.getUid(), newDomainObject);
         return newDomainObject;
     }
 }
