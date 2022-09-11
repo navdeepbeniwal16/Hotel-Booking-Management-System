@@ -3,7 +3,10 @@ package lans.hotels.application.api;
 import lans.hotels.datasource.DBConnection;
 import lans.hotels.datasource.mappers.RoomMapper;
 import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.hotel.HotelBuilder;
 import lans.hotels.domain.room.Room;
+import lans.hotels.domain.room.RoomBuilder;
+import lans.hotels.domain.room.RoomSpecification;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -15,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 
 @WebServlet(name = "RoomEndpoint", value = "/api/room/*")
 public class RoomEndpoint extends HttpServlet {
@@ -67,18 +71,41 @@ public class RoomEndpoint extends HttpServlet {
         } catch (NumberFormatException e) {
             System.err.println(e.getMessage());
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+
             return;
         }
 
-        Hotel hotel = new Hotel(hotelId);
+        HotelBuilder hotelBuilder = new HotelBuilder();
+        Hotel hotel = hotelBuilder.uid(hotelId).getResult();
+
+        // TODO: error handling - hotel does not exist
+        // TODO: implement HotelMapper
 
         // TODO: add defensive programming against bad requests
-        Integer spec_id = Integer.parseInt(request.getParameter("spec_id"));
-        Integer number = Integer.parseInt(request.getParameter("number"));
-        Integer floor = Integer.parseInt(request.getParameter("floor"));
-        System.out.println("Room("+hotelId+", "+spec_id+", "+number+", "+floor+")");
 
-        Room room = new Room(hotel, spec_id, number, floor);
+        Map params = request.getParameterMap();
+
+        RoomSpecification specification;
+        if (params.containsKey(RoomParams.specId)) {
+            specification = new RoomSpecification(Integer.parseInt(request.getParameter(RoomParams.specId)));
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            throw new ServletException("Error: POST /api/room/:hotel - room must include room specification ID");
+        }
+
+        RoomBuilder roomBuilder = new RoomBuilder(hotel, specification);
+
+        if (params.containsKey(RoomParams.number)) {
+            Integer number = Integer.parseInt(request.getParameter(RoomParams.number));
+            roomBuilder.number(number);
+        }
+
+        if (params.containsKey(RoomParams.floor)) {
+            Integer floor = Integer.parseInt(request.getParameter(RoomParams.floor));
+            roomBuilder.number(floor);
+        }
+
+        Room room = roomBuilder.getResult();
         try {
             DBConnection dbConnection = (DBConnection) getServletContext().getAttribute("DBConnection");
             Connection conn = dbConnection.connection();
@@ -89,6 +116,7 @@ public class RoomEndpoint extends HttpServlet {
             System.out.println(e);
         }
 
+        // TODO: extract duplicate code between doPost and doGet.
         if (room != null) {
             PrintWriter out = response.getWriter();
             response.setContentType("application/json");
@@ -103,5 +131,10 @@ public class RoomEndpoint extends HttpServlet {
             System.out.println("Error: POST /api/room/:hotel - create new room failed");
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
+    }
+    private class RoomParams {
+        protected static final String specId = "spec_id";
+        protected static final String number = "number";
+        protected static final String floor = "floor";
     }
 }

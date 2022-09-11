@@ -1,14 +1,19 @@
 package lans.hotels.datasource.mappers;
+import lans.hotels.datasource.identity_maps.HotelMap;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
+import lans.hotels.domain.room.RoomBuilder;
+import lans.hotels.domain.room.RoomSpecification;
 
 import java.sql.*;
 
 public class RoomMapper extends AbstractPostgresMapper<Room> {
+    private HotelMap hotels;
     private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
 
-    public RoomMapper(Connection connection) {
+    public RoomMapper(Connection connection, HotelMap hotelMap) {
         super(connection, "room");
+        this.hotels = hotelMap;
     }
 
     @Override
@@ -40,7 +45,7 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
             insertStatement.setInt(2, room.getRoomNumber());
             insertStatement.setInt(3, room.getRoomFloor());
             insertStatement.setBoolean(4, true);
-            insertStatement.setInt(5, room.getSpecificationId());
+            insertStatement.setInt(5, room.getSpecification().getUid());
             ResultSet keys = insertStatement.executeQuery();
             if (keys.next()) return keys.getInt("id");
             System.err.println("RoomMapper error: insertion did not return id");
@@ -53,11 +58,23 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
 
     @Override
     protected Room doLoad(int id, ResultSet resultSet) throws SQLException {
-        int hotelId = resultSet.getInt("hotel_id");
-        int specificationId = resultSet.getInt("room_spec_id");
-        int roomNumber = resultSet.getInt("number");
-        int roomFloor = resultSet.getInt("floor");
-        boolean isActive = resultSet.getBoolean("is_active");
-        return new Room(new Hotel(hotelId), id, specificationId, roomNumber, roomFloor, isActive);
+        Hotel hotel = lookupHotel(resultSet.getInt("hotel_id"));
+        RoomSpecification specification = new RoomSpecification(resultSet.getInt("room_spec_id"));
+        RoomBuilder roomBuilder = new RoomBuilder(hotel, specification);
+        Room room = roomBuilder
+                .number(resultSet.getInt("number"))
+                .floor(resultSet.getInt("floor"))
+                .active(resultSet.getBoolean("is_active"))
+                .getResult();
+        return room;
+    }
+
+    private Hotel lookupHotel(Integer hotelId) {
+        Hotel hotel = this.hotels.get(hotelId);
+        if (hotel == null) {
+            hotel = new Hotel(hotelId);
+            hotels.add(hotel);
+        }
+        return hotel;
     }
 }

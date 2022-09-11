@@ -1,7 +1,7 @@
 package lans.hotels.domain.hotel_group;
 
+import lans.hotels.domain.AbstractReferenceObject;
 import lans.hotels.domain.IBuilder;
-import lans.hotels.domain.exceptions.ReferenceObjectException;
 
 import java.util.ArrayList;
 
@@ -15,25 +15,30 @@ public class HotelGroupBuilder implements IBuilder<HotelGroup>  {
         reset();
     }
 
-    public void uid(int id) {
+    public HotelGroupBuilder uid(int id) {
         this.uid = id;
+        return this;
     }
 
-    public void businessDetail(BusinessDetail businessDetail) {
+    public HotelGroupBuilder businessDetail(BusinessDetail businessDetail) {
         this.businessDetails.add(businessDetail);
+        return this;
     }
 
-    public void name(String name) {
+    public HotelGroupBuilder name(String name) {
         this.name = name;
+        return this;
     }
 
+    @Override
     public void reset() {
         hotelGroup = null;
         name = "Default Hotel Group Name";
-        uid = -1;
+        uid = AbstractReferenceObject.NOT_SET;
         businessDetails = new ArrayList<>();
     }
 
+    @Override
     public HotelGroup getResult() {
         if (this.hotelGroup == null) {
             this.hotelGroup = new HotelGroup(this.uid, this.name, this.businessDetails);

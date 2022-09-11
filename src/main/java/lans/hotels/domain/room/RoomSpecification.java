@@ -10,6 +10,10 @@ public class RoomSpecification extends AbstractReferenceObject {
     int capacity;
     String description;
     HashMap<String, Feature> features;
+
+    public RoomSpecification(int id) {
+        super(id);
+    }
     private RoomSpecification(int id, String roomType, int capacity, String description) {
         super(id);
         this.roomType = roomType;

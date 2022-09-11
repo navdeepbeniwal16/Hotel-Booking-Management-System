@@ -1,7 +1,7 @@
 package lans.hotels.application;
 
 import lans.hotels.datasource.DBConnection;
-import lans.hotels.datasource.PostgresConnection;
+import lans.hotels.datasource.connections.PostgresConnection;
 import lans.hotels.environment.Environment;
 import lans.hotels.environment.EnvironmentI;
 import lans.hotels.environment.InvalidEnvironmentException;

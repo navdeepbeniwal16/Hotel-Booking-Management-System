@@ -1,6 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 
+import lans.hotels.datasource.IDataMapper;
 import lans.hotels.domain.IReferenceObject;
 
 import java.sql.PreparedStatement;

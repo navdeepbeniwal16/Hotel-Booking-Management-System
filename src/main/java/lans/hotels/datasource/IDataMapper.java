@@ -1,4 +1,4 @@
-package lans.hotels.datasource.mappers;
+package lans.hotels.datasource;
 
 import lans.hotels.domain.IReferenceObject;
 
