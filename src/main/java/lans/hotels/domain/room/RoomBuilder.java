@@ -1,6 +1,6 @@
 package lans.hotels.domain.room;
 
-import lans.hotels.domain.DomainObject;
+import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.IBuilder;
 import lans.hotels.domain.hotel.Hotel;
 
@@ -41,7 +41,7 @@ public class RoomBuilder implements IBuilder<Room> {
 
     @Override
     public void reset() {
-        this.uid = DomainObject.NOT_SET;
+        this.uid = ReferenceObject.NOT_SET;
         this.isActive = true;
         this.roomFloor = 0;
         this.roomNumber = 0;

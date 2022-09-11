@@ -1,8 +1,8 @@
 package lans.hotels.domain.hotel_group;
 
-import lans.hotels.domain.DomainObject;
+import lans.hotels.domain.ReferenceObject;
 
-public class BusinessDetail extends DomainObject {
+public class BusinessDetail extends ReferenceObject {
     String type;
     String description;
 

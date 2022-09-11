@@ -1,13 +1,13 @@
 package lans.hotels.domain.hotel;
 
-import lans.hotels.domain.DomainObject;
+import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomSpecification;
 import lans.hotels.domain.utils.Phone;
 
 import java.util.HashMap;
 
-public class Hotel extends DomainObject {
+public class Hotel extends ReferenceObject {
     private String name;
     Phone phone;
     String email; // TODO: refactor email into value object.

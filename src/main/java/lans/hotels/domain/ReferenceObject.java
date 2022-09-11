@@ -3,16 +3,16 @@ package lans.hotels.domain;
 
 import lans.hotels.domain.exceptions.ReferenceObjectException;
 
-public abstract class DomainObject implements IReferenceObject<Integer> {
+public abstract class ReferenceObject implements IReferenceObject<Integer> {
     public static final Integer NOT_SET = null;
     protected Integer uid;
     private boolean isNew;
 
-    protected DomainObject() {
+    protected ReferenceObject() {
         this.uid = NOT_SET;
         this.isNew = true;
     }
-    protected DomainObject(int id) {
+    protected ReferenceObject(int id) {
         try { setUid(id); }  catch (ReferenceObjectException ignored) {}
     }
 
@@ -32,6 +32,6 @@ public abstract class DomainObject implements IReferenceObject<Integer> {
     @Override
     public boolean equals(Object other) {
         if (other.getClass() != this.getClass()) return false;
-        return this.uid == ((DomainObject) other).getUid();
+        return this.uid == ((ReferenceObject) other).getUid();
     }
 }
