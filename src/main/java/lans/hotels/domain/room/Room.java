@@ -9,11 +9,7 @@ public class Room extends AbstractReferenceObject {
     private int roomFloor;
     private boolean isActive;
     private int specificationId;
-
-    // TODO: refactor to better creational pattern - façade?
-    public static Room createNewRoom(Hotel hotel, int specificationId, int roomNumber, int roomFloor) {
-        return new Room(hotel, specificationId, roomNumber, roomFloor);
-    }
+    private RoomSpecification specification;
 
     public Room(Hotel hotel, int id, int specificationId, int roomNumber, int roomFloor, boolean isActive) {
         super(id);
@@ -24,7 +20,7 @@ public class Room extends AbstractReferenceObject {
         this.isActive = isActive;
     }
 
-    private Room(Hotel hotel, int specificationId, int roomNumber, int roomFloor) {
+    public Room(Hotel hotel, int specificationId, int roomNumber, int roomFloor) {
         super();
         this.hotel = hotel;
         this.specificationId = specificationId;
@@ -45,5 +41,10 @@ public class Room extends AbstractReferenceObject {
 
     public int getSpecificationId() {
         return specificationId;
+    }
+    public RoomSpecification getSpecification() { return specification; }
+    public void setSpecification(RoomSpecification newSpec) {
+        this.specification = newSpec;
+        this.specificationId = newSpec.getUid();
     }
 }

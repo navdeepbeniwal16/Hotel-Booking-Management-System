@@ -1,7 +1,6 @@
 package lans.hotels.domain.utils;
 
 import lans.hotels.domain.IValueObject;
-import lans.hotels.domain.booking.DateRange;
 
 public class Name implements IValueObject {
     String title;

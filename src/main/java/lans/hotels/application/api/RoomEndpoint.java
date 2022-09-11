@@ -78,7 +78,7 @@ public class RoomEndpoint extends HttpServlet {
         Integer floor = Integer.parseInt(request.getParameter("floor"));
         System.out.println("Room("+hotelId+", "+spec_id+", "+number+", "+floor+")");
 
-        Room room = Room.createNewRoom(hotel, spec_id, number, floor);
+        Room room = new Room(hotel, spec_id, number, floor);
         try {
             DBConnection dbConnection = (DBConnection) getServletContext().getAttribute("DBConnection");
             Connection conn = dbConnection.connection();
