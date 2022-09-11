@@ -1,4 +1,4 @@
-package lans.hotels.domain.booking;
+package lans.hotels.domain.utils;
 
 import lans.hotels.domain.IValueObject;
 

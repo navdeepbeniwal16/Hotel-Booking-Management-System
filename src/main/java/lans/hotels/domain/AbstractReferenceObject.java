@@ -2,10 +2,11 @@ package lans.hotels.domain;
 
 
 public abstract class AbstractReferenceObject implements IReferenceObject<Integer> {
+    public static final Integer NOT_SET = -1;
     protected Integer uid;
 
     protected AbstractReferenceObject() {
-        this.uid = -1;
+        this.uid = NOT_SET;
     }
     protected AbstractReferenceObject(int id) {
         this.uid = id;
