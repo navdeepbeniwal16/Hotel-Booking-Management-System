@@ -7,11 +7,12 @@ public class RoomSpecificationMap implements IIdentityMap<Integer, RoomSpecifica
 
     @Override
     public void add(RoomSpecification obj) {
-
+        // TODO
     }
 
     @Override
     public RoomSpecification get(Integer id) {
+        // TODO
         return null;
     }
 }
