@@ -1,6 +1,6 @@
 package lans.hotels.domain.hotel;
 
-import lans.hotels.domain.AbstractReferenceObject;
+import lans.hotels.domain.DomainObject;
 import lans.hotels.domain.IBuilder;
 import lans.hotels.domain.utils.Phone;
 
@@ -40,7 +40,7 @@ public class HotelBuilder implements IBuilder<Hotel> {
         this.phone = new Phone(0,0,0);
         this.name = "Default Hotel Name";
         this.email = "example@email.com";
-        this.uid = AbstractReferenceObject.NOT_SET;
+        this.uid = DomainObject.NOT_SET;
         this.hotel = null;
     }
 

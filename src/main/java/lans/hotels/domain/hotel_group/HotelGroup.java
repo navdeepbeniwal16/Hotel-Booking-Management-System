@@ -1,11 +1,11 @@
 package lans.hotels.domain.hotel_group;
 
-import lans.hotels.domain.AbstractReferenceObject;
+import lans.hotels.domain.DomainObject;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class HotelGroup extends AbstractReferenceObject  {
+public class HotelGroup extends DomainObject {
     String name;
     HashMap<String, BusinessDetail> businessDetails;
     protected HotelGroup() {

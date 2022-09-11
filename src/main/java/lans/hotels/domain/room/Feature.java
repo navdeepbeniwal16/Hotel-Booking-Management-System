@@ -12,6 +12,7 @@ public class Feature implements IValueObject {
         this.description = description;
     }
 
+    // TODO: authorisation - only admin?
     public Feature updateDescription(String newDescription) {
         return new Feature(this.name, newDescription);
     }
