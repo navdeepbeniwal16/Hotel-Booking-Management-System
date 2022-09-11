@@ -1,5 +1,6 @@
 package lans.hotels.datasource.mappers;
 import lans.hotels.datasource.identity_maps.HotelMap;
+import lans.hotels.datasource.identity_maps.RoomSpecificationMap;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomBuilder;
@@ -9,11 +10,13 @@ import java.sql.*;
 
 public class RoomMapper extends AbstractPostgresMapper<Room> {
     private HotelMap hotels;
+    private RoomSpecificationMap roomSpecifications;
     private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
 
-    public RoomMapper(Connection connection, HotelMap hotelMap) {
+    public RoomMapper(Connection connection, HotelMap hotelMap, RoomSpecificationMap roomSpecificationMap) {
         super(connection, "room");
         this.hotels = hotelMap;
+        this.roomSpecifications = roomSpecificationMap;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
     @Override
     protected Room doLoad(int id, ResultSet resultSet) throws SQLException {
         Hotel hotel = lookupHotel(resultSet.getInt("hotel_id"));
-        RoomSpecification specification = new RoomSpecification(resultSet.getInt("room_spec_id"));
+        RoomSpecification specification = lookupRoomSpecification(resultSet.getInt("room_spec_id"));
         RoomBuilder roomBuilder = new RoomBuilder(hotel, specification);
         Room room = roomBuilder
                 .number(resultSet.getInt("number"))
@@ -76,5 +79,14 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
             hotels.add(hotel);
         }
         return hotel;
+    }
+
+    private RoomSpecification lookupRoomSpecification(Integer roomSpecId) {
+        RoomSpecification roomSpec = roomSpecifications.get(roomSpecId);
+        if (roomSpec == null) {
+            roomSpec = new RoomSpecification(roomSpecId);
+            roomSpecifications.add(roomSpec);
+        }
+        return roomSpec;
     }
 }

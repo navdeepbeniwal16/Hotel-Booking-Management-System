@@ -1,7 +1,6 @@
 package lans.hotels.datasource.identity_maps;
 
 import lans.hotels.datasource.IIdentityMap;
-import lans.hotels.domain.IReferenceObject;
 import lans.hotels.domain.hotel.Hotel;
 
 import java.util.Map;
