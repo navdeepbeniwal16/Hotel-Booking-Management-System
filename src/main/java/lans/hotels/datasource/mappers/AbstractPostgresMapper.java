@@ -1,7 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 
-import lans.hotels.domain.IDomainObject;
+import lans.hotels.domain.IReferenceObject;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.sql.Connection;
-public abstract class AbstractPostgresMapper<DomainObject extends IDomainObject> implements IDataMapper<DomainObject> {
+public abstract class AbstractPostgresMapper<DomainObject extends IReferenceObject<Integer>>
+        implements IDataMapper<DomainObject> {
     protected Connection connection;
     protected String table;
     protected Map<Integer, DomainObject> loadedMap = new HashMap();
@@ -53,7 +54,9 @@ public abstract class AbstractPostgresMapper<DomainObject extends IDomainObject>
     protected DomainObject load(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) return null;
 
-        int id = resultSet.getInt("id");
+        // TODO: abstract out type to generic?
+
+        Integer id = resultSet.getInt("id");
         DomainObject result = loadedMap.get(id);
         if (result == null) {
             result = doLoad(id, resultSet);

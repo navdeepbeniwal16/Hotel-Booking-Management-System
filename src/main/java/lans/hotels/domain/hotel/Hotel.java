@@ -1,10 +1,8 @@
 package lans.hotels.domain.hotel;
 
-import lans.hotels.domain.Entity;
+import lans.hotels.domain.AbstractReferenceObject;
 
-import java.util.UUID;
-
-public class Hotel extends Entity {
+public class Hotel extends AbstractReferenceObject {
     private String name;
 
     public Hotel(int id) {

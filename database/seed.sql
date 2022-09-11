@@ -18,11 +18,18 @@ VALUES
     ('92 Lonsdale Street', NULL, 1, 'Melbourne', 3000)
 ;
 
+INSERT INTO
+    hotel_group (name, address)
+VALUES
+    ('Marriott', 1);
 
 INSERT INTO
-    hotel_group (name, address, business_details)
-VALUES
-    ('Marriott', 1, 'ABN 79 066 059 729');
+    business_detail_type(name)
+VALUES ('ABN'), ('ACN'), ('ASIC Entity Name');
+
+INSERT INTO
+    hotel_group_business_detail(type, hotel_group, detail)
+VALUES (1, 1, '38 094 477 175'), (3, 1, 'LONEX PTY LIMITED');
 
 INSERT INTO
     hotel(hotel_group_id, name, email, contact, address)
