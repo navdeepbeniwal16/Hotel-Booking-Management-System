@@ -1,6 +1,8 @@
 package lans.hotels.domain;
 
 
+import lans.hotels.domain.exceptions.ReferenceObjectException;
+
 public abstract class AbstractReferenceObject implements IReferenceObject<Integer> {
     public static final Integer NOT_SET = -1;
     protected Integer uid;
@@ -14,6 +16,14 @@ public abstract class AbstractReferenceObject implements IReferenceObject<Intege
 
     public Integer getUid() {
         return uid;
+    }
+
+    public void setUid(int id) throws ReferenceObjectException{
+        if (this.uid == NOT_SET) {
+            this.uid = id;
+        } else {
+            throw new ReferenceObjectException("cannot change UID of existing reference object");
+        }
     }
 
     @Override

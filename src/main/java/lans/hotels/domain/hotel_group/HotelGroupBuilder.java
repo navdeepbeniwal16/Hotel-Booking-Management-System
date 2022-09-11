@@ -13,6 +13,8 @@ public class HotelGroupBuilder implements IBuilder<HotelGroup>  {
         hotelGroup = new HotelGroup(id);
     }
 
+
+
     public void reset() {
         hotelGroup = new HotelGroup();
     }
