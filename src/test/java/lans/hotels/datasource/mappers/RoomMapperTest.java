@@ -10,9 +10,10 @@ class RoomMapperTest {
     @InjectMocks private Connection mockDbConnection;
     @Mock private Statement mockStatement;
 
-    protected static final String findStatement = "SELECT " +
-    " room_number, room_floor, isActive, room_spec_id " +
-    " FROM room " + " WHERE room_id = ? ";
+    // TODO: refactor to test BEHAVIOUR, not implementation!
+    protected static final String findStatement = "SELECT " + " id, " +
+    " hotel_id, number, floor, is_active, room_spec_id " +
+    " FROM room " + "WHERE id = ? ";
 
     @Test
     void find_statement_is_correct() {
