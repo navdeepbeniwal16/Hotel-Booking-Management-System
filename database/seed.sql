@@ -18,16 +18,29 @@ VALUES
     ('92 Lonsdale Street', NULL, 1, 'Melbourne', 3000)
 ;
 
+INSERT INTO
+    phone(country, area, number)
+VALUES
+    (61, 4, 96623900)
+;
 
 INSERT INTO
-    hotel_group (name, address, business_details)
+    hotel_group (name, address, phone)
 VALUES
-    ('Marriott', 1, 'ABN 79 066 059 729');
+    ('Marriott', 1, 1);
 
 INSERT INTO
-    hotel(hotel_group_id, name, email, contact, address)
+    business_detail_type(name)
+VALUES ('ABN'), ('ACN'), ('ASIC Entity Name');
+
+INSERT INTO
+    hotel_group_business_detail(hotel_group, type, detail)
+VALUES (1, 1, '38 094 477 175'), (1, 3, 'LONEX PTY LIMITED');
+
+INSERT INTO
+    hotel(hotel_group_id, name, email, address, phone)
 VALUES
-    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 'Joe Guy', 2);
+    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 2, 1);
 
 INSERT INTO
     bed_type(name)
