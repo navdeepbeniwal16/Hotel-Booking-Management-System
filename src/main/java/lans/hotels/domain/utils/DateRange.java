@@ -4,7 +4,7 @@ import lans.hotels.domain.ValueObject;
 
 import java.util.Date;
 
-public class DateRange implements ValueObject {
+public class DateRange extends ValueObject {
     Date from;
     Date to;
 

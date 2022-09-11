@@ -1,7 +1,7 @@
 package lans.hotels.domain;
 
-public abstract class IDomainObject<Id> {
+public abstract class AbstractDomainObject<Id> {
     public abstract Id getId();
-    boolean isNew();
-    boolean equals(Object other);
+    protected abstract boolean isNew();
+    public abstract boolean equals(Object other);
 }

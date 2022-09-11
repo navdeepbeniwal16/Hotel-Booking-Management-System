@@ -14,7 +14,6 @@ public class ApiTest extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 //        DBConnection dbConnection = (DBConnection) getServletContext().getAttribute("DBConnection");
-
         Integer highestNumber = 0;
         PrintWriter out = response.getWriter();
         response.setContentType("application/json");

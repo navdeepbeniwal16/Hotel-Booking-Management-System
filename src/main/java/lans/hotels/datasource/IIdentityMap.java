@@ -1,8 +1,8 @@
 package lans.hotels.datasource;
 
-import lans.hotels.domain.IDomainObject;
+import lans.hotels.domain.AbstractDomainObject;
 
-public interface IIdentityMap<UIDType, ObjectType extends IDomainObject> {
+public interface IIdentityMap<UIDType, ObjectType extends AbstractDomainObject> {
     void add(ObjectType obj);
     ObjectType get(UIDType id);
 }
