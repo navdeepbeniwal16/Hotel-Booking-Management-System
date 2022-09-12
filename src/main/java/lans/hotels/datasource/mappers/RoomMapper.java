@@ -1,6 +1,5 @@
 package lans.hotels.datasource.mappers;
-import lans.hotels.datasource.identity_maps.HotelMap;
-import lans.hotels.datasource.identity_maps.RoomSpecificationMap;
+import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomBuilder;
@@ -9,14 +8,10 @@ import lans.hotels.domain.room.RoomSpecification;
 import java.sql.*;
 
 public class RoomMapper extends AbstractPostgresMapper<Integer, Room> {
-    private HotelMap hotels;
-    private RoomSpecificationMap roomSpecifications;
     private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
 
-    public RoomMapper(Connection connection, HotelMap hotelMap, RoomSpecificationMap roomSpecificationMap) {
-        super(connection, "room");
-        this.hotels = hotelMap;
-        this.roomSpecifications = roomSpecificationMap;
+    public RoomMapper(Connection connection, IDataSource dataSource) {
+        super(connection, "room", dataSource);
     }
 
     @Override
