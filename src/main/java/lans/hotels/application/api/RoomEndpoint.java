@@ -1,6 +1,7 @@
 package lans.hotels.application.api;
 
 import lans.hotels.datasource.DBConnection;
+import lans.hotels.datasource.UnitOfWork;
 import lans.hotels.datasource.mappers.RoomMapper;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel.HotelBuilder;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class RoomEndpoint extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        UnitOfWork.handleSession(request.getSession());
         DBConnection dbConnection = (DBConnection) getServletContext().getAttribute("DBConnection");
         // TODO: error handling - id is not an int
         System.out.println("GET /api/room/" + request.getPathInfo().substring(1));
