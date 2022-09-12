@@ -1,6 +1,5 @@
 package lans.hotels.datasource.identity_maps;
 
-import lans.hotels.datasource.IIdentityMap;
 import lans.hotels.domain.room.RoomSpecification;
 
 public class RoomSpecificationMap implements IIdentityMap<Integer, RoomSpecification> {
@@ -11,7 +10,7 @@ public class RoomSpecificationMap implements IIdentityMap<Integer, RoomSpecifica
     }
 
     @Override
-    public RoomSpecification get(Integer id) {
+    public RoomSpecification getById(Integer id) {
         // TODO
         return null;
     }

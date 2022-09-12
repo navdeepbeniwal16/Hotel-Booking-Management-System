@@ -8,7 +8,7 @@ import lans.hotels.domain.room.RoomSpecification;
 
 import java.sql.*;
 
-public class RoomMapper extends AbstractPostgresMapper<Room> {
+public class RoomMapper extends AbstractPostgresMapper<Integer, Room> {
     private HotelMap hotels;
     private RoomSpecificationMap roomSpecifications;
     private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
@@ -44,11 +44,11 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
 
     private Integer prepareAndExecuteInsertion(Room room) {
         try (PreparedStatement insertStatement = connection.prepareStatement(insertStatement())){
-            insertStatement.setInt(1, room.getHotel().getUid());
+            insertStatement.setInt(1, room.getHotel().getId());
             insertStatement.setInt(2, room.getRoomNumber());
             insertStatement.setInt(3, room.getRoomFloor());
             insertStatement.setBoolean(4, true);
-            insertStatement.setInt(5, room.getSpecification().getUid());
+            insertStatement.setInt(5, room.getSpecification().getId());
             ResultSet keys = insertStatement.executeQuery();
             if (keys.next()) return keys.getInt("id");
             System.err.println("RoomMapper error: insertion did not return id");

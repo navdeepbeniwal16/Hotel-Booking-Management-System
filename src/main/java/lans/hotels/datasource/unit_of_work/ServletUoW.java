@@ -1,21 +1,23 @@
-package lans.hotels.datasource;
+package lans.hotels.datasource.unit_of_work;
 
 import lans.hotels.datasource.exceptions.UnitOfWorkException;
+import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class UnitOfWork implements AbstractUoW {
+public class ServletUoW extends AbstractUoW<Integer> {
     private static final String attributeName = "UnitOfWork";
-    private static HashMap<Thread, UnitOfWork> activeUnitsOfWork = new HashMap<>();
+    private static HashMap<Thread, ServletUoW> activeUnitsOfWork = new HashMap<>();
     private static final ReentrantLock reentrantLock = new ReentrantLock();
 
-    public UnitOfWork() {
+    public ServletUoW(IntegerIdentityMapRegistry identityMaps) {
+        super(identityMaps);
     }
 
-    synchronized public static UnitOfWork getCurrent() throws UnitOfWorkException {
-        UnitOfWork current = activeUnitsOfWork.get(Thread.currentThread());
+    synchronized public static ServletUoW getCurrent() throws UnitOfWorkException {
+        ServletUoW current = activeUnitsOfWork.get(Thread.currentThread());
         if (current == null) {
             throw new UnitOfWorkException("Unit of Work was not initialised for this thread. UnitOfWork.handleSession() must be called in order to associate a UoW instance with a thread");
         }
@@ -24,16 +26,16 @@ public class UnitOfWork implements AbstractUoW {
 
     public static void handleSession(HttpSession session) {
         reentrantLock.lock();
-        UnitOfWork uow = (UnitOfWork) session.getAttribute(attributeName);
+        ServletUoW uow = (ServletUoW) session.getAttribute(attributeName);
         if (uow == null) {
-            uow = UnitOfWork.newActiveUoW();
+            uow = ServletUoW.newActiveUoW();
         }
         activeUnitsOfWork.put(Thread.currentThread(), uow);
         reentrantLock.unlock();
     }
 
-    private static UnitOfWork newActiveUoW() {
-        return new UnitOfWork();
+    private static ServletUoW newActiveUoW() {
+        return new ServletUoW();
     }
 
     public static void removeCurrent() {

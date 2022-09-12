@@ -1,6 +1,5 @@
 package lans.hotels.application.api;
 
-import lans.hotels.datasource.DBConnection;
 import org.json.JSONObject;
 
 import javax.servlet.*;

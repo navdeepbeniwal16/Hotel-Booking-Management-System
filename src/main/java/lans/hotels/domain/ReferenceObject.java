@@ -3,17 +3,20 @@ package lans.hotels.domain;
 
 import lans.hotels.domain.exceptions.ReferenceObjectException;
 
-public abstract class ReferenceObject implements AbstractDomainObject<Integer> {
+public abstract class ReferenceObject extends AbstractDomainObject<Integer> {
     public static final Integer NOT_SET = null;
     protected Integer uid;
     private boolean isNew;
 
     protected ReferenceObject() {
-        this.uid = NOT_SET;
+        this.id = NOT_SET;
         this.isNew = true;
     }
-    protected ReferenceObject(int id) {
-        try { setUid(id); }  catch (ReferenceObjectException ignored) {}
+    protected ReferenceObject(Integer id) {
+        try {
+            setId(id);
+
+        }  catch (ReferenceObjectException ignored) {}
     }
 
     @Override
@@ -21,17 +24,15 @@ public abstract class ReferenceObject implements AbstractDomainObject<Integer> {
         return isNew;
     }
 
+    @Override
     public Integer getId() {
-        return getUid();
+        return id;
     }
 
-    public Integer getUid() {
-        return uid;
-    }
-
-    public void setUid(int id) throws ReferenceObjectException{
-        if (this.uid == NOT_SET) {
-            this.uid = id;
+    @Override
+    public void setId(Integer id) throws ReferenceObjectException {
+        if (this.id == NOT_SET) {
+            this.id = id;
         } else {
             throw new ReferenceObjectException("cannot change UID of existing reference object");
         }
@@ -41,6 +42,7 @@ public abstract class ReferenceObject implements AbstractDomainObject<Integer> {
     @Override
     public boolean equals(Object other) {
         if (other.getClass() != this.getClass()) return false;
-        return this.uid == ((ReferenceObject) other).getUid();
+        return this.uid == ((ReferenceObject) other).getId();
     }
+
 }

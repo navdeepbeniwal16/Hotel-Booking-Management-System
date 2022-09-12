@@ -12,7 +12,7 @@ import java.util.Map;
 
 import java.sql.Connection;
 public abstract class AbstractPostgresMapper<DomainObject extends AbstractDomainObject<Integer>>
-        implements IDataMapper<DomainObject> {
+        implements IMapper<Integer, DomainObject>{
     protected Connection connection;
     protected String table;
     protected Map<Integer, DomainObject> loadedMap = new HashMap();
@@ -34,7 +34,7 @@ public abstract class AbstractPostgresMapper<DomainObject extends AbstractDomain
         return result;
     }
 
-    public DomainObject getById(int id) {
+    public DomainObject getById(Integer id) {
         try {
             return abstractGetById(id);
         } catch (SQLException e) {
