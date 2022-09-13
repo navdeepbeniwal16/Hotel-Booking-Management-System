@@ -1,6 +1,6 @@
 package lans.hotels.domain.hotel_group;
 
-import lans.hotels.domain.AbstractReferenceObject;
+import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.IBuilder;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class HotelGroupBuilder implements IBuilder<HotelGroup>  {
     public void reset() {
         hotelGroup = null;
         name = "Default Hotel Group Name";
-        uid = AbstractReferenceObject.NOT_SET;
+        uid = ReferenceObject.NOT_SET;
         businessDetails = new ArrayList<>();
     }
 

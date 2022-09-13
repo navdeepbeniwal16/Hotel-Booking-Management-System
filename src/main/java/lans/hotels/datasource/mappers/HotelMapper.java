@@ -1,29 +1,20 @@
 package lans.hotels.datasource.mappers;
 
+import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Connection;
 
-//public class HotelMapper extends AbstractPostgresMapper<Hotel> {
-public class HotelMapper {
-//    @Override
-//    protected String findStatement() {
-//        return null;
-//    }
-//
-//    @Override
-//    protected String insertStatement() {
-//        return null;
-//    }
-//
-//    @Override
-//    protected Hotel doLoad(int id, ResultSet resultSet) throws SQLException {
-//        return null;
-//    }
-//
-//    @Override
-//    protected Hotel concreteCreate(Hotel domainObject) {
-//        return null;
-//    }
+public class HotelMapper extends AbstractPostgresMapper<Hotel> {
+    private static final String COLUMNS = " number, floor, is_active, room_spec_id ";
+
+    public HotelMapper(Connection connection) {
+        super(connection, "hotel");
+    }
+    @Override
+    protected String findStatement() {
+        return "SELECT " + " id, " + COLUMNS +
+                " FROM " + this.table +
+                " WHERE id = ? ";
+    }
 }

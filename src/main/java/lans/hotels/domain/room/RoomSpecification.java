@@ -1,11 +1,11 @@
 package lans.hotels.domain.room;
 
-import lans.hotels.domain.AbstractReferenceObject;
+import lans.hotels.domain.ReferenceObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class RoomSpecification extends AbstractReferenceObject {
+public class RoomSpecification extends ReferenceObject {
     String roomType;
     int capacity;
     String description;

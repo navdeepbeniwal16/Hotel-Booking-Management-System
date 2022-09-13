@@ -1,9 +1,9 @@
 package lans.hotels.domain.room;
 
-import lans.hotels.domain.AbstractReferenceObject;
+import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.hotel.Hotel;
 
-public class Room extends AbstractReferenceObject {
+public class Room extends ReferenceObject {
     private Hotel hotel;
     private int roomNumber;
     private int roomFloor;

@@ -1,9 +1,9 @@
 package lans.hotels.domain.room;
 
-import lans.hotels.domain.IValueObject;
+import lans.hotels.domain.ValueObject;
 
 
-public class Feature implements IValueObject {
+public class Feature extends ValueObject {
     String name;
     String description;
 
@@ -12,6 +12,7 @@ public class Feature implements IValueObject {
         this.description = description;
     }
 
+    // TODO: authorisation - only admin?
     public Feature updateDescription(String newDescription) {
         return new Feature(this.name, newDescription);
     }

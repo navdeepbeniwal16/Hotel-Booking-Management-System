@@ -1,6 +1,7 @@
-package lans.hotels.application.api;
+package lans.hotels.api;
 
-import lans.hotels.datasource.DBConnection;
+import lans.hotels.datasource.connections.DBConnection;
+import lans.hotels.datasource.unit_of_work.ServletUoW;
 import lans.hotels.datasource.mappers.RoomMapper;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel.HotelBuilder;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class RoomEndpoint extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ServletUoW.handleSession(request.getSession());
         DBConnection dbConnection = (DBConnection) getServletContext().getAttribute("DBConnection");
         // TODO: error handling - id is not an int
         System.out.println("GET /api/room/" + request.getPathInfo().substring(1));
@@ -50,7 +52,7 @@ public class RoomEndpoint extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", room.getUid());
+            jsonObject.put("id", room.getId());
             jsonObject.put("floor_number", room.getRoomFloor());
             jsonObject.put("room_number", room.getRoomNumber());
             out.println(jsonObject);
@@ -122,7 +124,7 @@ public class RoomEndpoint extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", room.getUid());
+            jsonObject.put("id", room.getId());
             jsonObject.put("floor_number", room.getRoomFloor());
             jsonObject.put("room_number", room.getRoomNumber());
             out.println(jsonObject);

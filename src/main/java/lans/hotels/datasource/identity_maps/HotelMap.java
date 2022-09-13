@@ -1,6 +1,5 @@
 package lans.hotels.datasource.identity_maps;
 
-import lans.hotels.datasource.IIdentityMap;
 import lans.hotels.domain.hotel.Hotel;
 
 import java.util.Map;
@@ -15,11 +14,11 @@ public class HotelMap implements IIdentityMap<Integer, Hotel> {
 
     @Override
     public void add(Hotel hotel) {
-        hotels.put(hotel.getUid(), hotel);
+        hotels.put(hotel.getId(), hotel);
     }
 
     @Override
-    public Hotel get(Integer id) {
+    public Hotel getById(Integer id) {
         return hotels.get(id);
     }
 }

@@ -1,10 +1,10 @@
 package lans.hotels.domain.utils;
 
-import lans.hotels.domain.IValueObject;
+import lans.hotels.domain.ValueObject;
 
 import java.util.Date;
 
-public class DateRange implements IValueObject {
+public class DateRange extends ValueObject {
     Date from;
     Date to;
 

@@ -1,8 +1,8 @@
 package lans.hotels.domain.utils;
 
-import lans.hotels.domain.IValueObject;
+import lans.hotels.domain.ValueObject;
 
-public class Phone implements IValueObject  {
+public class Phone extends ValueObject {
     int countryCode;
     int areaCode;
     int number;

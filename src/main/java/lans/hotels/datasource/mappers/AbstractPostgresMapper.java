@@ -1,8 +1,9 @@
 package lans.hotels.datasource.mappers;
 
 
-import lans.hotels.datasource.IDataMapper;
-import lans.hotels.domain.IReferenceObject;
+import lans.hotels.domain.AbstractDomainObject;
+import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.room.Room;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,30 +12,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.sql.Connection;
-public abstract class AbstractPostgresMapper<DomainObject extends IReferenceObject<Integer>>
-        implements IDataMapper<DomainObject> {
+public abstract class AbstractPostgresMapper<DomainObject extends AbstractDomainObject<Integer>>
+        implements IMapper<Integer, DomainObject>{
+    protected IDataSource dataSource;
     protected Connection connection;
     protected String table;
     protected Map<Integer, DomainObject> loadedMap = new HashMap();
     abstract protected String findStatement();
     abstract protected String insertStatement();
+
+    public abstract DomainObject concreteCreate(DomainObject domainObject);
+
     abstract protected DomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
-    abstract protected DomainObject concreteCreate(DomainObject domainObject);
 
     protected AbstractPostgresMapper(Connection connection, String table) {
         this.connection = connection;
         this.table = table;
+        this.dataSource = dataSource;
     }
 
     protected DomainObject abstractGetById(int id) throws SQLException {
-        DomainObject result = loadedMap.get(id);
-        if (result == null) {
-            result = getFromDb(id);
-        }
-        return result;
+        return getFromDb(id);
     }
 
-    public DomainObject getById(int id) {
+    public DomainObject getById(Integer id) {
         try {
             return abstractGetById(id);
         } catch (SQLException e) {
@@ -44,7 +45,7 @@ public abstract class AbstractPostgresMapper<DomainObject extends IReferenceObje
         }
     }
 
-    private DomainObject getFromDb(int id) throws SQLException {
+    private DomainObject getFromDb(Integer id) throws SQLException {
         try (PreparedStatement findStatement = connection.prepareStatement(findStatement())){
             findStatement.setInt(1, id);
             ResultSet resultSet = findStatement.executeQuery();
@@ -68,7 +69,7 @@ public abstract class AbstractPostgresMapper<DomainObject extends IReferenceObje
 
     public DomainObject create(DomainObject domainObject) {
         DomainObject newDomainObject = concreteCreate(domainObject);
-        if (newDomainObject != null) loadedMap.put(newDomainObject.getUid(), newDomainObject);
+        if (newDomainObject != null) loadedMap.put(newDomainObject.getId(), newDomainObject);
         return newDomainObject;
     }
 }
