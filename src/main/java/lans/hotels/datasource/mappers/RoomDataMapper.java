@@ -6,10 +6,10 @@ import lans.hotels.domain.room.RoomSpecification;
 
 import java.sql.*;
 
-public class RoomMapper extends AbstractPostgresMapper<Room> {
+public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
     private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
 
-    public RoomMapper(Connection connection) {
+    public RoomDataMapper(Connection connection) {
         super(connection, "room");
     }
 

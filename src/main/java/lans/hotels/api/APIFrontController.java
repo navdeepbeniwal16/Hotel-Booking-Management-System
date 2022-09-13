@@ -1,7 +1,7 @@
 package lans.hotels.api;
 
 import lans.hotels.controllers.UnknownCommand;
-import lans.hotels.datasource.PostgresFacade;
+import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
 
@@ -15,8 +15,8 @@ public class APIFrontController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            DBConnection dbConnection = (DBConnection) getServletContext().getAttribute("DBConnection");
-            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(), dbConnection.connection());
+            DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
+            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(), database.connection());
             IFrontCommand command = getCommand(request);
             command.init(getServletContext(), request, response, dataSourceLayer);
             command.process();

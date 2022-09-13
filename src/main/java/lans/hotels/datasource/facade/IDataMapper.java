@@ -1,9 +1,9 @@
-package lans.hotels.datasource;
+package lans.hotels.datasource.facade;
 
 import lans.hotels.domain.AbstractDomainObject;
 
-public interface IDataMapper<DomainObject extends AbstractDomainObject> {
-    DomainObject getById(int id);
+public interface IDataMapper<IdType, DomainObject extends AbstractDomainObject<IdType>> {
+    DomainObject getById(IdType id);
     DomainObject create(DomainObject domainObject);
 //   DomainObject update(int id, DomainObject domainObject);
 //    boolean delete(int id);

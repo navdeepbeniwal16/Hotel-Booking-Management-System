@@ -1,4 +1,4 @@
-package lans.hotels.datasource.identity_maps;
+package lans.hotels.datasource.facade;
 
 import lans.hotels.domain.AbstractDomainObject;
 

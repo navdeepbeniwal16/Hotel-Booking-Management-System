@@ -1,10 +1,8 @@
-package lans.hotels.datasource;
+package lans.hotels.datasource.facade;
 
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
-import lans.hotels.datasource.mappers.IMapperRegistry;
 import lans.hotels.datasource.mappers.PostgresMapperRegistry;
-import lans.hotels.datasource.unit_of_work.IUnitOfWork;
 import lans.hotels.datasource.unit_of_work.ServletUoW;
 import lans.hotels.domain.AbstractDomainObject;
 

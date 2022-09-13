@@ -18,7 +18,7 @@ class RoomMapperTest {
     @Test
     void find_statement_is_correct() {
         // Arrange
-        RoomMapper roomMapper = new RoomMapper(mockDbConnection);
+        RoomDataMapper roomMapper = new RoomDataMapper(mockDbConnection);
 
         // Act
         String statement = roomMapper.findStatement();

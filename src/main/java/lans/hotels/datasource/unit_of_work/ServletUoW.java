@@ -1,6 +1,7 @@
 package lans.hotels.datasource.unit_of_work;
 
 import lans.hotels.datasource.exceptions.UnitOfWorkException;
+import lans.hotels.datasource.facade.IUnitOfWork;
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
 import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
 
@@ -8,7 +9,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ServletUoW implements IUnitOfWork{
+public class ServletUoW implements IUnitOfWork {
     public AbstractIdentityMapRegistry identityMaps;
     private static final String attributeName = "UnitOfWork";
     private static HashMap<Thread, ServletUoW> activeUnitsOfWork = new HashMap<>();

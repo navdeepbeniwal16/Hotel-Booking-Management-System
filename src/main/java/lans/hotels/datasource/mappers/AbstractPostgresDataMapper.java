@@ -1,9 +1,9 @@
 package lans.hotels.datasource.mappers;
 
 
+import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.room.Room;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.sql.Connection;
-public abstract class AbstractPostgresMapper<DomainObject extends AbstractDomainObject<Integer>>
-        implements IMapper<Integer, DomainObject>{
+public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDomainObject<Integer>>
+        implements IDataMapper<Integer, DomainObject> {
     protected IDataSource dataSource;
     protected Connection connection;
     protected String table;
@@ -25,7 +25,7 @@ public abstract class AbstractPostgresMapper<DomainObject extends AbstractDomain
 
     abstract protected DomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
 
-    protected AbstractPostgresMapper(Connection connection, String table) {
+    protected AbstractPostgresDataMapper(Connection connection, String table) {
         this.connection = connection;
         this.table = table;
         this.dataSource = dataSource;
