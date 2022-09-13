@@ -10,8 +10,8 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 
-@WebServlet(name = "APIFront", value = "/api/*")
-public class APIFront extends HttpServlet {
+@WebServlet(name = "APIFrontController", value = "/api/*")
+public class APIFrontController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
