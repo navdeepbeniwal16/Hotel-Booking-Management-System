@@ -1,4 +1,4 @@
-package lans.hotels.application;
+package lans.hotels.api;
 
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.datasource.connections.PostgresConnection;

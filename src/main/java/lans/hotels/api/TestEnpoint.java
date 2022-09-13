@@ -1,7 +1,6 @@
-package lans.hotels.application.api;
+package lans.hotels.api;
 
 import lans.hotels.datasource.connections.DBConnection;
-import lans.hotels.datasource.mappers.IMapper;
 import lans.hotels.datasource.mappers.IMapperRegistry;
 import lans.hotels.datasource.mappers.PostgresMapperRegistry;
 import lans.hotels.domain.IDataSource;

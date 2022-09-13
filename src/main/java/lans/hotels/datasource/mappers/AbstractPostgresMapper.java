@@ -1,7 +1,6 @@
 package lans.hotels.datasource.mappers;
 
 
-import lans.hotels.datasource.IDataMapper;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 

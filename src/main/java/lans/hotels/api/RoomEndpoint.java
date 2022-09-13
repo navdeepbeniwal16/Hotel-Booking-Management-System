@@ -1,4 +1,4 @@
-package lans.hotels.application.api;
+package lans.hotels.api;
 
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.datasource.unit_of_work.ServletUoW;
