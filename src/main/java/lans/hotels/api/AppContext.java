@@ -3,7 +3,6 @@ package lans.hotels.api;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.datasource.connections.PostgresConnection;
 import lans.hotels.environment.Environment;
-import lans.hotels.environment.EnvironmentI;
 import lans.hotels.environment.InvalidEnvironmentException;
 
 import javax.servlet.ServletContext;
