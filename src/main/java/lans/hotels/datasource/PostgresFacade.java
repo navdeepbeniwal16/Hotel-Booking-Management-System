@@ -17,8 +17,13 @@ public class PostgresFacade extends DataSourceFacade {
         try {
             IntegerIdentityMapRegistry identityMaps = IntegerIdentityMapRegistry.newInstance();
             ServletUoW.handleSession(session, identityMaps);
+
             PostgresFacade facade = new PostgresFacade(ServletUoW.getCurrent(), connection);
             facade.initIdentityMaps(identityMaps);
+
+            PostgresMapperRegistry mappers = PostgresMapperRegistry.newInstance(connection);
+            facade.initMappers(mappers);
+
             return facade;
         } catch (Exception e) {
             throw new DataSourceLayerException(e.getMessage());
@@ -27,8 +32,6 @@ public class PostgresFacade extends DataSourceFacade {
 
     private PostgresFacade(IUnitOfWork uow, Connection connection) {
         super(uow);
-        IMapperRegistry mappers = PostgresMapperRegistry.newInstance(connection, this);
-        initMappers(mappers);
     }
 
     @Override

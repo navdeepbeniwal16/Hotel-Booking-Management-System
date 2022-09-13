@@ -1,5 +1,4 @@
 package lans.hotels.datasource.mappers;
-import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomBuilder;
@@ -7,11 +6,11 @@ import lans.hotels.domain.room.RoomSpecification;
 
 import java.sql.*;
 
-public class RoomMapper extends AbstractPostgresMapper<Integer, Room> {
+public class RoomMapper extends AbstractPostgresMapper<Room> {
     private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
 
-    public RoomMapper(Connection connection, IDataSource dataSource) {
-        super(connection, "room", dataSource);
+    public RoomMapper(Connection connection) {
+        super(connection, "room");
     }
 
     @Override
@@ -29,11 +28,11 @@ public class RoomMapper extends AbstractPostgresMapper<Integer, Room> {
                 " RETURNING id; ";
     }
 
+    @Override
     public Room concreteCreate(Room room) {
         // TODO: optimisation - can we not do this second call to the DB?
         Integer newRoomId = prepareAndExecuteInsertion(room);
         if (newRoomId != null) return getById(newRoomId);
-        System.out.println("--- bad create");
         return null;
     }
 
@@ -59,12 +58,11 @@ public class RoomMapper extends AbstractPostgresMapper<Integer, Room> {
         Hotel hotel = lookupHotel(resultSet.getInt("hotel_id"));
         RoomSpecification specification = lookupRoomSpecification(resultSet.getInt("room_spec_id"));
         RoomBuilder roomBuilder = new RoomBuilder(hotel, specification);
-        Room room = roomBuilder
+        return roomBuilder
                 .number(resultSet.getInt("number"))
                 .floor(resultSet.getInt("floor"))
                 .active(resultSet.getBoolean("is_active"))
                 .getResult();
-        return room;
     }
 
     private Hotel lookupHotel(Integer hotelId) {

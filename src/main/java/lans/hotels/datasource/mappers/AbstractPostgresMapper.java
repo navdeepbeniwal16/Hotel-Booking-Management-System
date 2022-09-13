@@ -3,6 +3,7 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.room.Room;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,21 +20,19 @@ public abstract class AbstractPostgresMapper<DomainObject extends AbstractDomain
     protected Map<Integer, DomainObject> loadedMap = new HashMap();
     abstract protected String findStatement();
     abstract protected String insertStatement();
-    abstract protected DomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
-    abstract protected DomainObject concreteCreate(DomainObject domainObject);
 
-    protected AbstractPostgresMapper(Connection connection, String table, IDataSource dataSource) {
+    public abstract DomainObject concreteCreate(DomainObject domainObject);
+
+    abstract protected DomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
+
+    protected AbstractPostgresMapper(Connection connection, String table) {
         this.connection = connection;
         this.table = table;
         this.dataSource = dataSource;
     }
 
     protected DomainObject abstractGetById(int id) throws SQLException {
-        DomainObject result = loadedMap.get(id);
-        if (result == null) {
-            result = getFromDb(id);
-        }
-        return result;
+        return getFromDb(id);
     }
 
     public DomainObject getById(Integer id) {
@@ -46,7 +45,7 @@ public abstract class AbstractPostgresMapper<DomainObject extends AbstractDomain
         }
     }
 
-    private DomainObject getFromDb(int id) throws SQLException {
+    private DomainObject getFromDb(Integer id) throws SQLException {
         try (PreparedStatement findStatement = connection.prepareStatement(findStatement())){
             findStatement.setInt(1, id);
             ResultSet resultSet = findStatement.executeQuery();

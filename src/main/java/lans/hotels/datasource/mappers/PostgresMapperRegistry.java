@@ -11,11 +11,10 @@ import java.util.Map;
 public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
     Map<String, AbstractPostgresMapper> mappers;
 
-    public static PostgresMapperRegistry newInstance(Connection connection,
-                                                     IDataSource dataSource) {
+    public static PostgresMapperRegistry newInstance(Connection connection) {
         PostgresMapperRegistry registry = new PostgresMapperRegistry(new HashMap<>());
-        registry.addMapper(new RoomMapper(connection, dataSource), Room.class);
-        registry.addMapper(new HotelMapper(connection, dataSource), Hotel.class);
+        registry.addMapper(new RoomMapper(connection), Room.class);
+        registry.addMapper(new HotelMapper(connection), Hotel.class);
         return registry;
     }
 
