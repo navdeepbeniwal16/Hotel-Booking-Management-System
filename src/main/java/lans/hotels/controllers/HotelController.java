@@ -35,6 +35,12 @@ public class HotelController extends FrontCommand {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
             return;
         }
+
         Hotel hotel = (Hotel) dataSource.find(Hotel.class, id);
+        if (hotel == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
+        } else {
+            // TODO: marshall response!
+        }
     }
 }
