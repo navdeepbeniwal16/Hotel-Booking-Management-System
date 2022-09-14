@@ -1,6 +1,7 @@
 package lans.hotels.controllers;
 
 import lans.hotels.api.IFrontCommand;
+import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.domain.IDataSource;
 
 import javax.servlet.ServletContext;
@@ -25,5 +26,12 @@ public abstract class FrontCommand implements IFrontCommand  {
         this.dataSource = dataSource;
     }
 
-    abstract public void process() throws ServletException, IOException;
+    public void process() throws ServletException, IOException, CommandException {
+        if (context == null || request == null || response == null || dataSource == null) {
+            throw new CommandException(this.getClass() + " must be initialised by it can process a command.");
+        }
+        concreteProcess();
+    }
+
+    abstract protected void concreteProcess() throws CommandException, IOException;
 }

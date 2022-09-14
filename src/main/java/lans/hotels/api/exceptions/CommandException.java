@@ -1,7 +1,7 @@
 package lans.hotels.api.exceptions;
 
-public class ControllerException extends Exception{
-    public ControllerException(String message) {
+public class CommandException extends Exception{
+    public CommandException(String message) {
         super(message);
     }
 }

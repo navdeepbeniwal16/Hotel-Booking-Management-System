@@ -13,7 +13,7 @@ import java.io.IOException;
 @WebServlet(name = "APIFrontController", value = "/api/*")
 public class APIFrontController extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(), database.connection());
@@ -32,21 +32,27 @@ public class APIFrontController extends HttpServlet {
 
     private IFrontCommand getCommand(HttpServletRequest request) throws ServletException {
         try {
-            return (IFrontCommand) getCommandClass(request).getDeclaredConstructor().newInstance();
+            String[] commandPath = request.getPathInfo().split("/");
+            return (IFrontCommand) getCommandClass(commandPath).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new ServletException(e.getMessage());
         }
     }
 
-    private Class getCommandClass(HttpServletRequest request) {
+    private Class getCommandClass(String[] commandPath) {
+        if (commandPath.length == 0) return UnknownCommand.class;
         Class result;
         final String commandClassName = "lans.hotels.controllers" +
-                request.getParameter("command") + "Command";
+                capitalise(commandPath[0]) + "Command";
         try {
             result = Class.forName(commandClassName);
         } catch (ClassNotFoundException e) {
             result = UnknownCommand.class;
         }
         return result;
+    }
+
+    private String capitalise(String s) {
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 }
