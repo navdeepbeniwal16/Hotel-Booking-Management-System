@@ -6,14 +6,21 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
     private IDataSource dataSource;
     private Integer hashCode;
     protected Id id;
-    private Boolean isNew;
+    protected Boolean isNew;
 
     private LoadStatus loadStatus;
 
-    public abstract Id getId();
-    public abstract void setId(Id id) throws Exception;
+    public Id getId() {
+        return this.id;
+    }
+    public Boolean isNew() {
+        return isNew;
+    }
 
-    protected abstract Boolean isNew();
+    public boolean hasId() {
+        return id != null;
+    }
+
     public abstract boolean equals(Object other);
 
     protected AbstractDomainObject(IDataSource dataSource, Boolean isNew) {

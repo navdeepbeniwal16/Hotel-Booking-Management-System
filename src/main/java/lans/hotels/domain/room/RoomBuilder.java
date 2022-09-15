@@ -41,7 +41,6 @@ public class RoomBuilder implements IBuilder<Room> {
 
     @Override
     public void reset() {
-        this.uid = ReferenceObject.NOT_SET;
         this.isActive = true;
         this.roomFloor = 0;
         this.roomNumber = 0;

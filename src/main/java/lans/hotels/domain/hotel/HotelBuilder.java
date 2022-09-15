@@ -40,7 +40,6 @@ public class HotelBuilder implements IBuilder<Hotel> {
         this.phone = new Phone(0,0,0);
         this.name = "Default Hotel Name";
         this.email = "example@email.com";
-        this.uid = ReferenceObject.NOT_SET;
         this.hotel = null;
     }
 

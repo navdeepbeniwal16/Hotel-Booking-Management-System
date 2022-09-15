@@ -3,7 +3,7 @@ package lans.hotels.domain.room;
 import lans.hotels.domain.ValueObject;
 
 
-public class Feature extends ValueObject {
+public class Feature implements ValueObject {
     String name;
     String description;
 
