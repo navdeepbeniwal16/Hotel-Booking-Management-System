@@ -5,16 +5,10 @@ import lans.hotels.domain.exceptions.ReferenceObjectException;
 
 public abstract class ReferenceObject extends AbstractDomainObject<Integer> {
     protected ReferenceObject(IDataSource dataSource) {
-        super(dataSource, true);
-        this.isNew = true;
+        super(true, dataSource);
     }
-    protected ReferenceObject(IDataSource dataSource, Integer id) {
-        super(dataSource, false);
-        try {
-            setId(id);
-            this.isNew = false;
-
-        }  catch (ReferenceObjectException ignored) {}
+    protected ReferenceObject(Integer id, IDataSource dataSource) {
+        super(id, dataSource);
     }
 
     public void setId(Integer id) throws ReferenceObjectException {

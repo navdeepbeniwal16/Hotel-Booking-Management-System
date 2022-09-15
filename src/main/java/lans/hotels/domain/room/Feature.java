@@ -1,20 +1,32 @@
 package lans.hotels.domain.room;
 
-import lans.hotels.domain.ValueObject;
+import lans.hotels.domain.DomainValueObject;
+import lans.hotels.domain.IDataSource;
 
 
-public class Feature implements ValueObject {
+public class Feature extends DomainValueObject<Integer> {
     String name;
     String description;
 
-    public Feature(String name, String description) {
+    public Feature(String name, String description, IDataSource dataSource) {
+        super(dataSource);
         this.name = name;
         this.description = description;
     }
 
+    public Feature(String name, String description, Integer id, IDataSource dataSource) {
+        super(id, dataSource);
+        this.name = name;
+        this.description = description;
+    }
+
+
+    String getName() { return this.name; }
+    String getDescription() { return this.description; }
+
     // TODO: authorisation - only admin?
-    public Feature updateDescription(String newDescription) {
-        return new Feature(this.name, newDescription);
+    public Feature setDescription(String newDescription) {
+        return new Feature(name, newDescription, id, dataSource);
     }
 
     @Override
@@ -22,7 +34,8 @@ public class Feature implements ValueObject {
         if (other.getClass() != Feature.class) return false;
         return this.name == ((Feature) other).name;
     }
-
-    String getName() { return this.name; }
-    String getDescription() { return this.description; }
+    @Override
+    protected DomainValueObject setId(Integer id) {
+        return new Feature(name, description, id, dataSource);
+    }
 }

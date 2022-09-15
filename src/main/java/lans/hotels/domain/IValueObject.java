@@ -1,5 +1,5 @@
 package lans.hotels.domain;
 
-public interface ValueObject {
+public interface IValueObject {
     boolean equals(Object other);
 }

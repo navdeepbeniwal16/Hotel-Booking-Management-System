@@ -3,8 +3,8 @@ package lans.hotels.domain;
 import java.util.Objects;
 
 public abstract class AbstractDomainObject<Id> implements IGhost {
-    private IDataSource dataSource;
-    private Integer hashCode;
+    protected IDataSource dataSource;
+    protected Integer hashCode;
     protected Id id;
     protected Boolean isNew;
 
@@ -13,6 +13,7 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
     public Id getId() {
         return this.id;
     }
+
     public Boolean isNew() {
         return isNew;
     }
@@ -23,9 +24,15 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
 
     public abstract boolean equals(Object other);
 
-    protected AbstractDomainObject(IDataSource dataSource, Boolean isNew) {
+    protected AbstractDomainObject(Boolean isNew, IDataSource dataSource) {
         this.dataSource = dataSource;
         this.isNew = isNew;
+    }
+
+    protected AbstractDomainObject(Id id, IDataSource dataSource) {
+        this.id = id;
+        this.dataSource = dataSource;
+        this.isNew = false;
     }
 
     @Override
