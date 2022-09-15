@@ -48,4 +48,5 @@ public class Hotel extends ReferenceObject {
 
     public void setAddress(String address) { this.address = address; }
     public String getAddress() { return this.address; }
+    public Phone getPhone() { return this.phone; }
 }

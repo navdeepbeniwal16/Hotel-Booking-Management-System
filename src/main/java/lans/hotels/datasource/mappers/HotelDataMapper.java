@@ -18,11 +18,10 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     @Override
     protected String findStatement() {
         return "SELECT " + " * " +
-                " FROM " + this.table +
-                " JOIN phone ON hotel.phone = phone.id " +
-                " JOIN address on hotel.address = address.id " +
-                " WHERE id = ? " +
-                " JOIN phone";
+                " FROM " + this.table + " h " +
+                " JOIN phone p ON h.phone = p.id " +
+                " JOIN address a on h.address = a.id " +
+                " WHERE h.id = ? ";
     }
 
     @Override
@@ -37,7 +36,6 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
 
     @Override
     protected Hotel doLoad(Integer id, ResultSet rs) throws SQLException {
-        if (!rs.next()) return null;
         HotelBuilder builder = new HotelBuilder(dataSource);
         Phone phone = new Phone(rs.getInt("country"),
                 rs.getInt("area"),

@@ -2,12 +2,11 @@ package lans.hotels.controllers;
 
 import org.json.JSONObject;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class UnknownCommand extends FrontCommand {
+public class UnknownController extends FrontCommand {
     @Override
     public void concreteProcess() throws IOException {
         PrintWriter out = response.getWriter();

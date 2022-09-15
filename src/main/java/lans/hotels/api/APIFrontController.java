@@ -1,6 +1,6 @@
 package lans.hotels.api;
 
-import lans.hotels.controllers.UnknownCommand;
+import lans.hotels.controllers.UnknownController;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
@@ -9,6 +9,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.util.Arrays;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
 public class APIFrontController extends HttpServlet {
@@ -16,7 +17,7 @@ public class APIFrontController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
-            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(), database.connection());
+            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
             IFrontCommand command = getCommand(request);
             command.init(getServletContext(), request, response, dataSourceLayer);
             command.process();
@@ -33,8 +34,6 @@ public class APIFrontController extends HttpServlet {
 
     private IFrontCommand getCommand(HttpServletRequest request) throws ServletException {
         try {
-            System.out.println("path: " + request.getPathInfo());
-            System.out.println("split path:" + request.getPathInfo().split("/"));
             String[] commandPath = request.getPathInfo().split("/");
             return (IFrontCommand) getCommandClass(commandPath).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
@@ -44,17 +43,18 @@ public class APIFrontController extends HttpServlet {
     }
 
     private Class getCommandClass(String[] commandPath) {
-        if (commandPath.length == 0) return UnknownCommand.class;
-        System.out.println("command path: " + commandPath.toString());
+        if (commandPath.length == 0) return UnknownController.class;
         Class result;
         final String commandClassName = "lans.hotels.controllers." +
-                capitalise(commandPath[1]) + "Command";
+                capitalise(commandPath[1]) + "Controller";
         try {
-            System.out.println("commandClassName: " + commandClassName);
             result = Class.forName(commandClassName);
         } catch (ClassNotFoundException e) {
-            result = UnknownCommand.class;
-            System.out.println("getCommandClass():" + e.getMessage());
+            result = UnknownController.class;
+            System.out.println("404 NOT FOUND");
+            System.out.println("\t" + e.getMessage());
+            System.out.println("\tgetCommandClass()" + Arrays.toString(commandPath));
+
         }
         return result;
     }
