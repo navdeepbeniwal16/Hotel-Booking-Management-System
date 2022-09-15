@@ -1,22 +1,36 @@
 package lans.hotels.domain.room;
 
-import lans.hotels.domain.ValueObject;
+import lans.hotels.domain.DomainValueObject;
+import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.ReferenceObject;
+import lans.hotels.domain.IValueObject;
 
-public class RoomType extends ValueObject {
+public class RoomType extends DomainValueObject<Integer> {
     String name;
 
-    public RoomType(String name) {
-        super();
+    public RoomType(String name, IDataSource dataSource) {
+        super(dataSource);
         this.name = name;
     }
 
-    public RoomType(Integer id, String name) {
-        super(id);
+    public RoomType(String name, Integer id, IDataSource dataSource) {
+        super(id, dataSource);
         this.name = name;
     }
+
+    @Override
+    public Boolean isNew() {
+        return null;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other.getClass() != RoomType.class) return false;
         return this.getId() == ((RoomType) other).getId() || this.name == ((RoomType) other).name;
+    }
+
+    @Override
+    protected DomainValueObject<Integer> setId(Integer integer) {
+        return null;
     }
 }

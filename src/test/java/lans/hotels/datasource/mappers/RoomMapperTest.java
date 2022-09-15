@@ -14,16 +14,4 @@ class RoomMapperTest {
     protected static final String findStatement = "SELECT " + " id, " +
     " hotel_id, number, floor, is_active, room_spec_id " +
     " FROM room " + "WHERE id = ? ";
-
-    @Test
-    void find_statement_is_correct() {
-        // Arrange
-        RoomMapper roomMapper = new RoomMapper(mockDbConnection);
-
-        // Act
-        String statement = roomMapper.findStatement();
-
-        // Assert
-        Assertions.assertEquals(findStatement, statement);
-    }
 }

@@ -1,5 +1,6 @@
 package lans.hotels.datasource.identity_maps;
 
+import lans.hotels.datasource.facade.IIdentityMap;
 import lans.hotels.domain.hotel.Hotel;
 
 import java.util.Map;

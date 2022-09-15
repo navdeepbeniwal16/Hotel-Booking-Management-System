@@ -1,10 +1,6 @@
-package lans.hotels.datasource;
+package lans.hotels.datasource.facade;
 
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
-import lans.hotels.datasource.identity_maps.IIdentityMap;
-import lans.hotels.datasource.mappers.IMapperRegistry;
-import lans.hotels.datasource.unit_of_work.IUnitOfWork;
-import lans.hotels.datasource.mappers.IMapper;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
@@ -20,7 +16,10 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
         this.identityMaps = identityMaps;
     }
 
-    protected DataSourceFacade(IUnitOfWork uow) {
+    protected DataSourceFacade() {
+    }
+
+    protected void initUoW(IUnitOfWork uow) {
         this.uow = uow;
     }
 
@@ -32,9 +31,8 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
         this.identityMaps = identityMaps;
     }
 
-    @Override
-    public AbstractDomainObject find(Class<? extends AbstractDomainObject> aClass, Integer id) {
-        AbstractDomainObject domainObject = checkCache(aClass, id);
+    public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
+        T domainObject = checkCache(aClass, id);
         if (domainObject == null) {
             domainObject = queryDb(aClass, id);
             // TODO: identityMaps.get(className).put(id, domainObject);
@@ -42,17 +40,17 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
         return domainObject;
     }
 
-    private AbstractDomainObject checkCache(Class<? extends AbstractDomainObject> aClass, Integer id) {
+    private <T extends AbstractDomainObject> T checkCache(Class<T> aClass, Integer id) {
         IIdentityMap identityMap = identityMaps.get(aClass);
         if (identityMap != null) {
-            return identityMap.getById(id);
+            return (T) identityMap.getById(id);
         }
         return null;
     }
 
-    private AbstractDomainObject queryDb(Class<? extends AbstractDomainObject> aClass, Integer id) {
-        IMapper<Integer, AbstractDomainObject> identityMap = mappers.getMapper(aClass);
-        AbstractDomainObject domainObject = identityMap.getById(id);
+    private <T extends AbstractDomainObject> T queryDb(Class<T> aClass, Integer id) {
+        IDataMapper<Integer, AbstractDomainObject<Integer>> identityMap = mappers.getMapper(aClass);
+        T domainObject = (T) identityMap.getById(id);
         return domainObject;
     }
 

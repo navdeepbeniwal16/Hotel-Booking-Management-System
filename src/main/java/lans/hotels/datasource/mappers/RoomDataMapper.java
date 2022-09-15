@@ -1,4 +1,5 @@
 package lans.hotels.datasource.mappers;
+import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomBuilder;
@@ -6,11 +7,11 @@ import lans.hotels.domain.room.RoomSpecification;
 
 import java.sql.*;
 
-public class RoomMapper extends AbstractPostgresMapper<Room> {
+public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
     private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
 
-    public RoomMapper(Connection connection) {
-        super(connection, "room");
+    public RoomDataMapper(Connection connection, IDataSource dataSource) {
+        super(connection, "room", dataSource);
     }
 
     @Override
@@ -29,7 +30,7 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
     }
 
     @Override
-    public Room concreteCreate(Room room) {
+    public Room doCreate(Room room) {
         // TODO: optimisation - can we not do this second call to the DB?
         Integer newRoomId = prepareAndExecuteInsertion(room);
         if (newRoomId != null) return getById(newRoomId);
@@ -54,32 +55,15 @@ public class RoomMapper extends AbstractPostgresMapper<Room> {
     }
 
     @Override
-    protected Room doLoad(int id, ResultSet resultSet) throws SQLException {
-        Hotel hotel = lookupHotel(resultSet.getInt("hotel_id"));
-        RoomSpecification specification = lookupRoomSpecification(resultSet.getInt("room_spec_id"));
-        RoomBuilder roomBuilder = new RoomBuilder(hotel, specification);
+    protected Room doLoad(Integer id, ResultSet resultSet) throws SQLException {
+        Hotel hotel = (Hotel) dataSource.find(Hotel.class, resultSet.getInt("hotel_id"));
+        RoomSpecification specification = (RoomSpecification) dataSource.find(RoomSpecification.class, resultSet.getInt("room_spec_id"));
+        RoomBuilder roomBuilder = new RoomBuilder(hotel, specification, dataSource);
         return roomBuilder
+                .id(id)
                 .number(resultSet.getInt("number"))
                 .floor(resultSet.getInt("floor"))
                 .active(resultSet.getBoolean("is_active"))
                 .getResult();
-    }
-
-    private Hotel lookupHotel(Integer hotelId) {
-        Hotel hotel = this.hotels.get(hotelId);
-        if (hotel == null) {
-            hotel = new Hotel(hotelId);
-            hotels.add(hotel);
-        }
-        return hotel;
-    }
-
-    private RoomSpecification lookupRoomSpecification(Integer roomSpecId) {
-        RoomSpecification roomSpec = roomSpecifications.get(roomSpecId);
-        if (roomSpec == null) {
-            roomSpec = new RoomSpecification(roomSpecId);
-            roomSpecifications.add(roomSpec);
-        }
-        return roomSpec;
     }
 }

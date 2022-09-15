@@ -1,5 +1,6 @@
 package lans.hotels.domain.room;
 
+import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.hotel.Hotel;
 
@@ -11,15 +12,26 @@ public class Room extends ReferenceObject {
     private RoomSpecification specification;
 
     protected Room(Hotel hotel,
-                   int id,
+                   RoomSpecification specification,
+                   IDataSource dataSource) {
+        super(dataSource);
+        this.hotel = hotel;
+        this.specification = specification;
+    }
+
+    protected Room(Hotel hotel,
+                   RoomSpecification specification,
                    int roomNumber,
                    int roomFloor,
-                   boolean isActive) {
-        super(id);
+                   boolean isActive,
+                   Integer id,
+                   IDataSource dataSource) {
+        super(id, dataSource);
         this.hotel = hotel;
         this.roomNumber = roomNumber;
         this.roomFloor = roomFloor;
         this.isActive = isActive;
+        this.specification = specification;
     }
 
     public Hotel getHotel() { return this.hotel; }

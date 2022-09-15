@@ -15,7 +15,7 @@ public class HotelGroupBuilder implements IBuilder<HotelGroup>  {
         reset();
     }
 
-    public HotelGroupBuilder uid(int id) {
+    public HotelGroupBuilder id(int id) {
         this.uid = id;
         return this;
     }
@@ -34,7 +34,6 @@ public class HotelGroupBuilder implements IBuilder<HotelGroup>  {
     public void reset() {
         hotelGroup = null;
         name = "Default Hotel Group Name";
-        uid = ReferenceObject.NOT_SET;
         businessDetails = new ArrayList<>();
     }
 

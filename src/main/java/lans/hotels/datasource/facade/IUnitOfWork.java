@@ -1,4 +1,4 @@
-package lans.hotels.datasource.unit_of_work;
+package lans.hotels.datasource.facade;
 
 import lans.hotels.domain.AbstractDomainObject;
 

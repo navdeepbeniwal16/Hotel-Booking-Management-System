@@ -1,4 +1,4 @@
-package lans.hotels.environment;
+package lans.hotels.api;
 
 import lans.hotels.datasource.DBConfiguration;
 

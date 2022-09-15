@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 
 public class UnknownCommand extends FrontCommand {
     @Override
-    public void process() throws ServletException, IOException {
+    public void concreteProcess() throws IOException {
         PrintWriter out = response.getWriter();
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
