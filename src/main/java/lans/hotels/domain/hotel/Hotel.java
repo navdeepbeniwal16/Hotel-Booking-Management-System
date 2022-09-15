@@ -1,5 +1,6 @@
 package lans.hotels.domain.hotel;
 
+import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomSpecification;
@@ -15,13 +16,18 @@ public class Hotel extends ReferenceObject {
     HashMap<Integer, Room> rooms;
     HashMap<Integer, RoomSpecification> roomSpecifications;
 
-    public Hotel(int id) {
-        super(id);
+    public Hotel(IDataSource dataSource) {
+        super(dataSource);
         initMaps();
     }
 
-    protected Hotel(int id, String name, Phone phone, String email) {
-        super(id);
+    public Hotel(Integer id, IDataSource dataSource) {
+        super(id, dataSource);
+        initMaps();
+    }
+
+    protected Hotel(String name, Phone phone, String email, Integer id, IDataSource dataSource) {
+        super(id, dataSource);
         this.name = name;
         this.phone = phone;
         this.email = email;

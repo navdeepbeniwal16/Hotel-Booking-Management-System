@@ -1,6 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.facade.IMapperRegistry;
+import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
 
@@ -11,10 +12,10 @@ import java.util.Map;
 public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
     Map<String, AbstractPostgresDataMapper> mappers;
 
-    public static PostgresMapperRegistry newInstance(Connection connection) {
+    public static PostgresMapperRegistry newInstance(Connection connection, IDataSource dataSource) {
         PostgresMapperRegistry registry = new PostgresMapperRegistry(new HashMap<>());
-        registry.addMapper(new RoomDataMapper(connection), Room.class);
-        registry.addMapper(new HotelDataMapper(connection), Hotel.class);
+        registry.addMapper(new RoomDataMapper(connection, dataSource), Room.class);
+        registry.addMapper(new HotelDataMapper(connection, dataSource), Hotel.class);
         return registry;
     }
 

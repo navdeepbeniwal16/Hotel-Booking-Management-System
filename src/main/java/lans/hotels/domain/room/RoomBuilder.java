@@ -1,6 +1,6 @@
 package lans.hotels.domain.room;
 
-import lans.hotels.domain.ReferenceObject;
+import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.IBuilder;
 import lans.hotels.domain.hotel.Hotel;
 
@@ -12,11 +12,21 @@ public class RoomBuilder implements IBuilder<Room> {
     private int roomFloor;
     private boolean isActive;
     private RoomSpecification specification;
+    private Integer id;
+    private IDataSource dataSource;
 
-    public RoomBuilder(Hotel hotel, RoomSpecification specification) {
+    public RoomBuilder(Hotel hotel,
+                       RoomSpecification specification,
+                       IDataSource dataSource) {
+        this.dataSource = dataSource;
         this.hotel = hotel;
         this.specification = specification;
         reset();
+    }
+
+    public RoomBuilder id(Integer id) {
+        this.id = id;
+        return this;
     }
 
     public RoomBuilder number(int roomNumber) {
@@ -34,11 +44,6 @@ public class RoomBuilder implements IBuilder<Room> {
         return this;
     }
 
-    public RoomBuilder specification(RoomSpecification specification) {
-        this.specification = specification;
-        return this;
-    }
-
     @Override
     public void reset() {
         this.isActive = true;
@@ -49,9 +54,8 @@ public class RoomBuilder implements IBuilder<Room> {
     @Override
     public Room getResult() {
         if (this.room == null) {
-            this.room = new Room(this.hotel, this.uid, this.roomNumber, this.roomFloor, this.isActive);
+            this.room = new Room(hotel, specification, roomNumber, roomFloor, isActive, id, dataSource);
         }
-        if (this.specification != null) this.room.setSpecification(specification);
         return this.room;
     }
 }

@@ -19,7 +19,7 @@ public class RoomType extends DomainValueObject<Integer> {
     }
 
     @Override
-    protected Boolean isNew() {
+    public Boolean isNew() {
         return null;
     }
 

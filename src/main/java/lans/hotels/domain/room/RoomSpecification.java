@@ -1,5 +1,6 @@
 package lans.hotels.domain.room;
 
+import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
 
 import java.util.HashMap;
@@ -11,19 +12,23 @@ public class RoomSpecification extends ReferenceObject {
     String description;
     HashMap<String, Feature> features;
 
-    public RoomSpecification(int id) {
-        super(id);
+    public RoomSpecification(IDataSource dataSource) {
+        super(dataSource);
     }
-    private RoomSpecification(int id, String roomType, int capacity, String description) {
-        super(id);
+
+    public RoomSpecification(Integer id, IDataSource dataSource) {
+        super(id, dataSource);
+    }
+    private RoomSpecification(String roomType, int capacity, String description, Integer id, IDataSource dataSource) {
+        super(id, dataSource);
         this.roomType = roomType;
         this.capacity = capacity;
         this.description = description;
         this.features = new HashMap<>();
     }
 
-    private RoomSpecification(int id, String roomType, int capacity, String description, Map<String, Feature> features) {
-        super(id);
+    private RoomSpecification(String roomType, int capacity, String description, Map<String, Feature> features, Integer id, IDataSource dataSource) {
+        super(id, dataSource);
         this.roomType = roomType;
         this.capacity = capacity;
         this.description = description;

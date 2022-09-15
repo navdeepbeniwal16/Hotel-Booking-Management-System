@@ -13,13 +13,11 @@ public class PostgresFacade extends DataSourceFacade {
     public static PostgresFacade newInstance(HttpSession session,
                                              Connection connection) throws DataSourceLayerException {
         try {
-            IntegerIdentityMapRegistry identityMaps = IntegerIdentityMapRegistry.newInstance();
-            ServletUoW.handleSession(session, identityMaps);
-
             PostgresFacade facade = new PostgresFacade(ServletUoW.getCurrent(), connection);
+            IntegerIdentityMapRegistry identityMaps = IntegerIdentityMapRegistry.newInstance(facade);
+            PostgresMapperRegistry mappers = PostgresMapperRegistry.newInstance(connection, facade);
+            ServletUoW.handleSession(session, identityMaps);
             facade.initIdentityMaps(identityMaps);
-
-            PostgresMapperRegistry mappers = PostgresMapperRegistry.newInstance(connection);
             facade.initMappers(mappers);
 
             return facade;
@@ -35,6 +33,11 @@ public class PostgresFacade extends DataSourceFacade {
     @Override
     public void load(AbstractDomainObject domainObject) {
 
+    }
+
+    @Override
+    public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
+        return null;
     }
 
     @Override

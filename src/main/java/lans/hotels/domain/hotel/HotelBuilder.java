@@ -1,17 +1,19 @@
 package lans.hotels.domain.hotel;
 
-import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.IBuilder;
+import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.utils.Phone;
 
 public class HotelBuilder implements IBuilder<Hotel> {
-    Integer uid;
+    Integer id;
     Hotel hotel;
     Phone phone;
     String name;
     String email; // TODO: refactor email into value object.
+    IDataSource dataSource;
 
-    public HotelBuilder() {
+    public HotelBuilder(IDataSource dataSource) {
+        this.dataSource = dataSource;
         reset();
     }
 
@@ -25,8 +27,8 @@ public class HotelBuilder implements IBuilder<Hotel> {
         return this;
     }
 
-    public HotelBuilder uid(int id) {
-        this.uid = id;
+    public HotelBuilder id(Integer id) {
+        this.id = id;
         return this;
     }
 
@@ -46,7 +48,7 @@ public class HotelBuilder implements IBuilder<Hotel> {
     @Override
     public Hotel getResult() {
         if (this.hotel == null) {
-            this.hotel = new Hotel(this.uid, this.name, this.phone, this.email);
+            this.hotel = new Hotel(name, phone, email, id, dataSource);
         }
         return this.hotel;
     }

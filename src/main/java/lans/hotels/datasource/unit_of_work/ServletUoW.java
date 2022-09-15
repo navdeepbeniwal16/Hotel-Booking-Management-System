@@ -4,6 +4,7 @@ import lans.hotels.datasource.exceptions.UnitOfWorkException;
 import lans.hotels.datasource.facade.IUnitOfWork;
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
 import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
+import lans.hotels.domain.AbstractDomainObject;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -44,5 +45,25 @@ public class ServletUoW implements IUnitOfWork {
     public static void removeCurrent() {
         // TODO: exception handling?
         activeUnitsOfWork.remove(Thread.currentThread());
+    }
+
+    @Override
+    public void registerNew(AbstractDomainObject obj) {
+
+    }
+
+    @Override
+    public void registerDirty(AbstractDomainObject obj) {
+
+    }
+
+    @Override
+    public void registerRemoved(AbstractDomainObject obj) {
+
+    }
+
+    @Override
+    public void registerClean(AbstractDomainObject obj) {
+
     }
 }

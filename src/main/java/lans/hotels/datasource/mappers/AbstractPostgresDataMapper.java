@@ -4,6 +4,7 @@ package lans.hotels.datasource.mappers;
 import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.room.Room;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,7 +26,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
 
     abstract protected DomainObject doLoad(int id, ResultSet resultSet) throws SQLException;
 
-    protected AbstractPostgresDataMapper(Connection connection, String table) {
+    protected AbstractPostgresDataMapper(Connection connection, String table, IDataSource dataSource) {
         this.connection = connection;
         this.table = table;
         this.dataSource = dataSource;
@@ -53,6 +54,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         }
     }
 
+    protected abstract DomainObject doLoad(Integer id, ResultSet resultSet) throws SQLException;
     protected DomainObject load(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) return null;
 
@@ -61,7 +63,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         Integer id = resultSet.getInt("id");
         DomainObject result = loadedMap.get(id);
         if (result == null) {
-            result = doLoad(id, resultSet);
+            result = (DomainObject) doLoad(id, resultSet);
             loadedMap.put(id, result);
         }
         return result;

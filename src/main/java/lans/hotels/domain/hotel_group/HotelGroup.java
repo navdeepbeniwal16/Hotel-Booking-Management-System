@@ -5,15 +5,15 @@ import lans.hotels.domain.ReferenceObject;
 import java.util.HashMap;
 import java.util.List;
 
-public class HotelGroup extends ReferenceObject {
+public class HotelGroup {
     String name;
     HashMap<String, BusinessDetail> businessDetails;
     protected HotelGroup() {
-        super();
+//        super();
     }
 
     protected HotelGroup(int id, String name, List<BusinessDetail> businessDetails) {
-        super(id);
+//        super(id);
         this.name = name;
         businessDetails.stream().map(businessDetail -> this.businessDetails.put(businessDetail.type, businessDetail));
     }
