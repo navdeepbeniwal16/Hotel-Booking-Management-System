@@ -37,7 +37,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         try {
             return abstractGetById(id);
         } catch (SQLException e) {
-            System.out.println("getById(): " + e.getMessage());
+            System.err.println("AbstractPostgresDataMapper.getById(): " + e.getMessage());
             // TODO: do not return null!
             return null;
         }

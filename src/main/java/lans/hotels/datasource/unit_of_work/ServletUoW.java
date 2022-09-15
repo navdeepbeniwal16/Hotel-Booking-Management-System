@@ -28,15 +28,14 @@ public class ServletUoW implements IUnitOfWork {
         return current;
     }
 
-    public static void handleSession(HttpSession session, IntegerIdentityMapRegistry identityMaps) {
+    public static void handleSession(HttpSession session, IntegerIdentityMapRegistry freshIdentityMap) {
         reentrantLock.lock();
         ServletUoW uow = (ServletUoW) session.getAttribute(attributeName);
         if (uow == null) {
-            uow = ServletUoW.newActiveUoW(identityMaps);
+            uow = ServletUoW.newActiveUoW(freshIdentityMap);
             System.out.println("UoW created");
         }
         activeUnitsOfWork.put(Thread.currentThread(), uow);
-        System.out.println("UoW put on thread");
         reentrantLock.unlock();
     }
 
