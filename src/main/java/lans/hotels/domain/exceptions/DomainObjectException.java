@@ -1,2 +1,9 @@
-package lans.hotels.domain.exceptions;public class DomainObjectException {
+package lans.hotels.domain.exceptions;
+
+import lans.hotels.domain.DomainValueObject;
+
+public class DomainObjectException extends Exception {
+    public DomainObjectException(String message) {
+        super(message);
+    }
 }

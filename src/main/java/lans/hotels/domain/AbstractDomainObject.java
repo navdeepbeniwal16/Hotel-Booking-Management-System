@@ -1,5 +1,9 @@
 package lans.hotels.domain;
 
+import lans.hotels.datasource.exceptions.DataSourceLayerException;
+import lans.hotels.domain.exceptions.DomainObjectException;
+import lans.hotels.domain.exceptions.ReferenceObjectException;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -34,6 +38,8 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
         hashCode = Objects.hash(this.id, this.getClass());
     }
 
+     abstract void setId(Id id) throws Exception;
+
     @Override
     public int hashCode() {
         return hashCode;
@@ -57,6 +63,7 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
         return loadStatus == LoadStatus.LOADING;
     }
 
+    // TODO: #lazyload markGhost?
     protected void markLoaded() {
         assert loadStatus == LoadStatus.LOADING;
         loadStatus = LoadStatus.LOADED;
@@ -66,4 +73,10 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
         assert loadStatus == LoadStatus.GHOST;
         loadStatus = LoadStatus.LOADING;
     }
+
+    // TODO: #ghost #lazyload how do these UoW commands interact with Ghost Lazy Load?
+    protected void markNew() throws Exception  { dataSource.registerNew(this); }
+    protected void markClean() throws Exception { dataSource.registerClean(this); }
+    protected void markDirty() throws Exception { dataSource.registerDirty(this); }
+    protected void markRemoved() throws Exception  { dataSource.registerRemoved(this); }
 }

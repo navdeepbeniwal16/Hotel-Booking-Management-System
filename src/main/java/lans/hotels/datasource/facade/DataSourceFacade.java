@@ -1,23 +1,23 @@
 package lans.hotels.datasource.facade;
 
+import lans.hotels.datasource.exceptions.DataSourceLayerException;
+import lans.hotels.datasource.exceptions.IdentityMapException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public abstract class DataSourceFacade implements IDataSource<Integer> {
+    Connection connection;
     IUnitOfWork uow;
     IMapperRegistry<Integer> mappers;
     AbstractIdentityMapRegistry<Integer> identityMaps;
 
-
-    protected DataSourceFacade(IUnitOfWork uow, IMapperRegistry mappers, AbstractIdentityMapRegistry<Integer> identityMaps) {
-        this.uow = uow;
-        this.mappers = mappers;
-        this.identityMaps = identityMaps;
-    }
-
-    protected DataSourceFacade() {
+    protected DataSourceFacade(Connection connection) {
+        this.connection = connection;
     }
 
     protected void initUoW(IUnitOfWork uow) {
@@ -39,7 +39,8 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
         if (domainObject == null) {
             domainObject = (T) mapper.getById(id);
             if (domainObject != null) {
-                classCache.add(domainObject);
+                // TODO: handle this exception more gracefully
+                try { classCache.add(domainObject); } catch (IdentityMapException e) {}
             }
         }
         return domainObject;
@@ -63,5 +64,14 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
 
     public void registerClean(AbstractDomainObject domainObject) throws UoWException {
         uow.registerClean(domainObject);
+    }
+
+    public void commit() throws DataSourceLayerException {
+        try {
+            uow.commit(mappers);
+            connection.commit();
+        } catch (Exception e) {
+            throw new DataSourceLayerException(e.getMessage());
+        }
     }
 }

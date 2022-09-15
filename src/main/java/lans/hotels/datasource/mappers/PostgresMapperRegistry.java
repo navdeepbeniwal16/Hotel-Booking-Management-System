@@ -1,6 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.facade.IMapperRegistry;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
@@ -24,7 +25,7 @@ public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
     }
 
     @Override
-    public AbstractPostgresDataMapper getMapper(Class<?> aClass) {
+    public AbstractPostgresDataMapper getMapper(Class<? extends AbstractDomainObject> aClass) {
         return mappers.get(aClass.getName());
     }
 

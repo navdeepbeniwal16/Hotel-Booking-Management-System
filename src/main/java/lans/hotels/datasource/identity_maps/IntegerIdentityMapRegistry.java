@@ -13,7 +13,7 @@ public class IntegerIdentityMapRegistry extends AbstractIdentityMapRegistry<Inte
     }
 
     private IntegerIdentityMapRegistry(Map<String,
-            IIdentityMap<Integer, AbstractDomainObject>> identityMaps,
+            IIdentityMap<Integer, ? extends AbstractDomainObject>> identityMaps,
                                        IDataSource<Integer> dataSource) {
         super(identityMaps, dataSource);
     }

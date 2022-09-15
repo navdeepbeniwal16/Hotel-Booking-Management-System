@@ -2,8 +2,6 @@ package lans.hotels.domain.room;
 
 import lans.hotels.domain.DomainValueObject;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.ReferenceObject;
-import lans.hotels.domain.IValueObject;
 
 public class RoomType extends DomainValueObject<Integer> {
     String name;
@@ -22,10 +20,5 @@ public class RoomType extends DomainValueObject<Integer> {
     public boolean equals(Object other) {
         if (other.getClass() != RoomType.class) return false;
         return this.getId() == ((RoomType) other).getId() || this.name == ((RoomType) other).name;
-    }
-
-    @Override
-    protected DomainValueObject<Integer> setId(Integer integer) {
-        return null;
     }
 }
