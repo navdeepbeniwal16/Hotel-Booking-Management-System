@@ -2,9 +2,7 @@ package lans.hotels.controllers;
 
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.api.HttpMethod;
-import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.room.Room;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

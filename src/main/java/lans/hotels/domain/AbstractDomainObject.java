@@ -2,18 +2,23 @@ package lans.hotels.domain;
 
 import java.util.Objects;
 
-public abstract class AbstractDomainObject<Id> {
+public abstract class AbstractDomainObject<Id> implements IGhost {
     private IDataSource dataSource;
     private Integer hashCode;
     protected Id id;
+    private Boolean isNew;
+
+    private LoadStatus loadStatus;
+
     public abstract Id getId();
     public abstract void setId(Id id) throws Exception;
 
-    protected abstract boolean isNew();
+    protected abstract Boolean isNew();
     public abstract boolean equals(Object other);
 
-    protected AbstractDomainObject(IDataSource dataSource) {
+    protected AbstractDomainObject(IDataSource dataSource, Boolean isNew) {
         this.dataSource = dataSource;
+        this.isNew = isNew;
     }
 
     @Override
@@ -22,7 +27,31 @@ public abstract class AbstractDomainObject<Id> {
         return this.hashCode;
     }
 
-//    protected void load() {
-//        if (isGhost())
-//    }
+    protected void load() {
+        if (isGhost()) {
+            dataSource.load(this);
+        }
+    }
+
+    public Boolean isGhost() {
+        return loadStatus == LoadStatus.GHOST;
+    }
+
+    public Boolean isLoaded() {
+        return loadStatus == LoadStatus.LOADED;
+    }
+
+    public Boolean isLoading() {
+        return loadStatus == LoadStatus.LOADING;
+    }
+
+    protected void markLoaded() {
+        assert loadStatus == LoadStatus.LOADING;
+        loadStatus = LoadStatus.LOADED;
+    }
+
+    protected void markLoading() {
+        assert loadStatus == LoadStatus.GHOST;
+        loadStatus = LoadStatus.LOADING;
+    }
 }
