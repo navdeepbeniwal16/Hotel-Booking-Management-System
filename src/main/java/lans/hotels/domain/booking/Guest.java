@@ -3,7 +3,7 @@ package lans.hotels.domain.booking;
 import lans.hotels.domain.IValueObject;
 import lans.hotels.domain.utils.Name;
 
-public class Guest extends IValueObject {
+public class Guest implements IValueObject {
     Name name;
 
     public Guest(Name name) {

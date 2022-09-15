@@ -28,7 +28,6 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
         this.identityMaps = identityMaps;
     }
 
-    @Override
     public AbstractDomainObject find(Class<? extends AbstractDomainObject> aClass, Integer id) {
         AbstractDomainObject domainObject = checkCache(aClass, id);
         if (domainObject == null) {
@@ -47,7 +46,7 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
     }
 
     private AbstractDomainObject queryDb(Class<? extends AbstractDomainObject> aClass, Integer id) {
-        IDataMapper<Integer, AbstractDomainObject> identityMap = mappers.getMapper(aClass);
+        IDataMapper<Integer, AbstractDomainObject<Integer>> identityMap = mappers.getMapper(aClass);
         AbstractDomainObject domainObject = identityMap.getById(id);
         return domainObject;
     }
