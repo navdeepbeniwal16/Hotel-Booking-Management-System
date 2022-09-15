@@ -33,10 +33,19 @@ public class ServletUoW implements IUnitOfWork {
         ServletUoW uow = (ServletUoW) session.getAttribute(attributeName);
         if (uow == null) {
             uow = ServletUoW.newActiveUoW(freshIdentityMap);
+            session.setAttribute(attributeName, uow);
             System.out.println("UoW created");
+        } else {
+            System.out.println("Using existing UoW");
         }
         activeUnitsOfWork.put(Thread.currentThread(), uow);
         reentrantLock.unlock();
+    }
+
+    synchronized public static IntegerIdentityMapRegistry getActiveIdentityMaps(HttpSession session) {
+        ServletUoW uow = (ServletUoW) session.getAttribute(attributeName);
+        if (uow == null) return null;
+        return (IntegerIdentityMapRegistry) uow.identityMaps;
     }
 
     private static ServletUoW newActiveUoW(IntegerIdentityMapRegistry identityMaps) {

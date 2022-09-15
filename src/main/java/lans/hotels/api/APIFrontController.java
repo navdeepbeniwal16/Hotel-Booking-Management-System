@@ -17,7 +17,7 @@ public class APIFrontController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
-            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(), database.connection());
+            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
             IFrontCommand command = getCommand(request);
             command.init(getServletContext(), request, response, dataSourceLayer);
             command.process();
