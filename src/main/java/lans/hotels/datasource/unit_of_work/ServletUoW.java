@@ -7,6 +7,7 @@ import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
 import lans.hotels.domain.AbstractDomainObject;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -16,8 +17,17 @@ public class ServletUoW implements IUnitOfWork {
     private static HashMap<Thread, ServletUoW> activeUnitsOfWork = new HashMap<>();
     private static final ReentrantLock reentrantLock = new ReentrantLock();
 
+    private ArrayList newObjects;
+    private ArrayList dirtyObjects;
+    private ArrayList removedObjects;
+    private ArrayList cleanObjects;
+
     public ServletUoW(AbstractIdentityMapRegistry identityMaps) {
         this.identityMaps = identityMaps;
+        this.newObjects = new ArrayList();
+        this.dirtyObjects = new ArrayList();
+        this.removedObjects = new ArrayList();
+        this.cleanObjects = new ArrayList();
     }
 
     synchronized public static ServletUoW getCurrent() throws UnitOfWorkException {
@@ -74,6 +84,11 @@ public class ServletUoW implements IUnitOfWork {
 
     @Override
     public void registerClean(AbstractDomainObject obj) {
+
+    }
+
+    @Override
+    public void commit() {
 
     }
 }

@@ -32,26 +32,35 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
     }
 
     public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
-        T domainObject = checkCache(aClass, id);
+        IIdentityMap classCache = identityMaps.get(aClass);
+        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = mappers.getMapper(aClass);
+        T domainObject = (T) classCache.getById(id);
         if (domainObject == null) {
-            domainObject = checkDb(aClass, id);
-            // TODO: identityMaps.get(className).put(id, domainObject);
+            domainObject = (T) mapper.getById(id);
+            if (domainObject != null) {
+                classCache.add(domainObject);
+            }
         }
         return domainObject;
     }
 
-    private <T extends AbstractDomainObject> T checkCache(Class<T> aClass, Integer id) {
-        IIdentityMap identityMap = identityMaps.get(aClass);
-        if (identityMap != null) {
-            return (T) identityMap.getById(id);
-        }
-        return null;
+    public void load(AbstractDomainObject domainObject) {
+
     }
 
-    private <T extends AbstractDomainObject> T checkDb(Class<T> aClass, Integer id) {
-        IDataMapper<Integer, AbstractDomainObject<Integer>> identityMap = mappers.getMapper(aClass);
-        T domainObject = (T) identityMap.getById(id);
-        return domainObject;
+    public void registerNew(AbstractDomainObject domainObject) {
+        uow.registerNew(domainObject);
     }
 
+    public void registerDirty(AbstractDomainObject domainObject) {
+        uow.registerDirty(domainObject);
+    }
+
+    public void registerRemoved(AbstractDomainObject domainObject) {
+        uow.registerRemoved(domainObject);
+    }
+
+    public void registerClean(AbstractDomainObject domainObject) {
+        uow.registerClean(domainObject);
+    }
 }
