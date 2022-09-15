@@ -1,5 +1,6 @@
 package lans.hotels.domain;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public abstract class AbstractDomainObject<Id> implements IGhost {
@@ -14,10 +15,6 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
         return this.id;
     }
 
-    public Boolean isNew() {
-        return isNew;
-    }
-
     public boolean hasId() {
         return id != null;
     }
@@ -27,18 +24,19 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
     protected AbstractDomainObject(Boolean isNew, IDataSource dataSource) {
         this.dataSource = dataSource;
         this.isNew = isNew;
+        hashCode = Objects.hash(LocalDateTime.now(), this.getClass());
     }
 
     protected AbstractDomainObject(Id id, IDataSource dataSource) {
         this.id = id;
         this.dataSource = dataSource;
         this.isNew = false;
+        hashCode = Objects.hash(this.id, this.getClass());
     }
 
     @Override
     public int hashCode() {
-        if (this.hashCode == null) this.hashCode = Objects.hash(this.id, this.getClass());
-        return this.hashCode;
+        return hashCode;
     }
 
     protected void load() {

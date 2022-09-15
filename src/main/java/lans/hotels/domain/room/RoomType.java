@@ -19,11 +19,6 @@ public class RoomType extends DomainValueObject<Integer> {
     }
 
     @Override
-    public Boolean isNew() {
-        return null;
-    }
-
-    @Override
     public boolean equals(Object other) {
         if (other.getClass() != RoomType.class) return false;
         return this.getId() == ((RoomType) other).getId() || this.name == ((RoomType) other).name;

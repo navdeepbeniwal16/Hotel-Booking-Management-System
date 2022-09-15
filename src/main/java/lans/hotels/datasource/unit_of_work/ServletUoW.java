@@ -1,6 +1,7 @@
 package lans.hotels.datasource.unit_of_work;
 
 import lans.hotels.datasource.exceptions.UnitOfWorkException;
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.facade.IUnitOfWork;
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
 import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
@@ -9,25 +10,26 @@ import lans.hotels.domain.AbstractDomainObject;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ServletUoW implements IUnitOfWork {
+public class ServletUoW implements IUnitOfWork<Integer> {
     public AbstractIdentityMapRegistry identityMaps;
     private static final String attributeName = "UnitOfWork";
     private static HashMap<Thread, ServletUoW> activeUnitsOfWork = new HashMap<>();
     private static final ReentrantLock reentrantLock = new ReentrantLock();
 
-    private ArrayList newObjects;
-    private ArrayList dirtyObjects;
-    private ArrayList removedObjects;
-    private ArrayList cleanObjects;
+    private HashSet<AbstractDomainObject> newObjects;
+    private HashSet<AbstractDomainObject> dirtyObjects;
+    private HashSet<AbstractDomainObject> removedObjects;
+    private HashSet<AbstractDomainObject> cleanObjects;
 
     public ServletUoW(AbstractIdentityMapRegistry identityMaps) {
         this.identityMaps = identityMaps;
-        this.newObjects = new ArrayList();
-        this.dirtyObjects = new ArrayList();
-        this.removedObjects = new ArrayList();
-        this.cleanObjects = new ArrayList();
+        this.newObjects = new HashSet<>();
+        this.dirtyObjects = new HashSet<>();
+        this.removedObjects = new HashSet<>();
+        this.cleanObjects = new HashSet<>();
     }
 
     synchronized public static ServletUoW getCurrent() throws UnitOfWorkException {
@@ -68,23 +70,36 @@ public class ServletUoW implements IUnitOfWork {
     }
 
     @Override
-    public void registerNew(AbstractDomainObject obj) {
+    public void registerNew(AbstractDomainObject obj) throws UoWException {
+        if (!obj.hasId()) throw new UoWException("attempting to register an object with no ID as 'new'.");
+        if (dirtyObjects.contains(obj)) throw new UoWException("attempting to register a 'dirty' object as 'new'.");
+        if (removedObjects.contains(obj)) throw new UoWException("attempting to register a 'removed' object as 'new'.");
+        if (newObjects.contains(obj)) throw new UoWException("attempting to register a 'new' multiple times.");
 
+        identityMaps.get(obj.getClass()).add(obj);
+        newObjects.add(obj);
     }
 
     @Override
-    public void registerDirty(AbstractDomainObject obj) {
+    public void registerDirty(AbstractDomainObject obj) throws UoWException {
+        if (!obj.hasId()) throw new UoWException("attempting to register an object with no ID as 'dirty'.");
+        if (cleanObjects.contains(obj)) throw new UoWException("attempting to register a 'removed' object as 'dirty'.");
+        if (removedObjects.contains(obj)) throw new UoWException("attempting to register a 'removed' object as 'new'.");
+        if (dirtyObjects.contains(obj)) throw new UoWException("attempting to register a 'new' multiple times.");
 
+        dirtyObjects.add(obj);
     }
 
     @Override
-    public void registerRemoved(AbstractDomainObject obj) {
-
+    public void registerRemoved(AbstractDomainObject obj) throws UoWException {
+        if (!obj.hasId()) throw new UoWException("attempting to register an object with no ID as 'removed'.");
+        identityMaps.get(obj.getClass()).add(obj);
     }
 
     @Override
-    public void registerClean(AbstractDomainObject obj) {
-
+    public void registerClean(AbstractDomainObject obj) throws UoWException {
+        if (!obj.hasId()) throw new UoWException("attempting to register an object with no ID as 'clean'.");
+        identityMaps.get(obj.getClass()).add(obj);
     }
 
     @Override

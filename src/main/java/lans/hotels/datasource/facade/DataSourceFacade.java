@@ -1,5 +1,6 @@
 package lans.hotels.datasource.facade;
 
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
@@ -48,19 +49,19 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
 
     }
 
-    public void registerNew(AbstractDomainObject domainObject) {
+    public void registerNew(AbstractDomainObject domainObject) throws UoWException {
         uow.registerNew(domainObject);
     }
 
-    public void registerDirty(AbstractDomainObject domainObject) {
+    public void registerDirty(AbstractDomainObject domainObject) throws UoWException {
         uow.registerDirty(domainObject);
     }
 
-    public void registerRemoved(AbstractDomainObject domainObject) {
+    public void registerRemoved(AbstractDomainObject domainObject) throws UoWException {
         uow.registerRemoved(domainObject);
     }
 
-    public void registerClean(AbstractDomainObject domainObject) {
+    public void registerClean(AbstractDomainObject domainObject) throws UoWException {
         uow.registerClean(domainObject);
     }
 }
