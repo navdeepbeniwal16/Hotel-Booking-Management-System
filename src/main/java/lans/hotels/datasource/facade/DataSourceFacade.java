@@ -16,7 +16,10 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
         this.identityMaps = identityMaps;
     }
 
-    protected DataSourceFacade(IUnitOfWork uow) {
+    protected DataSourceFacade() {
+    }
+
+    protected void initUoW(IUnitOfWork uow) {
         this.uow = uow;
     }
 

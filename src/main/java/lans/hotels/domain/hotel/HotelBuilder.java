@@ -10,6 +10,7 @@ public class HotelBuilder implements IBuilder<Hotel> {
     Phone phone;
     String name;
     String email; // TODO: refactor email into value object.
+    String address;
     IDataSource dataSource;
 
     public HotelBuilder(IDataSource dataSource) {
@@ -19,6 +20,11 @@ public class HotelBuilder implements IBuilder<Hotel> {
 
     public HotelBuilder phone(Phone phone) {
         this.phone = phone;
+        return this;
+    }
+
+    public HotelBuilder address(String address) {
+        this.address = address;
         return this;
     }
 
@@ -49,6 +55,7 @@ public class HotelBuilder implements IBuilder<Hotel> {
     public Hotel getResult() {
         if (this.hotel == null) {
             this.hotel = new Hotel(name, phone, email, id, dataSource);
+            if (this.address != null) hotel.setAddress(address);
         }
         return this.hotel;
     }

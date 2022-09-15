@@ -12,6 +12,7 @@ public class Hotel extends ReferenceObject {
     private String name;
     Phone phone;
     String email; // TODO: refactor email into value object.
+    String address;
 
     HashMap<Integer, Room> rooms;
     HashMap<Integer, RoomSpecification> roomSpecifications;
@@ -41,4 +42,10 @@ public class Hotel extends ReferenceObject {
     public String getName() {
         return name;
     }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setAddress(String address) { this.address = address; }
+    public String getAddress() { return this.address; }
 }

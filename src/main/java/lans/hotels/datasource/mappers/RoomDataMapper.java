@@ -30,15 +30,10 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
     }
 
     @Override
-    public Room concreteCreate(Room room) {
+    public Room doCreate(Room room) {
         // TODO: optimisation - can we not do this second call to the DB?
         Integer newRoomId = prepareAndExecuteInsertion(room);
         if (newRoomId != null) return getById(newRoomId);
-        return null;
-    }
-
-    @Override
-    protected Room doLoad(int id, ResultSet resultSet) throws SQLException {
         return null;
     }
 

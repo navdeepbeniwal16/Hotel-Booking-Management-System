@@ -21,7 +21,8 @@ public class APIFrontController extends HttpServlet {
             command.init(getServletContext(), request, response, dataSourceLayer);
             command.process();
         } catch (Exception e) {
-            throw new ServletException(e.getMessage());
+            System.out.println(e.getMessage());
+            throw new ServletException("doGet():" + e.getMessage());
         }
     }
 
@@ -32,22 +33,28 @@ public class APIFrontController extends HttpServlet {
 
     private IFrontCommand getCommand(HttpServletRequest request) throws ServletException {
         try {
+            System.out.println("path: " + request.getPathInfo());
+            System.out.println("split path:" + request.getPathInfo().split("/"));
             String[] commandPath = request.getPathInfo().split("/");
             return (IFrontCommand) getCommandClass(commandPath).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
+            System.out.println("getCommand():" + e.getMessage());
             throw new ServletException(e.getMessage());
         }
     }
 
     private Class getCommandClass(String[] commandPath) {
         if (commandPath.length == 0) return UnknownCommand.class;
+        System.out.println("command path: " + commandPath.toString());
         Class result;
-        final String commandClassName = "lans.hotels.controllers" +
-                capitalise(commandPath[0]) + "Command";
+        final String commandClassName = "lans.hotels.controllers." +
+                capitalise(commandPath[1]) + "Command";
         try {
+            System.out.println("commandClassName: " + commandClassName);
             result = Class.forName(commandClassName);
         } catch (ClassNotFoundException e) {
             result = UnknownCommand.class;
+            System.out.println("getCommandClass():" + e.getMessage());
         }
         return result;
     }

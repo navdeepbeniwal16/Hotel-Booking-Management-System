@@ -33,8 +33,10 @@ public class ServletUoW implements IUnitOfWork {
         ServletUoW uow = (ServletUoW) session.getAttribute(attributeName);
         if (uow == null) {
             uow = ServletUoW.newActiveUoW(identityMaps);
+            System.out.println("UoW created");
         }
         activeUnitsOfWork.put(Thread.currentThread(), uow);
+        System.out.println("UoW put on thread");
         reentrantLock.unlock();
     }
 
