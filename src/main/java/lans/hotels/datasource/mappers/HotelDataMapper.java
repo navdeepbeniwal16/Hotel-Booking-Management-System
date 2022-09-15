@@ -48,4 +48,14 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
                 .getResult();
         return hotel;
     }
+
+    @Override
+    public Hotel update(Hotel domainObject) {
+        return null;
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        return false;
+    }
 }

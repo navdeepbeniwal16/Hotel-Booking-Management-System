@@ -34,8 +34,4 @@ public class Feature extends DomainValueObject<Integer> {
         if (other.getClass() != Feature.class) return false;
         return this.name == ((Feature) other).name;
     }
-    @Override
-    protected DomainValueObject setId(Integer id) {
-        return new Feature(name, description, id, dataSource);
-    }
 }

@@ -66,4 +66,14 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
                 .active(resultSet.getBoolean("is_active"))
                 .getResult();
     }
+
+    @Override
+    public Room update(Room domainObject) {
+        return null;
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        return false;
+    }
 }

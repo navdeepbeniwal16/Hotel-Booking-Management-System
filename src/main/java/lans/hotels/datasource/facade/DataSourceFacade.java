@@ -1,22 +1,23 @@
 package lans.hotels.datasource.facade;
 
+import lans.hotels.datasource.exceptions.DataSourceLayerException;
+import lans.hotels.datasource.exceptions.IdentityMapException;
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public abstract class DataSourceFacade implements IDataSource<Integer> {
+    Connection connection;
     IUnitOfWork uow;
     IMapperRegistry<Integer> mappers;
     AbstractIdentityMapRegistry<Integer> identityMaps;
 
-
-    protected DataSourceFacade(IUnitOfWork uow, IMapperRegistry mappers, AbstractIdentityMapRegistry<Integer> identityMaps) {
-        this.uow = uow;
-        this.mappers = mappers;
-        this.identityMaps = identityMaps;
-    }
-
-    protected DataSourceFacade() {
+    protected DataSourceFacade(Connection connection) {
+        this.connection = connection;
     }
 
     protected void initUoW(IUnitOfWork uow) {
@@ -32,26 +33,45 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
     }
 
     public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
-        T domainObject = checkCache(aClass, id);
+        IIdentityMap classCache = identityMaps.get(aClass);
+        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = mappers.getMapper(aClass);
+        T domainObject = (T) classCache.getById(id);
         if (domainObject == null) {
-            domainObject = checkDb(aClass, id);
-            // TODO: identityMaps.get(className).put(id, domainObject);
+            domainObject = (T) mapper.getById(id);
+            if (domainObject != null) {
+                // TODO: handle this exception more gracefully
+                try { classCache.add(domainObject); } catch (IdentityMapException e) {}
+            }
         }
         return domainObject;
     }
 
-    private <T extends AbstractDomainObject> T checkCache(Class<T> aClass, Integer id) {
-        IIdentityMap identityMap = identityMaps.get(aClass);
-        if (identityMap != null) {
-            return (T) identityMap.getById(id);
+    public void load(AbstractDomainObject domainObject) {
+
+    }
+
+    public void registerNew(AbstractDomainObject domainObject) throws UoWException {
+        uow.registerNew(domainObject);
+    }
+
+    public void registerDirty(AbstractDomainObject domainObject) throws UoWException {
+        uow.registerDirty(domainObject);
+    }
+
+    public void registerRemoved(AbstractDomainObject domainObject) throws UoWException {
+        uow.registerRemoved(domainObject);
+    }
+
+    public void registerClean(AbstractDomainObject domainObject) throws UoWException {
+        uow.registerClean(domainObject);
+    }
+
+    public void commit() throws DataSourceLayerException {
+        try {
+            uow.commit(mappers);
+            connection.commit();
+        } catch (Exception e) {
+            throw new DataSourceLayerException(e.getMessage());
         }
-        return null;
     }
-
-    private <T extends AbstractDomainObject> T checkDb(Class<T> aClass, Integer id) {
-        IDataMapper<Integer, AbstractDomainObject<Integer>> identityMap = mappers.getMapper(aClass);
-        T domainObject = (T) identityMap.getById(id);
-        return domainObject;
-    }
-
 }
