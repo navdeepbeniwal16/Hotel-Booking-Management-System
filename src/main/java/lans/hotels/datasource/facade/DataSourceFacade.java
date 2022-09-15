@@ -34,7 +34,7 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
     public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
         T domainObject = checkCache(aClass, id);
         if (domainObject == null) {
-            domainObject = queryDb(aClass, id);
+            domainObject = checkDb(aClass, id);
             // TODO: identityMaps.get(className).put(id, domainObject);
         }
         return domainObject;
@@ -48,7 +48,7 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
         return null;
     }
 
-    private <T extends AbstractDomainObject> T queryDb(Class<T> aClass, Integer id) {
+    private <T extends AbstractDomainObject> T checkDb(Class<T> aClass, Integer id) {
         IDataMapper<Integer, AbstractDomainObject<Integer>> identityMap = mappers.getMapper(aClass);
         T domainObject = (T) identityMap.getById(id);
         return domainObject;

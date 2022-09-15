@@ -21,8 +21,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
                 " FROM " + this.table +
                 " JOIN phone ON hotel.phone = phone.id " +
                 " JOIN address on hotel.address = address.id " +
-                " WHERE id = ? " +
-                " JOIN phone";
+                " WHERE id = ? ";
     }
 
     @Override

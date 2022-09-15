@@ -1,6 +1,6 @@
 package lans.hotels.api;
 
-import lans.hotels.controllers.UnknownCommand;
+import lans.hotels.controllers.UnknownController;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
@@ -44,16 +44,16 @@ public class APIFrontController extends HttpServlet {
     }
 
     private Class getCommandClass(String[] commandPath) {
-        if (commandPath.length == 0) return UnknownCommand.class;
+        if (commandPath.length == 0) return UnknownController.class;
         System.out.println("command path: " + commandPath.toString());
         Class result;
         final String commandClassName = "lans.hotels.controllers." +
-                capitalise(commandPath[1]) + "Command";
+                capitalise(commandPath[1]) + "Controller";
         try {
             System.out.println("commandClassName: " + commandClassName);
             result = Class.forName(commandClassName);
         } catch (ClassNotFoundException e) {
-            result = UnknownCommand.class;
+            result = UnknownController.class;
             System.out.println("getCommandClass():" + e.getMessage());
         }
         return result;

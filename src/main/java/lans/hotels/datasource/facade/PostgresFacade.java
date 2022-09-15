@@ -1,7 +1,6 @@
 package lans.hotels.datasource.facade;
 
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
-import lans.hotels.datasource.identity_maps.HotelMap;
 import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
 import lans.hotels.datasource.mappers.PostgresMapperRegistry;
 import lans.hotels.datasource.unit_of_work.ServletUoW;
@@ -24,6 +23,7 @@ public class PostgresFacade extends DataSourceFacade {
 
             facade.initIdentityMaps(identityMaps);
             facade.initMappers(mappers);
+            // TODO: unfuck this section
             ServletUoW.handleSession(session, identityMaps);
             facade.initUoW(ServletUoW.getCurrent());
 
@@ -42,21 +42,30 @@ public class PostgresFacade extends DataSourceFacade {
 
     }
 
-    @Override
-    public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
-        IIdentityMap identityMap = identityMaps.get(aClass);
-        IDataMapper mapper = mappers.getMapper(aClass);
-
-
-        if (identityMap == null || mapper == null) return null;
-        T domainObject = (T) identityMap.getById(id);
-
-        if (domainObject == null) {
-            domainObject = (T) mapper.getById(id);
-        }
-
-        return domainObject;
-    }
+//    @Override
+//    public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
+//        IIdentityMap cache = identityMaps.get(aClass);
+//        IDataMapper dataMapper = mappers.getMapper(aClass);
+//
+//
+//        // TODO: remove later
+////        if (cache == null || dataMapper == null) return null; // TODO: might be an issue...
+//
+//        // Check the cache first
+//        T domainObject = (T) cache.getById(id);
+//
+//        // If it is not in the cache, then check the database.
+//        if (domainObject == null) {
+//            domainObject = (T) dataMapper.getById(id);
+//        }
+//
+//        if (domainObject != null) {
+//            cache.add(domainObject);
+//            return domainObject;
+//        }
+//
+//        return null;
+//    }
 
     @Override
     public void registerNew(AbstractDomainObject domainObject) {
