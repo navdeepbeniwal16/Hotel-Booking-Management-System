@@ -4,12 +4,12 @@ import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
+import { Link } from "react-router-dom";
 
 export const MainNavbar = () => {
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar bg="dark" variant="dark" expand="lg">
       <Container>
-        {/* <Navbar.Brand href="#">Navbar scroll</Navbar.Brand> */}
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
@@ -17,11 +17,11 @@ export const MainNavbar = () => {
             style={{ maxHeight: "100px" }}
             navbarScroll
           >
-            <Nav.Link href="#action1">Home</Nav.Link>
-            <Nav.Link href="#action2">Bookings</Nav.Link>
+            <Nav.Link href="/">Home</Nav.Link>
+            <Nav.Link href="/bookings">Bookings</Nav.Link>
           </Nav>
           <Nav className="d-flex">
-            <Nav.Link href="#action2">Logout</Nav.Link>
+            <Nav.Link href="#action2">Login</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
