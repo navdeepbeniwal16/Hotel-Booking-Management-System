@@ -78,5 +78,9 @@
     <orderEntry type="library" name="Maven: org.ow2.asm:asm:9.2" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.qdox:qdox:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven.surefire:surefire-shared-utils:3.0.0-M7" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-core:4.7.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy:1.12.13" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy-agent:1.12.13" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.objenesis:objenesis:3.2" level="project" />
   </component>
 </module>

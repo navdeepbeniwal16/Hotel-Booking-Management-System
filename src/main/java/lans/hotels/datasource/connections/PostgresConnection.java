@@ -1,4 +1,6 @@
-package lans.hotels.datasource;
+package lans.hotels.datasource.connections;
+
+        import lans.hotels.datasource.DBConfiguration;
 
         import java.sql.Connection;
         import java.sql.DriverManager;
