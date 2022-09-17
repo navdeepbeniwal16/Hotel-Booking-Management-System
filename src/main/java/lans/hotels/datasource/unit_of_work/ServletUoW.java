@@ -58,7 +58,7 @@ public class ServletUoW implements IUnitOfWork<Integer> {
     synchronized public static IntegerIdentityMapRegistry getActiveIdentityMaps(HttpSession session) {
         ServletUoW uow = (ServletUoW) session.getAttribute(attributeName);
         if (uow == null) return null;
-        return (IntegerIdentityMapRegistry) uow.identityMaps;
+        return (IntegerIdentityMapRegistry) uow.identityMaps; // TODO: ??? #bug
     }
 
     private static ServletUoW newActiveUoW(IntegerIdentityMapRegistry identityMaps) {
@@ -119,5 +119,7 @@ public class ServletUoW implements IUnitOfWork<Integer> {
         newObjects.forEach(obj -> mappers.getMapper(obj.getClass()).create(obj));
         dirtyObjects.forEach(obj -> mappers.getMapper(obj.getClass()).update(obj));
         removedObjects.forEach(obj -> mappers.getMapper(obj.getClass()).delete((Integer) obj.getId()));
+        // TODO: flush identity maps #bug
+        // mappers.clear();
     }
 }

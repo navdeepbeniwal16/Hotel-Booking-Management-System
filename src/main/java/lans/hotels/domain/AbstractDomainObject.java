@@ -47,7 +47,7 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
 
     protected void load() {
         if (isGhost()) {
-            dataSource.load(this);
+            dataSource.load(this); // TODO: #bug #how?
         }
     }
 
