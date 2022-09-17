@@ -1,6 +1,7 @@
 package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
+import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.domain.hotel.Hotel;
 import org.json.JSONObject;
 
@@ -25,7 +26,7 @@ public class HotelController extends FrontCommand {
     }
 
     private void getHotel() throws IOException {
-        // /api/hotel/:id
+        // GET /api/hotel/:id
         String[] commandPath = request.getPathInfo().split("/");
         if (commandPath.length != 3) { // TODO: is this causing the 500? #bug
             System.err.println("getHotel(): " + Arrays.toString(commandPath));
@@ -45,6 +46,13 @@ public class HotelController extends FrontCommand {
         }
 
         Hotel hotel = (Hotel) dataSource.find(Hotel.class, id);
+
+        try {
+            dataSource.commit();
+        } catch (DataSourceLayerException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+            return;
+        }
 
         if (hotel == null) {
             System.out.println("404 NOT FOUND");
