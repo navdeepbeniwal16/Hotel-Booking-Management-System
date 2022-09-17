@@ -8,13 +8,12 @@ import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public abstract class DataSourceFacade implements IDataSource<Integer> {
     Connection connection;
     IUnitOfWork uow;
-    IMapperRegistry<Integer> mappers;
-    AbstractIdentityMapRegistry<Integer> identityMaps;
+    IMapperRegistry<Integer> dataMapperRegistry;
+    AbstractIdentityMapRegistry<Integer> identityMapRegistry;
 
     protected DataSourceFacade(Connection connection) {
         this.connection = connection;
@@ -25,16 +24,16 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
     }
 
     protected void initMappers(IMapperRegistry mappers) {
-        this.mappers = mappers;
+        this.dataMapperRegistry = mappers;
     }
 
     protected void initIdentityMaps(AbstractIdentityMapRegistry<Integer> identityMaps) {
-        this.identityMaps = identityMaps;
+        this.identityMapRegistry = identityMaps;
     }
 
     public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
-        IIdentityMap classCache = identityMaps.get(aClass);
-        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = mappers.getMapper(aClass);
+        IIdentityMap classCache = identityMapRegistry.get(aClass);
+        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
         T domainObject = (T) classCache.getById(id);
         if (domainObject == null) {
             domainObject = (T) mapper.getById(id);
@@ -68,7 +67,7 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
 
     public void commit() throws DataSourceLayerException {
         try {
-            uow.commit(mappers);
+            uow.commit(dataMapperRegistry);
             connection.commit();
         } catch (Exception e) {
             throw new DataSourceLayerException(e.getMessage());

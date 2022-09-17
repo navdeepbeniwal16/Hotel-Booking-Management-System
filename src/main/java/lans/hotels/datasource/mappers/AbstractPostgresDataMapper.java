@@ -17,7 +17,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
     protected IDataSource dataSource;
     protected Connection connection;
     protected String table;
-    protected Map<Integer, DomainObject> loadedMap = new HashMap();
+    protected Map<Integer, DomainObject> loadedMap = new HashMap(); // TODO: unfuck #bug
     abstract protected String findStatement();
     abstract protected String insertStatement();
     protected abstract DomainObject doLoad(Integer id, ResultSet resultSet) throws SQLException;
@@ -29,13 +29,9 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         this.dataSource = dataSource;
     }
 
-    protected DomainObject abstractGetById(int id) throws SQLException {
-        return getFromDb(id);
-    }
-
     public DomainObject getById(Integer id) {
         try {
-            return abstractGetById(id);
+            return getFromDb(id);
         } catch (SQLException e) {
             System.err.println("AbstractPostgresDataMapper.getById(): " + e.getMessage());
             // TODO: do not return null!
