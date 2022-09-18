@@ -8,8 +8,8 @@ import lans.hotels.domain.IDataSource;
 import java.util.Map;
 
 public abstract class AbstractIdentityMapRegistry<IdType> implements IIdentityMapRegistry<IdType> {
-    private Map<String, IIdentityMap<IdType, ? extends AbstractDomainObject>> identityMaps;
-    private IDataSource dataSource;
+    protected Map<String, IIdentityMap<IdType, ? extends AbstractDomainObject>> identityMaps;
+    protected IDataSource dataSource;
     protected AbstractIdentityMapRegistry(Map<String, IIdentityMap<IdType, ? extends AbstractDomainObject>> identityMaps, IDataSource dataSource) {
         this.identityMaps = identityMaps;
         this.dataSource = dataSource;

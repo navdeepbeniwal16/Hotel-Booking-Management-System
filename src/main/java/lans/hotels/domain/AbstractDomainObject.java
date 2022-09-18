@@ -1,6 +1,7 @@
 package lans.hotels.domain;
 
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.domain.exceptions.DomainObjectException;
 import lans.hotels.domain.exceptions.ReferenceObjectException;
 import org.json.JSONObject;
@@ -76,8 +77,8 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
     }
 
     // TODO: #ghost #lazyload how do these UoW commands interact with Ghost Lazy Load?
-    protected void markNew() throws Exception  { dataSource.registerNew(this); }
-    protected void markClean() throws Exception { dataSource.registerClean(this); }
-    protected void markDirty() throws Exception { dataSource.registerDirty(this); }
-    protected void markRemoved() throws Exception  { dataSource.registerRemoved(this); }
+    protected void markNew() throws UoWException { dataSource.registerNew(this); }
+    protected void markClean() throws UoWException { dataSource.registerClean(this); }
+    protected void markDirty() throws UoWException { dataSource.registerDirty(this); }
+    protected void markRemoved() throws UoWException  { dataSource.registerRemoved(this); }
 }

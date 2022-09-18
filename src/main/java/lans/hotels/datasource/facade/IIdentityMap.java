@@ -11,4 +11,6 @@ public interface IIdentityMap<IdType, DomainObject extends AbstractDomainObject>
     DomainObject remove(IdType id);
 
     List<DomainObject> findAll();
+
+    void clear();
 }

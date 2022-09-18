@@ -98,8 +98,8 @@ public class HotelsController extends FrontCommand {
                  }
 
                 return;
-            case HttpMethod.PUT:
             case HttpMethod.POST:
+                case HttpMethod.PUT:
             case HttpMethod.DELETE:
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());

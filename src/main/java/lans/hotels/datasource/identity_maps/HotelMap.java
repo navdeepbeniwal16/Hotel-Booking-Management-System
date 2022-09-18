@@ -38,4 +38,9 @@ public class HotelMap implements IIdentityMap<Integer, Hotel> {
     public List<Hotel> findAll() {
         return null;
     }
+
+    @Override
+    public void clear() {
+        hotels.clear();
+    }
 }
