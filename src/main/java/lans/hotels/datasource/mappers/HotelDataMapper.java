@@ -42,15 +42,14 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
         String findAllStatment = "SELECT " + " * " +
                 " FROM " + this.table + " h " +
                 " JOIN phone p ON h.phone = p.id " +
-                " JOIN address a on h.address = a.id " +
-                " WHERE h.id = ? ";
+                " JOIN address a on h.address = a.id ";
         try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
             ResultSet resultSet = statement.executeQuery();
             Hotel currentHotel = load(resultSet);
             while (currentHotel != null) {
                 currentHotel = load(resultSet);
             }
-            return (List) loadedMap.values();
+            return new ArrayList<>(loadedMap.values());
         }
     }
 

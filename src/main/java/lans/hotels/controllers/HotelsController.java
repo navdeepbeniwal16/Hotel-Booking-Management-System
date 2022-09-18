@@ -6,6 +6,8 @@ import lans.hotels.datasource.mappers.HotelDataMapper;
 import lans.hotels.domain.hotel.Hotel;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONWriter;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
@@ -32,8 +34,8 @@ public class HotelsController extends FrontCommand {
                     try {
                         id = Integer.parseInt(commandPath[2]);
                     } catch (NumberFormatException e) {
-                        System.err.println("getHotel(): " + Arrays.toString(commandPath));
-                        System.err.println("getHotel(): " + e.getMessage());
+                        System.err.println("GET /api/hotels/:id: " + Arrays.toString(commandPath));
+                        System.err.println("GET /api/hotels/:id: " + e.getMessage());
                         response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
                         return;
                     }
@@ -43,7 +45,13 @@ public class HotelsController extends FrontCommand {
                     BufferedReader requestReader = request.getReader();
 
                     String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-                    JSONObject body = (JSONObject) JSONObject.stringToValue(lines);
+                    System.out.println(lines);
+                    JSONObject body = new JSONObject();
+
+                    if (lines.length() > 0) {
+                        System.out.println(lines);
+                         body = new JSONObject(lines);
+                    }
 
                     if (body.has("search")) {
                         // perform search
@@ -52,8 +60,9 @@ public class HotelsController extends FrontCommand {
                         try {
                             hotels = (ArrayList<Hotel>) dataSource.findAll(Hotel.class);
                         } catch (Exception e) {
-                            System.err.println("getHotel(): " + Arrays.toString(commandPath));
-                            System.err.println("getHotel(): " + e.getMessage());
+                            System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
+                            System.err.println("GET /api/hotels: " + e.getMessage());
+                            System.err.println("GET /api/hotels: " + e.getClass());
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                             return;
                         }
@@ -82,8 +91,8 @@ public class HotelsController extends FrontCommand {
                         return;
                     }
                 } else {
-                    System.err.println("getHotel(): " + Arrays.toString(commandPath));
-                    System.err.println("getHotel(): commandPath.length = " + commandPath.length);
+                    System.err.println("Hotels contoller: " + Arrays.toString(commandPath));
+                    System.err.println("Hotels contoller: commandPath.length = " + commandPath.length);
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
                     return;
                  }
