@@ -3,9 +3,7 @@ package lans.hotels.datasource.unit_of_work;
 import lans.hotels.datasource.exceptions.IdentityMapException;
 import lans.hotels.datasource.exceptions.UnitOfWorkException;
 import lans.hotels.datasource.exceptions.UoWException;
-import lans.hotels.datasource.facade.IIdentityMapRegistry;
-import lans.hotels.datasource.facade.IMapperRegistry;
-import lans.hotels.datasource.facade.IUnitOfWork;
+import lans.hotels.datasource.facade.*;
 import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
 import lans.hotels.domain.AbstractDomainObject;
 
@@ -118,8 +116,16 @@ public class ServletUoW implements IUnitOfWork<Integer> {
     public void commit(IMapperRegistry<Integer> mappers) {
         newObjects.forEach(obj -> mappers.getMapper(obj.getClass()).create(obj));
         dirtyObjects.forEach(obj -> mappers.getMapper(obj.getClass()).update(obj));
-        removedObjects.forEach(obj -> mappers.getMapper(obj.getClass()).delete((Integer) obj.getId()));
+        removedObjects.forEach(obj -> {
+            mappers.getMapper(obj.getClass()).delete((Integer) obj.getId());
+            identityMaps.get(obj.getClass()).remove(obj.getId());
+        });
+
+        for(Object identityMap: identityMaps.getAll()) {
+            ((IIdentityMap) identityMap).clear();
+        }
         // TODO: flush identity maps #bug
         // mappers.clear();
+        // TODO: @levimk - how does commit actually work with JDBC?
     }
 }

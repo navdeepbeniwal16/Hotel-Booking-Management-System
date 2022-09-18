@@ -33,4 +33,9 @@ public class RoomMap implements IIdentityMap<Integer, Room> {
     public List<Room> findAll() {
         return null;
     }
+
+    @Override
+    public void clear() {
+        rooms.clear();
+    }
 }

@@ -35,4 +35,9 @@ public class RoomSpecificationMap implements IIdentityMap<Integer, RoomSpecifica
     public List<RoomSpecification> findAll() {
         return null;
     }
+
+    @Override
+    public void clear() {
+        specifications.clear();
+    }
 }
