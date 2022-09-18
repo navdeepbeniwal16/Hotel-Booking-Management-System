@@ -66,3 +66,14 @@ VALUES
     (1, 2, 0, 1, true),
     (1, 3, 0, 2, true)
 ;
+
+INSERT INTO
+    app_user(name,email,"password",role)
+VALUES
+    ('Arman','arman@gmail.com','12345','2')
+;
+
+INSERT INTO
+    hotelier(user_id,is_active)
+VALUES(1,TRUE)
+;
