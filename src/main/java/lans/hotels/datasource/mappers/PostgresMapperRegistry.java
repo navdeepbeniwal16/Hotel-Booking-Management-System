@@ -1,6 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.facade.IMapperRegistry;
+import lans.hotels.domain.user_types.Hotelier;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
@@ -17,6 +18,7 @@ public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
         PostgresMapperRegistry registry = new PostgresMapperRegistry(new HashMap<>());
         registry.addMapper(new RoomDataMapper(connection, dataSource), Room.class);
         registry.addMapper(new HotelDataMapper(connection, dataSource), Hotel.class);
+        registry.addMapper(new HotelierDataMapper(connection, dataSource), Hotelier.class);
         return registry;
     }
 
