@@ -150,6 +150,8 @@ CREATE TABLE HOTEL(
     email VARCHAR(50) NOT NULL CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
     address INT NOT NULL,
     phone INT NOT NULL,
+    hotel_city VARCHAR(50) NOT NULL,
+    pin_code INT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (address) REFERENCES ADDRESS(id),
     FOREIGN KEY (phone) REFERENCES PHONE(id),
@@ -184,6 +186,7 @@ CREATE TABLE ROOM_SPEC(
     max_occupancy INT NOT NULL,
     bed_type INT NOT NULL,
     view VARCHAR(20) NOT NULL,
+    room_price VARCHAR(10) NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (hotel_id) REFERENCES HOTEL(id),
     FOREIGN KEY (bed_type) REFERENCES BED_TYPE(id),
@@ -225,8 +228,10 @@ CREATE TABLE BOOKING(
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     is_active BOOLEAN NOT NULL,
+    hotel_id INT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (customer_id) REFERENCES CUSTOMER(id)
+    FOREIGN KEY (customer_id) REFERENCES CUSTOMER(id),
+    FOREIGN KEY (hotel_id) REFERENCES HOTEL(id)
 );
 
 CREATE TABLE ROOM_BOOKING( 
@@ -234,22 +239,8 @@ CREATE TABLE ROOM_BOOKING(
     booking_id INT NOT NULL,
     room_id INT NOT NULL,
     is_active BOOLEAN NOT NULL,
+    main_guest VARCHAR(50) NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (booking_id) REFERENCES BOOKING(id),
     FOREIGN KEY (room_id) REFERENCES ROOM(id)
-);
-
-CREATE TABLE GUEST( 
-    id INT GENERATED ALWAYS AS IDENTITY,
-    name VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE BOOKING_GUEST( 
-    id INT GENERATED ALWAYS AS IDENTITY,
-    booking_id INT NOT NULL,
-    guest_id INT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (booking_id) REFERENCES BOOKING(id),
-    FOREIGN KEY (guest_id) REFERENCES GUEST(id)
 );
