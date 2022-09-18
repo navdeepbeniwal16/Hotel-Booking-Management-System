@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -9,21 +10,25 @@ import { Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 
 import { useContext } from 'react';
+import AppContext from './context/AppContext';
 
-function App() {
+const App = () => {
+  const appContext = useContext(AppContext.GlobalContext);
   return (
-    <div>
-      <header>
-        <MainNavbar></MainNavbar>
-      </header>
-      <Container>
-        <Routes>
-          <Route path='/' element={<Home></Home>}></Route>
-          <Route path='/bookings' element={<Bookings></Bookings>}></Route>
-        </Routes>
-      </Container>
-    </div>
+    <AppContext.GlobalProvider>
+      <div>
+        <header>
+          <MainNavbar></MainNavbar>
+        </header>
+        <Container>
+          <Routes>
+            <Route path='/' element={<Home></Home>}></Route>
+            <Route path='/bookings' element={<Bookings></Bookings>}></Route>
+          </Routes>
+        </Container>
+      </div>
+    </AppContext.GlobalProvider>
   );
-}
+};
 
 export default App;
