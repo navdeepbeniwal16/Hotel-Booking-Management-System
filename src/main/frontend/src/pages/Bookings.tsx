@@ -1,10 +1,15 @@
-import { BookingsList } from "../components/layouts/BookingsList";
-import { HotelsList } from "../components/layouts/HotelsList";
+import React from 'react';
 
-export const Bookings = () => {
+import BookingsList from '../components/layouts/BookingsList';
+import HotelsList from '../components/layouts/HotelsList';
+
+const Bookings = () => {
+  const bookings: any[] = [];
   return (
     <div>
-      <BookingsList></BookingsList>
+      <BookingsList bookings={bookings}></BookingsList>
     </div>
   );
 };
+
+export default Bookings;

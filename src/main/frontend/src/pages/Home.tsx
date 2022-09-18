@@ -1,7 +1,8 @@
-import { SearchForm } from '../components/layouts/SearchForm';
-import { HotelsList } from '../components/layouts/HotelsList';
+import React from 'react';
+import SearchForm from '../components/layouts/SearchForm';
+import HotelsList from '../components/layouts/HotelsList';
 
-export const Home = () => {
+const Home = () => {
   return (
     <div>
       <SearchForm></SearchForm>
@@ -9,3 +10,5 @@ export const Home = () => {
     </div>
   );
 };
+
+export default Home;

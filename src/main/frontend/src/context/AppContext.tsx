@@ -1,17 +1,12 @@
 import React, {
+  Context,
   createContext,
   useState,
   ReactNode,
-  Dispatch,
   ReactPropTypes,
 } from 'react';
 
-type EmptyString = '';
-
-type User = {
-  username: string | EmptyString;
-  setUsername: Dispatch<React.SetStateAction<string>>;
-};
+import User from '../types/UserType';
 
 const defaultUser: User = {
   username: '',
@@ -32,15 +27,19 @@ interface IGlobalProvider {
 const GlobalProvider = ({ children }: IGlobalProvider) => {
   const [username, setUsername] = useState('');
 
+  const user = {
+    username,
+    setUsername,
+  };
+
   return (
-    <GlobalContext.Provider value={{ user: { username, setUsername } }}>
-      {children}
-    </GlobalContext.Provider>
+    <GlobalContext.Provider value={{ user }}>{children}</GlobalContext.Provider>
   );
 };
 
 const withGlobalContext =
-  (Child: React.FC<ReactPropTypes>) => (props: ReactPropTypes) => {
+  (Child: React.FC<ReactPropTypes>) =>
+  (props: ReactPropTypes, context: Context<any>) => {
     if (!Child) return null;
     return (
       <GlobalContext.Consumer>
