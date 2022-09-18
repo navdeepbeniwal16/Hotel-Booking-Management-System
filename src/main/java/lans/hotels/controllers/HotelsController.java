@@ -55,6 +55,13 @@ public class HotelsController extends FrontCommand {
 
                     if (body.has("search")) {
                         // perform search
+                        System.out.println("Parsed JSON Request Body");
+                        JSONObject searchQueryBody = body.getJSONObject("search");
+                        if(searchQueryBody.has("location")){
+                            System.out.println("Location parameter found!"); // TODO: TBR
+                            String location = searchQueryBody.getString("location");
+
+                        }
                     } else {
                         ArrayList<Hotel> hotels;
                         try {
