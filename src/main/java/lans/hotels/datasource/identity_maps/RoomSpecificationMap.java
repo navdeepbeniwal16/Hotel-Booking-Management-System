@@ -6,6 +6,7 @@ import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomSpecification;
 
+import java.util.List;
 import java.util.Map;
 
 public class RoomSpecificationMap implements IIdentityMap<Integer, RoomSpecification> {
@@ -28,5 +29,10 @@ public class RoomSpecificationMap implements IIdentityMap<Integer, RoomSpecifica
     @Override
     public RoomSpecification remove(Integer id) {
         return specifications.remove(id);
+    }
+
+    @Override
+    public List<RoomSpecification> findAll() {
+        return null;
     }
 }

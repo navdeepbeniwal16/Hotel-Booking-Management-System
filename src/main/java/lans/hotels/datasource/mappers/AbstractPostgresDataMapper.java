@@ -5,10 +5,12 @@ import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
+import java.lang.reflect.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import java.sql.Connection;
@@ -22,6 +24,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
     abstract protected String insertStatement();
     protected abstract DomainObject doLoad(Integer id, ResultSet resultSet) throws SQLException;
     public abstract DomainObject doCreate(DomainObject domainObject);
+    public abstract List<DomainObject> findAll() throws SQLException;
 
     protected AbstractPostgresDataMapper(Connection connection, String table, IDataSource dataSource) {
         this.connection = connection;
@@ -47,7 +50,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         }
     }
     protected DomainObject load(ResultSet resultSet) throws SQLException {
-        if (!resultSet.next()) return null;
+        if (!resultSet.next()) return null; // TODO: bug? refactor - see getAll()
 
         // TODO: abstract out type to generic?
 

@@ -6,6 +6,7 @@ import lans.hotels.domain.room.RoomBuilder;
 import lans.hotels.domain.room.RoomSpecification;
 
 import java.sql.*;
+import java.util.List;
 
 public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
     private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
@@ -34,6 +35,11 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
         // TODO: optimisation - can we not do this second call to the DB?
         Integer newRoomId = prepareAndExecuteInsertion(room);
         if (newRoomId != null) return getById(newRoomId);
+        return null;
+    }
+
+    @Override
+    public List<Room> findAll() throws SQLException {
         return null;
     }
 

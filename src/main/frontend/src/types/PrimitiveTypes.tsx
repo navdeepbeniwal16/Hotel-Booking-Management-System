@@ -1,0 +1,3 @@
+type EmptyString = '';
+
+export { EmptyString };

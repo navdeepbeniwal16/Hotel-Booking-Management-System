@@ -4,6 +4,7 @@ import lans.hotels.datasource.exceptions.IdentityMapException;
 import lans.hotels.datasource.facade.IIdentityMap;
 import lans.hotels.domain.hotel.Hotel;
 
+import java.util.List;
 import java.util.Map;
 
 public class HotelMap implements IIdentityMap<Integer, Hotel> {
@@ -31,5 +32,10 @@ public class HotelMap implements IIdentityMap<Integer, Hotel> {
     @Override
     public Hotel remove(Integer id) {
         return hotels.remove(id);
+    }
+
+    @Override
+    public List<Hotel> findAll() {
+        return null;
     }
 }

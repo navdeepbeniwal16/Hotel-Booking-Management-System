@@ -38,9 +38,9 @@ INSERT INTO
 VALUES (1, 1, '38 094 477 175'), (1, 3, 'LONEX PTY LIMITED');
 
 INSERT INTO
-    hotel(hotel_group_id, name, email, address, phone)
+    hotel(hotel_group_id, name, email, address, phone, hotel_city, pin_code)
 VALUES
-    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 2, 1);
+    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 2, 1, 'Melbourne', 3000);
 
 INSERT INTO
     bed_type(name)
@@ -53,17 +53,16 @@ VALUES
     ('Standard'), ('Deluxe'), ('Premium'), ('Penthouse');
 
 INSERT INTO
-    room_spec(hotel_id, type, max_occupancy, bed_type, view)
+    room_spec(hotel_id, type, max_occupancy, bed_type, view, room_price)
 VALUES
-    (1, 1, 2, 1, 'Street view'),
-    (1, 2, 2, 3, 'Street view'),
-    (1, 3, 3, 4, 'Above street')
+    (1, 1, 2, 1, 'Street view', '$100'),
+    (1, 2, 2, 3, 'Street view', '$100'),
+    (1, 3, 3, 4, 'Above street', '$100')
 ;
 
 INSERT INTO
     room(hotel_id, room_spec_id, floor, number, is_active)
 VALUES
-    (1, 1, 0, 1, true),
-    (1, 1, 0, 2, true),
-    (1, 2, 1, 3, true)
+    (1, 2, 0, 1, true),
+    (1, 3, 0, 2, true)
 ;

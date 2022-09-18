@@ -19,6 +19,7 @@
         <frontend-dir>${project.basedir}/src/main/frontend</frontend-dir>
         <node.version>v14.19.1</node.version>
         <yarn.version>v1.12.1</yarn.version>
+        <spring-security-version>5.7.3</spring-security-version>
     </properties>
 
     <dependencies>

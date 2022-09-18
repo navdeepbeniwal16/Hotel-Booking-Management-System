@@ -5,6 +5,7 @@ import lans.hotels.datasource.facade.IIdentityMap;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomSpecification;
 
+import java.util.List;
 import java.util.Map;
 
 public class RoomMap implements IIdentityMap<Integer, Room> {
@@ -26,5 +27,10 @@ public class RoomMap implements IIdentityMap<Integer, Room> {
     @Override
     public Room remove(Integer id) {
         return rooms.remove(id);
+    }
+
+    @Override
+    public List<Room> findAll() {
+        return null;
     }
 }

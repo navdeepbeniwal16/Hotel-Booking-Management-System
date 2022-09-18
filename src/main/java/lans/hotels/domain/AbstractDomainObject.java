@@ -3,6 +3,7 @@ package lans.hotels.domain;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.domain.exceptions.DomainObjectException;
 import lans.hotels.domain.exceptions.ReferenceObjectException;
+import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
