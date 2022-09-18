@@ -8,6 +8,9 @@ import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class DataSourceFacade implements IDataSource<Integer> {
     Connection connection;
@@ -43,6 +46,12 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
             }
         }
         return domainObject;
+    }
+
+    public <T extends AbstractDomainObject> List<T> findAll(Class<T> aClass) throws Exception {
+        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
+        List<T> domainObjects = (List<T>) mapper.findAll();
+        return domainObjects;
     }
 
     public void load(AbstractDomainObject domainObject) {
