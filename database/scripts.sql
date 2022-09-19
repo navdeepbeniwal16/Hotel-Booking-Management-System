@@ -31,7 +31,7 @@ WITH insert_booking AS (
         VALUES
         ((SELECT id FROM insert_booking),1,True,'Ben Stiller');
 
---Create a hotelier------------------------------
+--Onboard hotelier users------------------------------
 WITH insert_app_user AS (
     INSERT INTO app_user (name,email,password,role)
         VALUES
@@ -61,11 +61,14 @@ SELECT b.id as id,h.name as hotel_name, start_date, end_date, t.name as room_typ
 UPDATE room_booking SET no_of_guests = 3 WHERE id = ?;
 
 --Modify a booking(change dates)-----------------------------------------
---TODO
+--Check for availability
+--Use functions declared above for search functionality
+--Change the dates
+UPDATE booking SET start_date = DATE '2022-10-30' AND end_date = DATE '2022-11-02';
 
 --Modify a booking(Cancel Booking)---------------------------------------
 UPDATE booking SET is_active = FALSE WHERE id = ?;
-UPDATE room_booking SET is_active = FALSE WHERE id = ?;
+UPDATE room_booking SET is_active = FALSE WHERE booking_id = ?;
 
 --Create a hotel for a group--------------------------------------------
 --Get Hotel Group
@@ -83,9 +86,26 @@ insert_address AS (
             ('1-15','College Cres',(SELECT id from district WHERE name = 'NSW'),'Melbourne',3052)
         RETURNING id
 )
-INSERT INTO hotel (hotel_group_id, name, email, address, phone,hotel_city,pin_code)
-VALUES (1,'JWM Marriott','jwm@gmail.com',(SELECT id FROM insert_address),(SELECT id FROM insert_phone),'Sydney','1052');
+INSERT INTO hotel (hotel_group_id, name, email, address, phone,hotel_city,pin_code,is_active)
+VALUES (1,'JWM Marriott','jwm@gmail.com',(SELECT id FROM insert_address),(SELECT id FROM insert_phone),'Sydney','1052',true);
+
+--Create hotel rooms-----------------------------------------------------
 --Create hotel room spec
+INSERT INTO room_spec (hotel_id,type,max_occupancy,bed_type,view,room_price)
+VALUES
+       (?,
+        (SELECT id FROM room_type WHERE name='Penthouse'),
+        3,
+        (SELECT id FROM bed_type WHERE name='King'),
+        'Pool Facing','$450');
+--Create hotel room
+INSERT INTO room (hotel_id,room_spec_id,number,floor,is_active)
+VALUES
+    (3,
+     (SELECT id FROM room_spec WHERE hotel_id=3 and type = (SELECT id FROM room_type WHERE name = 'Penthouse')),
+     901,
+     9,
+     TRUE);
 
 --View all bookings tied to a hotelier group-------------
 SELECT
@@ -99,3 +119,37 @@ SELECT
             JOIN app_user a ON c.user_id=a.id)
             ON c.id=b.customer_id
     WHERE b.is_active=TRUE;
+
+--Add remove hoteliers in a hotel group----------------------------------
+--Add hoteliers in a hotel group
+INSERT INTO hotel_group_hotelier (hotelier_id,hotel_group_id) VALUES (2,1);
+--Remove hoteliers from hotel group
+DELETE FROM hotel_group_hotelier WHERE hotelier_id = ?;
+
+--Create a hotel group---------------------------------------------------
+WITH insert_phone AS (
+    INSERT INTO phone (country,area,number)
+        VALUES
+            (61,437,847586)
+        RETURNING id
+),
+     insert_address AS (
+         INSERT INTO address (line_1,line_2,district,city,postcode)
+             VALUES
+                 ('1-12','Monash Road',(SELECT id from district WHERE name = 'QLD'),'Rawthdowne',1035)
+             RETURNING id
+     )
+INSERT INTO hotel_group (name, address,phone,about)
+VALUES ('Novotel Group of Hotels',(SELECT id FROM insert_address),(SELECT id FROM insert_phone),'Chain of Novotel hotels');
+
+--Remove hotel listing--------------------------------------------
+--Make hotel inactive
+UPDATE hotel SET is_active=FALSE WHERE id=?;
+--Make rooms associated with hotel inactive
+UPDATE room SET is_active=FALSE WHERE hotel_id=?;
+--Make bookings associated with hotel inactive
+UPDATE booking SET is_active=FALSE WHERE hotel_id=?;
+--Make room bookings associated with inactive booking inactive
+UPDATE room_booking SET is_active = FALSE WHERE booking_id IN (SELECT id FROM booking WHERE hotel_id = ?);
+
+
