@@ -147,13 +147,10 @@ INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
     VALUES (2,DATE '2022-09-27',DATE '2022-09-29',TRUE,1);
 
 INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
-    VALUES (3,DATE '2022-09-29',DATE '2022-09-30',TRUE,1);
+    VALUES (1,DATE '2022-09-29',DATE '2022-09-30',TRUE,1);
 
 INSERT INTO room_booking(booking_id,room_id,is_active,main_guest)
     VALUES (1,1,TRUE,'Tim Burners Lee');
 
 INSERT INTO room_booking(booking_id,room_id,is_active,main_guest)
     VALUES (2,1,TRUE,'Bertrand Russell');
-
-
-SELECT * FROM booking
