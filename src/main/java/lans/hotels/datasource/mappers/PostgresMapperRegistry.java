@@ -1,5 +1,7 @@
 package lans.hotels.datasource.mappers;
 
+import lans.hotels.datasource.exceptions.MapperNotFoundException;
+import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.datasource.facade.IMapperRegistry;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.user_types.Customer;
@@ -18,11 +20,11 @@ public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
 
     public static PostgresMapperRegistry newInstance(Connection connection, IDataSource dataSource) {
         PostgresMapperRegistry registry = new PostgresMapperRegistry(new HashMap<>());
-        registry.addMapper(new RoomDataMapper(connection, dataSource), Room.class);
-        registry.addMapper(new HotelDataMapper(connection, dataSource), Hotel.class);
-        registry.addMapper(new CustomerDataMapper(connection, dataSource), Customer.class);
-        registry.addMapper(new HotelierDataMapper(connection, dataSource), Hotelier.class);
-        registry.addMapper(new UserDataMapper(connection, dataSource), User.class);
+        registry.addMapper(Room.class, new RoomDataMapper(connection, dataSource));
+        registry.addMapper(Hotel.class, new HotelDataMapper(connection, dataSource));
+        registry.addMapper(Customer.class, new CustomerDataMapper(connection, dataSource));
+        registry.addMapper(Hotelier.class, new HotelierDataMapper(connection, dataSource));
+        registry.addMapper(User.class, new UserDataMapper(connection, dataSource));
         return registry;
     }
 
@@ -31,11 +33,13 @@ public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
     }
 
     @Override
-    public AbstractPostgresDataMapper getMapper(Class<? extends AbstractDomainObject> aClass) {
-        return mappers.get(aClass.getName());
+    public AbstractPostgresDataMapper getMapper(Class<? extends AbstractDomainObject> aClass) throws MapperNotFoundException {
+        AbstractPostgresDataMapper mapper = mappers.get(aClass.getName());
+        if (mapper==null) throw new MapperNotFoundException("PostgresMapperRegistry: class not found - " + aClass.getName());
+        return mapper;
     }
 
-    private void addMapper(AbstractPostgresDataMapper mapper, Class<?> aClass) {
+    private void addMapper(Class<?> aClass,AbstractPostgresDataMapper mapper) {
         mappers.put(aClass.getName(), mapper);
     }
 }
