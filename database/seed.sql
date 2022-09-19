@@ -15,7 +15,9 @@ INSERT INTO
     address(line_1, line_2, district, city, postcode)
 VALUES
     ('50 Batman St', NULL, 1, 'West Melbourne', 3003),
-    ('92 Lonsdale Street', NULL, 1, 'Melbourne', 3000)
+    ('92 Lonsdale Street', NULL, 1, 'Melbourne', 3000),
+    ('215 Little Collins Street', NULL, 1, 'Melbourne', 3000),
+    ('300 Spencer Street', NULL, 1, 'Melbourne', 3000)
 ;
 
 INSERT INTO
@@ -40,7 +42,9 @@ VALUES (1, 1, '38 094 477 175'), (1, 3, 'LONEX PTY LIMITED');
 INSERT INTO
     hotel(hotel_group_id, name, email, address, phone, hotel_city, pin_code)
 VALUES
-    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 2, 1, 'Melbourne', 3000);
+    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 2, 1, 'Melbourne', 3000),
+    (1, 'The Victoria Hotel', 'hello@victoriahotel.com.au', 3, 1, 'Melbourne', 3000),
+    (1, 'Atlantis Hotel Melbourne', 'help@atlantishotel.com.au', 4, 1, 'Melbourne', 3000);
 
 INSERT INTO
     bed_type(name)
