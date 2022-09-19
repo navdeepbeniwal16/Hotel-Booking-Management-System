@@ -43,9 +43,13 @@ public class Room extends ReferenceObject {
     public int getRoomNumber() {
         return roomNumber;
     }
-
     public RoomSpecification getSpecification() { return specification; }
     public void setSpecification(RoomSpecification newSpec) {
         this.specification = newSpec;
+    }
+
+    @Override
+    public String toString() {
+        return "Room(" + id + ")";
     }
 }

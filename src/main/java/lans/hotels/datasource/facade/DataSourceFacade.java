@@ -51,8 +51,14 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
 
     public <T extends AbstractDomainObject> List<T> findAll(Class<T> aClass) throws Exception {
         IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
-        List<T> domainObjects = (List<T>) mapper.findAll();
-        return domainObjects;
+        if (mapper==null) {
+            System.err.println("Null mapper for class: " + aClass.getName());
+        } else {
+            List<T> domainObjects = (List<T>) mapper.findAll();
+            System.out.println("Getting map for class: " + aClass.getName());
+            return domainObjects;
+        }
+        return new ArrayList<>();
     }
 
     public <T extends AbstractDomainObject> List<T> findBySearchCriteria(Class<T> aClass, AbstractSearchCriteria criteria) throws Exception {

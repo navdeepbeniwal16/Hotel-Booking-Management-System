@@ -17,13 +17,15 @@ VALUES
     ('50 Batman St', NULL, 1, 'West Melbourne', 3003),
     ('92 Lonsdale Street', NULL, 1, 'Melbourne', 3000),
     ('215 Little Collins Street', NULL, 1, 'Melbourne', 3000),
-    ('300 Spencer Street', NULL, 1, 'Melbourne', 3000)
+    ('300 Spencer Street', NULL, 1, 'Melbourne', 3000),
+    ('176 Cumberland Street', 'The Rocks', 1, 'Sydney', 2000)
 ;
 
 INSERT INTO
     phone(country, area, number)
 VALUES
-    (61, 4, 96623900)
+    (61, 3, 96623900),
+    (61, 2, 98975983)
 ;
 
 INSERT INTO
@@ -44,7 +46,9 @@ INSERT INTO
 VALUES
     (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 2, 1, 'Melbourne', 3000),
     (1, 'The Victoria Hotel', 'hello@victoriahotel.com.au', 3, 1, 'Melbourne', 3000),
-    (1, 'Atlantis Hotel Melbourne', 'help@atlantishotel.com.au', 4, 1, 'Melbourne', 3000);
+    (1, 'Atlantis Hotel Melbourne', 'help@atlantishotel.com.au', 4, 1, 'Melbourne', 3000),
+    (1, 'Shangri-La Sydney', 'hello@shangrila.com.au', 5, 2, 'Sydney', 2000)
+;
 
 INSERT INTO
     bed_type(name)
@@ -59,9 +63,9 @@ VALUES
 INSERT INTO
     room_spec(hotel_id, type, max_occupancy, bed_type, view, room_price)
 VALUES
-    (1, 1, 2, 1, 'Street view', '$100'),
-    (1, 2, 2, 3, 'Street view', '$100'),
-    (1, 3, 3, 4, 'Above street', '$100')
+    (1, 1, 2, 1, 'Street view', 100),
+    (1, 2, 2, 3, 'Street view', 200),
+    (1, 3, 3, 4, 'Above street', 300)
 ;
 
 INSERT INTO

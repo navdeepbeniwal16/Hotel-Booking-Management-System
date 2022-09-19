@@ -7,7 +7,8 @@ import React, {
 } from 'react';
 
 import User from '../types/UserType';
-import Hotel, { HotelState } from '../types/HotelType';
+import { defaultHotel, defaultHotelState } from '../types/HotelType';
+import { defaultRoom, defaultRoomState } from '../types/RoomType';
 
 const defaultUser: User = {
   username: '',
@@ -15,23 +16,10 @@ const defaultUser: User = {
     console.error('Error: cannot call setUsername() without context'),
 };
 
-const defaultHotel: Hotel = {
-  address: '',
-  phone: '',
-  name: '',
-  id: -1,
-  email: '',
-};
-
-const defaultHotelState: HotelState = {
-  hotel: defaultHotel,
-  setHotel: () =>
-    console.error('Error: cannot call setHotel() without context'),
-};
-
 const defaultGlobalContext = {
   user: defaultUser,
   hotel: defaultHotelState,
+  room: defaultRoomState,
 };
 
 const GlobalContext = createContext(defaultGlobalContext);
@@ -43,6 +31,7 @@ interface IGlobalProvider {
 const GlobalProvider = ({ children }: IGlobalProvider) => {
   const [username, setUsername] = useState('');
   const [hotel, setHotel] = useState(defaultHotel);
+  const [room, setRoom] = useState(defaultRoom);
 
   const userState = {
     username,
@@ -54,8 +43,19 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
     setHotel,
   };
 
+  const roomState = {
+    room,
+    setRoom,
+  };
+
   return (
-    <GlobalContext.Provider value={{ user: userState, hotel: hotelState }}>
+    <GlobalContext.Provider
+      value={{
+        user: userState,
+        hotel: hotelState,
+        room: roomState,
+      }}
+    >
       {children}
     </GlobalContext.Provider>
   );
