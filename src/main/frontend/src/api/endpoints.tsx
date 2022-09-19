@@ -1,7 +1,10 @@
-const getAllHotels = async () => {
+import Hotel from '../types/HotelType';
+
+const getAllHotels = async (): Promise<Hotel[]> => {
   const res = await fetch('/api/hotels');
   const data = await res.json();
-  return data;
+  const hotels: Array<Hotel> = data.result;
+  return hotels;
 };
 
 const endpoints = {

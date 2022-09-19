@@ -1,4 +1,4 @@
-import React, { ReactPropTypes, ContextType } from 'react';
+import React, { ReactPropTypes, ContextType, useEffect } from 'react';
 import './App.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,6 +14,7 @@ import AppContext from './context/AppContext';
 
 const App = (props: ReactPropTypes, context: ContextType<any>) => {
   const { user } = useContext(AppContext.GlobalContext);
+
   return (
     <AppContext.GlobalProvider>
       <div>
@@ -22,8 +23,8 @@ const App = (props: ReactPropTypes, context: ContextType<any>) => {
         </header>
         <Container>
           <Routes>
-            <Route path='/' element={<Home></Home>}></Route>
-            <Route path='/bookings' element={<Bookings></Bookings>}></Route>
+            <Route path='/' element={<Home />}></Route>
+            <Route path='/bookings' element={<Bookings />}></Route>
           </Routes>
         </Container>
       </div>

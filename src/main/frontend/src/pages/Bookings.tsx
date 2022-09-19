@@ -1,7 +1,6 @@
 import React from 'react';
 
 import BookingsList from '../components/layouts/BookingsList';
-import HotelsList from '../components/layouts/HotelsList';
 
 const Bookings = () => {
   const bookings: any[] = [];
