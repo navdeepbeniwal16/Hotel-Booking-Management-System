@@ -244,3 +244,5 @@ CREATE TABLE ROOM_BOOKING(
     FOREIGN KEY (booking_id) REFERENCES BOOKING(id),
     FOREIGN KEY (room_id) REFERENCES ROOM(id)
 );
+
+ALTER TABLE room_booking ADD no_of_guests INT;

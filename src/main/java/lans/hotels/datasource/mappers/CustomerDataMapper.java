@@ -2,7 +2,7 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.Customer.Customer;
+import lans.hotels.domain.user_types.Customer;
 import lans.hotels.domain.utils.District;
 import lans.hotels.domain.utils.Address;
 
