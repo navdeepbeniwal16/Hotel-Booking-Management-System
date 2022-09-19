@@ -18,4 +18,8 @@ public abstract class AbstractIdentityMapRegistry<IdType> implements IIdentityMa
     public IIdentityMap<IdType, ? extends AbstractDomainObject> get(Class<? extends AbstractDomainObject> aClass) {
         return identityMaps.get(aClass.getName());
     }
+
+    public void add(IIdentityMap identityMap, Class<?> aClass) {
+        identityMaps.put(aClass.getName(), identityMap);
+    }
 }
