@@ -87,3 +87,15 @@ INSERT INTO hotel (hotel_group_id, name, email, address, phone,hotel_city,pin_co
 VALUES (1,'JWM Marriott','jwm@gmail.com',(SELECT id FROM insert_address),(SELECT id FROM insert_phone),'Sydney','1052');
 --Create hotel room spec
 
+--View all bookings tied to a hotelier group-------------
+SELECT
+       b.id AS id,b.customer_id,a.name as customer_name,b.start_date,b.end_date,h.name as hotel_name, g.name as hotel_group_name
+    FROM BOOKING b
+        JOIN ( hotel h
+            JOIN hotel_group g
+                ON h.hotel_group_id = g.id)
+            ON b.hotel_id=h.id
+        JOIN ( customer c
+            JOIN app_user a ON c.user_id=a.id)
+            ON c.id=b.customer_id
+    WHERE b.is_active=TRUE;
