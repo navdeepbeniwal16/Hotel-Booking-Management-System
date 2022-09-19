@@ -4,6 +4,7 @@ import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.IdentityMapException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
+import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
@@ -51,6 +52,12 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
     public <T extends AbstractDomainObject> List<T> findAll(Class<T> aClass) throws Exception {
         IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
         List<T> domainObjects = (List<T>) mapper.findAll();
+        return domainObjects;
+    }
+
+    public <T extends AbstractDomainObject> List<T> findBySearchCriteria(Class<T> aClass, AbstractSearchCriteria criteria) throws Exception {
+        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
+        List<T> domainObjects = (List<T>) mapper.findBySearchCriteria(criteria);
         return domainObjects;
     }
 
