@@ -7,6 +7,7 @@ import lans.hotels.domain.room.RoomBuilder;
 import lans.hotels.domain.room.RoomSpecification;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
@@ -41,7 +42,15 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
 
     @Override
     public List<Room> findAll() throws SQLException {
-        return null;
+        String findAllStatment = "SELECT " + " * " +
+                " FROM " + this.table;
+        try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (load(resultSet) != null) {
+                load(resultSet);
+            }
+            return new ArrayList<>(loadedMap.values());
+        }
     }
 
     @Override
@@ -68,6 +77,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
 
     @Override
     protected Room doLoad(Integer id, ResultSet resultSet) throws SQLException {
+        if (!resultSet.next()) return null;
         Hotel hotel = (Hotel) dataSource.find(Hotel.class, resultSet.getInt("hotel_id"));
         RoomSpecification specification = (RoomSpecification) dataSource.find(RoomSpecification.class, resultSet.getInt("room_spec_id"));
         RoomBuilder roomBuilder = new RoomBuilder(hotel, specification, dataSource);

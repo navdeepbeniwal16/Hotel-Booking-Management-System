@@ -6,6 +6,7 @@ import MainNavbar from './components/layouts/MainNavbar';
 
 import Home from './pages/Home';
 import Bookings from './pages/Bookings';
+import Hotel from './pages/Hotel';
 import { Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 
@@ -25,6 +26,7 @@ const App = (props: ReactPropTypes, context: ContextType<any>) => {
           <Routes>
             <Route path='/' element={<Home />}></Route>
             <Route path='/bookings' element={<Bookings />}></Route>
+            <Route path='/hotel/:id' element={<Hotel />}></Route>
           </Routes>
         </Container>
       </div>

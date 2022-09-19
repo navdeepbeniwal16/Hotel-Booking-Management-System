@@ -1,3 +1,6 @@
+
+import React, { Dispatch } from 'react';
+
 type Hotel = {
   address: String;
   phone: String;
@@ -6,4 +9,8 @@ type Hotel = {
   email: String;
 };
 
+export type HotelState = {
+  hotel: Hotel;
+  setHotel: Dispatch<React.SetStateAction<Hotel>>;
+};
 export default Hotel;
