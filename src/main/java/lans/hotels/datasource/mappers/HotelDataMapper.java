@@ -59,15 +59,18 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     public List<Hotel> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         HotelsSearchCriteria hotelsSearchCriteria = (HotelsSearchCriteria) criteria;
         String findAllStatment = "SELECT " + " * " +
-                " FROM " + this.table + " h ";
-
-        findAllStatment +=
+                " FROM " + this.table + " h " +
                 " JOIN phone p ON h.phone = p.id " +
-                        " JOIN address a on h.address = a.id ";
+                " JOIN address a on h.address = a.id ";
 
         if (hotelsSearchCriteria.getLocation() != null){
             findAllStatment += "WHERE city = '" + hotelsSearchCriteria.getLocation() + "'";
             System.out.println("Location passed to HotelDataMapper : " + hotelsSearchCriteria.getLocation());
+        }
+
+        if(hotelsSearchCriteria.getHotelGroupId() != null) {
+            findAllStatment += "WHERE hotel_group_id = '" + hotelsSearchCriteria.getHotelGroupId() + "'";
+            System.out.println("HotelGroupId passed to HotelDataMapper : " + hotelsSearchCriteria.getLocation());
         }
 
 

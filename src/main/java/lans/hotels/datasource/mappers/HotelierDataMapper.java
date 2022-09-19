@@ -1,5 +1,6 @@
 package lans.hotels.datasource.mappers;
 
+import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.user_types.Hotelier;
 
@@ -43,6 +44,11 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
             }
             return new ArrayList<>(loadedMap.values());
         }
+    }
+
+    @Override
+    public List<Hotelier> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+        return null;
     }
 
     @Override
