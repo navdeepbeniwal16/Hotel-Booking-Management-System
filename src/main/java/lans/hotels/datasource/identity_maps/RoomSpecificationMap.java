@@ -12,6 +12,11 @@ import java.util.Map;
 public class RoomSpecificationMap implements IIdentityMap<Integer, RoomSpecification> {
 
     Map<Integer, RoomSpecification> specifications;
+
+    public RoomSpecificationMap(Map<Integer, RoomSpecification> specifications) {
+        this.specifications = specifications;
+    }
+
     @Override
     public void add(RoomSpecification spec) throws IdentityMapException {
         if (spec.hasId()) {

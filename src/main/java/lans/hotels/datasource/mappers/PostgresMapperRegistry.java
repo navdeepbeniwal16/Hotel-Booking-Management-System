@@ -6,6 +6,8 @@ import lans.hotels.domain.Customer.Customer;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
+import lans.hotels.domain.user_types.Hotelier;
+import lans.hotels.domain.user_types.User;
 
 import java.sql.Connection;
 import java.util.HashMap;
@@ -19,6 +21,8 @@ public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
         registry.addMapper(new RoomDataMapper(connection, dataSource), Room.class);
         registry.addMapper(new HotelDataMapper(connection, dataSource), Hotel.class);
         registry.addMapper(new CustomerDataMapper(connection, dataSource), Customer.class);
+        registry.addMapper(new HotelierDataMapper(connection, dataSource), Hotelier.class);
+        registry.addMapper(new UserDataMapper(connection, dataSource), User.class);
         return registry;
     }
 
