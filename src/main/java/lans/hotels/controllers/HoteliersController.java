@@ -61,7 +61,9 @@ public class HoteliersController extends FrontCommand{
                         JSONObject aHotelier;
                         for (Hotelier hotelier: hoteliers) {
                             aHotelier = new JSONObject();
-                            aHotelier.put("id", hotelier.getId());
+                            aHotelier.put("hotelier_id", hotelier.getId());
+                            aHotelier.put("name",hotelier.getName());
+                            aHotelier.put("email",hotelier.getEmail());
                             aHotelier.put("user_id", hotelier.getUserID());
                             aHotelier.put("isActive", hotelier.getStatus());
                             hotelierArray.put(aHotelier);

@@ -1,7 +1,6 @@
 package lans.hotels.domain.user_types;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.utils.Address;
 
 public class Customer extends User{
