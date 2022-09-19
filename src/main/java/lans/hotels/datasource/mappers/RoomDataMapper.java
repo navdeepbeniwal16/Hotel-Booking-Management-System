@@ -1,4 +1,5 @@
 package lans.hotels.datasource.mappers;
+import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
@@ -40,6 +41,11 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
 
     @Override
     public List<Room> findAll() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public List<Room> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         return null;
     }
 
