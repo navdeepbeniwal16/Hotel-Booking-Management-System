@@ -10,6 +10,11 @@ import java.util.Map;
 
 public class RoomMap implements IIdentityMap<Integer, Room> {
     Map<Integer, Room> rooms;
+
+    public RoomMap(Map<Integer, Room> rooms) {
+        this.rooms = rooms;
+    }
+
     @Override
     public void add(Room room) throws IdentityMapException {
         if (room.hasId()) {

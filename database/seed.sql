@@ -158,3 +158,7 @@ INSERT INTO room_booking(booking_id,room_id,is_active,main_guest)
 
 INSERT INTO room_booking(booking_id,room_id,is_active,main_guest)
     VALUES (2,1,TRUE,'Bertrand Russell');
+
+UPDATE ROOM_BOOKING SET no_of_guests=2 WHERE id=1;
+UPDATE ROOM_BOOKING SET no_of_guests=2 WHERE id=2;
+UPDATE ROOM_BOOKING SET no_of_guests=2 WHERE id=3;

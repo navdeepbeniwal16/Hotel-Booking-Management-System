@@ -1,7 +1,7 @@
 package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
-import lans.hotels.domain.Customer.Customer;
+import lans.hotels.domain.user_types.Customer;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
