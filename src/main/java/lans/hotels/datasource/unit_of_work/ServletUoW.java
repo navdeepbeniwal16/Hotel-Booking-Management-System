@@ -121,9 +121,15 @@ public class ServletUoW implements IUnitOfWork<Integer> {
             identityMaps.get(obj.getClass()).remove(obj.getId());
         });
 
+
         for(Object identityMap: identityMaps.getAll()) {
             ((IIdentityMap) identityMap).clear();
         }
+
+        newObjects.clear();
+        dirtyObjects.clear();
+        removedObjects.clear();
+        cleanObjects.clear();
         // TODO: flush identity maps #bug
         // mappers.clear();
         // TODO: @levimk - how does commit actually work with JDBC?
