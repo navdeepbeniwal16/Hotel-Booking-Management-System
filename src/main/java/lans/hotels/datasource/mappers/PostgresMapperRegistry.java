@@ -22,7 +22,6 @@ public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
         registry.addMapper(new HotelDataMapper(connection, dataSource), Hotel.class);
         registry.addMapper(new CustomerDataMapper(connection, dataSource), Customer.class);
         registry.addMapper(new HotelierDataMapper(connection, dataSource), Hotelier.class);
-        registry.addMapper(new UserDataMapper(connection, dataSource), User.class);
         return registry;
     }
 
