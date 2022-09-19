@@ -89,4 +89,71 @@ INSERT INTO
 VALUES(2,2, '+614153726767', 1)
 ;
 
-SELECT * FROM customer
+-- New queries start here --------------------
+
+INSERT INTO
+    app_user(name,email,"password",role)
+VALUES
+    ('Ben','ben@gmail.com','pwd','3')
+;
+
+
+INSERT INTO
+    customer(user_id,address,contact,age)
+VALUES(3,1, '+61415678394', 25)
+;
+
+INSERT INTO amenity("name", description)
+    VALUES
+           ('Gym', 'Utility space for exercise'),
+           ('Spa','Utility space for spa/sauna/massage'),
+           ('restaurant','eatery spot for in room dining');
+
+INSERT INTO hotel_amenity(amenity_id,hotel_id)
+    VALUES
+           (1,1),
+           (2,1),
+           (3,1);
+
+INSERT INTO app_user("name", email, "password", "role")
+    VALUES ('Chris','chris@gmail.com','tbdpwd',1);
+
+INSERT INTO system_admin(user_id) VALUES (4);
+
+INSERT INTO hotel_group_hotelier(hotelier_id,hotel_group_id)
+    VALUES (1,1);
+
+INSERT INTO feature ("name",description)
+    VALUES ('ironing board', 'Pull out table to iron clothes'),
+           ('electric kettle','kettle to heat water'),
+           ('hair dryer','device to dry hair'),
+           ('bath towels','set of towels');
+
+INSERT INTO room_feature(feature_id,room_spec_id,quantity)
+    VALUES (1,1,1),
+           (2,1,1),
+           (3,1,1),
+           (4,1,1),
+           (1,2,1),
+           (2,2,1),
+           (3,2,1),
+           (4,2,1),
+           (1,3,1),
+           (2,3,1),
+           (3,3,1),
+           (4,3,1);
+
+INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
+    VALUES (2,DATE '2022-09-27',DATE '2022-09-29',TRUE,1);
+
+INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
+    VALUES (3,DATE '2022-09-29',DATE '2022-09-30',TRUE,1);
+
+INSERT INTO room_booking(booking_id,room_id,is_active,main_guest)
+    VALUES (1,1,TRUE,'Tim Burners Lee');
+
+INSERT INTO room_booking(booking_id,room_id,is_active,main_guest)
+    VALUES (2,1,TRUE,'Bertrand Russell');
+
+
+SELECT * FROM booking
