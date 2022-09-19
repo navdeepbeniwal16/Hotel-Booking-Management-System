@@ -77,3 +77,16 @@ INSERT INTO
     hotelier(user_id,is_active)
 VALUES(1,TRUE)
 ;
+
+INSERT INTO
+    app_user(name,email,"password",role)
+VALUES
+    ('Saood','saood@gmail.com','test','3')
+;
+
+INSERT INTO
+    customer(user_id,address,contact,age)
+VALUES(2,2, '+614153726767', 1)
+;
+
+SELECT * FROM customer
