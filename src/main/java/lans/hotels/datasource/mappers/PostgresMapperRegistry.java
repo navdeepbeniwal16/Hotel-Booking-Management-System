@@ -2,7 +2,7 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.facade.IMapperRegistry;
 import lans.hotels.domain.AbstractDomainObject;
-import lans.hotels.domain.Customer.Customer;
+import lans.hotels.domain.user_types.Customer;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;

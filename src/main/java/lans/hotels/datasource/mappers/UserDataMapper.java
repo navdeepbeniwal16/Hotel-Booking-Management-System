@@ -3,9 +3,7 @@ package lans.hotels.datasource.mappers;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.user_types.User;
-import lans.hotels.domain.Customer.Customer;
 
-import javax.sound.midi.Soundbank;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
