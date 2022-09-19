@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchForm from '../components/layouts/SearchForm';
+
 import HotelsList from '../components/molecules/HotelsList';
 import { useEffect, useState } from 'react';
 import Hotel from '../types/HotelType';
@@ -11,7 +12,6 @@ const Home = () => {
     const fetchHotels = async () => {
       const fetchedHotels = await endpoints.getAllHotels();
       setHotels(fetchedHotels);
-      console.log(hotels);
     };
     fetchHotels().catch(console.error);
   }, []);

@@ -1,3 +1,4 @@
+
 import React, { Dispatch } from 'react';
 
 type Hotel = {
@@ -12,5 +13,4 @@ export type HotelState = {
   hotel: Hotel;
   setHotel: Dispatch<React.SetStateAction<Hotel>>;
 };
-
 export default Hotel;
