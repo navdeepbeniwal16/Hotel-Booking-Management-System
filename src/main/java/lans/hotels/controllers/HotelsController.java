@@ -15,9 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,45 +53,51 @@ public class HotelsController extends FrontCommand {
                     }
 
                     if (body.has("search")) {
-                        ArrayList<Hotel> hotels;
+                        HotelsSearchCriteria criteria = new HotelsSearchCriteria();
+
                         JSONObject searchQueryBody = body.getJSONObject("search");
                         if(searchQueryBody.has("location")){
-                            HotelsSearchCriteria criteria = new HotelsSearchCriteria();
                             String location = searchQueryBody.getString("location");
                             if(location != null) criteria.setLocation(location);
-                            try {
-                                hotels = (ArrayList<Hotel>) dataSource.findBySearchCriteria(Hotel.class, criteria);
-                            } catch (Exception e) {
-                                System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
-                                System.err.println("GET /api/hotels: " + e.getMessage());
-                                System.err.println("GET /api/hotels: " + e.getClass());
-                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                                return;
-                            }
+                        }
+                        if(searchQueryBody.has("hotelGroupId")) {
+                           Integer hotelGroupId = searchQueryBody.getInt("hotelGroupId");
+                           if(hotelGroupId != null) criteria.setHotelGroupId(hotelGroupId);
+                        }
 
-                            JSONArray hotelArray = new JSONArray();
-                            PrintWriter out = response.getWriter();
-                            response.setStatus(200);
-                            response.setContentType("application/json");
-                            response.setCharacterEncoding("UTF-8");
-
-                            JSONObject aHotel;
-                            for (Hotel hotel: hotels) {
-                                aHotel = new JSONObject();
-                                aHotel.put("id", hotel.getId());
-                                aHotel.put("name", hotel.getName());
-                                aHotel.put("email", hotel.getEmail());
-                                aHotel.put("address", hotel.getAddress());
-                                aHotel.put("phone", hotel.getPhone().toString());
-                                hotelArray.put(aHotel);
-                            }
-
-                            JSONObject hotelJson = new JSONObject();
-                            hotelJson.put("result", hotelArray);
-                            out.print(hotelJson);
-                            out.flush();
+                        ArrayList<Hotel> hotels;
+                        try {
+                            hotels = (ArrayList<Hotel>) dataSource.findBySearchCriteria(Hotel.class, criteria);
+                        } catch (Exception e) {
+                            System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
+                            System.err.println("GET /api/hotels: " + e.getMessage());
+                            System.err.println("GET /api/hotels: " + e.getClass());
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                             return;
                         }
+
+                        JSONArray hotelArray = new JSONArray();
+                        PrintWriter out = response.getWriter();
+                        response.setStatus(200);
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+
+                        JSONObject aHotel;
+                        for (Hotel hotel: hotels) {
+                            aHotel = new JSONObject();
+                            aHotel.put("id", hotel.getId());
+                            aHotel.put("name", hotel.getName());
+                            aHotel.put("email", hotel.getEmail());
+                            aHotel.put("address", hotel.getAddress());
+                            aHotel.put("phone", hotel.getPhone().toString());
+                            hotelArray.put(aHotel);
+                        }
+
+                        JSONObject hotelJson = new JSONObject();
+                        hotelJson.put("result", hotelArray);
+                        out.print(hotelJson);
+                        out.flush();
+                        return;
                     } else {
                         ArrayList<Hotel> hotels;
                         try {
