@@ -63,4 +63,13 @@ public class Booking extends ReferenceObject {
     public void remove() throws UoWException {
         markRemoved();
     }
+
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "id=" + id +
+                ", hotelId=" + hotelId +
+                ", customerId=" + customerId +
+                '}';
+    }
 }

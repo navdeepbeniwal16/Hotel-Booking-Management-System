@@ -2,8 +2,10 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.datasource.search_criteria.CustomerSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.user_types.Customer;
 import lans.hotels.domain.utils.District;
 import lans.hotels.domain.utils.Address;
@@ -62,6 +64,40 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
 
     @Override
     public ArrayList<Customer> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+        CustomerSearchCriteria customerSearchCriteria = (CustomerSearchCriteria) criteria;
+        String findByCriteriaStatement = "SELECT customer_id as id, name, email, password, role, " +
+                "contact, age, line_1 as address_l1,line_2 AS address_l2, " +
+                "district_name, postcode, city " +
+                "FROM app_user u " +
+                "JOIN ( " +
+                "SELECT user_id,c.id AS customer_id, contact, age, line_1, line_2, city, postcode, name as district_name " +
+                "FROM customer c " +
+                "JOIN ( " +
+                "address a JOIN district d ON a.district = d.id " +
+                ") " +
+                "ON c.address = a.id " +
+                ") AS cc " +
+                "ON u.id = cc.user_id ";
+
+        if(customerSearchCriteria.getCustomerId()!=null) {
+            findByCriteriaStatement += "WHERE customer_id ='" + customerSearchCriteria.getCustomerId() + "'";
+        }
+
+        System.out.println("Prepared Query : ");
+        System.out.println(findByCriteriaStatement);
+
+        try (PreparedStatement statement = connection.prepareStatement(findByCriteriaStatement)) {
+            ResultSet resultSet = statement.executeQuery();
+            Customer loadedCustomer = load(resultSet);
+            while (loadedCustomer != null) {
+                loadedCustomer = load(resultSet);
+            }
+            return new ArrayList<>(loadedMap.values());
+        } catch (Exception e) {
+            System.out.println("Exception occurred at findBySearchCriteria");
+            e.printStackTrace();
+        }
+
         return null;
     }
 

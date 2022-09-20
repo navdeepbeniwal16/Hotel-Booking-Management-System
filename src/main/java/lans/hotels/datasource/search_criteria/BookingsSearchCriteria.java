@@ -13,4 +13,11 @@ public class BookingsSearchCriteria extends AbstractSearchCriteria {
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
     }
+
+    @Override
+    public String toString() {
+        return "BookingsSearchCriteria{" +
+                "customerId=" + customerId +
+                '}';
+    }
 }
