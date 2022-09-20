@@ -108,6 +108,7 @@ CREATE TABLE HOTEL(
                       contact VARCHAR(13) NULL,
                       city VARCHAR(50) NOT NULL,
                       pin_code INT NOT NULL,
+                      is_active BOOLEAN NOT NULL,
                       PRIMARY KEY (id),
                       FOREIGN KEY (address) REFERENCES ADDRESS(id),
                       FOREIGN KEY (hotel_group_id) REFERENCES HOTEL_GROUP(id)

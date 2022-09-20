@@ -64,11 +64,11 @@ VALUES
 ;
 
 INSERT INTO
-    hotel(hotel_group_id, name, email, address, contact, city, pin_code)
+    hotel(hotel_group_id, name, email, address, contact, city, pin_code,is_active)
 VALUES
-    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 1, '+614737373737', 'Melbourne', 3000),
-    (1, 'Sydney Marriott Hotel', 'sydney@vmarriot.com.au', 2, '+619898989898', 'Sydney', 4000),
-    (2, 'Perth Hilton Melbourne', 'perth@hilton.com.au', 3, '+614545454545', 'Perth', 5000)
+    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 1, '+614737373737', 'Melbourne', 3000,TRUE),
+    (1, 'Sydney Marriott Hotel', 'sydney@vmarriot.com.au', 2, '+619898989898', 'Sydney', 4000,TRUE),
+    (2, 'Perth Hilton Melbourne', 'perth@hilton.com.au', 3, '+614545454545', 'Perth', 5000,FALSE)
 ;
 
 
