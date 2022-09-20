@@ -77,6 +77,11 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
             System.out.println("HotelGroupId passed to HotelDataMapper : " + hotelsSearchCriteria.getLocation());
         }
 
+        if(hotelsSearchCriteria.getStartDate() != null && hotelsSearchCriteria.getEndDate() != null) {
+            // TODO: Add a query that will only get the hotels that have rooms not present in the bookings for a given date range
+            // Check with Saood about how we can do this
+        }
+
 
         try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
             ResultSet resultSet = statement.executeQuery();

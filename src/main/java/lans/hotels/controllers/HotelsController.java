@@ -16,6 +16,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,6 +63,26 @@ public class HotelsController extends FrontCommand {
                             String location = searchQueryBody.getString("location");
                             if(location != null) criteria.setLocation(location);
                         }
+
+                        if(searchQueryBody.has("startDate") && searchQueryBody.has("endDate")) {
+                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+
+                            String startDateInString = searchQueryBody.getString("startDate");
+                            String endDateInString = searchQueryBody.getString("endDate");
+                            try {
+                                Date startDate = formatter.parse(startDateInString);
+                                Date endDate = formatter.parse(endDateInString);
+                                criteria.setStartDate(startDate);
+                                criteria.setEndDate(endDate);
+                            } catch (Exception e) {
+                                System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
+                                System.err.println("GET /api/hotels: " + e.getMessage());
+                                System.err.println("GET /api/hotels: " + e.getClass());
+                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
+                                return;
+                            }
+                        }
+
                         if(searchQueryBody.has("hotelGroupId")) {
                            Integer hotelGroupId = searchQueryBody.getInt("hotelGroupId");
                            if(hotelGroupId != null) criteria.setHotelGroupId(hotelGroupId);
