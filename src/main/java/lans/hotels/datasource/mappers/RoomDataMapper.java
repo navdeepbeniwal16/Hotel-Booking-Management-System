@@ -42,14 +42,16 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
 
     @Override
     public List<Room> findAll() throws SQLException {
-        String findAllStatment = "SELECT " + " * " +
-                " FROM " + this.table;
-        try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
+        String findAllStatement = "SELECT " + " * " + " FROM " + this.table;
+        try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();
             while (load(resultSet) != null) {
                 load(resultSet);
             }
             return new ArrayList<>(loadedMap.values());
+        } catch (SQLException e) {
+            System.err.println("RoomMapper.findAll():" + e);
+            throw e;
         }
     }
 

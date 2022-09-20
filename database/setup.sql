@@ -186,7 +186,7 @@ CREATE TABLE ROOM_SPEC(
     max_occupancy INT NOT NULL,
     bed_type INT NOT NULL,
     view VARCHAR(20) NOT NULL,
-    room_price VARCHAR(10) NOT NULL,
+    room_price INTEGER NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (hotel_id) REFERENCES HOTEL(id),
     FOREIGN KEY (bed_type) REFERENCES BED_TYPE(id),

@@ -1,6 +1,7 @@
 package lans.hotels.datasource.unit_of_work;
 
 import lans.hotels.datasource.exceptions.IdentityMapException;
+import lans.hotels.datasource.exceptions.MapperNotFoundException;
 import lans.hotels.datasource.exceptions.UnitOfWorkException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.facade.*;
@@ -114,10 +115,26 @@ public class ServletUoW implements IUnitOfWork<Integer> {
 
     @Override
     public void commit(IMapperRegistry<Integer> mappers) {
-        newObjects.forEach(obj -> mappers.getMapper(obj.getClass()).create(obj));
-        dirtyObjects.forEach(obj -> mappers.getMapper(obj.getClass()).update(obj));
+        newObjects.forEach(obj -> {
+            try {
+                mappers.getMapper(obj.getClass()).create(obj);
+            } catch (MapperNotFoundException e) {
+                System.err.println(e);
+            }
+        });
+        dirtyObjects.forEach(obj -> {
+            try {
+                mappers.getMapper(obj.getClass()).update(obj);
+            } catch (MapperNotFoundException e) {
+                System.err.println(e);
+            }
+        });
         removedObjects.forEach(obj -> {
-            mappers.getMapper(obj.getClass()).delete((Integer) obj.getId());
+            try {
+                mappers.getMapper(obj.getClass()).delete((Integer) obj.getId());
+            } catch (MapperNotFoundException e) {
+                System.err.println(e);
+            }
             identityMaps.get(obj.getClass()).remove(obj.getId());
         });
 

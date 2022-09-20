@@ -41,6 +41,6 @@ const HotelsList = ({ hotels }: HotelListProps) => {
         );
       })}
     </Container>
-
-
+  );
+};
 export default HotelsList;

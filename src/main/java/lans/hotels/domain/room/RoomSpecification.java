@@ -27,6 +27,11 @@ public class RoomSpecification extends ReferenceObject {
         this.features = new HashMap<>();
     }
 
+    public String getDescription() { return description; }
+    public Integer getCapacity() { return capacity; }
+    public HashMap<String, Feature> getFeatures() { return features; }
+    public String getRoomType() { return roomType; }
+
     private RoomSpecification(String roomType, int capacity, String description, Map<String, Feature> features, Integer id, IDataSource dataSource) {
         super(id, dataSource);
         this.roomType = roomType;

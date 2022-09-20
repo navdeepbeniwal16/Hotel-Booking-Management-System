@@ -2,6 +2,7 @@ package lans.hotels.datasource.facade;
 
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.IdentityMapException;
+import lans.hotels.datasource.exceptions.MapperNotFoundException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
@@ -37,7 +38,13 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
 
     public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
         IIdentityMap classCache = identityMapRegistry.get(aClass);
-        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
+        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper;
+        try {
+            mapper = dataMapperRegistry.getMapper(aClass);
+        } catch (MapperNotFoundException e) {
+            System.err.println(e);
+            return null;
+        }
         T domainObject = (T) classCache.getById(id);
         if (domainObject == null) {
             domainObject = (T) mapper.getById(id);
@@ -50,9 +57,20 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
     }
 
     public <T extends AbstractDomainObject> List<T> findAll(Class<T> aClass) throws Exception {
-        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
-        List<T> domainObjects = (List<T>) mapper.findAll();
-        return domainObjects;
+        try {
+            IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
+            if (mapper==null) {
+                System.err.println("Null mapper for class: " + aClass.getName());
+            } else {
+                System.err.println("DataSourceFacade.findAll(): getting objects for class" + aClass.getName());
+                List<T> domainObjects = (List<T>) mapper.findAll();
+                return domainObjects;
+            }
+        } catch (Exception e) {
+            System.err.println("DataSourceFacade.findAll(): " + e);
+        } finally {
+            return new ArrayList<>();
+        }
     }
 
     public <T extends AbstractDomainObject> List<T> findBySearchCriteria(Class<T> aClass, AbstractSearchCriteria criteria) throws Exception {
