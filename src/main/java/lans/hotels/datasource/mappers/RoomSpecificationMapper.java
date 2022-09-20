@@ -10,11 +10,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class RoomSpecMapper extends AbstractPostgresDataMapper<RoomSpecification> {
-    protected RoomSpecMapper(Connection connection, String table, IDataSource dataSource) {
-        super(connection, table, dataSource);
-    }
+public class RoomSpecificationMapper extends AbstractPostgresDataMapper<RoomSpecification> {
 
+    public RoomSpecificationMapper(Connection connection, IDataSource dataSource) {
+        super(connection, "room_spec", dataSource);
+    }
     @Override
     public <DomainObj extends AbstractDomainObject> DomainObj update(AbstractDomainObject domainObject) {
         return null;

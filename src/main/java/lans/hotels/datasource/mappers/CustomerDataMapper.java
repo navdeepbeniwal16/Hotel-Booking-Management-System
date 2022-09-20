@@ -45,8 +45,7 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
                 ") AS cc " +
                 "ON u.id = cc.user_id ";
 
-    public ArrayList<Customer> findAll() throws SQLException {
-        String findAllStatement = "SELECT h.id AS id, contact, age, line_1, line_2, city, postcode, name FROM " + this.table +" h JOIN ( address a JOIN district d ON a.district = d.id) ON h.address = a.id";
+//        String findAllStatement = "SELECT h.id AS id, contact, age, line_1, line_2, city, postcode, name FROM " + this.table +" h JOIN ( address a JOIN district d ON a.district = d.id) ON h.address = a.id";
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();
             while (load(resultSet) != null) {

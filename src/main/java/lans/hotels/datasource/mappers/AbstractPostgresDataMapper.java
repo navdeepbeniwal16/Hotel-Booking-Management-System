@@ -57,7 +57,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
 
         // TODO: abstract out type to generic?
 
-        Integer id = resultSet.getInt(idPrefix + "id");
+        Integer id = resultSet.getInt("id");
         DomainObject result = loadedMap.get(id);
         if (result == null) {
             result = doLoad(id, resultSet);
