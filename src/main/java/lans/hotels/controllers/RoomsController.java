@@ -19,12 +19,14 @@ public class RoomsController extends FrontCommand {
 
     @Override
     protected void concreteProcess() throws CommandException, IOException {
+        System.out.println("RoomsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
         switch(request.getMethod()) {
             case HttpMethod.GET:
                 handleGet();
                 return;
             case HttpMethod.POST:
                 System.err.println("POST /rooms: ENDPOINT NOT IMPLEMENTED");
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             case HttpMethod.PUT:
                 System.err.println("PUT /rooms: NOT IMPLEMENTED");
