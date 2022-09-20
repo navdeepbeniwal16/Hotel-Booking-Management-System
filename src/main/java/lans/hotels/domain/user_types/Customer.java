@@ -47,12 +47,13 @@ public class Customer extends User{
         markRemoved();
     }
 
-    public List<Booking> getAllBookings() {
+    public ArrayList<Booking> getAllBookings() {
         BookingsSearchCriteria bookingsSearchCriteria = new BookingsSearchCriteria();
         bookingsSearchCriteria.setCustomerId(this.getId());
         ArrayList<Booking> allBookings = new ArrayList<>();
         try {
             allBookings = dataSource.findBySearchCriteria(Booking.class, bookingsSearchCriteria);
+            System.out.println("In Customer : Number of bookings fetched : " + allBookings.size());
         } catch (Exception e) {
             System.out.println("Exception occured while fetching bookings for the customer");
             System.out.println(e.getMessage());
