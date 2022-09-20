@@ -2,6 +2,7 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel.HotelBuilder;
@@ -12,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     private static final String COLUMNS = " number, floor, is_active, room_spec_id ";
@@ -40,23 +40,27 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
 
     @Override
-    public List<Hotel> findAll() throws SQLException {
+    public ArrayList<Hotel> findAll() throws SQLException {
         String findAllStatment = "SELECT " + " * " +
                 " FROM " + this.table + " h " +
                 " JOIN phone p ON h.phone = p.id " +
                 " JOIN address a on h.address = a.id ";
         try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
             ResultSet resultSet = statement.executeQuery();
-            Hotel currentHotel = load(resultSet);
-            while (currentHotel != null) {
-                currentHotel = load(resultSet);
+            Hotel aHotel = load(resultSet);
+            while (aHotel != null) {
+                aHotel = load(resultSet);
             }
-            return new ArrayList<>(loadedMap.values());
+        } catch (Exception e) {
+            System.err.println("ERROR HotelDataMapper.findAll(): " + e);
+        } finally {
+            System.out.println("HotelDataMapper.findAll() - loaded hotels: " + loadedMap);
         }
+        return new ArrayList<>(loadedMap.values());
     }
 
     @Override
-    public List<Hotel> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+    public ArrayList<Hotel> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         HotelsSearchCriteria hotelsSearchCriteria = (HotelsSearchCriteria) criteria;
         String findAllStatment = "SELECT " + " * " +
                 " FROM " + this.table + " h " +
@@ -105,7 +109,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
 
     @Override
-    public Hotel update(Hotel domainObject) {
+    public Hotel update(AbstractDomainObject domainObject) {
         return null;
     }
 

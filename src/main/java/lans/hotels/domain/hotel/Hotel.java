@@ -1,6 +1,7 @@
 package lans.hotels.domain.hotel;
 
 import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.room.Room;
@@ -9,7 +10,7 @@ import lans.hotels.domain.utils.Phone;
 
 import java.util.HashMap;
 
-public class Hotel extends ReferenceObject {
+public class Hotel extends AbstractDomainObject { // TODO: refactor ReferenceObject
     private String name;
     Phone phone;
     String email; // TODO: refactor email into value object.
@@ -29,6 +30,11 @@ public class Hotel extends ReferenceObject {
         super(id, dataSource);
         initMaps();
         markClean();
+    }
+
+    @Override
+    protected void setId(Integer id) throws Exception {
+
     }
 
     protected Hotel(String name, Phone phone, String email, Integer id, IDataSource dataSource) {

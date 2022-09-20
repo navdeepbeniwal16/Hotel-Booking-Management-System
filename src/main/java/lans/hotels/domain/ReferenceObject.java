@@ -6,7 +6,7 @@ import lans.hotels.domain.exceptions.ReferenceObjectException;
 
 import java.util.Objects;
 
-public abstract class ReferenceObject extends AbstractDomainObject<Integer> {
+public abstract class ReferenceObject extends AbstractDomainObject {
     protected ReferenceObject(IDataSource dataSource) {
         super(true, dataSource);
     }

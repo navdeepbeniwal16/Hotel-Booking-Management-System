@@ -1,12 +1,12 @@
 package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.user_types.User;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class UserDataMapper extends AbstractPostgresDataMapper<User> {
 
@@ -37,7 +37,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     }
 
     @Override
-    public List<User> findAll() throws SQLException {
+    public ArrayList<User> findAll() throws SQLException {
         String findAllStatment = "SELECT " + " * " +
                 " FROM " + this.table;
         System.out.println(findAllStatment);
@@ -53,7 +53,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     }
 
     @Override
-    public List<User> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+    public ArrayList<User> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         return null;
     }
 
@@ -64,7 +64,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     }
 
     @Override
-    public User update(User domainObject) {
+    public User update(AbstractDomainObject domainObject) {
         return null;
     }
 

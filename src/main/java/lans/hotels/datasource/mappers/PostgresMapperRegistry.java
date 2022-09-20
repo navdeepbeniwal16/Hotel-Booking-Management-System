@@ -1,7 +1,6 @@
 package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.exceptions.MapperNotFoundException;
-import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.datasource.facade.IMapperRegistry;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.user_types.Customer;
@@ -13,10 +12,10 @@ import lans.hotels.domain.user_types.User;
 
 import java.sql.Connection;
 import java.util.HashMap;
-import java.util.Map;
 
-public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
-    Map<String, AbstractPostgresDataMapper> mappers;
+public class PostgresMapperRegistry implements IMapperRegistry {
+    // implements IDataMapper<Integer, >
+    HashMap<String, AbstractPostgresDataMapper<? extends AbstractDomainObject>> mappers;
 
     public static PostgresMapperRegistry newInstance(Connection connection, IDataSource dataSource) {
         PostgresMapperRegistry registry = new PostgresMapperRegistry(new HashMap<>());
@@ -28,18 +27,17 @@ public class PostgresMapperRegistry implements IMapperRegistry<Integer> {
         return registry;
     }
 
-    private PostgresMapperRegistry(Map<String, AbstractPostgresDataMapper> mappers) {
+    private PostgresMapperRegistry(HashMap<String, AbstractPostgresDataMapper<? extends AbstractDomainObject>> mappers) {
         this.mappers = mappers;
     }
 
-    @Override
-    public AbstractPostgresDataMapper getMapper(Class<? extends AbstractDomainObject> aClass) throws MapperNotFoundException {
-        AbstractPostgresDataMapper mapper = mappers.get(aClass.getName());
+    public AbstractPostgresDataMapper getMapper(Class aClass) throws MapperNotFoundException {
+        AbstractPostgresDataMapper mapper = mappers.get(aClass.getName()); // TODO: #bug - possible loss of data from type checking
         if (mapper==null) throw new MapperNotFoundException("PostgresMapperRegistry: class not found - " + aClass.getName());
         return mapper;
     }
 
-    private void addMapper(Class<?> aClass,AbstractPostgresDataMapper mapper) {
+    private <DomainObj extends AbstractDomainObject, T extends AbstractPostgresDataMapper<DomainObj>> void addMapper(Class<DomainObj> aClass, T mapper) {
         mappers.put(aClass.getName(), mapper);
     }
 }

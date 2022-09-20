@@ -1,6 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.user_types.Hotelier;
 
@@ -9,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
 
@@ -33,7 +33,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    public List<Hotelier> findAll() throws SQLException {
+    public ArrayList<Hotelier> findAll() throws SQLException {
         String findAllStatment = "SELECT " + " * " +
                 " FROM " + this.table;
         try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
@@ -47,7 +47,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    public List<Hotelier> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+    public ArrayList<Hotelier> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         return null;
     }
 
@@ -58,7 +58,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    public Hotelier update(Hotelier domainObject) {
+    public Hotelier update(AbstractDomainObject domainObject) {
         return null;
     }
 

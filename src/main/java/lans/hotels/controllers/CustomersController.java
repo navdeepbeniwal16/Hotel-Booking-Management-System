@@ -40,7 +40,7 @@ public class CustomersController extends FrontCommand {
                     } else {
                         ArrayList<Customer> customers;
                         try {
-                            customers = (ArrayList<Customer>) dataSource.findAll(Customer.class);
+                            customers = dataSource.findAll(Customer.class);
                         } catch (Exception e) {
                             System.err.println("GET /api/customers: " + Arrays.toString(commandPath));
                             System.err.println("GET /api/customers: " + e.getMessage());

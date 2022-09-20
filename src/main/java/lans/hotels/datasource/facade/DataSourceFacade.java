@@ -5,20 +5,19 @@ import lans.hotels.datasource.exceptions.IdentityMapException;
 import lans.hotels.datasource.exceptions.MapperNotFoundException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.identity_maps.AbstractIdentityMapRegistry;
+import lans.hotels.datasource.mappers.AbstractPostgresDataMapper;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-public abstract class DataSourceFacade implements IDataSource<Integer> {
+public abstract class DataSourceFacade implements IDataSource {
     Connection connection;
     IUnitOfWork uow;
-    IMapperRegistry<Integer> dataMapperRegistry;
-    AbstractIdentityMapRegistry<Integer> identityMapRegistry;
+    IMapperRegistry dataMapperRegistry;
+    AbstractIdentityMapRegistry identityMapRegistry;
 
     protected DataSourceFacade(Connection connection) {
         this.connection = connection;
@@ -32,22 +31,22 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
         this.dataMapperRegistry = mappers;
     }
 
-    protected void initIdentityMaps(AbstractIdentityMapRegistry<Integer> identityMaps) {
+    protected void initIdentityMaps(AbstractIdentityMapRegistry identityMaps) {
         this.identityMapRegistry = identityMaps;
     }
 
-    public <T extends AbstractDomainObject> T find(Class<T> aClass, Integer id) {
+    public <DomainObject extends AbstractDomainObject> DomainObject find(Class<DomainObject> aClass, Integer id) {
         IIdentityMap classCache = identityMapRegistry.get(aClass);
-        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper;
+        IDataMapper<AbstractDomainObject> mapper;
         try {
-            mapper = dataMapperRegistry.getMapper(aClass);
+            mapper = dataMapperRegistry.getMapper((Class<AbstractDomainObject>) aClass); // TODO: #bug - possible unchecked caste
         } catch (MapperNotFoundException e) {
             System.err.println(e);
             return null;
         }
-        T domainObject = (T) classCache.getById(id);
+        DomainObject domainObject = (DomainObject) classCache.getById(id); // TODO: #bug - possible unchecked caste
         if (domainObject == null) {
-            domainObject = (T) mapper.getById(id);
+            domainObject = (DomainObject) mapper.getById(id); // TODO: #bug - possible unchecked caste
             if (domainObject != null) {
                 // TODO: handle this exception more gracefully
                 try { classCache.add(domainObject); } catch (IdentityMapException e) {}
@@ -56,27 +55,25 @@ public abstract class DataSourceFacade implements IDataSource<Integer> {
         return domainObject;
     }
 
-    public <T extends AbstractDomainObject> List<T> findAll(Class<T> aClass) throws Exception {
+    public <DomainObject extends AbstractDomainObject> ArrayList<DomainObject> findAll(Class<DomainObject> aClass) throws Exception {
+        AbstractPostgresDataMapper<DomainObject> mapper;
         try {
-            IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
+            mapper = dataMapperRegistry.getMapper(aClass);
             if (mapper==null) {
                 System.err.println("Null mapper for class: " + aClass.getName());
             } else {
-                System.err.println("DataSourceFacade.findAll(): getting objects for class" + aClass.getName());
-                List<T> domainObjects = (List<T>) mapper.findAll();
-                return domainObjects;
+                System.out.println("DataSourceFacade.findAll(): getting objects for class" + aClass.getName());
+                return mapper.findAll();
             }
         } catch (Exception e) {
-            System.err.println("DataSourceFacade.findAll(): " + e);
-        } finally {
-            return new ArrayList<>();
+            System.err.println("ERROR DataSourceFacade.findAll(): " + e);
         }
+        return null;
     }
 
-    public <T extends AbstractDomainObject> List<T> findBySearchCriteria(Class<T> aClass, AbstractSearchCriteria criteria) throws Exception {
-        IDataMapper<Integer, AbstractDomainObject<Integer>> mapper = dataMapperRegistry.getMapper(aClass);
-        List<T> domainObjects = (List<T>) mapper.findBySearchCriteria(criteria);
-        return domainObjects;
+    public <DomainObject extends AbstractDomainObject> ArrayList<DomainObject> findBySearchCriteria(Class<DomainObject> aClass, AbstractSearchCriteria criteria) throws Exception {
+        AbstractPostgresDataMapper<? extends  AbstractDomainObject> mapper = dataMapperRegistry.getMapper(aClass); //TODO: #bug unchecked type caste
+        return mapper.findBySearchCriteria(criteria);
     }
 
     public void load(AbstractDomainObject domainObject) {

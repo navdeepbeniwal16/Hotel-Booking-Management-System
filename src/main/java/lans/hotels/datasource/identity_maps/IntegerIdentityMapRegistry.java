@@ -9,10 +9,9 @@ import lans.hotels.domain.room.RoomSpecification;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-public class IntegerIdentityMapRegistry extends AbstractIdentityMapRegistry<Integer> {
-    public static IntegerIdentityMapRegistry newInstance(IDataSource<Integer> dataSource) {
+public class IntegerIdentityMapRegistry extends AbstractIdentityMapRegistry {
+    public static IntegerIdentityMapRegistry newInstance(IDataSource dataSource) {
         IntegerIdentityMapRegistry newRegistry = new IntegerIdentityMapRegistry(new HashMap<>(), dataSource);
         newRegistry.add(new HotelMap(new HashMap<>()), Hotel.class);
         newRegistry.add(new RoomMap(new HashMap<>()), Room.class);
@@ -20,14 +19,14 @@ public class IntegerIdentityMapRegistry extends AbstractIdentityMapRegistry<Inte
         return newRegistry;
     }
 
-    private IntegerIdentityMapRegistry(Map<String,
-            IIdentityMap<Integer, ? extends AbstractDomainObject>> identityMaps,
-                                       IDataSource<Integer> dataSource) {
+    private IntegerIdentityMapRegistry(HashMap<String,
+            IIdentityMap<? extends AbstractDomainObject>> identityMaps,
+                                       IDataSource dataSource) {
         super(identityMaps, dataSource);
     }
 
     @Override
-    public ArrayList<IIdentityMap<Integer, ? extends AbstractDomainObject>> getAll() {
+    public ArrayList<IIdentityMap<? extends AbstractDomainObject>> getAll() {
         return new ArrayList<>(identityMaps.values());
     }
 }
