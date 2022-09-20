@@ -19,14 +19,17 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
 
     public HotelDataMapper(Connection connection, IDataSource dataSource) {
         super(connection, "hotel", dataSource);
+        idPrefix = "h.";
     }
     @Override
     protected String findStatement() {
-        return "SELECT " + " * " +
+        String statement = "SELECT " + " * " +
                 " FROM " + this.table + " h " +
                 " JOIN phone p ON h.phone = p.id " +
                 " JOIN address a on h.address = a.id " +
                 " WHERE h.id = ? ";
+        System.out.println("HotelDataMapper.findStatement(): " + statement);
+        return statement;
     }
 
     @Override
@@ -44,11 +47,12 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
         String findAllStatment = "SELECT " + " * " +
                 " FROM " + this.table + " h " +
                 " JOIN phone p ON h.phone = p.id " +
-                " JOIN address a on h.address = a.id ";
+                " JOIN address a on h.address = a.id;";
         try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
             ResultSet resultSet = statement.executeQuery();
             Hotel aHotel = load(resultSet);
             while (aHotel != null) {
+                System.out.println(aHotel);
                 aHotel = load(resultSet);
             }
         } catch (Exception e) {
