@@ -59,7 +59,9 @@ public class CustomersController extends FrontCommand {
                         for (Customer customer: customers) {
 
                             aCustomer = new JSONObject();
-                            aCustomer.put("id", customer.getId());
+                            aCustomer.put("customer_id", customer.getId());
+                            aCustomer.put("name",customer.getName());
+                            aCustomer.put("email",customer.getEmail());
                             aCustomer.put("address", customer.getAddress().toString());
                             aCustomer.put("contact", customer.getContact());
                             aCustomer.put("age", customer.getAge());

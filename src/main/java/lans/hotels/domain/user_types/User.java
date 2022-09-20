@@ -6,31 +6,17 @@ import lans.hotels.domain.ReferenceObject;
 
 public class User extends ReferenceObject {
 
-    int id;
     String name;
     String email;
     String password;
     int role;
 
-    public User(IDataSource dataSource) throws UoWException {
+    public User(IDataSource dataSource){
         super(dataSource);
-        initMaps();
-        markNew();
     }
 
-    public User(Integer id, IDataSource dataSource) throws UoWException {
+    public User(Integer id, IDataSource dataSource){
         super(id, dataSource);
-        initMaps();
-        markClean();
-    }
-
-    public User(Integer id, IDataSource dataSource, String name, String email, String password, Integer role) {
-        super(id, dataSource);
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        initMaps();
     }
 
     public int getID()
@@ -40,7 +26,7 @@ public class User extends ReferenceObject {
 
     public String getName()
     {
-        return this.email;
+        return this.name;
     }
 
     public void setName(String name) throws UoWException {

@@ -2,28 +2,19 @@ package lans.hotels.domain.user_types;
 
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.ReferenceObject;
 
-public class Hotelier extends ReferenceObject {
+public class Hotelier extends User {
 
     int id;
     int userID;
     boolean isActive;
 
-    public Hotelier(IDataSource dataSource) throws UoWException {
-        super(dataSource);
-        initMaps();
-        markNew();
-    }
-
-    public Hotelier(Integer id, IDataSource dataSource) throws UoWException {
-        super(id, dataSource);
-        initMaps();
-        markClean();
-    }
-
-    public Hotelier(Integer id, IDataSource dataSource, int userID, boolean isActive) {
-        super(id, dataSource);
+    public Hotelier(Integer id, IDataSource dataSource, String name, String email, String password, Integer role, int userID, boolean isActive) {
+        super(id,dataSource);
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
         this.isActive = isActive;
         this.userID = userID;
         initMaps();

@@ -246,3 +246,5 @@ CREATE TABLE ROOM_BOOKING(
 );
 
 ALTER TABLE room_booking ADD no_of_guests INT;
+ALTER TABLE hotel ADD is_active BOOLEAN;
+SELECT * FROM HOTEL;
