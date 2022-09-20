@@ -24,7 +24,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     protected String findStatement() {
         String statement =
                 "SELECT h.id,hotel_group_id,h.name as hotel_name, " +
-                        "email,contact,h.city as hotel_city,pin_code, " +
+                        "email,contact,h.city as hotel_city,pin_code,is_active, " +
                         "a.id as address_id,line_1,line_2,a.city as address_city, " +
                         "postcode,d.id as district_id, d.name as district_name " +
                         "FROM hotel h " +
@@ -106,7 +106,8 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
         Hotel hotel = new Hotel(id,dataSource,
                 rs.getInt("hotel_group_id"),rs.getString("hotel_name"),
                 rs.getString("email"),address,rs.getString("contact"),
-                rs.getString("hotel_city"),rs.getInt("pin_code"));
+                rs.getString("hotel_city"),rs.getInt("pin_code"),
+                rs.getBoolean("is_active"));
         return hotel;
     }
 

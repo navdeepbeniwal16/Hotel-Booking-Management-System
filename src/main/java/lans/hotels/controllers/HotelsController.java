@@ -122,6 +122,8 @@ public class HotelsController extends FrontCommand {
                             aHotel.put("contact", hotel.getContact());
                             aHotel.put("city", hotel.getCity());
                             aHotel.put("pin_code", hotel.getPinCode());
+                            aHotel.put("district", hotel.getAddress().getDistrict().toString());
+                            aHotel.put("is_active", hotel.getIsActive());
                             hotelArray.put(aHotel);
                         }
 
@@ -162,6 +164,7 @@ public class HotelsController extends FrontCommand {
                             aHotel.put("city", hotel.getCity());
                             aHotel.put("pin_code", hotel.getPinCode());
                             aHotel.put("district", hotel.getAddress().getDistrict().toString());
+                            aHotel.put("is_active", hotel.getIsActive());
                             hotelArray.put(aHotel);
                         }
 

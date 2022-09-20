@@ -19,6 +19,7 @@ public class Hotel extends ReferenceObject {
     String contact;
     String city;
     int pin_code;
+    boolean is_active;
 
     HashMap<Integer, Room> rooms;
     HashMap<Integer, RoomSpecification> roomSpecifications;
@@ -36,8 +37,8 @@ public class Hotel extends ReferenceObject {
     }
 
     public Hotel(Integer id, IDataSource dataSource,
-            Integer hotel_group_id, String name, String email,
-            Address address, String contact, String city, Integer pin_code) {
+            Integer hotel_group_id, String name, String email,Address address,
+                 String contact, String city, Integer pin_code, boolean is_active) {
         super(id, dataSource);
         this.hotel_group_id = hotel_group_id;
         this.name = name;
@@ -46,6 +47,7 @@ public class Hotel extends ReferenceObject {
         this.contact = contact;
         this.city = city;
         this.pin_code = pin_code;
+        this.is_active = is_active;
         initMaps();
     }
 
@@ -78,6 +80,9 @@ public class Hotel extends ReferenceObject {
     public int getPinCode() {
         return this.pin_code;
     }
+    public boolean getIsActive() {
+        return this.is_active;
+    }
 
     public void setName(String name) throws UoWException {
         this.name = name;
@@ -101,6 +106,11 @@ public class Hotel extends ReferenceObject {
     }
     public void setPincode(Integer pin_code) throws UoWException {
         this.pin_code = pin_code;
+        markDirty();
+    }
+
+    public void setPincode(Boolean is_active) throws UoWException {
+        this.is_active = is_active;
         markDirty();
     }
 
