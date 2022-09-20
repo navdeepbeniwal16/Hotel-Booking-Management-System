@@ -16,14 +16,15 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
 
     public RoomDataMapper(Connection connection, IDataSource dataSource) {
         super(connection, "room", dataSource);
+        idPrefix = "r.";
     }
 
     @Override
     protected String findStatement() {
-        return "SELECT " + " r.id AS id " + COLUMNS +
+        return "SELECT " + " * " + COLUMNS +
                 " FROM " + this.table + " r " +
-                " JOIN room_spec rs ON r.room_spec_id = room_spec.id" +
-                " WHERE id = ? ";
+                " JOIN room_spec rs ON r.room_spec_id = rs.id" +
+                " WHERE r.id = ? ";
     }
 
     @Override
@@ -82,14 +83,14 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     @Override
     protected Room doLoad(Integer id, ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) return null;
-        Hotel hotel = (Hotel) dataSource.find(Hotel.class, resultSet.getInt("hotel_id"));
-        RoomSpecification specification = (RoomSpecification) dataSource.find(RoomSpecification.class, resultSet.getInt("room_spec_id"));
+        Hotel hotel = dataSource.find(Hotel.class, resultSet.getInt("r.hotel_id"));
+        RoomSpecification specification = dataSource.find(RoomSpecification.class, resultSet.getInt("rs.id"));
         RoomBuilder roomBuilder = new RoomBuilder(hotel, specification, dataSource);
         return roomBuilder
                 .id(id)
-                .number(resultSet.getInt("number"))
-                .floor(resultSet.getInt("floor"))
-                .active(resultSet.getBoolean("is_active"))
+                .number(resultSet.getInt("r.number"))
+                .floor(resultSet.getInt("r.floor"))
+                .active(resultSet.getBoolean("r.is_active"))
                 .getResult();
     }
 
