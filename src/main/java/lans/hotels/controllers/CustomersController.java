@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -90,9 +91,9 @@ public class CustomersController extends FrontCommand {
         }
     }
 
-    private void getCustomer(Integer id) throws IOException {
+    private void getCustomer(Integer id) throws IOException, SQLException {
 
-        Customer customer = (Customer) dataSource.find(Customer.class, id);
+        Customer customer = dataSource.find(Customer.class, id);
 
         if (customer == null) {
             System.out.println("404 NOT FOUND");

@@ -8,9 +8,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public interface IFrontCommand {
-    void process() throws ServletException, IOException, CommandException;
+    void process() throws ServletException, IOException, CommandException, SQLException;
     void init(ServletContext context,
               HttpServletRequest request,
               HttpServletResponse response,

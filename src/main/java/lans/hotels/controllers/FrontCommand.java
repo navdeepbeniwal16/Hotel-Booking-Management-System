@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public abstract class FrontCommand implements IFrontCommand  {
     protected IDataSource dataSource;
@@ -26,12 +27,12 @@ public abstract class FrontCommand implements IFrontCommand  {
         this.dataSource = dataSource;
     }
 
-    public void process() throws ServletException, IOException, CommandException {
+    public void process() throws ServletException, IOException, CommandException, SQLException {
         if (context == null || request == null || response == null || dataSource == null) {
             throw new CommandException(this.getClass() + " must be initialised by it can process a command.");
         }
         concreteProcess();
     }
 
-    abstract protected void concreteProcess() throws CommandException, IOException;
+    abstract protected void concreteProcess() throws CommandException, IOException, SQLException;
 }

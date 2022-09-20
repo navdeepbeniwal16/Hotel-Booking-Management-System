@@ -9,6 +9,7 @@ import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
 import lans.hotels.domain.AbstractDomainObject;
 
 import javax.servlet.http.HttpSession;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -120,6 +121,8 @@ public class ServletUoW implements IUnitOfWork {
                 mappers.getMapper(obj.getClass()).create(obj);
             } catch (MapperNotFoundException e) {
                 System.err.println(e);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         });
         dirtyObjects.forEach(obj -> {

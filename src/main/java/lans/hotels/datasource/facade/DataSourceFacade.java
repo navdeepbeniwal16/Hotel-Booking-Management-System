@@ -11,6 +11,7 @@ import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public abstract class DataSourceFacade implements IDataSource {
@@ -35,7 +36,7 @@ public abstract class DataSourceFacade implements IDataSource {
         this.identityMapRegistry = identityMaps;
     }
 
-    public <DomainObject extends AbstractDomainObject> DomainObject find(Class<DomainObject> aClass, Integer id) {
+    public <DomainObject extends AbstractDomainObject> DomainObject find(Class<DomainObject> aClass, Integer id) throws SQLException {
         IIdentityMap classCache = identityMapRegistry.get(aClass);
         IDataMapper<AbstractDomainObject> mapper;
         try {

@@ -1,6 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
@@ -21,8 +22,8 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
     protected Map<Integer, DomainObject> loadedMap; // TODO: unfuck #bug
     abstract protected String findStatement();
     abstract protected String insertStatement();
-    protected abstract DomainObject doLoad(Integer id, ResultSet resultSet) throws SQLException;
-    public abstract DomainObject doCreate(DomainObject domainObject);
+    protected abstract DomainObject doLoad(Integer id, ResultSet resultSet) throws SQLException, UoWException;
+    public abstract DomainObject doCreate(DomainObject domainObject) throws SQLException;
     public abstract ArrayList<DomainObject> findAll() throws SQLException;
 
     protected String idPrefix;
@@ -35,13 +36,13 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         idPrefix = "";
     }
 
-    public DomainObject getById(Integer id) {
+    public DomainObject getById(Integer id) throws SQLException {
         try {
             return getFromDb(id);
         } catch (SQLException e) {
-            System.err.println("AbstractPostgresDataMapper.getById(): " + e.getMessage());
+            System.err.println("AbstractPostgresDataMapper | +" + this.getClass().getName() + ".getById(): " + e.getMessage());
             // TODO: do not return null!
-            return null;
+            throw e;
         }
     }
 
@@ -50,9 +51,11 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
             findStatement.setInt(1, id);
             ResultSet resultSet = findStatement.executeQuery();
             return load(resultSet);
+        } catch (UoWException e) {
+            throw new RuntimeException(e);
         }
     }
-    protected DomainObject load(ResultSet resultSet) throws SQLException {
+    protected DomainObject load(ResultSet resultSet) throws SQLException, UoWException {
         if (!resultSet.next()) return null; // TODO: bug? refactor - see getAll()
 
         // TODO: abstract out type to generic?
@@ -66,7 +69,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         return result;
     }
 
-    public void create(AbstractDomainObject domainObject) {
+    public void create(AbstractDomainObject domainObject) throws SQLException {
         DomainObject newDomainObject = doCreate((DomainObject) domainObject);
         if (newDomainObject != null) loadedMap.put(newDomainObject.getId(), newDomainObject);
     }

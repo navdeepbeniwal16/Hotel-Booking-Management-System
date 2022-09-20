@@ -1,5 +1,6 @@
 package lans.hotels.datasource.mappers;
 
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
@@ -46,6 +47,8 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
                 currentHotelier = load(resultSet);
             }
             return new ArrayList<>(loadedMap.values());
+        } catch (UoWException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -8,6 +8,8 @@ public class HotelsSearchCriteria extends AbstractSearchCriteria {
     Date startDate;
     Date endDate;
 
+    Integer hotelId;
+
     public HotelsSearchCriteria() {
     }
 
@@ -42,4 +44,8 @@ public class HotelsSearchCriteria extends AbstractSearchCriteria {
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
+
+    public Integer getHotelId() { return this.hotelId; }
+    public void setHotelId(Integer id) { this.hotelId = id; }
+
 }

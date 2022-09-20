@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -92,7 +93,7 @@ public class HoteliersController extends FrontCommand{
     }
 
 
-    public void getHotelier(Integer id) throws IOException {
+    public void getHotelier(Integer id) throws IOException, SQLException {
         Hotelier hotelier = (Hotelier) dataSource.find(Hotelier.class, id);
 
         if (hotelier == null) {

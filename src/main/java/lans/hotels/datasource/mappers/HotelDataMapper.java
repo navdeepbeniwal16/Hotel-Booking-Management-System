@@ -68,6 +68,11 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
         HotelsSearchCriteria hotelsSearchCriteria = (HotelsSearchCriteria) criteria;
         String findAllStatement = findStatement();
 
+        if (hotelsSearchCriteria.getHotelId() != null){
+            findAllStatement += "WHERE h.id = '" + hotelsSearchCriteria.getHotelId() + "'";
+            System.out.println("Location passed to HotelDataMapper : " + hotelsSearchCriteria.getLocation());
+        }
+
         if (hotelsSearchCriteria.getLocation() != null){
             findAllStatement += "WHERE h.city = '" + hotelsSearchCriteria.getLocation() + "'";
             System.out.println("Location passed to HotelDataMapper : " + hotelsSearchCriteria.getLocation());

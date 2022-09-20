@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,7 +25,7 @@ import java.util.stream.Stream;
 
 public class HotelsController extends FrontCommand {
     @Override
-    protected void concreteProcess() throws IOException {
+    protected void concreteProcess() throws IOException, SQLException {
         switch(request.getMethod()) {
             case HttpMethod.GET:
                 String[] commandPath = request.getPathInfo().split("/");
@@ -86,6 +87,11 @@ public class HotelsController extends FrontCommand {
                         if(searchQueryBody.has("hotelGroupId")) {
                            Integer hotelGroupId = searchQueryBody.getInt("hotelGroupId");
                            if(hotelGroupId != null) criteria.setHotelGroupId(hotelGroupId);
+                        }
+
+                        if(searchQueryBody.has("id")) {
+                            Integer hotelId = searchQueryBody.getInt("id");
+                            if(hotelId != null) criteria.setHotelId(hotelId);
                         }
 
                         ArrayList<Hotel> hotels;
@@ -181,9 +187,9 @@ public class HotelsController extends FrontCommand {
         }
     }
 
-    private void getHotel(Integer id) throws IOException {
+    private void getHotel(Integer id) throws IOException, SQLException {
 
-        Hotel hotel = (Hotel) dataSource.find(Hotel.class, id);
+        Hotel hotel = dataSource.find(Hotel.class, id);
 
         if (hotel == null) {
             System.out.println("404 NOT FOUND");

@@ -9,6 +9,7 @@ public class Room extends ReferenceObject {
     private int roomNumber;
     private int roomFloor;
     private boolean isActive;
+    private Integer hotelId;
     private RoomSpecification specification;
 
     protected Room(Hotel hotel,
@@ -47,6 +48,7 @@ public class Room extends ReferenceObject {
     public void setSpecification(RoomSpecification newSpec) {
         this.specification = newSpec;
     }
+
 
     @Override
     public String toString() {
