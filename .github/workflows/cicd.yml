@@ -3,8 +3,8 @@ name: Maven CI/CD
 on:
   push:
     branches: [ main, staging ]
-    pull_request:
-      branches: [ main, staging ]
+  pull_request:
+    branches: [ main, staging ]
 
 jobs:
   build_and_test:
@@ -25,5 +25,5 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build project with Maven
         run: mvn -B package --file pom.xml
-      - name: Test project with Maven
-        run: mvn test -f pom.xml
+#      - name: Test project with Maven
+#        run: mvn test -f pom.xml
