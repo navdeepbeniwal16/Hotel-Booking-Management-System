@@ -45,7 +45,9 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
 
     @Override
     public ArrayList<Room> findAll() throws SQLException {
-        String findAllStatement = "SELECT " + " * " + " FROM " + this.table;
+        String findAllStatement = "SELECT " + " * " + " FROM " + this.table +
+                " JOIN room_spec rs ON room_spec_id=rs.id " +
+                " JOIN room_type rt ON rs.room_type=rt.id" ;
         System.out.println("RoomDataMapper.findAll(): " + findAllStatement);
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();

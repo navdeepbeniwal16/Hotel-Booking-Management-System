@@ -51,21 +51,11 @@ VALUES
 ;
 
 INSERT INTO
-    bed_type(name)
-VALUES
-    ('Single'), ('Double'), ('Queen'), ('King');
-
-INSERT INTO
-    room_type(name)
-VALUES
-    ('Standard'), ('Deluxe'), ('Premium'), ('Penthouse');
-
-INSERT INTO
     room_spec(hotel_id, type, max_occupancy, bed_type, description, room_price)
 VALUES
-    (1, 1, 2, 1, 'Cozy single room for one or two people', 100),
-    (1, 2, 2, 3, 'Extra spacious room to treat yourself', 200),
-    (1, 3, 3, 4, 'The perfect room for business traveller', 300)
+    (1, 'Standard', 2, 'Single', 'Cozy single room for one or two people', 100),
+    (1, 'Deluxe', 2, 'Double', 'Extra spacious room to treat yourself', 200),
+    (1, 'Premium', 3, 'Queen', 'The perfect room for business traveller', 300)
 ;
 
 INSERT INTO
