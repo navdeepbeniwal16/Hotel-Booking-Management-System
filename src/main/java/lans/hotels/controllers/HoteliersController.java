@@ -88,7 +88,6 @@ public class HoteliersController extends FrontCommand{
                 return;
             case HttpMethod.POST:
             {
-                System.out.println("Enter Hotelier POST");
                 String[] commandPath2 = request.getPathInfo().split("/");
 
                 if (commandPath2.length == 2) {

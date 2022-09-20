@@ -42,6 +42,9 @@ public class Address {
     public String getCity () {
         return this.city;
     }
+    public Integer getPostCode () {
+        return this.postcode;
+    }
 
 
     @Override

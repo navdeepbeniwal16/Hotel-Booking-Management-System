@@ -111,26 +111,25 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) throws SQLException {
+    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) throws SQLException, UoWException {
         HotelGroup hg = (HotelGroup) domainObject;
         String createStatement = "WITH insert_address AS ( " +
-                "INSERT INTO address (line_1,line_2,district,city,postcode)" +
+                "INSERT INTO address (line_1,line_2,district,city,postcode) " +
                 "VALUES ( " + "'" + hg.getAddress().getLine1() +"'," +
-                "'" + hg.getAddress().getLine2() + "'," + "(SELECT id from district WHERE name = '" +
-                hg.getAddress().getDistrict().toString()+"'," + "'" + hg.getAddress().getCity() +"')" +
-                "RETURNING id )" +
-                "INSERT INTO hotel_group (name, address,phone) VALUES ('" +hg.getName() + "'," + "'" +
-                "',(SELECT id FROM insert_address),'" + hg.getPhone() +"')";
+                "'" + hg.getAddress().getLine2() + "'," + "( SELECT id from district WHERE name = '" +
+                hg.getAddress().getDistrict().toString()+"')," + "'" + hg.getAddress().getCity() + "" +"'," +
+                hg.getAddress().getPostCode() +")" +
+                " RETURNING id )" +
+                "INSERT INTO hotel_group (name, address,phone) VALUES ('" +hg.getName() +
+                "',(SELECT id FROM insert_address),'" + hg.getPhone() +"') returning * ";
 
         System.out.println(createStatement);
         try (PreparedStatement statement = connection.prepareStatement(createStatement)) {
             ResultSet resultSet = statement.executeQuery();
 
             if (!resultSet.next()) return null;
-            System.out.println(resultSet.getInt("user_id"));
-            Hotelier currentHotelier = new Hotelier(resultSet.getInt("user_id"),
-                    dataSource,resultSet.getInt("id"), resultSet.getBoolean("is_active"));
-            return (DomainObject) currentHotelier;
+            HotelGroup currentHg = new HotelGroup(resultSet.getInt("id"), dataSource,resultSet.getString("phone"));
+            return (DomainObject) currentHg;
 
         }
     }

@@ -23,6 +23,14 @@ public class HotelGroup extends ReferenceObject{
         initMaps();
         markClean();
     }
+
+    public HotelGroup(Integer id, IDataSource dataSource,String phone) throws UoWException {
+        super(id, dataSource);
+        this.phone = phone;
+        initMaps();
+
+    }
+
     public HotelGroup(Integer id, IDataSource dataSource,
                  String name,Address address, String phone) throws UoWException {
         super(id, dataSource);
@@ -32,7 +40,15 @@ public class HotelGroup extends ReferenceObject{
         initMaps();
     }
 
-    public int getID() {
+    public HotelGroup(IDataSource dataSource, String name, Address address, String phone) {
+        super(dataSource);
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+        initMaps();
+    }
+
+    public Integer getId() {
         return id;
     }
     public String getName() {
