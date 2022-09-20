@@ -1,13 +1,12 @@
 import React, { Dispatch } from 'react';
 
-type Room = {
-  id: Number;
-  hotelId: Number;
+export type Room = {
+  room_id: Number;
+  hotel_id: Number;
   type: String;
   occupancy: Number;
-  bed?: String;
-  view?: String;
-  price?: String;
+  bed_type?: String;
+  price?: Number;
 };
 
 export type RoomState = {
@@ -16,13 +15,12 @@ export type RoomState = {
 };
 
 export const defaultRoom: Room = {
-  id: -1,
-  hotelId: -1,
-  type: '',
+  room_id: -1,
+  hotel_id: -1,
+  type: 'default_type',
   occupancy: -1,
-  bed: '',
-  view: '',
-  price: '',
+  bed_type: 'default_bed',
+  price: 0,
 };
 
 export const defaultRoomState: RoomState = {

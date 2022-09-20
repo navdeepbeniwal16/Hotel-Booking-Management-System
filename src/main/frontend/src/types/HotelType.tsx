@@ -4,7 +4,7 @@ type Hotel = {
   address: String;
   phone: String;
   name: String;
-  id: Number;
+  hotel_id: Number;
   email: String;
 };
 
@@ -17,7 +17,7 @@ export const defaultHotel: Hotel = {
   address: '',
   phone: '',
   name: '',
-  id: -1,
+  hotel_id: -1,
   email: '',
 };
 

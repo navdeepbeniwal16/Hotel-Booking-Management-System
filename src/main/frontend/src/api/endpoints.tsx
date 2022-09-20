@@ -1,24 +1,26 @@
 import Hotel from '../types/HotelType';
 import Room from '../types/RoomType';
 
-const getHotelRooms = async (hotelId: Number): Promise<Room[]> => {
+const getHotelRooms = async (hotel_id: Number): Promise<Room[]> => {
   const res = await fetch('/api/hotels', {
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       search: {
-        hotelId,
+        hotel_id,
       },
     }),
   });
   const data = await res.json();
   const rooms: Array<Room> = data.result;
+  console.log('getHotelRooms:', rooms);
   return rooms;
 };
 
 const searchHotels = async (
-  location: String,
+  hotel_id: Number = -1,
+  location: String = '',
   startDate: Date = new Date(),
   endDate: Date = new Date()
 ): Promise<Hotel[]> => {
@@ -28,6 +30,7 @@ const searchHotels = async (
     },
     body: JSON.stringify({
       search: {
+        hotel_id,
         location,
         startDate: startDate.toLocaleDateString('en-GB'),
         endDate: endDate.toLocaleDateString('en-GB'),

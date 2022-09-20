@@ -23,8 +23,11 @@ const HotelsList = ({ hotels }: HotelListProps) => {
         return (
           <Row xs={1} md={1} className='g-4 mb-4'>
             <LinkContainer
-              to={`/hotel/${hotel.id}`}
-              onClick={() => context.hotel.setHotel(hotel)}
+              to={`/hotel/${hotel.hotel_id}`}
+              onClick={() => {
+                console.log('updating hotel context:', hotel);
+                context.hotel.setHotel(hotel);
+              }}
             >
               <Col>
                 <Card>
