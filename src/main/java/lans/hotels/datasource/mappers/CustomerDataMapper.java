@@ -55,6 +55,8 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
             return new ArrayList<>(loadedMap.values());
         } catch (UoWException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

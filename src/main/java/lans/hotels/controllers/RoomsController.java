@@ -91,6 +91,7 @@ public class RoomsController extends FrontCommand {
                     }
                 }
             }
+
             JSONArray roomArray = new JSONArray();
             PrintWriter out = response.getWriter();
             response.setStatus(200);

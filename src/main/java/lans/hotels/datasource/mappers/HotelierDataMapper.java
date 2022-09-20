@@ -49,6 +49,8 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
             return new ArrayList<>(loadedMap.values());
         } catch (UoWException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

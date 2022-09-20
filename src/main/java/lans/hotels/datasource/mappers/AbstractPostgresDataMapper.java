@@ -22,7 +22,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
     protected Map<Integer, DomainObject> loadedMap; // TODO: unfuck #bug
     abstract protected String findStatement();
     abstract protected String insertStatement();
-    protected abstract DomainObject doLoad(Integer id, ResultSet resultSet) throws SQLException, UoWException;
+    protected abstract DomainObject doLoad(Integer id, ResultSet resultSet) throws Exception;
     public abstract DomainObject doCreate(DomainObject domainObject) throws SQLException;
     public abstract ArrayList<DomainObject> findAll() throws SQLException;
 
@@ -53,9 +53,11 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
             return load(resultSet);
         } catch (UoWException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
-    protected DomainObject load(ResultSet resultSet) throws SQLException, UoWException {
+    protected DomainObject load(ResultSet resultSet) throws Exception {
         if (!resultSet.next()) return null; // TODO: bug? refactor - see getAll()
 
         // TODO: abstract out type to generic?

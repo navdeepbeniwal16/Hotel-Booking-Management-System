@@ -61,6 +61,8 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
             throw e;
         } catch (UoWException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -87,22 +89,43 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     }
 
     @Override
-    protected Room doLoad(Integer id, ResultSet resultSet) throws SQLException, UoWException {
+    protected Room doLoad(Integer id, ResultSet resultSet) throws Exception {
         System.out.println("RoomDataMapper.doLoad():");
         for (int i = 1; i < resultSet.getMetaData().getColumnCount(); i++) {
             System.out.println("\t" + i + ". " + resultSet.getMetaData().getColumnName(i));
         }
         if (!resultSet.next()) return null;
-        Hotel hotel = dataSource.find(Hotel.class, resultSet.getInt("hotel_id"));
+        ArrayList<Hotel> hotels = dataSource.findAll(Hotel.class);
 
-        RoomSpecification specification = new RoomSpecification(dataSource);
-        RoomBuilder roomBuilder = new RoomBuilder(hotel, specification, dataSource);
-        return roomBuilder
-                .id(id)
-                .number(resultSet.getInt("r.number"))
-                .floor(resultSet.getInt("r.floor"))
-                .active(resultSet.getBoolean("r.is_active"))
-                .getResult();
+        Hotel hotel = null;
+        for(Hotel h: hotels) {
+            if (h.getId()==resultSet.getInt("hotel_id")) {
+                hotel = h;
+            }
+        }
+        if (hotel == null) {
+            throw new Exception("ERROR - no hotel with id = " + resultSet.getInt("hotel_id"));
+        }
+
+        RoomSpecification specification = new RoomSpecification(
+                resultSet.getInt("room_spec_id"),
+                resultSet.getInt("hotel_id"),
+                resultSet.getInt("max_occupancy"),
+                resultSet.getString("bed_type"),
+                resultSet.getString("type"),
+                resultSet.getInt("room_price"),
+                dataSource
+        );
+
+        return new Room(
+                hotel,
+                specification,
+                resultSet.getInt("number"),
+                resultSet.getInt("floor"),
+                resultSet.getBoolean("is_active"),
+                id,
+                dataSource
+        );
     }
 
     @Override

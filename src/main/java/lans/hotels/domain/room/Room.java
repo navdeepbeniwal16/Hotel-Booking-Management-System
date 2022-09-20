@@ -20,13 +20,13 @@ public class Room extends ReferenceObject {
         this.specification = specification;
     }
 
-    protected Room(Hotel hotel,
-                   RoomSpecification specification,
-                   int roomNumber,
-                   int roomFloor,
-                   boolean isActive,
-                   Integer id,
-                   IDataSource dataSource) {
+    public Room(Hotel hotel,
+                RoomSpecification specification,
+                int roomNumber,
+                int roomFloor,
+                boolean isActive,
+                Integer id,
+                IDataSource dataSource) {
         super(id, dataSource);
         this.hotel = hotel;
         this.roomNumber = roomNumber;

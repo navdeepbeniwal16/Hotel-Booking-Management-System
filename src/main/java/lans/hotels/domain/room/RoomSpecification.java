@@ -16,8 +16,7 @@ public class RoomSpecification extends ReferenceObject {
     Integer occupancy;
 
     String description;
-    Double price;
-    ArrayList<String> features;
+    Integer price;
 
     public RoomSpecification(IDataSource dataSource) throws UoWException {
         super(dataSource);
@@ -29,40 +28,32 @@ public class RoomSpecification extends ReferenceObject {
         markClean();
         // TODO: #ghost
     }
-    private RoomSpecification(Integer id,
-                              Integer hotelId,
-                              Integer occupancy,
-                              String bedType,
-                              String roomType,
-                              String description,
-                              ArrayList<String> features,
-                              Double price,
-                              IDataSource dataSource) throws UoWException {
+    public RoomSpecification(Integer id,
+                             Integer hotelId,
+                             Integer occupancy,
+                             String bedType,
+                             String roomType,
+                             Integer price,
+                             IDataSource dataSource) throws UoWException {
         super(id, dataSource);
         this.hotelId = hotelId;
         this.roomType = roomType;
         this.bedType = bedType;
         this.occupancy = occupancy;
-        this.description = description;
         this.price = price;
-        this.features = features;
         markClean();
     }
 
     public String getDescription() { return description; }
     public Integer getOccupancy() { return occupancy; }
-    public ArrayList<String> getFeatures() { return features; }
     public String getRoomType() { return roomType; }
 
     public Integer getHotelId() {return hotelId;}
 
-    public Double getPrice() {return price;}
+    public Integer getPrice() {return price;}
 
     public String getBedType() {return bedType;}
 
 
     // TODO: #concurrency warning - this may cause concurrency issues
-    public void addFeature(String feature) {
-        if (!features.contains(feature)) features.add(feature);
-    }
 }
