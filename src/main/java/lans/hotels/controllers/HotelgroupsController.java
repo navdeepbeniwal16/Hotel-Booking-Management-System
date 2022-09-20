@@ -152,9 +152,9 @@ public class HotelgroupsController extends FrontCommand {
 
                     System.out.println("Parsed Hotel Group Object : " + hg);
 
-                    HotelGroup return_hg;
-                    try {
-                        return_hg = (HotelGroup) dataSource.insert(HotelGroup.class,hg);
+                    boolean success;
+                    try{
+                        success = dataSource.insert(HotelGroup.class,hg);
                     } catch (Exception e) {
                         System.err.println("POST /api/hotelgroups: " + Arrays.toString(commandPath2));
                         System.err.println("POST /api/hotelgroups: " + e.getMessage());
@@ -163,7 +163,6 @@ public class HotelgroupsController extends FrontCommand {
                         return;
                     }
 
-                    JSONArray hgArray = new JSONArray();
                     PrintWriter out = response.getWriter();
                     response.setStatus(200);
                     response.setContentType("application/json");
@@ -171,8 +170,10 @@ public class HotelgroupsController extends FrontCommand {
 
                     JSONObject aHG;
                     aHG = new JSONObject();
-                    aHG.put("hotel_group_id", return_hg.getId());
-                    aHG.put("phone", return_hg.getPhone());
+                    if(success)
+                        aHG.put("created", success);
+                    else
+                        aHG.put("created",success);
 
                     JSONObject hgJSON = new JSONObject();
                     hgJSON.put("result", aHG);

@@ -75,7 +75,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) throws Exception {
+    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) throws Exception {
         {
             Hotelier hotelier = (Hotelier) domainObject;
             String createStatement = "WITH insert_app_user AS ( " +
@@ -94,11 +94,9 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
             try (PreparedStatement statement = connection.prepareStatement(createStatement)) {
                 ResultSet resultSet = statement.executeQuery();
 
-                if (!resultSet.next()) return null;
-                System.out.println(resultSet.getInt("user_id"));
-                Hotelier currentHotelier = new Hotelier(resultSet.getInt("user_id"),
-                        dataSource,resultSet.getInt("id"), resultSet.getBoolean("is_active"));
-                return (DomainObject) currentHotelier;
+                if (resultSet.next())
+                    return true;
+                else return false;
 
             }
         }
