@@ -51,6 +51,21 @@ public class Hotel extends ReferenceObject {
         initMaps();
     }
 
+    public Hotel(IDataSource dataSource,
+                 Integer hotel_group_id, String name, String email,Address address,
+                 String contact, String city, Integer pin_code, boolean is_active) {
+        super(dataSource);
+        this.hotel_group_id = hotel_group_id;
+        this.name = name;
+        this.email = email;
+        this.address = address;
+        this.contact = contact;
+        this.city = city;
+        this.pin_code = pin_code;
+        this.is_active = is_active;
+        initMaps();
+    }
+
     private void initMaps() {
         this.rooms = new HashMap<>();
         this.roomSpecifications = new HashMap<>();

@@ -1,10 +1,12 @@
 package lans.hotels.datasource.mappers;
 
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
 
@@ -117,8 +119,33 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) {
-        return null;
+    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) throws SQLException, UoWException {
+        Hotel h = (Hotel) domainObject;
+        String createStatement = "WITH insert_address AS ( " +
+                "INSERT INTO address (line_1,line_2,district,city,postcode) " +
+                "VALUES ( " + "'" + h.getAddress().getLine1() +"'," +
+                "'" + h.getAddress().getLine2() + "'," + "( SELECT id from district WHERE name = '" +
+                h.getAddress().getDistrict().toString()+"')," + "'" + h.getAddress().getCity() + "" +"'," +
+                h.getAddress().getPostCode() +")" +
+                " RETURNING id )" +
+                " INSERT INTO hotel (hotel_group_id, name, email, address,contact,city,pin_code,is_active) VALUES ('" +
+                h.getHotelGroupID() + "'," + "'" +h.getName() + "'," + "'" + h.getEmail() +"',"
+                +"(SELECT id FROM insert_address)" + "," + "'" + h.getContact() + "'," +
+                "'" + h.getCity() + "'," + h.getPinCode() +"," + h.getIsActive() +") returning * ";
+
+        System.out.println(createStatement);
+        try (PreparedStatement statement = connection.prepareStatement(createStatement)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next())
+                return true;
+            else return false;
+
+        }
+        catch (SQLException e)
+        {
+            return false;
+        }
     }
 
     @Override

@@ -6,14 +6,19 @@ import lans.hotels.datasource.mappers.HotelDataMapper;
 import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.hotel_group.HotelGroup;
+import lans.hotels.domain.utils.Address;
+import lans.hotels.domain.utils.District;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 import org.json.JSONWriter;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.sql.SQLException;
@@ -183,7 +188,59 @@ public class HotelsController extends FrontCommand {
 
                 return;
             case HttpMethod.POST:
-                case HttpMethod.PUT:
+            {
+                String[] commandPath2 = request.getPathInfo().split("/");
+
+                if (commandPath2.length == 2) {
+
+                    JSONObject jsonHotelObject = getRequestBody(request);
+                    System.out.println("Parsed Hotel JSONObject : " + jsonHotelObject);
+                    Hotel h = getHotelGroupFromJsonObject(jsonHotelObject);
+
+                    if(h == null)
+                        throw new InvalidObjectException("Failed to parse hotel group object from request body");
+
+                    System.out.println("Parsed Hotel Object : " + h);
+
+                    boolean success;
+                    try{
+                        success = dataSource.insert(Hotel.class,h);
+                    } catch (Exception e) {
+                        System.err.println("POST /api/hotels: " + Arrays.toString(commandPath2));
+                        System.err.println("POST /api/hotels: " + e.getMessage());
+                        System.err.println("POST /api/hotels: " + e.getClass());
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                        return;
+                    }
+
+                    PrintWriter out = response.getWriter();
+                    response.setStatus(200);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    JSONObject aHG;
+                    aHG = new JSONObject();
+                    if(success)
+                        aHG.put("created", success);
+                    else
+                        aHG.put("created",success);
+
+                    JSONObject hgJSON = new JSONObject();
+                    hgJSON.put("result", aHG);
+                    out.print(hgJSON);
+                    out.flush();
+                    return;
+
+
+                }
+                else {
+                    System.err.println("Hotel Group controller: " + Arrays.toString(commandPath2));
+                    System.err.println("Hotel Group controller: commandPath2.length = " + commandPath2.length);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
+                    return;
+                }
+            }
+            case HttpMethod.PUT:
             case HttpMethod.DELETE:
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
@@ -211,5 +268,65 @@ public class HotelsController extends FrontCommand {
             out.print(json);
             out.flush();
         }
+    }
+
+    public JSONObject getRequestBody(HttpServletRequest request) throws IOException {
+        BufferedReader requestReader = request.getReader();
+
+        String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
+        System.out.println("Request Body Lines + " + lines);
+        JSONObject body;
+        if (lines.length() > 0) {
+            System.out.println(lines);
+            body = new JSONObject(lines);
+        } else {
+            return null;
+        }
+        return body;
+    }
+
+    public Hotel getHotelGroupFromJsonObject(JSONObject jsonObject) {
+
+        Hotel h = null;
+        int hotel_group_id = 0;
+        String h_name = "";
+        String email ="";
+        String l1 = "";
+        String l2 = "";
+        String city = "";
+        int postcode = 0;
+        String district = "";
+        String contact = "";
+        boolean is_active = true;
+
+        if(jsonObject.has("hotel")) {
+            JSONObject nestedJsonObject = jsonObject.getJSONObject("hotel");
+
+            if(nestedJsonObject.has("hotel_group_id"))
+                hotel_group_id = nestedJsonObject.getInt("hotel_group_id");
+            if(nestedJsonObject.has("h_name"))
+                h_name = nestedJsonObject.getString("h_name");
+            if(nestedJsonObject.has("email"))
+                email = nestedJsonObject.getString("email");
+            if(nestedJsonObject.has("l1"))
+                l1 = nestedJsonObject.getString("l1");
+            if(nestedJsonObject.has("l2"))
+                l2 = nestedJsonObject.getString("l2");
+            if(nestedJsonObject.has("city"))
+                city = nestedJsonObject.getString("city");
+            if(nestedJsonObject.has("postcode"))
+                postcode = nestedJsonObject.getInt("postcode");
+            if(nestedJsonObject.has("district"))
+                district = nestedJsonObject.getString("district");
+            if(nestedJsonObject.has("contact"))
+                contact = nestedJsonObject.getString("contact");
+
+            District district_ob = new District(district);
+            Address address = new Address(l1, l2, district_ob, city, postcode);
+
+            h = new Hotel(dataSource,hotel_group_id,h_name,email,address,contact,
+                    city,postcode,is_active);
+        }
+        return h;
     }
 }
