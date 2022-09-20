@@ -2,6 +2,7 @@ package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
 import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.user_types.Hotelier;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -88,7 +89,6 @@ public class HoteliersController extends FrontCommand{
                 return;
             case HttpMethod.POST:
             {
-                System.out.println("Enter Hotelier POST");
                 String[] commandPath2 = request.getPathInfo().split("/");
 
                 if (commandPath2.length == 2) {
@@ -102,37 +102,34 @@ public class HoteliersController extends FrontCommand{
 
                     System.out.println("Parsed Hotel Object : " + hotelier);
 
-                    Hotelier return_hotelier;
-                    try {
-                        return_hotelier = (Hotelier) dataSource.insert(Hotelier.class,hotelier);
+                    boolean success;
+                    try{
+                        success = dataSource.insert(Hotelier.class,hotelier);
                     } catch (Exception e) {
-                        System.err.println("GET /api/hoteliers: " + Arrays.toString(commandPath2));
-                        System.err.println("GET /api/hoteliers: " + e.getMessage());
-                        System.err.println("GET /api/hoteliers: " + e.getClass());
+                        System.err.println("POST /api/hotelgroups: " + Arrays.toString(commandPath2));
+                        System.err.println("POST /api/hotelgroups: " + e.getMessage());
+                        System.err.println("POST /api/hotelgroups: " + e.getClass());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                         return;
                     }
 
-                    System.out.println("R hotelier"+return_hotelier.getUserID());
-                    JSONArray hotelierArray = new JSONArray();
                     PrintWriter out = response.getWriter();
                     response.setStatus(200);
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
 
-                    JSONObject aHotelier;
-                    aHotelier = new JSONObject();
-                    aHotelier.put("hotelier_id", return_hotelier.getHotelierID());
-                    aHotelier.put("user_id", return_hotelier.getUserID());
-                    aHotelier.put("isActive", return_hotelier.getStatus());
+                    JSONObject aHG;
+                    aHG = new JSONObject();
+                    if(success)
+                        aHG.put("created", success);
+                    else
+                        aHG.put("created",success);
 
-                    JSONObject hotelierJson = new JSONObject();
-                    hotelierJson.put("result", aHotelier);
-                    out.print(hotelierJson);
+                    JSONObject hgJSON = new JSONObject();
+                    hgJSON.put("result", aHG);
+                    out.print(hgJSON);
                     out.flush();
                     return;
-
-
                 }
                 else {
                     System.err.println("Hotelier controller: " + Arrays.toString(commandPath2));

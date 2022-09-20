@@ -79,29 +79,32 @@ public class Hotel extends ReferenceObject {
         return this.pin_code;
     }
 
-    public void setHotel_group_id(Integer hotel_group_id) {
-        this.hotel_group_id = hotel_group_id;
-    }
-    public void setName(String name) {
+    public void setName(String name) throws UoWException {
         this.name = name;
+        markDirty();
     }
-    public void setEmail(String email) {
+    public void setEmail(String email) throws UoWException {
         this.email = email;
+        markDirty();
     }
-    public void setName(Address address) {
+    public void setAddress(Address address) throws UoWException {
         this.address = address;
+        markDirty();
     }
-    public void setContact(String contact) {
+    public void setContact(String contact) throws UoWException {
         this.contact = contact;
+        markDirty();
     }
-    public void setCity(String city) {
+    public void setCity(String city) throws UoWException {
         this.city = city;
+        markDirty();
     }
-    public void setPincode(Integer pin_code) {
+    public void setPincode(Integer pin_code) throws UoWException {
         this.pin_code = pin_code;
+        markDirty();
     }
 
-public void remove() throws UoWException {
-        markRemoved();
-    }
+    public void remove() throws UoWException {
+            markRemoved();
+        }
 }

@@ -72,9 +72,9 @@ public abstract class DataSourceFacade implements IDataSource {
         return null;
     }
 
-    public <DomainObject extends AbstractDomainObject> DomainObject insert(Class<DomainObject> aClass,DomainObject object) throws Exception {
+    public <DomainObject extends AbstractDomainObject> Boolean insert(Class<DomainObject> aClass,DomainObject object) throws Exception {
         AbstractPostgresDataMapper<? extends  AbstractDomainObject> mapper = dataMapperRegistry.getMapper(aClass); //TODO: #bug unchecked type caste
-        return (DomainObject) mapper.create(object);
+        return (Boolean) mapper.create(object);
     }
 
     public <DomainObject extends AbstractDomainObject> ArrayList<DomainObject> findBySearchCriteria(Class<DomainObject> aClass, AbstractSearchCriteria criteria) throws Exception {

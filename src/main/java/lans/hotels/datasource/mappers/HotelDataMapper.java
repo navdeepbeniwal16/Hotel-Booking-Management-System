@@ -116,7 +116,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) {
+    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) {
         return null;
     }
 

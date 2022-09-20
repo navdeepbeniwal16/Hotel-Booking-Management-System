@@ -17,7 +17,7 @@ public class RoomSpecificationMapper extends AbstractPostgresDataMapper<RoomSpec
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) {
+    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) {
         return null;
     }
 

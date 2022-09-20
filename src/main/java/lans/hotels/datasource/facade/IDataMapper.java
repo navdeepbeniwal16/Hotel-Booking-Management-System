@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public interface IDataMapper<DomainObject extends AbstractDomainObject> {
     <DomainObject extends AbstractDomainObject> DomainObject getById(Integer id);
-    <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) throws Exception;
+    <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) throws Exception;
     <DomainObject extends AbstractDomainObject> DomainObject update(AbstractDomainObject domainObject);
     boolean delete(Integer id);
 
