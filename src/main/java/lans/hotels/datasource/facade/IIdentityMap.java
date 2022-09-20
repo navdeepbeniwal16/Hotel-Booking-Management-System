@@ -5,10 +5,10 @@ import lans.hotels.domain.AbstractDomainObject;
 
 import java.util.List;
 
-public interface IIdentityMap<IdType, DomainObject extends AbstractDomainObject> {
-    void add(DomainObject obj) throws IdentityMapException;
-    DomainObject getById(IdType id);
-    DomainObject remove(IdType id);
+public interface IIdentityMap<DomainObject extends AbstractDomainObject> {
+    void add(AbstractDomainObject obj) throws IdentityMapException;
+    DomainObject getById(Integer id);
+    DomainObject remove(Integer id);
 
     List<DomainObject> findAll();
 

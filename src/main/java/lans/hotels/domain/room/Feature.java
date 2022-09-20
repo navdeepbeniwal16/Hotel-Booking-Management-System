@@ -4,7 +4,7 @@ import lans.hotels.domain.DomainValueObject;
 import lans.hotels.domain.IDataSource;
 
 
-public class Feature extends DomainValueObject<Integer> {
+public class Feature extends DomainValueObject {
     String name;
     String description;
 

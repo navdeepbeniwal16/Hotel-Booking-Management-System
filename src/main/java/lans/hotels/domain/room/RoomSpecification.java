@@ -1,47 +1,68 @@
 package lans.hotels.domain.room;
 
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RoomSpecification extends ReferenceObject {
+    Integer hotelId;
     String roomType;
-    int capacity;
+    String bedType;
+    Integer occupancy;
+
     String description;
-    HashMap<String, Feature> features;
+    Double price;
+    ArrayList<String> features;
 
-    public RoomSpecification(IDataSource dataSource) {
+    public RoomSpecification(IDataSource dataSource) throws UoWException {
         super(dataSource);
+        markNew();
     }
 
-    public RoomSpecification(Integer id, IDataSource dataSource) {
+    public RoomSpecification(Integer id, IDataSource dataSource) throws UoWException {
         super(id, dataSource);
+        markClean();
+        // TODO: #ghost
     }
-    private RoomSpecification(String roomType, int capacity, String description, Integer id, IDataSource dataSource) {
+    private RoomSpecification(Integer id,
+                              Integer hotelId,
+                              Integer occupancy,
+                              String bedType,
+                              String roomType,
+                              String description,
+                              ArrayList<String> features,
+                              Double price,
+                              IDataSource dataSource) throws UoWException {
         super(id, dataSource);
+        this.hotelId = hotelId;
         this.roomType = roomType;
-        this.capacity = capacity;
+        this.bedType = bedType;
+        this.occupancy = occupancy;
         this.description = description;
-        this.features = new HashMap<>();
+        this.price = price;
+        this.features = features;
+        markClean();
     }
 
     public String getDescription() { return description; }
-    public Integer getCapacity() { return capacity; }
-    public HashMap<String, Feature> getFeatures() { return features; }
+    public Integer getOccupancy() { return occupancy; }
+    public ArrayList<String> getFeatures() { return features; }
     public String getRoomType() { return roomType; }
 
-    private RoomSpecification(String roomType, int capacity, String description, Map<String, Feature> features, Integer id, IDataSource dataSource) {
-        super(id, dataSource);
-        this.roomType = roomType;
-        this.capacity = capacity;
-        this.description = description;
-        this.features = new HashMap<>();
-    }
+    public Integer getHotelId() {return hotelId;}
 
-    // TODO: warning - this may cause concurrency issues
-    public void addFeature(Feature feature) {
-        this.features.put(feature.getName(), feature);
+    public Double getPrice() {return price;}
+
+    public String getBedType() {return bedType;}
+
+
+    // TODO: #concurrency warning - this may cause concurrency issues
+    public void addFeature(String feature) {
+        if (!features.contains(feature)) features.add(feature);
     }
 }

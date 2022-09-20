@@ -13,10 +13,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ServletUoW implements IUnitOfWork<Integer> {
+public class ServletUoW implements IUnitOfWork {
     public IIdentityMapRegistry identityMaps;
     private static final String attributeName = "UnitOfWork";
-    private static HashMap<Thread, ServletUoW> activeUnitsOfWork = new HashMap<>();
+    private static final HashMap<Thread, ServletUoW> activeUnitsOfWork = new HashMap<>();
     private static final ReentrantLock reentrantLock = new ReentrantLock();
 
     private HashSet<AbstractDomainObject> newObjects;
@@ -85,7 +85,7 @@ public class ServletUoW implements IUnitOfWork<Integer> {
     }
 
     @Override
-    public void registerDirty(AbstractDomainObject obj) throws UoWException {
+    public <DomainObject extends AbstractDomainObject> void registerDirty(DomainObject obj) throws UoWException {
         if (!obj.hasId()) throw new UoWException("attempting to register an object with no ID as 'dirty'.");
         if (removedObjects.contains(obj)) throw new UoWException("attempting to register a 'removed' object as 'dirty'.");
         if (newObjects.contains(obj)) throw new UoWException("attempting to register a 'new' as 'dirty'.");
@@ -94,7 +94,7 @@ public class ServletUoW implements IUnitOfWork<Integer> {
     }
 
     @Override
-    public void registerRemoved(AbstractDomainObject obj) throws UoWException {
+    public <DomainObject extends AbstractDomainObject> void registerRemoved(DomainObject obj) throws UoWException {
         if (!obj.hasId()) throw new UoWException("attempting to register an object with no ID as 'removed'.");
         dirtyObjects.remove(obj);
         removedObjects.add(obj);
@@ -102,7 +102,7 @@ public class ServletUoW implements IUnitOfWork<Integer> {
     }
 
     @Override
-    public void registerClean(AbstractDomainObject obj) throws UoWException {
+    public <DomainObject extends AbstractDomainObject> void registerClean(DomainObject obj) throws UoWException {
         if (!obj.hasId()) throw new UoWException("attempting to register an object with no ID as 'clean'.");
         if (dirtyObjects.contains(obj)) throw new UoWException("attempting to register a 'dirty' object as 'clean'.");
         if (removedObjects.contains(obj)) throw new UoWException("attempting to register a 'removed' as 'clean'.");
@@ -114,7 +114,7 @@ public class ServletUoW implements IUnitOfWork<Integer> {
     }
 
     @Override
-    public void commit(IMapperRegistry<Integer> mappers) {
+    public void commit(IMapperRegistry mappers) {
         newObjects.forEach(obj -> {
             try {
                 mappers.getMapper(obj.getClass()).create(obj);
@@ -131,7 +131,7 @@ public class ServletUoW implements IUnitOfWork<Integer> {
         });
         removedObjects.forEach(obj -> {
             try {
-                mappers.getMapper(obj.getClass()).delete((Integer) obj.getId());
+                mappers.getMapper(obj.getClass()).delete(obj.getId());
             } catch (MapperNotFoundException e) {
                 System.err.println(e);
             }
@@ -140,7 +140,7 @@ public class ServletUoW implements IUnitOfWork<Integer> {
 
 
         for(Object identityMap: identityMaps.getAll()) {
-            ((IIdentityMap) identityMap).clear();
+            ((IIdentityMap<?>) identityMap).clear();
         }
 
         newObjects.clear();

@@ -3,7 +3,7 @@ package lans.hotels.domain.room;
 import lans.hotels.domain.DomainValueObject;
 import lans.hotels.domain.IDataSource;
 
-public class RoomType extends DomainValueObject<Integer> {
+public class RoomType extends DomainValueObject {
     String name;
 
     public RoomType(String name, IDataSource dataSource) {

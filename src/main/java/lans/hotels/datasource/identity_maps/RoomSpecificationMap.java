@@ -2,14 +2,13 @@ package lans.hotels.datasource.identity_maps;
 
 import lans.hotels.datasource.exceptions.IdentityMapException;
 import lans.hotels.datasource.facade.IIdentityMap;
-import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.room.Room;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.room.RoomSpecification;
 
 import java.util.List;
 import java.util.Map;
 
-public class RoomSpecificationMap implements IIdentityMap<Integer, RoomSpecification> {
+public class RoomSpecificationMap implements IIdentityMap<RoomSpecification> {
 
     Map<Integer, RoomSpecification> specifications;
 
@@ -18,9 +17,9 @@ public class RoomSpecificationMap implements IIdentityMap<Integer, RoomSpecifica
     }
 
     @Override
-    public void add(RoomSpecification spec) throws IdentityMapException {
-        if (spec.hasId()) {
-            specifications.put(spec.getId(), spec);
+    public void add(AbstractDomainObject spec) throws IdentityMapException {
+        if (spec.getClass()==RoomSpecification.class && spec.hasId()) {
+            specifications.put(spec.getId(), (RoomSpecification) spec);
         } else {
             throw new IdentityMapException("attempted to add object without an ID to identity map");
         }

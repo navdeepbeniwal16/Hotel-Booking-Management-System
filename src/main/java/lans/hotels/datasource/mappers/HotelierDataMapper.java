@@ -1,6 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.user_types.Hotelier;
 
@@ -9,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
 
@@ -33,6 +33,14 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    public ArrayList<Hotelier> findAll() throws SQLException {
+        String findAllStatment = "SELECT " + " * " +
+                " FROM " + this.table;
+=======
+>>>>>>> frontend/v3
     public List<Hotelier> findAll() throws SQLException {
         String findAllStatment = "SELECT hotelier_id AS id, name, email, password, role, " +
                 "hotelier_id, is_active " +
@@ -41,6 +49,10 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
             "SELECT user_id, id AS hotelier_id,is_active FROM hotelier " +
             ") AS ho " +
             "ON u.id = ho.user_id ";
+<<<<<<< HEAD
+=======
+>>>>>>> 926aae656c0695c7661aeba03654f9978d1ee34f
+>>>>>>> frontend/v3
         try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
             ResultSet resultSet = statement.executeQuery();
             Hotelier currentHotelier = load(resultSet);
@@ -52,7 +64,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    public List<Hotelier> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+    public ArrayList<Hotelier> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         return null;
     }
 
@@ -65,7 +77,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    public Hotelier update(Hotelier domainObject) {
+    public Hotelier update(AbstractDomainObject domainObject) {
         return null;
     }
 

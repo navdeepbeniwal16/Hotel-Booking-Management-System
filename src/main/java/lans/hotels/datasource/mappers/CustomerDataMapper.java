@@ -1,6 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.user_types.Customer;
 import lans.hotels.domain.utils.District;
@@ -8,7 +9,6 @@ import lans.hotels.domain.utils.Address;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     private static final String COLUMNS = " number, floor, is_active, room_spec_id ";
@@ -30,6 +30,13 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     }
 
     @Override
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    public ArrayList<Customer> findAll() throws SQLException {
+        String findAllStatement = "SELECT h.id AS id, contact, age, line_1, line_2, city, postcode, name FROM " + this.table +" h JOIN ( address a JOIN district d ON a.district = d.id) ON h.address = a.id";
+=======
+>>>>>>> frontend/v3
     public List<Customer> findAll() throws SQLException {
         String findAllStatement = "SELECT customer_id as id, name, email, password, role, " +
                 "contact, age, line_1 as address_l1,line_2 AS address_l2, " +
@@ -45,6 +52,10 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
                 ") AS cc " +
                 "ON u.id = cc.user_id ";
 
+<<<<<<< HEAD
+=======
+>>>>>>> 926aae656c0695c7661aeba03654f9978d1ee34f
+>>>>>>> frontend/v3
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();
             while (load(resultSet) != null) {
@@ -55,7 +66,7 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     }
 
     @Override
-    public List<Customer> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+    public ArrayList<Customer> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         return null;
     }
 
@@ -76,7 +87,7 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     }
 
     @Override
-    public Customer update(Customer domainObject) {
+    public Customer update(AbstractDomainObject domainObject) {
         return null;
     }
 

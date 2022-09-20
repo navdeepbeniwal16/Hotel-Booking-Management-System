@@ -1,5 +1,6 @@
 package lans.hotels.controllers;
 
+import jdk.jshell.spi.ExecutionControl;
 import lans.hotels.api.HttpMethod;
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.search_criteria.RoomSearchCriteria;
@@ -11,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class RoomsController extends FrontCommand {
@@ -22,7 +23,12 @@ public class RoomsController extends FrontCommand {
         System.out.println("RoomsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
         switch(request.getMethod()) {
             case HttpMethod.GET:
-                handleGet();
+                try {
+                    handleGet();
+                } catch (Exception e) {
+                    System.err.println("ERROR RoomsContoller:" + e);
+                    throw new CommandException(e.getMessage());
+                }
                 return;
             case HttpMethod.POST:
                 System.err.println("POST /rooms: ENDPOINT NOT IMPLEMENTED");
@@ -41,7 +47,7 @@ public class RoomsController extends FrontCommand {
         }
     }
 
-    private void handleGet() throws IOException {
+    private void handleGet() throws Exception {
         String[] commandPath = request.getPathInfo().split("/");
         BufferedReader requestReader = request.getReader();
         String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
@@ -66,43 +72,45 @@ public class RoomsController extends FrontCommand {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
             }
         } else if (commandPath.length==2) {
+            ArrayList<Room> rooms;
+            try {
+                rooms = dataSource.findAll(Room.class);
+            } catch (Exception e) {
+                System.err.println(e);
+                throw new CommandException(e.getMessage());
+            }
             if (body.has("search")) {
                 RoomSearchCriteria criteria = new RoomSearchCriteria();
                 JSONObject searchQueryBody = body.getJSONObject("search");
                 if(searchQueryBody.has("hotelId")){
                     try {
-                        System.out.println(searchQueryBody.get("hotelId"));
-                        System.out.println(dataSource);
-                        List<Room> rooms = (List<Room>) dataSource.findAll(Room.class);
-                        System.out.println(rooms.get(0).toString());
-                        JSONArray roomArray = new JSONArray();
-                        PrintWriter out = response.getWriter();
-                        response.setStatus(200);
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("UTF-8");
-                        JSONObject aRoom;
-                        for (Room room: rooms) {
-//                            if (room.getId() == searchQueryBody.get("hotelId")) {
-                            System.out.println(room.toString());
-                                aRoom = new JSONObject();
-                                aRoom.put("id", room.getId());
-                                aRoom.put("hotelId", room.getHotel().getId());
-                                aRoom.put("occupancy", room.getSpecification().getCapacity());
-                                aRoom.put("address", room.getSpecification().getRoomType());
-                                roomArray.put(aRoom);
-//                            }
-                        }
-
-                        JSONObject roomJson = new JSONObject();
-                        roomJson.put("result", roomArray);
-                        out.print(roomJson);
-                        out.flush();
+                        throw new ExecutionControl.NotImplementedException("room search not implemented");
                     } catch (Exception e){
                         System.err.println("GET /api/rooms SEARCH: " + e);
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     }
                 }
             }
+            JSONArray roomArray = new JSONArray();
+            PrintWriter out = response.getWriter();
+            response.setStatus(200);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            JSONObject aRoom;
+            for (Room room: rooms) {
+                System.out.println(room.toString());
+                aRoom = new JSONObject();
+                aRoom.put("id", room.getId());
+                aRoom.put("hotelId", room.getHotel().getId());
+                aRoom.put("occupancy", room.getSpecification().getOccupancy());
+                aRoom.put("address", room.getSpecification().getRoomType());
+                roomArray.put(aRoom);
+            }
+
+            JSONObject roomJson = new JSONObject();
+            roomJson.put("result", roomArray);
+            out.print(roomJson);
+            out.flush();
         } else {
             System.err.println("GET /rooms: bad request");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);

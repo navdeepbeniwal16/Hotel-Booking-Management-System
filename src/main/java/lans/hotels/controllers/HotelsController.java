@@ -4,6 +4,7 @@ import lans.hotels.api.HttpMethod;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.mappers.HotelDataMapper;
 import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.hotel.Hotel;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -89,7 +90,7 @@ public class HotelsController extends FrontCommand {
 
                         ArrayList<Hotel> hotels;
                         try {
-                            hotels = (ArrayList<Hotel>) dataSource.findBySearchCriteria(Hotel.class, criteria);
+                            hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
                         } catch (Exception e) {
                             System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
                             System.err.println("GET /api/hotels: " + e.getMessage());
@@ -123,7 +124,9 @@ public class HotelsController extends FrontCommand {
                     } else {
                         ArrayList<Hotel> hotels;
                         try {
-                            hotels = (ArrayList<Hotel>) dataSource.findAll(Hotel.class);
+                            hotels = dataSource.findAll(Hotel.class);
+                            System.out.println("HotelsController.concreteProcess() ALL v1: " + hotels.toString());
+                            System.out.println("HotelsController.concreteProcess() ALL v2: " + dataSource.findAll(Hotel.class).toString());
                         } catch (Exception e) {
                             System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
                             System.err.println("GET /api/hotels: " + e.getMessage());

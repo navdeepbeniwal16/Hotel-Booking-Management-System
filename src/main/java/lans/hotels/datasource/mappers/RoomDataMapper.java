@@ -1,5 +1,7 @@
 package lans.hotels.datasource.mappers;
+import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
@@ -8,20 +10,21 @@ import lans.hotels.domain.room.RoomSpecification;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
-public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
+public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements IDataMapper<Room> {
     private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
 
     public RoomDataMapper(Connection connection, IDataSource dataSource) {
         super(connection, "room", dataSource);
+        idPrefix = "r.";
     }
 
     @Override
     protected String findStatement() {
-        return "SELECT " + " id, " + COLUMNS +
-                " FROM " + this.table +
-                " WHERE id = ? ";
+        return "SELECT " + " * " + COLUMNS +
+                " FROM " + this.table + " r " +
+                " JOIN room_spec rs ON r.room_spec_id = rs.id" +
+                " WHERE r.id = ? ";
     }
 
     @Override
@@ -41,7 +44,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
     }
 
     @Override
-    public List<Room> findAll() throws SQLException {
+    public ArrayList<Room> findAll() throws SQLException {
         String findAllStatement = "SELECT " + " * " + " FROM " + this.table;
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();
@@ -56,7 +59,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
     }
 
     @Override
-    public List<Room> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+    public ArrayList<Room> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         return null;
     }
 
@@ -80,19 +83,19 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> {
     @Override
     protected Room doLoad(Integer id, ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) return null;
-        Hotel hotel = (Hotel) dataSource.find(Hotel.class, resultSet.getInt("hotel_id"));
-        RoomSpecification specification = (RoomSpecification) dataSource.find(RoomSpecification.class, resultSet.getInt("room_spec_id"));
+        Hotel hotel = dataSource.find(Hotel.class, resultSet.getInt("r.hotel_id"));
+        RoomSpecification specification = dataSource.find(RoomSpecification.class, resultSet.getInt("rs.id"));
         RoomBuilder roomBuilder = new RoomBuilder(hotel, specification, dataSource);
         return roomBuilder
                 .id(id)
-                .number(resultSet.getInt("number"))
-                .floor(resultSet.getInt("floor"))
-                .active(resultSet.getBoolean("is_active"))
+                .number(resultSet.getInt("r.number"))
+                .floor(resultSet.getInt("r.floor"))
+                .active(resultSet.getBoolean("r.is_active"))
                 .getResult();
     }
 
     @Override
-    public Room update(Room domainObject) {
+    public Room update(AbstractDomainObject domainObject) {
         return null;
     }
 
