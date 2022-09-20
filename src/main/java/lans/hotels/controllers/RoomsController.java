@@ -79,16 +79,13 @@ public class RoomsController extends FrontCommand {
                 System.err.println(e);
                 throw new CommandException(e.getMessage());
             }
+
+            Integer hotelId = null;
+            JSONObject searchQueryBody = null;
             if (body.has("search")) {
-                RoomSearchCriteria criteria = new RoomSearchCriteria();
-                JSONObject searchQueryBody = body.getJSONObject("search");
+                searchQueryBody = body.getJSONObject("search");
                 if(searchQueryBody.has("hotelId")){
-                    try {
-                        throw new ExecutionControl.NotImplementedException("room search not implemented");
-                    } catch (Exception e){
-                        System.err.println("GET /api/rooms SEARCH: " + e);
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    }
+                    hotelId = (Integer) searchQueryBody.get("hotelId");
                 }
             }
 
@@ -101,11 +98,13 @@ public class RoomsController extends FrontCommand {
             for (Room room: rooms) {
                 System.out.println(room.toString());
                 aRoom = new JSONObject();
-                aRoom.put("id", room.getId());
-                aRoom.put("hotelId", room.getHotel().getId());
-                aRoom.put("occupancy", room.getSpecification().getOccupancy());
-                aRoom.put("address", room.getSpecification().getRoomType());
-                roomArray.put(aRoom);
+                if (searchQueryBody==null || (hotelId!=null && hotelId==room.getHotel().getId())) {
+                    aRoom.put("id", room.getId());
+                    aRoom.put("hotelId", room.getHotel().getId());
+                    aRoom.put("occupancy", room.getSpecification().getOccupancy());
+                    aRoom.put("address", room.getSpecification().getRoomType());
+                    roomArray.put(aRoom);
+                }
             }
 
             JSONObject roomJson = new JSONObject();
