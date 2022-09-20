@@ -42,7 +42,7 @@ INSERT INTO
 VALUES (1, 1, '38 094 477 175'), (1, 3, 'LONEX PTY LIMITED');
 
 INSERT INTO
-    hotel(hotel_group_id, name, email, address, phone, hotel_city, pin_code)
+    hotel(hotel_group_id, name, email, address, phone, hotel_city, pin_code,is_active)
 VALUES
     (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 2, 1, 'Melbourne', 3000),
     (1, 'The Victoria Hotel', 'hello@victoriahotel.com.au', 3, 1, 'Melbourne', 3000),

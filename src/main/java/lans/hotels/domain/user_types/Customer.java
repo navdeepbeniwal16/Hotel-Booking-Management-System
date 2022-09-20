@@ -1,16 +1,19 @@
 package lans.hotels.domain.user_types;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.utils.Address;
 
-public class Customer extends ReferenceObject{
+public class Customer extends User{
     Address address;
     String contact;
     int age;
 
-    public Customer(Integer id,IDataSource dataSource, Address address, String contact, int age) {
+    public Customer(Integer id,IDataSource dataSource,String name, String email, String password, Integer role, Address address, String contact, int age) {
         super(id,dataSource);
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
         this.address = address;
         this.contact = contact;
         this.age = age;
