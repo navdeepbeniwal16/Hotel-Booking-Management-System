@@ -23,5 +23,6 @@ public interface IDataSource {
     // Why? Current Data Model is receiving an interface it should not be able to use (commit).
     void commit() throws DataSourceLayerException;
 
-    <DomainObject extends AbstractDomainObject> Boolean insert(Class<DomainObject> hotelierClass, DomainObject object)throws Exception;
+    <DomainObject extends AbstractDomainObject> Boolean insert(Class<DomainObject> aClass, DomainObject object)throws Exception;
+    <DomainObject extends AbstractDomainObject> Boolean delete(Class<DomainObject> aClass,Integer id)throws Exception;
 }

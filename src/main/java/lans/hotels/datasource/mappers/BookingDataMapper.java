@@ -20,7 +20,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) throws Exception {
+    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) {
         return null;
     }
 

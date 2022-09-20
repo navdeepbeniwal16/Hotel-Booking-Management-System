@@ -116,6 +116,21 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
 
     @Override
     public boolean delete(Integer id) {
-        return false;
+        int delete_id = id;
+        String deleteStatement = "DELETE FROM hotel_group_hotelier WHERE id = " + delete_id +" returning * ";
+
+        System.out.println(deleteStatement);
+        try (PreparedStatement statement = connection.prepareStatement(deleteStatement)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next())
+                return true;
+            else return false;
+
+        }
+        catch (SQLException e)
+        {
+            return false;
+        }
     }
 }

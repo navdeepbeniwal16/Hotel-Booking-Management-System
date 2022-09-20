@@ -148,6 +148,63 @@ public class HotelgrouphoteliersController extends FrontCommand {
             }
             case HttpMethod.PUT:
             case HttpMethod.DELETE:
+            {
+                String[] commandPath2 = request.getPathInfo().split("/");
+                int id = -1;
+                if (commandPath2.length == 2) {
+
+                    JSONObject body = getRequestBody(request);
+                    System.out.println("Parsed Hotel Group JSONObject : " + body);
+
+                    if(body.has("hotel_group_hotelier")) {
+                        JSONObject nestedJsonObject = body.getJSONObject("hotel_group_hotelier");
+
+                        if (nestedJsonObject.has("id"))
+                            id = nestedJsonObject.getInt("id");
+                    }
+
+                    PrintWriter out = response.getWriter();
+                    response.setStatus(200);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    JSONObject returnBody;
+                    returnBody = new JSONObject();
+
+                    if(id==-1)
+                        returnBody.put("deleted", false);
+
+                   boolean success;
+                    try{
+                        success = dataSource.delete(HotelGroupHotelier.class,id);
+                    } catch (Exception e) {
+                        System.err.println("DELETE /api/hotelgrouphotleiers: " + Arrays.toString(commandPath2));
+                        System.err.println("DELETE /api/hotelgrouphotleiers: " + e.getMessage());
+                        System.err.println("DELETE /api/hotelgrouphotleiers: " + e.getClass());
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                        return;
+                    }
+
+                    if(success)
+                        returnBody.put("deleted", success);
+                    else
+                        returnBody.put("deleted",success);
+
+                    JSONObject hgJSON = new JSONObject();
+                    hgJSON.put("result", returnBody);
+                    out.print(hgJSON);
+                    out.flush();
+                    return;
+
+
+                }
+                else {
+                    System.err.println("Hotel Group controller: " + Arrays.toString(commandPath2));
+                    System.err.println("Hotel Group controller: commandPath2.length = " + commandPath2.length);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
+                    return;
+                }
+            }
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
         }
@@ -189,14 +246,14 @@ public class HotelgrouphoteliersController extends FrontCommand {
         return body;
     }
 
-    public HotelGroupHotelier getHotelGroupHotelierFromJsonObject(JSONObject jsonObject) {
+    public HotelGroupHotelier getHotelGroupHotelierFromJsonObject(JSONObject body) {
 
         HotelGroupHotelier hgHotelier = null;
         int hotelier_id = 0;
         int hotel_group_id = 0;
 
-        if(jsonObject.has("hotel_group_hotelier")) {
-            JSONObject nestedJsonObject = jsonObject.getJSONObject("hotel_group_hotelier");
+        if(body.has("hotel_group_hotelier")) {
+            JSONObject nestedJsonObject = body.getJSONObject("hotel_group_hotelier");
 
             if(nestedJsonObject.has("hotelier_id"))
                 hotelier_id = nestedJsonObject.getInt("hotelier_id");
