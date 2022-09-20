@@ -33,8 +33,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-<<<<<<< HEAD
-    public List<Hotelier> findAll() throws SQLException {
+    public ArrayList<Hotelier> findAll() throws SQLException {
         String findAllStatment = "SELECT hotelier_id AS id, name, email, password, role, " +
                 "hotelier_id, is_active " +
             "FROM app_user u " +
@@ -42,11 +41,6 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
             "SELECT user_id, id AS hotelier_id,is_active FROM hotelier " +
             ") AS ho " +
             "ON u.id = ho.user_id ";
-=======
-    public ArrayList<Hotelier> findAll() throws SQLException {
-        String findAllStatment = "SELECT " + " * " +
-                " FROM " + this.table;
->>>>>>> 7571a45 (fix type bug)
         try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
             ResultSet resultSet = statement.executeQuery();
             Hotelier currentHotelier = load(resultSet);
