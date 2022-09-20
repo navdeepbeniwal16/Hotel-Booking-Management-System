@@ -15,111 +15,83 @@ INSERT INTO
     address(line_1, line_2, district, city, postcode)
 VALUES
     ('50 Batman St', NULL, 1, 'West Melbourne', 3003),
-    ('92 Lonsdale Street', NULL, 1, 'Melbourne', 3000),
-    ('215 Little Collins Street', NULL, 1, 'Melbourne', 3000),
-    ('300 Spencer Street', NULL, 1, 'Melbourne', 3000),
-    ('176 Cumberland Street', 'The Rocks', 1, 'Sydney', 2000)
+    ('92 Lonsdale Street', NULL, 2, 'Melbourne', 3000),
+    ('215 Little Collins Street', NULL, 4, 'Melbourne', 3000),
+    ('300 Spencer Street', NULL, 5, 'Melbourne', 3000),
+    ('176 Cumberland Street', 'The Rocks', 6, 'Sydney', 2000)
 ;
 
 INSERT INTO
-    phone(country, area, number)
+    app_user(name,email,"password",role)
 VALUES
-    (61, 3, 96623900),
-    (61, 2, 98975983)
+    ('Arman','arman@gmail.com','12345','1'),
+    ('Levi','levi@gmail.com','12345','2'),
+    ('Saood','saood@gmail.com','12345','2'),
+    ('Navdeep','navdeep@gmail.com','12345','2'),
+    ('Max','max@gmail.com','12345','3'),
+    ('Luke','luke@gmail.com','12345','3'),
+    ('Eduardo','aduardo@gmail.com','12345','3')
+;
+INSERT INTO
+    customer(user_id,address,contact,age)
+VALUES
+    (5,1, '+614153726767', 25),
+    (6,2, '+615555555555', 28),
+    (7,3, '+616666666666', 35)
+;
+
+INSERT INTO system_admin(user_id) VALUES (1);
+
+INSERT INTO
+    hotelier(user_id,is_active)
+VALUES
+       (2,TRUE),
+       (3,TRUE),
+       (4,TRUE)
 ;
 
 INSERT INTO
     hotel_group (name, address, phone)
 VALUES
-    ('Marriott', 1, 1);
-
-INSERT INTO
-    business_detail_type(name)
-VALUES ('ABN'), ('ACN'), ('ASIC Entity Name');
-
-INSERT INTO
-    hotel_group_business_detail(hotel_group, type, detail)
-VALUES (1, 1, '38 094 477 175'), (1, 3, 'LONEX PTY LIMITED');
-
-INSERT INTO
-    hotel(hotel_group_id, name, email, address, phone, hotel_city, pin_code)
-VALUES
-    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 2, 1, 'Melbourne', 3000),
-    (1, 'The Victoria Hotel', 'hello@victoriahotel.com.au', 3, 1, 'Melbourne', 3000),
-    (1, 'Atlantis Hotel Melbourne', 'help@atlantishotel.com.au', 4, 1, 'Melbourne', 3000),
-    (1, 'Shangri-La Sydney', 'hello@shangrila.com.au', 5, 2, 'Sydney', 2000)
+    ('Marriott', 4, '+617676868696'),
+    ('Hilton',5,'+615645342312')
 ;
-
-INSERT INTO
-    room_spec(hotel_id, type, max_occupancy, bed_type, description, room_price)
-VALUES
-    (1, 'Standard', 2, 'Single', 'Cozy single room for one or two people', 100),
-    (1, 'Deluxe', 2, 'Double', 'Extra spacious room to treat yourself', 200),
-    (1, 'Premium', 3, 'Queen', 'The perfect room for business traveller', 300)
-;
-
-INSERT INTO
-    room(hotel_id, room_spec_id, floor, number, is_active)
-VALUES
-    (1, 2, 0, 1, true),
-    (1, 3, 0, 2, true)
-;
-
-INSERT INTO
-    app_user(name,email,"password",role)
-VALUES
-    ('Arman','arman@gmail.com','12345','2')
-;
-
-INSERT INTO
-    hotelier(user_id,is_active)
-VALUES(1,TRUE)
-;
-
-INSERT INTO
-    app_user(name,email,"password",role)
-VALUES
-    ('Saood','saood@gmail.com','test','3')
-;
-
-INSERT INTO
-    customer(user_id,address,contact,age)
-VALUES(2,2, '+614153726767', 1)
-;
-
--- New queries start here --------------------
-
-INSERT INTO
-    app_user(name,email,"password",role)
-VALUES
-    ('Ben','ben@gmail.com','pwd','3')
-;
-
-
-INSERT INTO
-    customer(user_id,address,contact,age)
-VALUES(3,1, '+61415678394', 25)
-;
-
-INSERT INTO amenity("name", description)
-    VALUES
-           ('Gym', 'Utility space for exercise'),
-           ('Spa','Utility space for spa/sauna/massage'),
-           ('restaurant','eatery spot for in room dining');
-
-INSERT INTO hotel_amenity(amenity_id,hotel_id)
-    VALUES
-           (1,1),
-           (2,1),
-           (3,1);
-
-INSERT INTO app_user("name", email, "password", "role")
-    VALUES ('Chris','chris@gmail.com','tbdpwd',1);
-
-INSERT INTO system_admin(user_id) VALUES (4);
 
 INSERT INTO hotel_group_hotelier(hotelier_id,hotel_group_id)
-    VALUES (1,1);
+VALUES
+       (1,1),
+       (2,1),
+       (3,2)
+;
+
+INSERT INTO
+    hotel(hotel_group_id, name, email, address, contact, city, pin_code)
+VALUES
+    (1, 'Melbourne Marriott Hotel', 'melbourne@marriott.com', 1, '+614737373737', 'Melbourne', 3000),
+    (1, 'Sydney Marriott Hotel', 'sydney@vmarriot.com.au', 2, '+619898989898', 'Sydney', 4000),
+    (2, 'Perth Hilton Melbourne', 'perth@hilton.com.au', 3, '+614545454545', 'Perth', 5000)
+;
+
+
+INSERT INTO
+    room_spec(hotel_id, type, max_occupancy, bed_type, room_price)
+VALUES
+    (1, 'Deluxe', 4, 'Double', 100),
+    (1, 'Standard', 2, 'Queen', 200),
+    (1, 'Pent House', 3, 'King', 300)
+;
+
+INSERT INTO
+    room(hotel_id, room_spec_id, number, floor, is_active)
+VALUES
+    (1, 1, 101, 1, true),
+    (1, 1, 102, 1, true),
+    (1, 1, 103, 1, true),
+    (1, 2, 202, 2, true),
+    (1, 2, 402, 4, true),
+    (1, 3, 702, 7, true)
+;
+
 
 INSERT INTO feature ("name",description)
     VALUES ('ironing board', 'Pull out table to iron clothes'),
@@ -127,32 +99,36 @@ INSERT INTO feature ("name",description)
            ('hair dryer','device to dry hair'),
            ('bath towels','set of towels');
 
-INSERT INTO room_feature(feature_id,room_spec_id,quantity)
+INSERT INTO room_spec_feature(feature_id,room_spec_id,quantity)
     VALUES (1,1,1),
-           (2,1,1),
-           (3,1,1),
-           (4,1,1),
+           (1,1,1),
+           (1,1,1),
            (1,2,1),
            (2,2,1),
+           (2,2,1),
+           (2,2,1),
            (3,2,1),
-           (4,2,1),
-           (1,3,1),
-           (2,3,1),
+           (3,3,1),
+           (3,3,1),
            (3,3,1),
            (4,3,1);
 
 INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
-    VALUES (2,DATE '2022-09-27',DATE '2022-09-29',TRUE,1);
+    VALUES
+           (1,DATE '2022-09-27',DATE '2022-09-29',TRUE,1),
+           (2,DATE '2022-10-17',DATE '2022-10-18',TRUE,1),
+           (2,DATE '2022-08-12',DATE '2022-08-18',TRUE,1),
+           (3,DATE '2022-06-05',DATE '2022-06-10',TRUE,1)
 
-INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
-    VALUES (1,DATE '2022-09-29',DATE '2022-09-30',TRUE,1);
+;
 
-INSERT INTO room_booking(booking_id,room_id,is_active,main_guest)
-    VALUES (1,1,TRUE,'Tim Burners Lee');
 
-INSERT INTO room_booking(booking_id,room_id,is_active,main_guest)
-    VALUES (2,1,TRUE,'Bertrand Russell');
-
-UPDATE ROOM_BOOKING SET no_of_guests=2 WHERE id=1;
-UPDATE ROOM_BOOKING SET no_of_guests=2 WHERE id=2;
-UPDATE ROOM_BOOKING SET no_of_guests=2 WHERE id=3;
+INSERT INTO room_booking(booking_id,room_id,is_active,main_guest,no_of_guests)
+    VALUES
+           (1,1,TRUE,'Bertrand Russell',1),
+           (1,1,TRUE,'Freddie Mercury',1),
+           (1,2,TRUE,'Michael Jackson',2),
+           (2,2,TRUE,'Elvis Presley',1),
+           (2,2,TRUE,'John Lennon',2),
+           (3,3,TRUE,'AR Rahman',2)
+;
