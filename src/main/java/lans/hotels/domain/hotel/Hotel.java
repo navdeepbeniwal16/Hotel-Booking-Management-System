@@ -6,16 +6,19 @@ import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomSpecification;
+import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.Phone;
 
 import java.util.HashMap;
 
-public class Hotel extends AbstractDomainObject { // TODO: refactor ReferenceObject
-    private String name;
-    Phone phone;
-    String email; // TODO: refactor email into value object.
-    String address;
+public class Hotel extends ReferenceObject {
+    int hotel_group_id;
+    String name;
+    String email;
+    Address address;
+    String contact;
     String city;
+    int pin_code;
 
     HashMap<Integer, Room> rooms;
     HashMap<Integer, RoomSpecification> roomSpecifications;
@@ -32,40 +35,73 @@ public class Hotel extends AbstractDomainObject { // TODO: refactor ReferenceObj
         markClean();
     }
 
-    @Override
-    protected void setId(Integer id) throws Exception {
-
-    }
-
-    protected Hotel(String name, Phone phone, String email, Integer id, IDataSource dataSource) {
+    public Hotel(Integer id, IDataSource dataSource,
+            Integer hotel_group_id, String name, String email,
+            Address address, String contact, String city, Integer pin_code) {
         super(id, dataSource);
+        this.hotel_group_id = hotel_group_id;
         this.name = name;
-        this.phone = phone;
         this.email = email;
+        this.address = address;
+        this.contact = contact;
+        this.city = city;
+        this.pin_code = pin_code;
         initMaps();
-    }
-
-    public void setPhone(Phone phone) throws UoWException {
-        this.phone = phone;
-        markDirty();
     }
 
     private void initMaps() {
         this.rooms = new HashMap<>();
         this.roomSpecifications = new HashMap<>();
     }
+
+    public int getID() {
+        return id;
+    }
+    public int getHotelGroupID() {
+        return this.hotel_group_id;
+    }
     public String getName() {
-        return name;
+        return this.name;
     }
     public String getEmail() {
-        return email;
+        return this.email;
+    }
+    public Address getAddress() {
+        return this.address;
+    }
+    public String getContact() {
+        return this.contact;
+    }
+    public String getCity() {
+        return this.city;
+    }
+    public int getPinCode() {
+        return this.pin_code;
     }
 
-    public void setAddress(String address) { this.address = address; }
-    public String getAddress() { return this.address; }
-    public Phone getPhone() { return this.phone; }
+    public void setHotel_group_id(Integer hotel_group_id) {
+        this.hotel_group_id = hotel_group_id;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public void setName(Address address) {
+        this.address = address;
+    }
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+    public void setCity(String city) {
+        this.city = city;
+    }
+    public void setPincode(Integer pin_code) {
+        this.pin_code = pin_code;
+    }
 
-    public void remove() throws UoWException {
+public void remove() throws UoWException {
         markRemoved();
     }
 }

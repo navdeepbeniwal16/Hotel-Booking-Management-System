@@ -5,8 +5,8 @@ import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.hotel.HotelBuilder;
-import lans.hotels.domain.utils.Phone;
+import lans.hotels.domain.utils.Address;
+import lans.hotels.domain.utils.District;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,7 +15,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
-    private static final String COLUMNS = " number, floor, is_active, room_spec_id ";
 
     public HotelDataMapper(Connection connection, IDataSource dataSource) {
         super(connection, "hotel", dataSource);
@@ -23,11 +22,15 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
     @Override
     protected String findStatement() {
-        String statement = "SELECT " + " * " +
-                " FROM " + this.table + " h " +
-                " JOIN phone p ON h.phone = p.id " +
-                " JOIN address a on h.address = a.id " +
-                " WHERE h.id = ? ";
+        String statement =
+                "SELECT h.id,hotel_group_id,h.name as hotel_name, " +
+                        "email,contact,h.city as hotel_city,pin_code, " +
+                        "a.id as address_id,line_1,line_2,a.city as address_city, " +
+                        "postcode,d.id as district_id, d.name as district_name " +
+                        "FROM hotel h " +
+                        "JOIN (address a " +
+                        "JOIN district d ON a.district = d.id) " +
+                        "on h.address = a.id ";
         System.out.println("HotelDataMapper.findStatement(): " + statement);
         return statement;
     }
@@ -44,11 +47,8 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
 
     @Override
     public ArrayList<Hotel> findAll() throws SQLException {
-        String findAllStatment = "SELECT " + " * " +
-                " FROM " + this.table + " h " +
-                " JOIN phone p ON h.phone = p.id " +
-                " JOIN address a on h.address = a.id;";
-        try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
+
+        try (PreparedStatement statement = connection.prepareStatement(findStatement())) {
             ResultSet resultSet = statement.executeQuery();
             Hotel aHotel = load(resultSet);
             while (aHotel != null) {
@@ -64,30 +64,17 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
 
     @Override
-    public ArrayList<Hotel> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+    public ArrayList<Hotel> findBySearchCriteria(AbstractSearchCriteria criteria){
         HotelsSearchCriteria hotelsSearchCriteria = (HotelsSearchCriteria) criteria;
-        String findAllStatment = "SELECT " + " * " +
-                " FROM " + this.table + " h " +
-                " JOIN phone p ON h.phone = p.id " +
-                " JOIN address a on h.address = a.id ";
+        String findAllStatement = findStatement();
 
         if (hotelsSearchCriteria.getLocation() != null){
-            findAllStatment += "WHERE city = '" + hotelsSearchCriteria.getLocation() + "'";
+            findAllStatement += "WHERE h.city = '" + hotelsSearchCriteria.getLocation() + "'";
             System.out.println("Location passed to HotelDataMapper : " + hotelsSearchCriteria.getLocation());
         }
 
-        if(hotelsSearchCriteria.getHotelGroupId() != null) {
-            findAllStatment += "WHERE hotel_group_id = '" + hotelsSearchCriteria.getHotelGroupId() + "'";
-            System.out.println("HotelGroupId passed to HotelDataMapper : " + hotelsSearchCriteria.getLocation());
-        }
 
-        if(hotelsSearchCriteria.getStartDate() != null && hotelsSearchCriteria.getEndDate() != null) {
-            // TODO: Add a query that will only get the hotels that have rooms not present in the bookings for a given date range
-            // Check with Saood about how we can do this
-        }
-
-
-        try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
+        try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();
             Hotel currentHotel = load(resultSet);
             while (currentHotel != null) {
@@ -104,16 +91,17 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
 
     @Override
     protected Hotel doLoad(Integer id, ResultSet rs) throws SQLException {
-        HotelBuilder builder = new HotelBuilder(dataSource);
-        Phone phone = new Phone(rs.getInt("country"),
-                rs.getInt("area"),
-                rs.getInt("number"));
-        Hotel hotel = builder.id(id)
-                .name(rs.getString("name"))
-                .email(rs.getString("email"))
-                .phone(phone)
-                .address(rs.getString("line_1"))
-                .getResult();
+        District district = new District(rs.getString("district_name"));
+        Address address = new Address(rs.getString("line_1"),
+                rs.getString("line_2"),
+                district,
+                rs.getString("address_city"),
+                rs.getInt("postcode"));
+
+        Hotel hotel = new Hotel(id,dataSource,
+                rs.getInt("hotel_group_id"),rs.getString("hotel_name"),
+                rs.getString("email"),address,rs.getString("contact"),
+                rs.getString("hotel_city"),rs.getInt("pin_code"));
         return hotel;
     }
 

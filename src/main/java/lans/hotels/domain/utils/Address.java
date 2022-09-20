@@ -27,6 +27,9 @@ public class Address {
         else
             return ""+ line_1 + "," +district+","+city+"-"+postcode;
     }
+    public District getDistrict () {
+        return this.district;
+    }
 
     @Override
     public boolean equals(Object other) {

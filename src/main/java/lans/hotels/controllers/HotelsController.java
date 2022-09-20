@@ -108,11 +108,14 @@ public class HotelsController extends FrontCommand {
                         JSONObject aHotel;
                         for (Hotel hotel: hotels) {
                             aHotel = new JSONObject();
-                            aHotel.put("id", hotel.getId());
+                            aHotel.put("hotel_group_id", hotel.getHotelGroupID());
+                            aHotel.put("hotel_id", hotel.getID());
                             aHotel.put("name", hotel.getName());
                             aHotel.put("email", hotel.getEmail());
-                            aHotel.put("address", hotel.getAddress());
-                            aHotel.put("phone", hotel.getPhone().toString());
+                            aHotel.put("address", hotel.getAddress().toString());
+                            aHotel.put("contact", hotel.getContact());
+                            aHotel.put("city", hotel.getCity());
+                            aHotel.put("pin_code", hotel.getPinCode());
                             hotelArray.put(aHotel);
                         }
 
@@ -144,11 +147,15 @@ public class HotelsController extends FrontCommand {
                         JSONObject aHotel;
                         for (Hotel hotel: hotels) {
                             aHotel = new JSONObject();
-                            aHotel.put("id", hotel.getId());
+                            aHotel.put("hotel_group_id", hotel.getHotelGroupID());
+                            aHotel.put("hotel_id", hotel.getID());
                             aHotel.put("name", hotel.getName());
                             aHotel.put("email", hotel.getEmail());
-                            aHotel.put("address", hotel.getAddress());
-                            aHotel.put("phone", hotel.getPhone().toString());
+                            aHotel.put("address", hotel.getAddress().toString());
+                            aHotel.put("contact", hotel.getContact());
+                            aHotel.put("city", hotel.getCity());
+                            aHotel.put("pin_code", hotel.getPinCode());
+                            aHotel.put("district", hotel.getAddress().getDistrict().toString());
                             hotelArray.put(aHotel);
                         }
 
@@ -192,7 +199,6 @@ public class HotelsController extends FrontCommand {
             json.put("name", hotel.getName());
             json.put("email", hotel.getEmail());
             json.put("address", hotel.getAddress());
-            json.put("phone", hotel.getPhone().toString());
             out.print(json);
             out.flush();
         }
