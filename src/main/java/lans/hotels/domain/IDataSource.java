@@ -4,13 +4,14 @@ import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public interface IDataSource<IdType> {
+public interface IDataSource {
     void load(AbstractDomainObject domainObject);
-    <T extends AbstractDomainObject> List<T> findAll(Class<T> aClass) throws Exception;
-    <T extends AbstractDomainObject> T find(Class<T> aClass, IdType id);
-    public <T extends AbstractDomainObject> List<T> findBySearchCriteria(Class<T> aClass, AbstractSearchCriteria criteria) throws Exception;
+    <DomainObject extends AbstractDomainObject> ArrayList<DomainObject> findAll(Class<DomainObject> aClass) throws Exception;
+    <DomainObject extends AbstractDomainObject> DomainObject find(Class<DomainObject> aClass, Integer id);
+    <DomainObject extends AbstractDomainObject> ArrayList<DomainObject> findBySearchCriteria(Class<DomainObject> aClass, AbstractSearchCriteria criteria) throws Exception;
     void registerNew(AbstractDomainObject domainObject) throws UoWException;
     void registerDirty(AbstractDomainObject domainObject) throws UoWException;
     void registerRemoved(AbstractDomainObject domainObject) throws UoWException;

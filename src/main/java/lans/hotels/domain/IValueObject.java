@@ -1,5 +1,5 @@
 package lans.hotels.domain;
 
-public interface IValueObject<T extends AbstractDomainObject> {
+public interface IValueObject {
     boolean equals(Object other);
 }

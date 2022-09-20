@@ -1,23 +1,23 @@
 package lans.hotels.domain;
 
-import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
-import lans.hotels.domain.exceptions.DomainObjectException;
-import lans.hotels.domain.exceptions.ReferenceObjectException;
-import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public abstract class AbstractDomainObject<Id> implements IGhost {
+public abstract class AbstractDomainObject implements IGhost {
     protected IDataSource dataSource;
     protected Integer hashCode;
-    protected Id id;
+    protected Integer id;
     protected Boolean isNew;
 
     private LoadStatus loadStatus;
 
-    public Id getId() {
+    public AbstractDomainObject(IDataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public Integer getId() {
         return this.id;
     }
 
@@ -25,7 +25,11 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
         return id != null;
     }
 
-    public abstract boolean equals(Object other);
+    @Override
+    public boolean equals(Object other) {
+        if (other.getClass() != this.getClass()) return false;
+        return this.id == ((ReferenceObject) other).getId();
+    }
 
     protected AbstractDomainObject(Boolean isNew, IDataSource dataSource) {
         this.dataSource = dataSource;
@@ -33,14 +37,14 @@ public abstract class AbstractDomainObject<Id> implements IGhost {
         hashCode = Objects.hash(LocalDateTime.now(), this.getClass());
     }
 
-    protected AbstractDomainObject(Id id, IDataSource dataSource) {
+    protected AbstractDomainObject(Integer id, IDataSource dataSource) {
         this.id = id;
         this.dataSource = dataSource;
         this.isNew = false;
         hashCode = Objects.hash(this.id, this.getClass());
     }
 
-     abstract void setId(Id id) throws Exception;
+     protected abstract void setId(Integer id) throws Exception;
 
     @Override
     public int hashCode() {

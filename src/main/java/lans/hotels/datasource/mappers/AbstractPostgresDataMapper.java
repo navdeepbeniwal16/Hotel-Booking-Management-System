@@ -5,31 +5,31 @@ import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 
-import java.lang.reflect.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import java.sql.Connection;
-public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDomainObject<Integer>>
-        implements IDataMapper<Integer, DomainObject> {
+public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDomainObject>
+        implements IDataMapper<DomainObject> {
     protected IDataSource dataSource;
     protected Connection connection;
     protected String table;
-    protected Map<Integer, DomainObject> loadedMap = new HashMap(); // TODO: unfuck #bug
+    protected Map<Integer, DomainObject> loadedMap; // TODO: unfuck #bug
     abstract protected String findStatement();
     abstract protected String insertStatement();
     protected abstract DomainObject doLoad(Integer id, ResultSet resultSet) throws SQLException;
     public abstract DomainObject doCreate(DomainObject domainObject);
-    public abstract List<DomainObject> findAll() throws SQLException;
+    public abstract ArrayList<DomainObject> findAll() throws SQLException;
 
     protected AbstractPostgresDataMapper(Connection connection, String table, IDataSource dataSource) {
         this.connection = connection;
         this.table = table;
         this.dataSource = dataSource;
+        this.loadedMap = new HashMap();
     }
 
     public DomainObject getById(Integer id) {
@@ -63,9 +63,8 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         return result;
     }
 
-    public DomainObject create(DomainObject domainObject) {
-        DomainObject newDomainObject = doCreate(domainObject);
+    public void create(AbstractDomainObject domainObject) {
+        DomainObject newDomainObject = doCreate((DomainObject) domainObject);
         if (newDomainObject != null) loadedMap.put(newDomainObject.getId(), newDomainObject);
-        return newDomainObject;
     }
 }
