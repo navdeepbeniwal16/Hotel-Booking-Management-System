@@ -34,12 +34,10 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
 
     @Override
     public ArrayList<Hotelier> findAll() throws SQLException {
-        String findAllStatment = "SELECT hotelier_id AS id, name, email, password, role, " +
-                "hotelier_id, is_active " +
-            "FROM app_user u " +
-            "JOIN ( " +
-            "SELECT user_id, id AS hotelier_id,is_active FROM hotelier " +
-            ") AS ho " +
+        String findAllStatment =
+            "SELECT ho.id AS id, name, email, password, role, user_id, is_active " +
+            "FROM app_user u  " +
+            "JOIN hotelier ho " +
             "ON u.id = ho.user_id ";
         try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
             ResultSet resultSet = statement.executeQuery();
@@ -58,11 +56,15 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
 
     @Override
     protected Hotelier doLoad(Integer id, ResultSet rs) throws SQLException {
-        Hotelier hotelier = new Hotelier(rs.getInt("id"), dataSource, rs.getString("name"),rs.getString("email"),
-                rs.getString("password"),rs.getInt("role"),rs.getInt("hotelier_id"),
+        Hotelier hotelier = new Hotelier(rs.getInt("user_id"), dataSource,rs.getInt("id"),
+                rs.getString("name"),rs.getString("email"),
+                rs.getString("password"),rs.getInt("role"),
                 rs.getBoolean("is_active"));
+
         return hotelier;
     }
+
+
 
     @Override
     public Hotelier update(AbstractDomainObject domainObject) {

@@ -5,18 +5,19 @@ import lans.hotels.domain.IDataSource;
 
 public class Hotelier extends User {
 
-    int id;
+    int hotelierID;
     int userID;
     boolean isActive;
 
-    public Hotelier(Integer id, IDataSource dataSource, String name, String email, String password, Integer role, int userID, boolean isActive) {
-        super(id,dataSource);
+    public Hotelier(Integer userID, IDataSource dataSource, Integer id, String name, String email,
+                    String password, Integer role, boolean isActive) {
+        super(userID,dataSource);
+        this.hotelierID = id;
+        this.isActive = isActive;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.isActive = isActive;
-        this.userID = userID;
         initMaps();
     }
 
@@ -32,15 +33,15 @@ public class Hotelier extends User {
 
     public int getUserID()
     {
-        return this.userID;
+        return super.id;
     }
 
     private void initMaps() {
     }
 
-    public int getID()
+    public int getHotelierID()
     {
-        return this.id;
+        return this.hotelierID;
     }
 
 }
