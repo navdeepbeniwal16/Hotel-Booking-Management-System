@@ -38,6 +38,10 @@ public class User extends ReferenceObject {
     {
         return this.email;
     }
+    public String getPassword()
+    {
+        return this.password;
+    }
 
     public void setEmail(String email) throws UoWException {
         this.email = email;

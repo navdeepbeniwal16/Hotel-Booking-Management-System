@@ -119,10 +119,8 @@ public class ServletUoW implements IUnitOfWork {
         newObjects.forEach(obj -> {
             try {
                 mappers.getMapper(obj.getClass()).create(obj);
-            } catch (MapperNotFoundException e) {
+            } catch (Exception e) {
                 System.err.println(e);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
         });
         dirtyObjects.forEach(obj -> {

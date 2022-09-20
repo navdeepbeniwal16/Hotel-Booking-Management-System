@@ -6,9 +6,11 @@ import lans.hotels.domain.user_types.Hotelier;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.io.PrintWriter;
 
 import java.sql.SQLException;
@@ -85,6 +87,60 @@ public class HoteliersController extends FrontCommand{
 
                 return;
             case HttpMethod.POST:
+            {
+                System.out.println("Enter Hotelier POST");
+                String[] commandPath2 = request.getPathInfo().split("/");
+
+                if (commandPath2.length == 2) {
+
+                    JSONObject jsonHotelierObject = getRequestBody(request);
+                    System.out.println("Parsed Hotel JSONObject : " + jsonHotelierObject);
+                    Hotelier hotelier = getHotelierFromJsonObject(jsonHotelierObject);
+
+                    if(hotelier == null)
+                        throw new InvalidObjectException("Failed to parse hotelier object from request body");
+
+                    System.out.println("Parsed Hotel Object : " + hotelier);
+
+                    Hotelier return_hotelier;
+                    try {
+                        return_hotelier = (Hotelier) dataSource.insert(Hotelier.class,hotelier);
+                    } catch (Exception e) {
+                        System.err.println("GET /api/hoteliers: " + Arrays.toString(commandPath2));
+                        System.err.println("GET /api/hoteliers: " + e.getMessage());
+                        System.err.println("GET /api/hoteliers: " + e.getClass());
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                        return;
+                    }
+
+                    System.out.println("R hotelier"+return_hotelier.getUserID());
+                    JSONArray hotelierArray = new JSONArray();
+                    PrintWriter out = response.getWriter();
+                    response.setStatus(200);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    JSONObject aHotelier;
+                    aHotelier = new JSONObject();
+                    aHotelier.put("hotelier_id", return_hotelier.getHotelierID());
+                    aHotelier.put("user_id", return_hotelier.getUserID());
+                    aHotelier.put("isActive", return_hotelier.getStatus());
+
+                    JSONObject hotelierJson = new JSONObject();
+                    hotelierJson.put("result", aHotelier);
+                    out.print(hotelierJson);
+                    out.flush();
+                    return;
+
+
+                }
+                else {
+                    System.err.println("Hotelier controller: " + Arrays.toString(commandPath2));
+                    System.err.println("Hotelier controller: commandPath2.length = " + commandPath2.length);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
+                    return;
+                }
+            }
             case HttpMethod.PUT:
             case HttpMethod.DELETE:
             default:
@@ -112,5 +168,41 @@ public class HoteliersController extends FrontCommand{
             out.print(json);
             out.flush();
         }
+    }
+
+    public JSONObject getRequestBody(HttpServletRequest request) throws IOException {
+        BufferedReader requestReader = request.getReader();
+
+        String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
+        System.out.println("Request Body Lines + " + lines);
+        JSONObject body;
+        if (lines.length() > 0) {
+            System.out.println(lines);
+            body = new JSONObject(lines);
+        } else {
+            return null;
+        }
+        return body;
+    }
+
+    public Hotelier getHotelierFromJsonObject(JSONObject jsonObject) {
+
+        Hotelier hotelier = null;
+        String name = "";
+        String email = "";
+        String password = "";
+        if(jsonObject.has("hotelier")) {
+            JSONObject nestedJsonObject = jsonObject.getJSONObject("hotelier");
+
+            if(nestedJsonObject.has("name"))
+                name = nestedJsonObject.getString("name");
+            if(nestedJsonObject.has("email"))
+                email = nestedJsonObject.getString("email");
+            if(nestedJsonObject.has("password"))
+                password = nestedJsonObject.getString("password");
+
+            hotelier = new Hotelier(dataSource,name,email,password,2,true);
+        }
+        return hotelier;
     }
 }

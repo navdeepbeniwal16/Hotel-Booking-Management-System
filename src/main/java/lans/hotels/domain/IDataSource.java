@@ -3,6 +3,7 @@ package lans.hotels.domain;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.domain.user_types.Hotelier;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,4 +22,6 @@ public interface IDataSource {
     // TODO: #refactor - split into two separate interfaces. One of Data Model and one for Controllers.
     // Why? Current Data Model is receiving an interface it should not be able to use (commit).
     void commit() throws DataSourceLayerException;
+
+    <DomainObject extends AbstractDomainObject> DomainObject insert(Class<DomainObject> hotelierClass, DomainObject object)throws Exception;
 }

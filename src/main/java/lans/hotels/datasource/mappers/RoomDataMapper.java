@@ -36,13 +36,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
                 " RETURNING id; ";
     }
 
-    @Override
-    public Room doCreate(Room room) throws SQLException {
-        // TODO: optimisation - can we not do this second call to the DB?
-        Integer newRoomId = prepareAndExecuteInsertion(room);
-        if (newRoomId != null) return getById(newRoomId);
-        return null;
-    }
+
 
     @Override
     public ArrayList<Room> findAll() throws SQLException {
@@ -59,11 +53,14 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
         } catch (SQLException e) {
             System.err.println("RoomMapper.findAll():" + e);
             throw e;
-        } catch (UoWException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ArrayList<Room> insert() throws Exception {
+        return null;
     }
 
     @Override
@@ -130,6 +127,11 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
 
     @Override
     public Room update(AbstractDomainObject domainObject) {
+        return null;
+    }
+
+    @Override
+    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) {
         return null;
     }
 

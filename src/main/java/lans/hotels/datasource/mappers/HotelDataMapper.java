@@ -41,11 +41,6 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
 
     @Override
-    public Hotel doCreate(Hotel domainObject) {
-        return null;
-    }
-
-    @Override
     public ArrayList<Hotel> findAll() throws SQLException {
 
         try (PreparedStatement statement = connection.prepareStatement(findStatement())) {
@@ -61,6 +56,11 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
             System.out.println("HotelDataMapper.findAll() - loaded hotels: " + loadedMap);
         }
         return new ArrayList<>(loadedMap.values());
+    }
+
+    @Override
+    public ArrayList<Hotel> insert() throws Exception {
+        return null;
     }
 
     @Override
@@ -112,6 +112,11 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
 
     @Override
     public Hotel update(AbstractDomainObject domainObject) {
+        return null;
+    }
+
+    @Override
+    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) {
         return null;
     }
 

@@ -29,11 +29,6 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    public Hotelier doCreate(Hotelier domainObject) {
-        return null;
-    }
-
-    @Override
     public ArrayList<Hotelier> findAll() throws SQLException {
         String findAllStatment =
             "SELECT ho.id AS id, name, email, password, role, user_id, is_active " +
@@ -47,11 +42,14 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
                 currentHotelier = load(resultSet);
             }
             return new ArrayList<>(loadedMap.values());
-        } catch (UoWException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ArrayList<Hotelier> insert() throws Exception {
+        return null;
     }
 
     @Override
@@ -74,6 +72,36 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     @Override
     public Hotelier update(AbstractDomainObject domainObject) {
         return null;
+    }
+
+    @Override
+    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) throws Exception {
+        {
+            Hotelier hotelier = (Hotelier) domainObject;
+            String createStatement = "WITH insert_app_user AS ( " +
+                    "INSERT INTO app_user (name,email,password,role) " +
+                    "VALUES ( " + "'" + hotelier.getName() + "'," +
+                    "'" + hotelier.getEmail() + "'," +
+                    "'" + hotelier.getPassword() + "'," +
+                    "'" + hotelier.getRole() + "') " +
+                    "RETURNING id " +
+                    ") " +
+                    "INSERT INTO hotelier (user_id, is_active) " +
+                    "VALUES " +
+                    "((SELECT id FROM insert_app_user),True) " +
+                    "returning * ";
+            System.out.println(createStatement);
+            try (PreparedStatement statement = connection.prepareStatement(createStatement)) {
+                ResultSet resultSet = statement.executeQuery();
+
+                if (!resultSet.next()) return null;
+                System.out.println(resultSet.getInt("user_id"));
+                Hotelier currentHotelier = new Hotelier(resultSet.getInt("user_id"),
+                        dataSource,resultSet.getInt("id"), resultSet.getBoolean("is_active"));
+                return (DomainObject) currentHotelier;
+
+            }
+        }
     }
 
     @Override

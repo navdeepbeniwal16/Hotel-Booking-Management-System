@@ -15,6 +15,12 @@ public class RoomSpecificationMapper extends AbstractPostgresDataMapper<RoomSpec
     public RoomSpecificationMapper(Connection connection, IDataSource dataSource) {
         super(connection, "room_spec", dataSource);
     }
+
+    @Override
+    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) {
+        return null;
+    }
+
     @Override
     public <DomainObj extends AbstractDomainObject> DomainObj update(AbstractDomainObject domainObject) {
         return null;
@@ -46,12 +52,12 @@ public class RoomSpecificationMapper extends AbstractPostgresDataMapper<RoomSpec
     }
 
     @Override
-    public RoomSpecification doCreate(RoomSpecification domainObject) {
+    public ArrayList<RoomSpecification> findAll() throws SQLException {
         return null;
     }
 
     @Override
-    public ArrayList<RoomSpecification> findAll() throws SQLException {
+    public ArrayList<RoomSpecification> insert() throws Exception {
         return null;
     }
 

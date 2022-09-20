@@ -26,11 +26,6 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     }
 
     @Override
-    public Customer doCreate(Customer domainObject) {
-        return null;
-    }
-
-    @Override
     public ArrayList<Customer> findAll() throws SQLException {
         String findAllStatement = "SELECT customer_id as id, name, email, password, role, " +
                 "contact, age, line_1 as address_l1,line_2 AS address_l2, " +
@@ -61,6 +56,11 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     }
 
     @Override
+    public ArrayList<Customer> insert() throws Exception {
+        return null;
+    }
+
+    @Override
     public ArrayList<Customer> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         return null;
     }
@@ -83,6 +83,11 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
 
     @Override
     public Customer update(AbstractDomainObject domainObject) {
+        return null;
+    }
+
+    @Override
+    public <DomainObject extends AbstractDomainObject> DomainObject create(DomainObject domainObject) {
         return null;
     }
 

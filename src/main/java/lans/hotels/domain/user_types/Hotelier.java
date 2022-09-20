@@ -21,6 +21,23 @@ public class Hotelier extends User {
         initMaps();
     }
 
+    public Hotelier(IDataSource dataSource, String name, String email,
+                    String password, Integer role, boolean isActive) {
+        super(dataSource);
+        this.isActive = isActive;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        initMaps();
+    }
+
+    public Hotelier(Integer userID, IDataSource dataSource, Integer id, boolean isActive){
+        super(userID,dataSource);
+        this.hotelierID = id;
+        this.isActive = isActive;
+    }
+
     public Boolean getStatus()
     {
         return this.isActive;

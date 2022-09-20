@@ -1,7 +1,6 @@
 package lans.hotels.datasource.mappers;
 
 
-import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
@@ -23,7 +22,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
     abstract protected String findStatement();
     abstract protected String insertStatement();
     protected abstract DomainObject doLoad(Integer id, ResultSet resultSet) throws Exception;
-    public abstract DomainObject doCreate(DomainObject domainObject) throws SQLException;
+    //public abstract DomainObject create(DomainObject domainObject);
     public abstract ArrayList<DomainObject> findAll() throws SQLException;
 
     protected String idPrefix;
@@ -36,25 +35,21 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         idPrefix = "";
     }
 
-    public DomainObject getById(Integer id) throws SQLException {
+    public DomainObject getById(Integer id) {
         try {
             return getFromDb(id);
-        } catch (SQLException e) {
-            System.err.println("AbstractPostgresDataMapper | +" + this.getClass().getName() + ".getById(): " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("AbstractPostgresDataMapper.getById(): " + e.getMessage());
             // TODO: do not return null!
-            throw e;
+            return null;
         }
     }
 
-    private DomainObject getFromDb(Integer id) throws SQLException {
+    private DomainObject getFromDb(Integer id) throws Exception {
         try (PreparedStatement findStatement = connection.prepareStatement(findStatement())){
             findStatement.setInt(1, id);
             ResultSet resultSet = findStatement.executeQuery();
             return load(resultSet);
-        } catch (UoWException e) {
-            throw new RuntimeException(e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
     protected DomainObject load(ResultSet resultSet) throws Exception {
@@ -69,10 +64,5 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
             loadedMap.put(id, result);
         }
         return result;
-    }
-
-    public void create(AbstractDomainObject domainObject) throws SQLException {
-        DomainObject newDomainObject = doCreate((DomainObject) domainObject);
-        if (newDomainObject != null) loadedMap.put(newDomainObject.getId(), newDomainObject);
     }
 }
