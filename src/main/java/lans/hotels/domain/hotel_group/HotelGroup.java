@@ -24,12 +24,6 @@ public class HotelGroup extends ReferenceObject{
         markClean();
     }
 
-    public HotelGroup(Integer id, IDataSource dataSource,String phone) throws UoWException {
-        super(id, dataSource);
-        this.phone = phone;
-        initMaps();
-
-    }
 
     public HotelGroup(Integer id, IDataSource dataSource,
                  String name,Address address, String phone) throws UoWException {

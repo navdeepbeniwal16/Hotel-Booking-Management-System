@@ -99,6 +99,10 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
                 else return false;
 
             }
+            catch (SQLException e)
+            {
+                return false;
+            }
         }
     }
 

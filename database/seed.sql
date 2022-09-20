@@ -60,8 +60,7 @@ VALUES
 INSERT INTO hotel_group_hotelier(hotelier_id,hotel_group_id)
 VALUES
        (1,1),
-       (2,1),
-       (3,2)
+       (2,1)
 ;
 
 INSERT INTO

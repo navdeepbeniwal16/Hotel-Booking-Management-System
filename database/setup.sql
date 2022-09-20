@@ -29,7 +29,7 @@ DROP TABLE IF EXISTS room_feature CASCADE;
 
 CREATE TABLE DISTRICT(
     id INT GENERATED ALWAYS AS IDENTITY,
-    name VARCHAR(3) NOT NULL,
+    name VARCHAR(3) NOT NULL UNIQUE ,
     PRIMARY KEY (id)
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE ADDRESS(
 CREATE TABLE APP_USER(
                          id INT GENERATED ALWAYS AS IDENTITY,
                          name VARCHAR(50) NOT NULL,
-                         email VARCHAR(50) NOT NULL CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+                         email VARCHAR(50) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
                          password VARCHAR(50) NOT NULL,
                          role INT NOT NULL,
                          PRIMARY KEY (id)
@@ -83,7 +83,7 @@ CREATE TABLE HOTELIER(
 
 CREATE TABLE HOTEL_GROUP(
                             id INT GENERATED ALWAYS AS IDENTITY,
-                            name VARCHAR(50) NOT NULL,
+                            name VARCHAR(50) NOT NULL UNIQUE,
                             address INT NOT NULL,
                             phone VARCHAR(13) NULL,
                             FOREIGN KEY (address) REFERENCES ADDRESS(id),
@@ -92,7 +92,7 @@ CREATE TABLE HOTEL_GROUP(
 
 CREATE TABLE HOTEL_GROUP_HOTELIER(
                                      id INT GENERATED ALWAYS AS IDENTITY,
-                                     hotelier_id INT NOT NULL,
+                                     hotelier_id INT NOT NULL UNIQUE ,
                                      hotel_group_id INT NOT NULL,
                                      PRIMARY KEY (id),
                                      FOREIGN KEY (hotelier_id) REFERENCES HOTELIER(id),
@@ -102,8 +102,8 @@ CREATE TABLE HOTEL_GROUP_HOTELIER(
 CREATE TABLE HOTEL(
                       id INT GENERATED ALWAYS AS IDENTITY,
                       hotel_group_id INT NOT NULL,
-                      name VARCHAR(50) NOT NULL,
-                      email VARCHAR(50) NOT NULL CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+                      name VARCHAR(50) NOT NULL UNIQUE,
+                      email VARCHAR(50) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
                       address INT NOT NULL,
                       contact VARCHAR(13) NULL,
                       city VARCHAR(50) NOT NULL,

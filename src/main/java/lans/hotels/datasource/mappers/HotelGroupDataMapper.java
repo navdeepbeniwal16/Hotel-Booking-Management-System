@@ -132,6 +132,10 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
             else return false;
 
         }
+        catch (SQLException e)
+        {
+            return false;
+        }
     }
 
     @Override
