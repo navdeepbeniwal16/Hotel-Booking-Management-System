@@ -124,20 +124,14 @@ INSERT INTO hotel_group_hotelier (hotelier_id,hotel_group_id) VALUES (2,1);
 DELETE FROM hotel_group_hotelier WHERE hotelier_id = ?;
 
 --Create a hotel group---------------------------------------------------
-WITH insert_phone AS (
-    INSERT INTO phone (country,area,number)
-        VALUES
-            (61,437,847586)
-        RETURNING id
-),
-     insert_address AS (
-         INSERT INTO address (line_1,line_2,district,city,postcode)
-             VALUES
-                 ('1-12','Monash Road',(SELECT id from district WHERE name = 'QLD'),'Rawthdowne',1035)
-             RETURNING id
-     )
-INSERT INTO hotel_group (name, address,phone,about)
-VALUES ('Novotel Group of Hotels',(SELECT id FROM insert_address),(SELECT id FROM insert_phone),'Chain of Novotel hotels');
+WITH insert_address AS (
+INSERT INTO address (line_1,line_2,district,city,postcode)
+VALUES
+    ('1-12','Monash Road',(SELECT id from district WHERE name = 'QLD'),'Rawthdowne',1035)
+    RETURNING id
+    )
+INSERT INTO hotel_group (name, address,phone)
+VALUES ('Novotel Group of Hotels',(SELECT id FROM insert_address),'+91222222222');
 
 --Remove hotel listing--------------------------------------------
 --Make hotel inactive

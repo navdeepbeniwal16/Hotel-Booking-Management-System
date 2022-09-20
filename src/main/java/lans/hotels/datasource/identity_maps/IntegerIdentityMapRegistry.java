@@ -4,6 +4,7 @@ import lans.hotels.datasource.facade.IIdentityMap;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomSpecification;
 
@@ -14,6 +15,7 @@ public class IntegerIdentityMapRegistry extends AbstractIdentityMapRegistry {
     public static IntegerIdentityMapRegistry newInstance(IDataSource dataSource) {
         IntegerIdentityMapRegistry newRegistry = new IntegerIdentityMapRegistry(new HashMap<>(), dataSource);
         newRegistry.add(new HotelMap(new HashMap<>()), Hotel.class);
+        //newRegistry.add(new HotelGoupMap(new HashMap<>()), HotelGroup.class);
         newRegistry.add(new RoomMap(new HashMap<>()), Room.class);
         newRegistry.add(new RoomSpecificationMap(new HashMap<>()), RoomSpecification.class);
         return newRegistry;

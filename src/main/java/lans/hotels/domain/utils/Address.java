@@ -27,9 +27,22 @@ public class Address {
         else
             return ""+ line_1 + "," +district+","+city+"-"+postcode;
     }
+
+    public String getLine1 () {
+        return this.line_1;
+    }
+    public String getLine2 () {
+        return this.line_2;
+    }
+
     public District getDistrict () {
         return this.district;
     }
+
+    public String getCity () {
+        return this.city;
+    }
+
 
     @Override
     public boolean equals(Object other) {
