@@ -1,7 +1,12 @@
 package lans.hotels.domain.user_types;
 import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.utils.Address;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Customer extends User{
     Address address;
@@ -40,6 +45,20 @@ public class Customer extends User{
 
     public void remove() throws UoWException {
         markRemoved();
+    }
+
+    public List<Booking> getAllBookings() {
+        BookingsSearchCriteria bookingsSearchCriteria = new BookingsSearchCriteria();
+        bookingsSearchCriteria.setCustomerId(this.getId());
+        ArrayList<Booking> allBookings = new ArrayList<>();
+        try {
+            allBookings = dataSource.findBySearchCriteria(Booking.class, bookingsSearchCriteria);
+        } catch (Exception e) {
+            System.out.println("Exception occured while fetching bookings for the customer");
+            System.out.println(e.getMessage());
+        }
+
+        return allBookings;
     }
 
     @Override public String toString() {
