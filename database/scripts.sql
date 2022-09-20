@@ -1,9 +1,7 @@
 --Search functionality---------------------------------------------
 --get all rooms based on hotel id
-SELECT r.id as id, t.name as type, h.id as room, max_occupancy, b.name as bed_type, view, room_price
+SELECT r.id as id, h.id as room, max_occupancy, bed_type, description, room_price
     FROM room_spec r
-        JOIN room_type t ON r.type=t.id
-        JOIN bed_type b ON r.bed_type=b.id
         JOIN room h ON r.id = h.room_spec_id
     WHERE r.hotel_id = ? AND h.is_active=TRUE;
 
@@ -43,13 +41,11 @@ VALUES
     ((SELECT id FROM insert_app_user),True);
 
 --View prior and future hotel bookings-------------------------------
-SELECT b.id as id,h.name as hotel_name, start_date, end_date, t.name as room_type, m.id as room_id,no_of_guests,main_guest
+SELECT b.id as id,h.name as hotel_name, start_date, end_date, s.type as room_type, m.id as room_id,no_of_guests,main_guest
     FROM booking b
         JOIN ( room_booking r
             JOIN (room m
-                JOIN (room_spec s
-                    JOIN room_type t
-                    ON t.id = s.type)
+                JOIN room_spec s
                 ON m.room_spec_id=s.id)
             ON r.room_id=m.id)
         ON b.id = r.booking_id
@@ -91,18 +87,19 @@ VALUES (1,'JWM Marriott','jwm@gmail.com',(SELECT id FROM insert_address),(SELECT
 
 --Create hotel rooms-----------------------------------------------------
 --Create hotel room spec
-INSERT INTO room_spec (hotel_id,type,max_occupancy,bed_type,view,room_price)
+INSERT INTO room_spec (hotel_id,type,max_occupancy,bed_type,description,room_price)
 VALUES
        (?,
-        (SELECT id FROM room_type WHERE name='Penthouse'),
+        'Penthouse',
         3,
-        (SELECT id FROM bed_type WHERE name='King'),
-        'Pool Facing','$450');
+        'King',
+        'Pool Facing',
+        450);
 --Create hotel room
 INSERT INTO room (hotel_id,room_spec_id,number,floor,is_active)
 VALUES
     (3,
-     (SELECT id FROM room_spec WHERE hotel_id=3 and type = (SELECT id FROM room_type WHERE name = 'Penthouse')),
+     (SELECT id FROM room_spec WHERE hotel_id=3 and type = 'Penthouse'),
      901,
      9,
      TRUE);
