@@ -25,11 +25,14 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
     public abstract DomainObject doCreate(DomainObject domainObject);
     public abstract ArrayList<DomainObject> findAll() throws SQLException;
 
+    protected String idPrefix;
+
     protected AbstractPostgresDataMapper(Connection connection, String table, IDataSource dataSource) {
         this.connection = connection;
         this.table = table;
         this.dataSource = dataSource;
         this.loadedMap = new HashMap();
+        idPrefix = "";
     }
 
     public DomainObject getById(Integer id) {
@@ -54,7 +57,7 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
 
         // TODO: abstract out type to generic?
 
-        Integer id = resultSet.getInt("id");
+        Integer id = resultSet.getInt(idPrefix + "id");
         DomainObject result = loadedMap.get(id);
         if (result == null) {
             result = doLoad(id, resultSet);

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class RoomsController extends FrontCommand {
@@ -103,7 +102,7 @@ public class RoomsController extends FrontCommand {
                 aRoom = new JSONObject();
                 aRoom.put("id", room.getId());
                 aRoom.put("hotelId", room.getHotel().getId());
-                aRoom.put("occupancy", room.getSpecification().getCapacity());
+                aRoom.put("occupancy", room.getSpecification().getOccupancy());
                 aRoom.put("address", room.getSpecification().getRoomType());
                 roomArray.put(aRoom);
             }

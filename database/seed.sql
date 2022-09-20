@@ -61,11 +61,11 @@ VALUES
     ('Standard'), ('Deluxe'), ('Premium'), ('Penthouse');
 
 INSERT INTO
-    room_spec(hotel_id, type, max_occupancy, bed_type, view, room_price)
+    room_spec(hotel_id, type, max_occupancy, bed_type, description, room_price)
 VALUES
-    (1, 1, 2, 1, 'Street view', 100),
-    (1, 2, 2, 3, 'Street view', 200),
-    (1, 3, 3, 4, 'Above street', 300)
+    (1, 1, 2, 1, 'Cozy single room for one or two people', 100),
+    (1, 2, 2, 3, 'Extra spacious room to treat yourself', 200),
+    (1, 3, 3, 4, 'The perfect room for business traveller', 300)
 ;
 
 INSERT INTO
