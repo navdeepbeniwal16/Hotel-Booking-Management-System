@@ -2,7 +2,9 @@ package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
+import lans.hotels.datasource.search_criteria.HotelierSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
+import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.user_types.Hotelier;
 import lans.hotels.domain.utils.Address;
@@ -150,15 +152,77 @@ public class HotelsController extends FrontCommand {
                     }
                 }
                 case HttpMethod.PUT:
-//                {
-//                    JSONObject requestBody = getRequestBody(request);
-//                    if(requestBody.has("booking")) {
-//                        JSONObject bookingJsonBody = requestBody.getJSONObject("booking");
-//                        if(!bookingJsonBody.has("id")) {
-//                            // TODO: return some sensible error
-//                        }
-//
-//                }
+                {
+                    JSONObject requestBody = getRequestBody(request);
+                    if(requestBody.has("hotel")) {
+                        JSONObject JSONBody = requestBody.getJSONObject("hotel");
+                        if (!JSONBody.has("id")) {
+                            System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                            return;
+                        }
+                        else {
+                            Integer id = JSONBody.getInt("id");
+                            HotelsSearchCriteria criteria = new HotelsSearchCriteria();
+                            criteria.setHotelId(id);
+                            System.out.println("Hotel id : "+criteria.getHotelId());
+
+
+                            boolean success = false;
+
+                            try {
+                                hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
+                                if(hotels.size() > 0) {
+                                    Hotel hotel = hotels.get(0);
+
+                                    if(JSONBody.has("is_active") && !JSONBody.getBoolean("is_active")==(hotel.getIsActive())) {
+                                        System.out.println("value : "+JSONBody.getBoolean("is_active")+"My value : "+hotel.getIsActive());
+                                        hotel.setIs_Active(!hotel.getIsActive());
+                                        System.out.println("new value"+hotel.getIsActive());
+
+
+                                        success = true;
+                                    }
+                                    dataSource.commit();
+
+                                    PrintWriter out = response.getWriter();
+                                    response.setStatus(200);
+                                    response.setContentType("application/json");
+                                    response.setCharacterEncoding("UTF-8");
+
+                                    JSONObject aHG;
+                                    aHG = new JSONObject();
+
+                                    if (success)
+                                        aHG.put("updated", success);
+                                    else
+                                        aHG.put("updated", success);
+
+                                    JSONObject hgJSON = new JSONObject();
+                                    hgJSON.put("result", aHG);
+                                    out.print(hgJSON);
+                                    out.flush();
+                                    return;
+
+                                } else {
+                                    System.err.println("PUT /api/hotels: " + Arrays.toString(commandPath));
+                                    response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
+                                    return;
+                                }
+
+                            } catch (Exception e) {
+                                System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
+                                System.err.println("GET /api/bookings: " + e.getMessage());
+                                System.err.println("GET /api/bookings: " + e.getClass());
+                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                                e.printStackTrace();
+                                return;
+                            }
+
+                        }
+                    }
+
+                }
                 case HttpMethod.DELETE:
                 default:
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());

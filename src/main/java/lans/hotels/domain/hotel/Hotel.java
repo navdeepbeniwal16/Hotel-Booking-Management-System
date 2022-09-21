@@ -124,7 +124,7 @@ public class Hotel extends ReferenceObject {
         markDirty();
     }
 
-    public void setPincode(Boolean is_active) throws UoWException {
+    public void setIs_Active(Boolean is_active) throws UoWException {
         this.is_active = is_active;
         markDirty();
     }

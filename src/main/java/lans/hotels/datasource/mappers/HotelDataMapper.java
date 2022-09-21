@@ -2,9 +2,11 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.utils.Address;
@@ -72,7 +74,8 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
 
         if (hotelsSearchCriteria.getHotelId() != null){
             findAllStatement += "WHERE h.id = '" + hotelsSearchCriteria.getHotelId() + "'";
-            System.out.println("Location passed to HotelDataMapper : " + hotelsSearchCriteria.getLocation());
+            System.out.println(findAllStatement);
+            System.out.println("ID passed to HotelDataMapper : " + hotelsSearchCriteria.getHotelId());
         }
 
         if (hotelsSearchCriteria.getLocation() != null){
@@ -115,6 +118,27 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
 
     @Override
     public Hotel update(AbstractDomainObject domainObject) {
+        Hotel hotel = (Hotel) domainObject;
+        String updateStatement = "UPDATE hotel SET is_active = " + hotel.getIsActive()  +  " WHERE id = " + hotel.getId() + ";";
+
+        System.out.println("UPDATE BOOKING QUERY : ");
+        System.out.println(updateStatement);
+
+        try (PreparedStatement statement = connection.prepareStatement(updateStatement)) {
+            statement.executeQuery();
+            System.out.println("Hotel mapper : Hotel with id " + hotel.getId() + " updated in DataMapper...");
+
+            HotelsSearchCriteria criteria = new HotelsSearchCriteria();
+            criteria.setHotelId(hotel.getId());
+
+            ArrayList<Hotel> hotels = findBySearchCriteria(criteria);
+            if(hotels.size() > 0) return hotels.get(0);
+            else return null;
+        } catch (Exception e) {
+            System.out.println("Exception occurred at BookingDataMapper:update() execution");
+            e.printStackTrace();
+        }
+
         return null;
     }
 
