@@ -5,6 +5,7 @@ import lans.hotels.datasource.facade.IMapperRegistry;
 import lans.hotels.datasource.identity_maps.RoomSpecificationMap;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.booking.Booking;
+import lans.hotels.domain.booking.RoomBooking;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 import lans.hotels.domain.room.RoomSpecification;
@@ -33,6 +34,7 @@ public class PostgresMapperRegistry implements IMapperRegistry {
         registry.addMapper(HotelGroupHotelier.class, new HotelGroupHotelierDataMapper(connection, dataSource));
         registry.addMapper(RoomSpecification.class, new RoomSpecificationMapper(connection, dataSource));
         registry.addMapper(Booking.class, new BookingDataMapper(connection, dataSource));
+        registry.addMapper(RoomBooking.class, new RoomBookingDataMapper(connection, dataSource));
         return registry;
     }
 
