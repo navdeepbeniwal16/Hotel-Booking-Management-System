@@ -1,10 +1,27 @@
 import Hotel from '../types/HotelType';
 import Room from '../types/RoomType';
 
-const getHotelRooms = async (hotel_id: Number): Promise<Room[]> => {
+const getHoteliers = async (accessToken: string): Promise<Room[]> => {
+  const res = await fetch('/api/hoteliers', {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await res.json();
+  const hoteliers: Array<any> = data.result;
+  console.log('getHoteliers:', hoteliers);
+  return hoteliers;
+};
+
+const getHotelRooms = async (
+  hotel_id: Number,
+  headers: HeadersInit = {}
+): Promise<Room[]> => {
   const res = await fetch('/api/hotels', {
     headers: {
       'Content-Type': 'application/json',
+      ...headers,
     },
     body: JSON.stringify({
       search: {
@@ -42,8 +59,10 @@ const searchHotels = async (
   return hotels;
 };
 
-const getAllHotels = async (): Promise<Hotel[]> => {
-  const res = await fetch('/api/hotels');
+const getAllHotels = async (headers: HeadersInit = {}): Promise<Hotel[]> => {
+  const res = await fetch('/api/hotels', {
+    headers,
+  });
   const data = await res.json();
   const hotels: Array<Hotel> = data.result;
   return hotels;
@@ -61,6 +80,7 @@ const endpoints = {
   searchHotels,
   getHotelRooms,
   getAllRooms,
+  getHoteliers,
 };
 
 export default endpoints;

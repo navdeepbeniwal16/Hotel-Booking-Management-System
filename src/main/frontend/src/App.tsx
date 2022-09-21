@@ -13,7 +13,6 @@ import { Container } from 'react-bootstrap';
 
 import { useContext } from 'react';
 import AppContext from './context/AppContext';
-
 import { Auth0Provider } from '@auth0/auth0-react';
 
 const App = (props: ReactPropTypes, context: ContextType<any>) => {
@@ -21,10 +20,10 @@ const App = (props: ReactPropTypes, context: ContextType<any>) => {
 
   const auth0 = {
     domain: process.env.REACT_APP_AUTH0_DOMAIN || '',
-    audience: `${process.env.REACT_APP_AUTH0_DOMAIN}/api/v2` || '',
     childId: process.env.REACT_APP_AUTH0_CLIENTID || '',
     redirectUri: window.location.origin,
-    scope: 'read:current_user update:current_user_metadata',
+    audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}` || '',
+    // scope: 'read:current_user update:current_user_metadata',
   };
 
   return (
@@ -33,7 +32,7 @@ const App = (props: ReactPropTypes, context: ContextType<any>) => {
       clientId={auth0.childId}
       redirectUri={auth0.redirectUri}
       audience={auth0.audience}
-      scope={auth0.scope}
+      // scope={auth0.scope}
     >
       <AppContext.GlobalProvider>
         <div>

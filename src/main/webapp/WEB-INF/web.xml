@@ -10,7 +10,12 @@
 
     <context-param>
         <param-name>com.auth0.clientId</param-name>
-        <param-value>dev-easqepri.us.auth0.com</param-value>
+        <param-value>I8DM45EYicQ857Mj4s3pFRCpud5ES0IC</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>com.auth0.audience</param-name>
+        <param-value>https://swen90007-2022-lans.herokuapp.com/api</param-value>
     </context-param>
 
     <context-param>

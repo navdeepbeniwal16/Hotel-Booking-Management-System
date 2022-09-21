@@ -18,11 +18,22 @@ const defaultUser: UserState = {
     console.error('Error: cannot call setUsername() without context'),
 };
 
+type UserMetadata = {
+  apiAccessToken: string;
+};
+
+const defaultUserMetadata: UserMetadata = {
+  apiAccessToken: '',
+};
+
 const defaultGlobalContext = {
   user: defaultUser,
   hotel: defaultHotelState,
   room: defaultRoomState,
-  userMetadata: {},
+  userMetadata: defaultUserMetadata,
+  getAccessToken: () => {
+    console.log('getAccessToken not set');
+  },
 };
 
 const GlobalContext = createContext(defaultGlobalContext);
@@ -32,11 +43,11 @@ interface IGlobalProvider {
 }
 
 const GlobalProvider = ({ children }: IGlobalProvider) => {
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
   const [username, setUsername] = useState('');
   const [hotel, setHotel] = useState(defaultHotel);
   const [room, setRoom] = useState(defaultRoom);
-  const [userMetadata, setUserMetadata] = useState({});
+  const [userMetadata, setUserMetadata] = useState(defaultUserMetadata);
 
   const userState = {
     username,
@@ -53,34 +64,35 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
     setRoom,
   };
 
+  const getAccessToken = async () => {
+    let apiAccessToken;
+    try {
+      apiAccessToken = await getAccessTokenSilently({
+        audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
+      });
+    } catch (e: any) {
+      if (e.error === 'consent_required') {
+        console.log('getting consent');
+        apiAccessToken = await getAccessTokenWithPopup({
+          audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
+        });
+      } else {
+        console.log(e.message);
+        throw e;
+      }
+    }
+    return apiAccessToken;
+  };
+
   useEffect(() => {
     const getUserMetadata = async () => {
-      const domain = process.env.REACT_APP_AUTH0_DOMAIN;
-
-      try {
-        const accessToken = await getAccessTokenSilently({
-          audience: `https://${domain}/api/v2/`,
-          scope: 'read:current_user',
-        });
-
-        const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user?.sub}`;
-
-        const metadataResponse = await fetch(userDetailsByIdUrl, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        const { user_metadata } = await metadataResponse.json();
-        console.log('User metadata:', user_metadata);
-        setUserMetadata(user_metadata);
-      } catch (e: any) {
-        console.log(e.message);
-      }
+      let apiAccessToken = await getAccessToken();
+      console.log('User access token:', apiAccessToken);
+      setUserMetadata({ apiAccessToken });
     };
 
     getUserMetadata();
-  }, [getAccessTokenSilently, user?.sub]);
+  }, []);
 
   return (
     <GlobalContext.Provider
@@ -89,6 +101,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         hotel: hotelState,
         room: roomState,
         userMetadata,
+        getAccessToken,
       }}
     >
       {children}

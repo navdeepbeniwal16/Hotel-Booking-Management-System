@@ -1,18 +1,30 @@
 package lans.hotels.api;
 
+
+import com.auth0.jwk.Jwk;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lans.hotels.controllers.UnknownController;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
+import org.json.JSONObject;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+
+import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.Base64;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
 public class APIFrontController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
@@ -76,8 +88,10 @@ public class APIFrontController extends HttpServlet {
             throw new ServletException("doDelete():" + e);
         }
     }
+
     private IFrontCommand getCommand(HttpServletRequest request) throws ServletException {
         try {
+            handleAuth(request);
             String[] commandPath = request.getPathInfo().split("/");
             return (IFrontCommand) getCommandClass(commandPath).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
@@ -105,5 +119,43 @@ public class APIFrontController extends HttpServlet {
 
     private String capitalise(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
+    }
+
+    protected void handleAuth(HttpServletRequest request) {
+        try {
+            String headerString = request.getHeader("Authorization");
+            if (headerString == null || headerString.equals("")) {
+                System.out.println("APIFrontController.handleAuth(): " + request.getRequestURI() + " | null Authorization header");
+                request.getSession().setAttribute("auth", false);
+                return;
+            }
+
+            String authorizationType = headerString.split(" ")[0];
+            if (!authorizationType.equals("Bearer")) {
+                System.out.println("APIFrontController.handleAuth(): Invalid authorisation type: " + authorizationType);
+                request.getSession().setAttribute("auth", false);
+                return;
+            }
+
+            String tokenString = headerString.split(" ")[1];
+            DecodedJWT decodedJwt = JWT.decode(tokenString);
+            JwkProvider jwkProvider = (JwkProvider) getServletContext().getAttribute("jwkProvider");
+            Jwk jwk = jwkProvider.get(decodedJwt.getKeyId());
+            RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
+            Algorithm algorithm = Algorithm.RSA256(publicKey, null);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer("https://dev-easqepri.us.auth0.com/")
+                    .withAudience()
+                    .build();
+            DecodedJWT jwt = verifier.verify(tokenString);
+            request.getSession().setAttribute("auth", true);
+            Base64.Decoder decoder = Base64.getUrlDecoder();
+            JSONObject payload = new JSONObject(new String(decoder.decode(jwt.getPayload())));
+            if (payload.has("email")) request.getSession().setAttribute("email", payload.get("email"));
+            if (payload.has("roles")) request.getSession().setAttribute("roles", payload.get("roles"));
+        } catch (Exception e) {
+            System.out.println(e);
+            request.getSession().setAttribute("auth", false);
+        }
     }
 }
