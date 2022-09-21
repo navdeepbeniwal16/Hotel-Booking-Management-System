@@ -16,3 +16,6 @@ seed_db:
 	psql -h localhost -p 5432 -U postgres -W --dbname=lans_hotels -f ./database/seed.sql
 	@echo
 
+#.PHONY install
+#install:
+#	mvn clean install -U
