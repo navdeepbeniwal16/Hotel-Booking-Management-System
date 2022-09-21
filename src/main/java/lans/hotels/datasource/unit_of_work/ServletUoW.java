@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ServletUoW implements IUnitOfWork {
+    // TODO: do not treat identity maps as a session cache - clear them every request (scope identity maps to request)
     public IIdentityMapRegistry identityMaps;
     private static final String attributeName = "UnitOfWork";
     private static final HashMap<Thread, ServletUoW> activeUnitsOfWork = new HashMap<>();

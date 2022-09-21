@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
-            <version>3.10.2</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20180130</version>
+            <version>20220320</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
