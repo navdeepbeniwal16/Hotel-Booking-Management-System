@@ -129,6 +129,7 @@ public class BookingsController extends FrontCommand {
             case HttpMethod.POST:
                 break;
             case HttpMethod.PUT:
+
                 break;
             case HttpMethod.DELETE:
                 break;
@@ -161,6 +162,7 @@ public class BookingsController extends FrontCommand {
             abooking.put("customerId", booking.getCustomerId());
             abooking.put("startDate", booking.getDateRange().getTo().toString());
             abooking.put("endDate", booking.getDateRange().getFrom().toString());
+            abooking.put("is_active", booking.getActive());
             nestedBookingsArray.put(abooking);
         }
 

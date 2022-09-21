@@ -12,6 +12,7 @@ public class Booking extends ReferenceObject {
     Integer hotelId;
     Integer customerId;
     DateRange dateRange;
+    Boolean isActive;
     HashMap<Integer, RoomBooking> roomBookings;
 
     public Booking(IDataSource dataSource) throws UoWException {
@@ -24,11 +25,12 @@ public class Booking extends ReferenceObject {
         markClean();
     }
 
-   public Booking(Integer id, IDataSource dataSource, Integer hotelId, Integer customerId, DateRange dateRange){
+   public Booking(Integer id, IDataSource dataSource, Integer hotelId, Integer customerId, DateRange dateRange, Boolean isActive){
        super(id, dataSource);
        this.hotelId = hotelId;
        this.customerId = customerId;
        this.dateRange = dateRange;
+       this.isActive = isActive;
        initRoomBookings();
    }
 
@@ -60,6 +62,14 @@ public class Booking extends ReferenceObject {
         this.dateRange = dateRange;
     }
 
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     public void remove() throws UoWException {
         markRemoved();
     }
@@ -67,9 +77,10 @@ public class Booking extends ReferenceObject {
     @Override
     public String toString() {
         return "Booking{" +
-                "id=" + id +
-                ", hotelId=" + hotelId +
+                "hotelId=" + hotelId +
                 ", customerId=" + customerId +
+                ", dateRange=" + dateRange +
+                ", isActive=" + isActive +
                 '}';
     }
 }

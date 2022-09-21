@@ -46,7 +46,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     @Override
     public ArrayList<Booking> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         BookingsSearchCriteria bookingsSearchCriteria = (BookingsSearchCriteria) criteria;
-        String findByCriteriaStatement = "SELECT b.id as id,h.id as hotel_id,h.name as hotel_name," +
+        String findByCriteriaStatement = "SELECT b.id as id, b.is_active as is_active, h.id as hotel_id,h.name as hotel_name," +
                 "u.name as user_name,c.id as customer_id, start_date, end_date," +
                 " s.type as room_type, m.id as room_id,no_of_guests,main_guest, hg.id as hotel_group_id\n" +
                 "    FROM booking b\n" +
@@ -101,7 +101,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                 resultSet.getDate("end_date"));
         Booking booking =
                 new Booking(id,dataSource, resultSet.getInt("hotel_id"),
-                        resultSet.getInt("customer_id"), dateRange);
+                        resultSet.getInt("customer_id"), dateRange, resultSet.getBoolean("is_active"));
         return booking;
     }
 
