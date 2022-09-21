@@ -3,9 +3,10 @@ import React, {
   createContext,
   useState,
   ReactNode,
+  useEffect,
   ReactPropTypes,
 } from 'react';
-
+import { useAuth0 } from '@auth0/auth0-react';
 import UserState from '../types/UserType';
 import { defaultHotel, defaultHotelState } from '../types/HotelType';
 import { defaultRoom, defaultRoomState } from '../types/RoomType';
@@ -21,6 +22,7 @@ const defaultGlobalContext = {
   user: defaultUser,
   hotel: defaultHotelState,
   room: defaultRoomState,
+  userMetadata: {},
 };
 
 const GlobalContext = createContext(defaultGlobalContext);
@@ -30,9 +32,11 @@ interface IGlobalProvider {
 }
 
 const GlobalProvider = ({ children }: IGlobalProvider) => {
+  const { user, getAccessTokenSilently } = useAuth0();
   const [username, setUsername] = useState('');
   const [hotel, setHotel] = useState(defaultHotel);
   const [room, setRoom] = useState(defaultRoom);
+  const [userMetadata, setUserMetadata] = useState({});
 
   const userState = {
     username,
@@ -49,12 +53,42 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
     setRoom,
   };
 
+  useEffect(() => {
+    const getUserMetadata = async () => {
+      const domain = process.env.REACT_APP_AUTH0_DOMAIN;
+
+      try {
+        const accessToken = await getAccessTokenSilently({
+          audience: `https://${domain}/api/v2/`,
+          scope: 'read:current_user',
+        });
+
+        const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user?.sub}`;
+
+        const metadataResponse = await fetch(userDetailsByIdUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const { user_metadata } = await metadataResponse.json();
+        console.log('User metadata:', user_metadata);
+        setUserMetadata(user_metadata);
+      } catch (e: any) {
+        console.log(e.message);
+      }
+    };
+
+    getUserMetadata();
+  }, [getAccessTokenSilently, user?.sub]);
+
   return (
     <GlobalContext.Provider
       value={{
         user: userState,
         hotel: hotelState,
         room: roomState,
+        userMetadata,
       }}
     >
       {children}
