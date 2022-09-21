@@ -2,6 +2,7 @@ package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
 import lans.hotels.api.exceptions.CommandException;
+import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.datasource.search_criteria.CustomerSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.domain.booking.Booking;
@@ -127,8 +128,53 @@ public class BookingsController extends FrontCommand {
                 }
                 break;
             case HttpMethod.POST:
+
                 break;
             case HttpMethod.PUT:
+                // PUT: api/bookings
+                if(commandPath.length == 2) {
+                    JSONObject requestBody = getRequestBody(request);
+                    if(requestBody.has("booking")) {
+                        JSONObject bookingJsonBody = requestBody.getJSONObject("booking");
+                        if(!bookingJsonBody.has("id")) {
+                            // TODO: return some sensible error
+                        } else {
+                            Integer bookingId = bookingJsonBody.getInt("id");
+                            System.out.println("Booking id being fetched : " + bookingId);
+                            if(bookingId != null) {
+                                // fetching booking object from the backend
+                                BookingsSearchCriteria criteria = new BookingsSearchCriteria();
+                                criteria.setBookingId(bookingId);
+                                try {
+                                    ArrayList<Booking> bookings = dataSource.findBySearchCriteria(Booking.class, criteria);
+                                    if(bookings.size() > 0) {
+                                        Booking booking = bookings.get(0);
+
+                                        if(bookingJsonBody.has("isActive") && !bookingJsonBody.get("isActive").equals(booking.getActive())) {
+                                            booking.setActive(!booking.getActive());
+                                        }
+
+                                        dataSource.commit();
+                                        System.out.println("Commit is happening");
+                                    } else {
+                                        System.err.println("PUT /api/bookings: " + Arrays.toString(commandPath));
+                                        response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
+                                        return;
+                                    }
+
+                                } catch (Exception e) {
+                                    System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
+                                    System.err.println("GET /api/bookings: " + e.getMessage());
+                                    System.err.println("GET /api/bookings: " + e.getClass());
+                                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                                    e.printStackTrace();
+                                    return;
+                                }
+                            }
+                        }
+
+                    }
+                }
 
                 break;
             case HttpMethod.DELETE:
