@@ -18,11 +18,19 @@ const defaultUser: UserState = {
     console.error('Error: cannot call setUsername() without context'),
 };
 
+type UserMetadata = {
+  apiAccessToken: string;
+};
+
+const defaultUserMetadata: UserMetadata = {
+  apiAccessToken: '',
+};
+
 const defaultGlobalContext = {
   user: defaultUser,
   hotel: defaultHotelState,
   room: defaultRoomState,
-  userMetadata: {},
+  userMetadata: defaultUserMetadata,
 };
 
 const GlobalContext = createContext(defaultGlobalContext);
@@ -32,11 +40,11 @@ interface IGlobalProvider {
 }
 
 const GlobalProvider = ({ children }: IGlobalProvider) => {
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
   const [username, setUsername] = useState('');
   const [hotel, setHotel] = useState(defaultHotel);
   const [room, setRoom] = useState(defaultRoom);
-  const [userMetadata, setUserMetadata] = useState({});
+  const [userMetadata, setUserMetadata] = useState(defaultUserMetadata);
 
   const userState = {
     username,
@@ -55,32 +63,29 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
 
   useEffect(() => {
     const getUserMetadata = async () => {
-      const domain = process.env.REACT_APP_AUTH0_DOMAIN;
-
+      let apiAccessToken;
       try {
-        const accessToken = await getAccessTokenSilently({
-          audience: `https://${domain}/api/v2/`,
-          scope: 'read:current_user',
+        apiAccessToken = await getAccessTokenSilently({
+          audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
         });
-
-        const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user?.sub}`;
-
-        const metadataResponse = await fetch(userDetailsByIdUrl, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        const { user_metadata } = await metadataResponse.json();
-        console.log('User metadata:', user_metadata);
-        setUserMetadata(user_metadata);
       } catch (e: any) {
-        console.log(e.message);
+        if (e.error === 'consent_required') {
+          console.log('getting consent');
+          apiAccessToken = await getAccessTokenWithPopup({
+            audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
+          });
+        } else {
+          console.log(e.message);
+          throw e;
+        }
       }
+
+      console.log('User access token:', apiAccessToken);
+      setUserMetadata({ apiAccessToken });
     };
 
     getUserMetadata();
-  }, [getAccessTokenSilently, user?.sub]);
+  }, [getAccessTokenSilently, getAccessTokenWithPopup]);
 
   return (
     <GlobalContext.Provider

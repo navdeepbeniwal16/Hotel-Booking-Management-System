@@ -1,5 +1,12 @@
 package lans.hotels.api;
 
+import com.auth0.AuthenticationController;
+import com.auth0.IdentityVerificationException;
+import com.auth0.SessionUtils;
+import com.auth0.Tokens;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lans.hotels.controllers.UnknownController;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
@@ -13,10 +20,12 @@ import java.util.Arrays;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
 public class APIFrontController extends HttpServlet {
+    private Tokens tokens;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
+            handleAuth(request, response);
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
             IFrontCommand command = getCommand(request);
             // Dynamically instantiate the appropriate controller
@@ -105,5 +114,39 @@ public class APIFrontController extends HttpServlet {
 
     private String capitalise(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
+    }
+
+    protected void handleAuth(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        AuthenticationController authController = (AuthenticationController) getServletContext().getAttribute("AuthenticationController");
+        try {
+            // TODO: removing access token when session ended?
+            System.out.println("handleAuth");
+            System.out.println(request.getHeader("Authorization"));
+
+            if (request.getHeader("Authorization") == null) {
+                return;
+            }
+
+            tokens = authController.handle(request, response);
+            if (tokens.getAccessToken() != null && tokens.getIdToken() != null) {
+                DecodedJWT jwt = JWT.decode(tokens.getAccessToken());
+                String emailJWT = ((Claim) jwt.getClaim("email")).asString();
+                SessionUtils.set(request, "accessToken", tokens.getAccessToken());
+                SessionUtils.set(request, "idToken", tokens.getIdToken());
+                SessionUtils.set(request, "requestEmail", emailJWT);
+                System.out.println("User email:");
+                System.out.println(emailJWT);
+                System.out.println("User access token:");
+                System.out.println(tokens.getAccessToken());
+                System.out.println("User ID token:");
+                System.out.println(tokens.getIdToken());
+            }
+        } catch (IdentityVerificationException e) {
+            System.out.println(e.getCode());
+            e.printStackTrace();
+            System.out.println("handleAuth: " + e);
+            SessionUtils.set(request, "accessToken", null);
+            SessionUtils.set(request, "idToken", null);
+        }
     }
 }
