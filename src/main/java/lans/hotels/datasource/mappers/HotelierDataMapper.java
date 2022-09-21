@@ -2,8 +2,11 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelierSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.user_types.Hotelier;
 
 import java.sql.Connection;
@@ -20,7 +23,12 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
 
     @Override
     protected String findStatement() {
-        return null;
+        String statement =
+                "SELECT ho.id AS id, name, email, password, role, user_id, is_active " +
+                        "FROM app_user u  " +
+                        "JOIN hotelier ho " +
+                        "ON u.id = ho.user_id ";
+        return statement;
     }
 
     @Override
@@ -30,12 +38,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
 
     @Override
     public ArrayList<Hotelier> findAll() throws SQLException {
-        String findAllStatment =
-            "SELECT ho.id AS id, name, email, password, role, user_id, is_active " +
-            "FROM app_user u  " +
-            "JOIN hotelier ho " +
-            "ON u.id = ho.user_id ";
-        try (PreparedStatement statement = connection.prepareStatement(findAllStatment)) {
+        try (PreparedStatement statement = connection.prepareStatement(findStatement())) {
             ResultSet resultSet = statement.executeQuery();
             Hotelier currentHotelier = load(resultSet);
             while (currentHotelier != null) {
@@ -54,6 +57,36 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
 
     @Override
     public ArrayList<Hotelier> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
+        HotelierSearchCriteria hCriteria = (HotelierSearchCriteria) criteria;
+        String findAllStatement = findStatement();
+
+        if (hCriteria.getId() != null){
+            findAllStatement += "WHERE ho.id = '" + hCriteria.getId() + "'";
+        }
+
+        if (hCriteria.getName() != null){
+            findAllStatement += "WHERE name = '" + hCriteria.getName() + "'";
+        }
+
+        if (hCriteria.getEmail() != null){
+            findAllStatement += "WHERE email = '" + hCriteria.getEmail() + "'";
+        }
+
+        if (hCriteria.getIsActive() != null){
+            findAllStatement += "WHERE is_active = '" + hCriteria.getIsActive() + "'";
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
+            ResultSet resultSet = statement.executeQuery();
+            Hotelier currentHotelier = load(resultSet);
+            while (currentHotelier != null) {
+                currentHotelier = load(resultSet);
+            }
+            return new ArrayList<>(loadedMap.values());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

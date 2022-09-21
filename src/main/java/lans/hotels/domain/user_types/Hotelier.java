@@ -6,8 +6,19 @@ import lans.hotels.domain.IDataSource;
 public class Hotelier extends User {
 
     int hotelierID;
-    int userID;
     boolean isActive;
+
+    public Hotelier(IDataSource dataSource) throws UoWException {
+        super(dataSource);
+        initMaps();
+        markNew();
+    }
+
+    public Hotelier(Integer id, IDataSource dataSource) throws UoWException {
+        super(id, dataSource);
+        initMaps();
+        markClean();
+    }
 
     public Hotelier(Integer userID, IDataSource dataSource, Integer id, String name, String email,
                     String password, Integer role, boolean isActive) {
@@ -38,6 +49,8 @@ public class Hotelier extends User {
         this.isActive = isActive;
     }
 
+    private void initMaps() {}
+
     public Boolean getStatus()
     {
         return this.isActive;
@@ -53,12 +66,12 @@ public class Hotelier extends User {
         return super.id;
     }
 
-    private void initMaps() {
-    }
-
     public int getHotelierID()
     {
         return this.hotelierID;
     }
 
+    public void remove() throws UoWException {
+        markRemoved();
+    }
 }
