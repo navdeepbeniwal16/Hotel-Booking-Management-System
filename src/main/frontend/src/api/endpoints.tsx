@@ -49,10 +49,18 @@ const getAllHotels = async (): Promise<Hotel[]> => {
   return hotels;
 };
 
+const getAllRooms = async (): Promise<Room[]> => {
+  const res = await fetch('/api/rooms');
+  const data = await res.json();
+  const rooms: Array<Room> = data.result;
+  return rooms;
+};
+
 const endpoints = {
   getAllHotels,
   searchHotels,
   getHotelRooms,
+  getAllRooms,
 };
 
 export default endpoints;

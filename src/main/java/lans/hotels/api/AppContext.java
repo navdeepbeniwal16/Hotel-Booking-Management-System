@@ -19,6 +19,10 @@ public class AppContext implements ServletContextListener {
     public void contextInitialized(ServletContextEvent contextEvent) {
         System.out.println("Starting up ServletContext!");
         ctx = contextEvent.getServletContext();
+        System.out.println("Auth0:");
+        System.out.println("\t" + ctx.getInitParameter("com.auth0.domain"));
+        System.out.println("\t" + ctx.getInitParameter("com.auth0.clientId"));
+        System.out.println("\t" + ctx.getInitParameter("com.auth0.clientSecret"));
         try {
             environment = new Environment(System.getenv());
             dbConnection = new PostgresConnection(environment.getDBConfiguration());

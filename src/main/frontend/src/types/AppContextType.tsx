@@ -1,10 +1,12 @@
 import React from 'react';
-import User from './UserType';
+import UserState from './UserType';
 import { HotelState } from './HotelType';
+import { RoomState } from './RoomType';
 
 interface AppContextType extends React.Context<any> {
-  user: User;
+  user: UserState;
   hotelState: HotelState;
+  roomState: RoomState;
 }
 
 export default AppContextType;

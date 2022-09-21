@@ -1,9 +1,9 @@
 import React, { Dispatch } from 'react';
 import { EmptyString } from './PrimitiveTypes';
 
-type User = {
+type UserState = {
   username: string | EmptyString;
   setUsername: Dispatch<React.SetStateAction<string>>;
 };
 
-export default User;
+export default UserState;

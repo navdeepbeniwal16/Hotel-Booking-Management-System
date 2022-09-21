@@ -1,0 +1,21 @@
+<web-app
+        xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+  http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
+    <context-param>
+        <param-name>com.auth0.domain</param-name>
+        <param-value>dev-easqepri.us.auth0.com</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>com.auth0.clientId</param-name>
+        <param-value>dev-easqepri.us.auth0.com</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>com.auth0.clientSecret</param-name>
+        <param-value>vaaEZhao-NLWlzGCMQX4Vx218aIfzP9OIPwhkRpofvL4CaOmpk9G6DeA5kN0UE1U</param-value>
+    </context-param>
+    <!-- Servlet initialization parameters -->
+</web-app>
