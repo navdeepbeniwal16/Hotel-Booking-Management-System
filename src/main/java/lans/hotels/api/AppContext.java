@@ -41,10 +41,10 @@ public class AppContext implements ServletContextListener {
 
 
         System.out.println("Auth0:");
-        System.out.println("\t" + auth0Domain);
-        System.out.println("\t" + auth0ClientId);
-        System.out.println("\t" + auth0ClientSecret);
-        System.out.println("\t" + auth0Audience);
+        System.out.println("\tDomain: " + auth0Domain);
+        System.out.println("\tClient ID: " + auth0ClientId);
+        System.out.println("\tClient Secret: " + auth0ClientSecret);
+        System.out.println("\tAudience: " + auth0Audience);
 
         try {
             // Database connection based on environment (dev vs prod)
@@ -59,6 +59,9 @@ public class AppContext implements ServletContextListener {
                     .withJwkProvider(jwkProvider)
                     .build();
             ctx.setAttribute("AuthenticationController", authenticationController);
+            ctx.setAttribute("jwkProvider", jwkProvider);
+            ctx.setAttribute("authDomain", auth0Domain);
+            ctx.setAttribute("audience", auth0Audience);
         } catch (InvalidEnvironmentException invalidEnvironmentException) {
             System.err.println("AppContext | InvalidEnvironmentException: " + invalidEnvironmentException.getMessage());
             System.err.println(invalidEnvironmentException);

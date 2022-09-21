@@ -1,32 +1,34 @@
 package lans.hotels.api;
 
-import com.auth0.AuthenticationController;
-import com.auth0.IdentityVerificationException;
-import com.auth0.SessionUtils;
-import com.auth0.Tokens;
+
+import com.auth0.jwk.Jwk;
+import com.auth0.jwk.JwkProvider;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lans.hotels.controllers.UnknownController;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
+import org.json.JSONObject;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
-import java.net.http.HttpHeaders;
+
+import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.Base64;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
 public class APIFrontController extends HttpServlet {
-    private Tokens tokens;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
-            handleAuth(request, response);
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
             IFrontCommand command = getCommand(request);
             // Dynamically instantiate the appropriate controller
@@ -86,8 +88,10 @@ public class APIFrontController extends HttpServlet {
             throw new ServletException("doDelete():" + e);
         }
     }
+
     private IFrontCommand getCommand(HttpServletRequest request) throws ServletException {
         try {
+            handleAuth(request);
             String[] commandPath = request.getPathInfo().split("/");
             return (IFrontCommand) getCommandClass(commandPath).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
@@ -117,39 +121,41 @@ public class APIFrontController extends HttpServlet {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
-    protected void handleAuth(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        AuthenticationController authController = (AuthenticationController) getServletContext().getAttribute("AuthenticationController");
+    protected void handleAuth(HttpServletRequest request) {
         try {
-            // TODO: removing access token when session ended?
-            System.out.println("handleAuth");
-
-            if (request.getHeader("Authorization") == null || request.getHeader("Authorization").equals("")) {
-                System.out.println("handleAuth " + request.getRequestURI() + " | null Authorization header");
+            String headerString = request.getHeader("Authorization");
+            if (headerString == null || headerString.equals("")) {
+                System.out.println("APIFrontController.handleAuth(): " + request.getRequestURI() + " | null Authorization header");
+                request.getSession().setAttribute("auth", false);
                 return;
             }
 
-            System.out.println("Getting tokens with auth");
-            System.out.println("Authorization: " + request.getHeader("Authorization"));
-            tokens = authController.handle(request, response);
-            if (tokens.getAccessToken() != null && tokens.getIdToken() != null) {
-                DecodedJWT jwt = JWT.decode(tokens.getAccessToken());
-                String emailJWT = ((Claim) jwt.getClaim("email")).asString();
-                SessionUtils.set(request, "accessToken", tokens.getAccessToken());
-                SessionUtils.set(request, "idToken", tokens.getIdToken());
-                SessionUtils.set(request, "requestEmail", emailJWT);
-                System.out.println("User email:");
-                System.out.println(emailJWT);
-                System.out.println("User access token:");
-                System.out.println(tokens.getAccessToken());
-                System.out.println("User ID token:");
-                System.out.println(tokens.getIdToken());
+            String authorizationType = headerString.split(" ")[0];
+            if (!authorizationType.equals("Bearer")) {
+                System.out.println("APIFrontController.handleAuth(): Invalid authorisation type: " + authorizationType);
+                request.getSession().setAttribute("auth", false);
+                return;
             }
-        } catch (IdentityVerificationException e) {
-            System.out.println(e.getCode());
-            e.printStackTrace();
-            System.out.println("handleAuth: " + e);
-            SessionUtils.set(request, "accessToken", null);
-            SessionUtils.set(request, "idToken", null);
+
+            String tokenString = headerString.split(" ")[1];
+            DecodedJWT decodedJwt = JWT.decode(tokenString);
+            JwkProvider jwkProvider = (JwkProvider) getServletContext().getAttribute("jwkProvider");
+            Jwk jwk = jwkProvider.get(decodedJwt.getKeyId());
+            RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
+            Algorithm algorithm = Algorithm.RSA256(publicKey, null);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer("https://dev-easqepri.us.auth0.com/")
+                    .withAudience()
+                    .build();
+            DecodedJWT jwt = verifier.verify(tokenString);
+            request.getSession().setAttribute("auth", true);
+            Base64.Decoder decoder = Base64.getUrlDecoder();
+            JSONObject payload = new JSONObject(new String(decoder.decode(jwt.getPayload())));
+            if (payload.has("email")) request.getSession().setAttribute("email", payload.get("email"));
+            if (payload.has("roles")) request.getSession().setAttribute("roles", payload.get("roles"));
+        } catch (Exception e) {
+            System.out.println(e);
+            request.getSession().setAttribute("auth", false);
         }
     }
 }
