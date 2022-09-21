@@ -1,6 +1,7 @@
 package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
+import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelierSearchCriteria;
@@ -106,6 +107,11 @@ public class HoteliersController extends FrontCommand{
                             System.err.println("POST /api/hoteliers: " + e.getClass());
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                             return;
+                        }
+                        try {
+                            dataSource.commit();
+                        } catch (DataSourceLayerException e) {
+                            e.printStackTrace();
                         }
 
                         PrintWriter out = response.getWriter();

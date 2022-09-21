@@ -1,6 +1,7 @@
 package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
+import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.domain.hotel_group.HotelGroup;
@@ -92,7 +93,11 @@ public class HotelgroupsController extends FrontCommand {
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                             return;
                         }
-
+                        try {
+                            dataSource.commit();
+                        } catch (DataSourceLayerException e) {
+                            e.printStackTrace();
+                        }
                         PrintWriter out = response.getWriter();
                         response.setStatus(200);
                         response.setContentType("application/json");

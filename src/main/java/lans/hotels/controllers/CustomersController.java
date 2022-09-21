@@ -1,6 +1,7 @@
 package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
+import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.search_criteria.CustomerSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.user_types.Customer;
@@ -106,6 +107,11 @@ public class CustomersController extends FrontCommand {
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                             return;
                         }
+                        try {
+                            dataSource.commit();
+                        } catch (DataSourceLayerException e) {
+                            e.printStackTrace();
+                        }
 
                         PrintWriter out = response.getWriter();
                         response.setStatus(200);
@@ -125,6 +131,7 @@ public class CustomersController extends FrontCommand {
                         out.flush();
                         return;
 
+
                     }
                     else
                     {
@@ -132,6 +139,7 @@ public class CustomersController extends FrontCommand {
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                         return;
                     }
+
                 case HttpMethod.PUT:
 
                 case HttpMethod.DELETE:
