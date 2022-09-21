@@ -1,6 +1,7 @@
 package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.datasource.search_criteria.RoomBookingSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
@@ -26,7 +27,25 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> DomainObject update(AbstractDomainObject domainObject) {
+    public RoomBooking update(AbstractDomainObject domainObject) {
+        RoomBooking roomBooking = (RoomBooking) domainObject;
+        String updateStatement = "UPDATE room_booking SET is_active = " + roomBooking.getActive()  +  ", no_of_guests = " + roomBooking.getNumOfGuests() + " WHERE id = " + roomBooking.getId() + ";";
+
+        System.out.println("UPDATE ROOM BOOKING QUERY : ");
+        System.out.println(updateStatement);
+
+        try (PreparedStatement statement = connection.prepareStatement(updateStatement)) {
+            statement.executeUpdate();
+            System.out.println("RoomBookingMapper : Booking with id " + roomBooking.getId() + " updated in DataMapper...");
+
+            BookingsSearchCriteria criteria = new BookingsSearchCriteria();
+            criteria.setBookingId(roomBooking.getId());
+            return null;
+        } catch (Exception e) {
+            System.out.println("Exception occurred at RoomBookingDataMapper:update() execution");
+            e.printStackTrace();
+        }
+
         return null;
     }
 
@@ -43,7 +62,7 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
     @Override
     public ArrayList<RoomBooking> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         RoomBookingSearchCriteria roomBookingSearchCriteria = (RoomBookingSearchCriteria) criteria;
-        String findByCriteriaStatement = "SELECT b.id as id,h.name as hotel_name, start_date, end_date, s.type as room_type, m.id as room_id, r.is_active, no_of_guests,main_guest\n" +
+        String findByCriteriaStatement = "SELECT r.id as id,h.name as hotel_name, start_date, end_date, s.type as room_type, m.id as room_id, r.is_active, no_of_guests,main_guest\n" +
                 "FROM booking b\n" +
                 "         JOIN ( room_booking r\n" +
                 "    JOIN (room m\n" +
