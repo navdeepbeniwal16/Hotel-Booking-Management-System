@@ -2,12 +2,15 @@ import React, { ReactPropTypes } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface NavPropsType {
   username: String;
 }
 
 const MainNavbar = ({ username }: NavPropsType) => {
+  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+
   return (
     <Navbar bg='dark' variant='dark' expand='lg'>
       <Container>
@@ -22,12 +25,11 @@ const MainNavbar = ({ username }: NavPropsType) => {
             <Nav.Link href='/bookings'>Bookings</Nav.Link>
           </Nav>
           <Nav className='d-flex'>
-            {username != '' ? (
-              <Nav.Link href='#'>Log out</Nav.Link>
+            {isAuthenticated ? (
+              <Nav.Link onClick={() => logout()}>Log out</Nav.Link>
             ) : (
               <>
-                <Nav.Link href='#'>Sign up</Nav.Link>
-                <Nav.Link href='#'>Log in</Nav.Link>
+                <Nav.Link onClick={() => loginWithRedirect()}>Log in</Nav.Link>
               </>
             )}
           </Nav>

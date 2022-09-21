@@ -6,10 +6,10 @@ import Row from 'react-bootstrap/Row';
 
 import Hotel from '../../types/HotelType';
 import { map } from 'lodash';
-import { LinkContainer } from 'react-router-bootstrap';
-import { Container } from 'react-bootstrap';
+import { Container, Nav } from 'react-bootstrap';
 import AppContext from '../../context/AppContext';
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 interface HotelListProps {
   hotels: Array<Hotel>;
 }
@@ -22,7 +22,8 @@ const HotelsList = ({ hotels }: HotelListProps) => {
       {map(hotels, (hotel: Hotel) => {
         return (
           <Row xs={1} md={1} className='g-4 mb-4'>
-            <LinkContainer
+            <Nav.Link
+              as={Link}
               to={`/hotel/${hotel.hotel_id}`}
               onClick={() => {
                 console.log('updating hotel context:', hotel);
@@ -39,7 +40,7 @@ const HotelsList = ({ hotels }: HotelListProps) => {
                   </Card.Body>
                 </Card>
               </Col>
-            </LinkContainer>
+            </Nav.Link>
           </Row>
         );
       })}

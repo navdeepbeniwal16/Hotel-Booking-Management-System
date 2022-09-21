@@ -6,11 +6,12 @@ import React, {
   ReactPropTypes,
 } from 'react';
 
-import User from '../types/UserType';
+import UserState from '../types/UserType';
 import { defaultHotel, defaultHotelState } from '../types/HotelType';
 import { defaultRoom, defaultRoomState } from '../types/RoomType';
+import AppContextType from '../types/AppContextType';
 
-const defaultUser: User = {
+const defaultUser: UserState = {
   username: '',
   setUsername: () =>
     console.error('Error: cannot call setUsername() without context'),
@@ -63,11 +64,11 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
 
 const withGlobalContext =
   (Child: React.FC<ReactPropTypes>) =>
-  (props: ReactPropTypes, context: Context<any>) => {
+  (props: ReactPropTypes, context: Context<AppContextType>) => {
     if (!Child) return null;
     return (
       <GlobalContext.Consumer>
-        {(context) => <Child {...props} {...context} />}
+        {(context: any) => <Child {...props} {...context} />}
       </GlobalContext.Consumer>
     );
   };
