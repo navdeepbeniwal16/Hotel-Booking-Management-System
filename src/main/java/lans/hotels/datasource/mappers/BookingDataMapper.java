@@ -25,11 +25,33 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
 
     @Override
     public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) {
+        // TODO: TBR - Just for testing
         return null;
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> DomainObject update(AbstractDomainObject domainObject) {
+    public Booking update(AbstractDomainObject domainObject) {
+        Booking booking = (Booking) domainObject;
+        String updateStatement = "UPDATE booking SET is_active = " + booking.getActive()  +  " WHERE id = " + booking.getId() + ";";
+
+        System.out.println("UPDATE BOOKING QUERY : ");
+        System.out.println(updateStatement);
+
+        try (PreparedStatement statement = connection.prepareStatement(updateStatement)) {
+            statement.executeQuery();
+            System.out.println("BookingMapper : Booking with id " + booking.getId() + " updated in DataMapper...");
+
+            BookingsSearchCriteria criteria = new BookingsSearchCriteria();
+            criteria.setBookingId(booking.getId());
+
+            ArrayList<Booking> bookings = findBySearchCriteria(criteria);
+            if(bookings.size() > 0) return bookings.get(0);
+            else return null;
+        } catch (Exception e) {
+            System.out.println("Exception occurred at BookingDataMapper:update() execution");
+            e.printStackTrace();
+        }
+
         return null;
     }
 
@@ -61,6 +83,10 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                 "        JOIN app_user u on u.id = c.user_id " +
                 "        JOIN hotel_group hg on h.hotel_group_id = hg.id ";
 
+
+        if(bookingsSearchCriteria.getBookingId()!=null) {
+            findByCriteriaStatement += "WHERE  b.id = '" + bookingsSearchCriteria.getBookingId() + "'";
+        }
 
         if(bookingsSearchCriteria.getCustomerId()!=null) {
             findByCriteriaStatement += "WHERE b.customer_id = '" + bookingsSearchCriteria.getCustomerId() + "'";
