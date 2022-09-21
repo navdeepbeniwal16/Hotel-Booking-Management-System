@@ -82,17 +82,15 @@ public class Booking extends ReferenceObject {
     // Fetching room-bookings on the go, either locally from the object, or from the backend if not present locally
     public HashMap<Integer, RoomBooking> getRoomBookings() {
         if(isLoaded()) {
-            System.out.println("Room bookings already in Booking");
             return roomBookings;
-        }
-        else {
-            System.out.println("Room bookings lazy loaded by Booking");
-            return loadBookings();
+        } else {
+            loadRemainingData();
+            return roomBookings;
         }
     }
 
     // Lazy load the roomBookings pertaining to object of this booking class
-    private HashMap<Integer, RoomBooking> loadBookings() {
+    private void loadBookings() {
         RoomBookingSearchCriteria criteria = new RoomBookingSearchCriteria();
         criteria.setBookingId(this.getId());
         try {
@@ -108,17 +106,17 @@ public class Booking extends ReferenceObject {
             System.out.println("In Booking : " + e.getMessage());
             e.printStackTrace();
         }
-
-        return roomBookings;
     }
 
     public String getHotelName() {
         if(hotelName != null) return hotelName;
-        else return loadHotelName();
+        else {
+            loadRemainingData();
+            return hotelName;
+        }
     }
 
-    public String loadHotelName() {
-        // TODO: Get hotel_name from the backend
+    private void loadHotelName() {
         HotelsSearchCriteria criteria = new HotelsSearchCriteria();
         criteria.setHotelId(this.getHotelId());
         try {
@@ -129,8 +127,11 @@ public class Booking extends ReferenceObject {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
+    }
 
-        return hotelName;
+    public void loadRemainingData() {
+        loadBookings();
+        loadHotelName();
     }
 
     public void remove() throws UoWException {

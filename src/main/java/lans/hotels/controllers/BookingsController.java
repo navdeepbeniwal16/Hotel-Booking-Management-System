@@ -121,18 +121,21 @@ public class BookingsController extends FrontCommand {
 
                 break;
             case HttpMethod.PUT:
+
                 // PUT: api/bookings
                 if(commandPath.length == 2) {
                     JSONObject requestBody = getRequestBody(request);
+
                     if(requestBody.has("booking")) {
                         JSONObject bookingJsonBody = requestBody.getJSONObject("booking");
+
                         if(!bookingJsonBody.has("id")) {
                             System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                             return;
                         } else {
                             Integer bookingId = bookingJsonBody.getInt("id");
-                            System.out.println("Booking id being fetched : " + bookingId);
+
                             if(bookingId != null) {
                                 // fetching booking object from the backend
                                 BookingsSearchCriteria criteria = new BookingsSearchCriteria();
@@ -142,12 +145,37 @@ public class BookingsController extends FrontCommand {
                                     if(bookings.size() > 0) {
                                         Booking booking = bookings.get(0);
 
-                                        if(bookingJsonBody.has("isActive") && !bookingJsonBody.get("isActive").equals(booking.getActive())) {
-                                            booking.setActive(!booking.getActive());
+                                        // Cancelling room bookings as well
+                                        if(bookingJsonBody.has("isActive") && !bookingJsonBody.getBoolean("isActive") && booking.getActive()) {
+                                            HashMap<Integer, RoomBooking> roomBookingHashMap = booking.getRoomBookings();
+                                            for(Object roomBookingKey: roomBookingHashMap.keySet()) {
+                                                roomBookingHashMap.get(roomBookingKey).setActive(false);
+                                            }
+                                            booking.setActive(false);
+                                        }
+
+                                        if(bookingJsonBody.has("room_bookings") & bookingJsonBody.getJSONArray("room_bookings").length() > 0) {
+                                            JSONArray roomBookingsArray = bookingJsonBody.getJSONArray("room_bookings");
+                                            for(int rbIndex=0; rbIndex < roomBookingsArray.length(); rbIndex++) {
+                                                JSONObject rbObject = roomBookingsArray.getJSONObject(rbIndex);
+                                                HashMap<Integer, RoomBooking> rBookings = booking.getRoomBookings();
+                                                for(Object rbKey: rBookings.keySet()) {
+                                                    RoomBooking rBooking = rBookings.get(rbKey);
+
+                                                    System.out.println("Reaching here..."); // TODO: TBR
+                                                    if(rbObject.has("id") && rbObject.getInt("id") == rBooking.getId()) {
+                                                        if(rbObject.has("no_of_guests") && rbObject.getInt("no_of_guests") != rBooking.getNumOfGuests()) {
+                                                            rBooking.setNumOfGuests(rbObject.getInt("no_of_guests"));
+                                                        }
+                                                        // More updates to be added here
+
+                                                    }
+                                                }
+                                            }
                                         }
 
                                         dataSource.commit();
-                                        System.out.println("Commit is happening");
+
                                     } else {
                                         System.err.println("PUT /api/bookings: " + Arrays.toString(commandPath));
                                         response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
@@ -164,7 +192,6 @@ public class BookingsController extends FrontCommand {
                                 }
                             }
                         }
-
                     }
                 }
 

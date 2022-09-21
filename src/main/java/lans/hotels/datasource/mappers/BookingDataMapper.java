@@ -37,7 +37,9 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         System.out.println(updateStatement);
 
         try (PreparedStatement statement = connection.prepareStatement(updateStatement)) {
-            statement.executeQuery();
+            statement.executeUpdate();
+//            statement.executeQuery();
+//            connection.commit();
             System.out.println("BookingMapper : Booking with id " + booking.getId() + " updated in DataMapper...");
 
             BookingsSearchCriteria criteria = new BookingsSearchCriteria();

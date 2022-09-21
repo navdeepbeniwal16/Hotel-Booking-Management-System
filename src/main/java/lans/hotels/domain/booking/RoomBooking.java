@@ -71,7 +71,8 @@ public class RoomBooking extends DomainValueObject {
     @Override
     public String toString() {
         return "RoomBooking{" +
-                "roomId=" + roomId +
+                "id=" + getId() +
+                ", roomId=" + roomId +
                 ", isActive=" + isActive +
                 ", mainGuest='" + mainGuest + '\'' +
                 ", numOfGuests=" + numOfGuests +
