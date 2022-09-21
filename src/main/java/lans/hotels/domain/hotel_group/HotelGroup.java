@@ -39,7 +39,7 @@ public class HotelGroup extends ReferenceObject{
         initMaps();
     }
 
-    public HotelGroup(IDataSource dataSource, String name, Address address, String phone) {
+    public HotelGroup(IDataSource dataSource, String name, Address address, String phone) throws UoWException {
         super(dataSource);
         this.name = name;
         this.address = address;

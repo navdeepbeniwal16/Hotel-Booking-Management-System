@@ -33,7 +33,6 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
                         "JOIN (address a " +
                         "JOIN district d ON a.district = d.id) " +
                         "on hg.address = a.id ";
-        System.out.println("HotelGroupDataMapper.findStatement(): " + statement);
         return statement;
     }
 
@@ -49,14 +48,11 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
             ResultSet resultSet = statement.executeQuery();
             HotelGroup aHotelGroup = load(resultSet);
             while (aHotelGroup != null) {
-                System.out.println(aHotelGroup);
                 aHotelGroup = load(resultSet);
             }
         } catch (Exception e) {
             System.err.println("ERROR HotelGroupDataMapper.findAll(): " + e);
             e.printStackTrace();
-        } finally {
-            System.out.println("HotelGroupDataMapper.findAll() - loaded hotel groups: " + loadedMap);
         }
         return new ArrayList<>(loadedMap.values());
     }
@@ -73,7 +69,6 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
 
         if (hgCriteria.getHotelGroupID() != null){
             findAllStatement += "WHERE hg.id = '" + hgCriteria.getHotelGroupID() + "'";
-            System.out.println("ID passed to HotelGroupDataMapper : " + hgCriteria.getHotelGroupID());
         }
 
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
@@ -84,7 +79,6 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
             }
             return new ArrayList<>(loadedMap.values());
         } catch (Exception e) {
-            System.out.println("Exception occurred at findBySearchCriteria");
             e.printStackTrace();
         }
 
@@ -122,8 +116,9 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
                 " RETURNING id )" +
                 "INSERT INTO hotel_group (name, address,phone) VALUES ('" +hg.getName() +
                 "',(SELECT id FROM insert_address),'" + hg.getPhone() +"') returning * ";
+        System.out.println("Create statement :"+createStatement);
 
-        System.out.println(createStatement);
+
         try (PreparedStatement statement = connection.prepareStatement(createStatement)) {
             ResultSet resultSet = statement.executeQuery();
 

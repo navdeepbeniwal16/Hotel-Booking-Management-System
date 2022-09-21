@@ -17,6 +17,8 @@ public class IntegerIdentityMapRegistry extends AbstractIdentityMapRegistry {
         newRegistry.add(new HotelMap(new HashMap<>()), Hotel.class);
         //newRegistry.add(new HotelGoupMap(new HashMap<>()), HotelGroup.class);
         newRegistry.add(new RoomMap(new HashMap<>()), Room.class);
+        newRegistry.add(new HotelGroupMap(new HashMap<>()), HotelGroup.class);
+
         newRegistry.add(new RoomSpecificationMap(new HashMap<>()), RoomSpecification.class);
         return newRegistry;
     }
