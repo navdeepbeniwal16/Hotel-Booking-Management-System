@@ -97,8 +97,6 @@ public class HoteliersController extends FrontCommand{
                         if(hotelier == null)
                                 throw new InvalidObjectException("Failed to parse hotelier object from request body");
 
-                        System.out.println("Parsed Hotel Object : " + hotelier);
-
                         boolean success;
                         try{
                             success = dataSource.insert(Hotelier.class,hotelier);
@@ -131,7 +129,7 @@ public class HoteliersController extends FrontCommand{
                     }
                     else
                     {
-                        System.err.println("POST /api/hotelgroups: " + Arrays.toString(commandPath));
+                        System.err.println("POST /api/hoteliers: " + Arrays.toString(commandPath));
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                         return;
                     }
@@ -174,10 +172,8 @@ public class HoteliersController extends FrontCommand{
         BufferedReader requestReader = request.getReader();
 
         String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        System.out.println("Request Body Lines + " + lines);
         JSONObject body;
         if (lines.length() > 0) {
-            System.out.println(lines);
             body = new JSONObject(lines);
         } else {
             return null;

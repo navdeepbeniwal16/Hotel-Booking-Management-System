@@ -33,11 +33,11 @@ VALUES
     ('Eduardo','aduardo@gmail.com','12345','3')
 ;
 INSERT INTO
-    customer(user_id,address,contact,age)
+    customer(user_id,address,contact,age,is_active)
 VALUES
-    (5,1, '+614153726767', 25),
-    (6,2, '+615555555555', 28),
-    (7,3, '+616666666666', 35)
+    (5,1, '+614153726767', 25,TRUE),
+    (6,2, '+615555555555', 28,TRUE),
+    (7,3, '+616666666666', 35,TRUE)
 ;
 
 INSERT INTO system_admin(user_id) VALUES (1);

@@ -116,7 +116,6 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
                 " RETURNING id )" +
                 "INSERT INTO hotel_group (name, address,phone) VALUES ('" +hg.getName() +
                 "',(SELECT id FROM insert_address),'" + hg.getPhone() +"') returning * ";
-        System.out.println("Create statement :"+createStatement);
 
 
         try (PreparedStatement statement = connection.prepareStatement(createStatement)) {
