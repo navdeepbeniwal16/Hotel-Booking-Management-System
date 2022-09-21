@@ -27,12 +27,14 @@ public class AppContext implements ServletContextListener {
         String auth0Domain = ctx.getInitParameter("com.auth0.domain");
         String auth0ClientId = ctx.getInitParameter("com.auth0.clientId");
         String auth0ClientSecret = ctx.getInitParameter("com.auth0.clientSecret");
+        String auth0Audience = ctx.getInitParameter("com.auth0.audience");
 
         if (auth0Domain == null || auth0ClientId == null || auth0ClientSecret == null) {
             System.err.println("CONTEXT ERROR: invalid auth0");
             System.out.println("\t" + auth0Domain);
             System.out.println("\t" + auth0ClientId);
             System.out.println("\t" + auth0ClientSecret);
+            System.out.println("\t" + auth0Audience);
             System.exit(1);
         }
 
@@ -42,6 +44,7 @@ public class AppContext implements ServletContextListener {
         System.out.println("\t" + auth0Domain);
         System.out.println("\t" + auth0ClientId);
         System.out.println("\t" + auth0ClientSecret);
+        System.out.println("\t" + auth0Audience);
 
         try {
             // Database connection based on environment (dev vs prod)

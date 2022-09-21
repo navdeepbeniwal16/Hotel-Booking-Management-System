@@ -5,19 +5,29 @@ import { useEffect, useState } from 'react';
 import Hotel from '../types/HotelType';
 import endpoints from '../api/endpoints';
 import AppContext from '../context/AppContext';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Home = () => {
+  const { isLoading, isAuthenticated } = useAuth0();
   const [hotels, setHotels] = useState<Hotel[]>([]);
-  const { userMetadata } = useContext(AppContext.GlobalContext);
+  const { userMetadata, getAccessToken } = useContext(AppContext.GlobalContext);
   useEffect(() => {
-    if (userMetadata.apiAccessToken != '') {
+    const getHoteliers = async () => {
+      if (!isLoading && isAuthenticated && userMetadata.apiAccessToken !== '') {
+        await getAccessToken();
+        console.log(endpoints.getHoteliers(userMetadata.apiAccessToken));
+      }
+    };
+    if (userMetadata.apiAccessToken !== '') {
       const fetchHotels = async () => {
         const fetchedHotels = await endpoints.getAllHotels();
         setHotels(fetchedHotels);
       };
       fetchHotels().catch(console.error);
     }
-  }, [userMetadata.apiAccessToken]);
+    getHoteliers().catch(console.error);
+  }, [userMetadata.apiAccessToken, isLoading, isAuthenticated]);
+
   return (
     <div>
       <SearchForm></SearchForm>

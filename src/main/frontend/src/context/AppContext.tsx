@@ -31,6 +31,9 @@ const defaultGlobalContext = {
   hotel: defaultHotelState,
   room: defaultRoomState,
   userMetadata: defaultUserMetadata,
+  getAccessToken: () => {
+    console.log('getAccessToken not set');
+  },
 };
 
 const GlobalContext = createContext(defaultGlobalContext);
@@ -61,31 +64,35 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
     setRoom,
   };
 
-  useEffect(() => {
-    const getUserMetadata = async () => {
-      let apiAccessToken;
-      try {
-        apiAccessToken = await getAccessTokenSilently({
+  const getAccessToken = async () => {
+    let apiAccessToken;
+    try {
+      apiAccessToken = await getAccessTokenSilently({
+        audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
+      });
+    } catch (e: any) {
+      if (e.error === 'consent_required') {
+        console.log('getting consent');
+        apiAccessToken = await getAccessTokenWithPopup({
           audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
         });
-      } catch (e: any) {
-        if (e.error === 'consent_required') {
-          console.log('getting consent');
-          apiAccessToken = await getAccessTokenWithPopup({
-            audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
-          });
-        } else {
-          console.log(e.message);
-          throw e;
-        }
+      } else {
+        console.log(e.message);
+        throw e;
       }
+    }
+    return apiAccessToken;
+  };
 
+  useEffect(() => {
+    const getUserMetadata = async () => {
+      let apiAccessToken = await getAccessToken();
       console.log('User access token:', apiAccessToken);
       setUserMetadata({ apiAccessToken });
     };
 
     getUserMetadata();
-  }, [getAccessTokenSilently, getAccessTokenWithPopup]);
+  }, []);
 
   return (
     <GlobalContext.Provider
@@ -94,6 +101,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         hotel: hotelState,
         room: roomState,
         userMetadata,
+        getAccessToken,
       }}
     >
       {children}

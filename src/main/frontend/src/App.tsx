@@ -13,7 +13,6 @@ import { Container } from 'react-bootstrap';
 
 import { useContext } from 'react';
 import AppContext from './context/AppContext';
-
 import { Auth0Provider } from '@auth0/auth0-react';
 
 const App = (props: ReactPropTypes, context: ContextType<any>) => {

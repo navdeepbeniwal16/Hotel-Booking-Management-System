@@ -16,6 +16,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.net.http.HttpHeaders;
 import java.util.Arrays;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
@@ -121,12 +122,14 @@ public class APIFrontController extends HttpServlet {
         try {
             // TODO: removing access token when session ended?
             System.out.println("handleAuth");
-            System.out.println(request.getHeader("Authorization"));
 
-            if (request.getHeader("Authorization") == null) {
+            if (request.getHeader("Authorization") == null || request.getHeader("Authorization").equals("")) {
+                System.out.println("handleAuth " + request.getRequestURI() + " | null Authorization header");
                 return;
             }
 
+            System.out.println("Getting tokens with auth");
+            System.out.println("Authorization: " + request.getHeader("Authorization"));
             tokens = authController.handle(request, response);
             if (tokens.getAccessToken() != null && tokens.getIdToken() != null) {
                 DecodedJWT jwt = JWT.decode(tokens.getAccessToken());
