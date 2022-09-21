@@ -47,11 +47,12 @@ public class ServletUoW implements IUnitOfWork {
         ServletUoW uow = (ServletUoW) session.getAttribute(attributeName);
         if (uow == null) {
             uow = ServletUoW.newActiveUoW(freshIdentityMap);
-            session.setAttribute(attributeName, uow);
-            System.out.println("UoW created");
         } else {
-            System.out.println("Using existing UoW");
+            for(Object identityMap: uow.identityMaps.getAll()) {
+                ((IIdentityMap<?>) identityMap).clear();
+            }
         }
+        session.setAttribute(attributeName, uow);
         activeUnitsOfWork.put(Thread.currentThread(), uow);
         reentrantLock.unlock();
     }

@@ -37,6 +37,7 @@ public abstract class DataSourceFacade implements IDataSource {
     }
 
     public <DomainObject extends AbstractDomainObject> DomainObject find(Class<DomainObject> aClass, Integer id) throws SQLException {
+        // TODO: #review - does this need to be refactored? Now that UoW is clearing Identity Maps every request?
         IIdentityMap classCache = identityMapRegistry.get(aClass);
         IDataMapper<AbstractDomainObject> mapper;
         try {
