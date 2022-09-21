@@ -59,6 +59,7 @@ CREATE TABLE CUSTOMER(
                          address INT NOT NULL,
                          contact VARCHAR(13) NOT NULL,
                          age INT NOT NULL,
+                         is_active BOOLEAN NOT NULL,
                          PRIMARY KEY (id),
                          FOREIGN KEY (user_id) REFERENCES APP_USER(id),
                          FOREIGN KEY (address) REFERENCES ADDRESS(id)

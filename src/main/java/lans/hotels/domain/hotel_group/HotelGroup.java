@@ -39,7 +39,7 @@ public class HotelGroup extends ReferenceObject{
         initMaps();
     }
 
-    public HotelGroup(IDataSource dataSource, String name, Address address, String phone) {
+    public HotelGroup(IDataSource dataSource, String name, Address address, String phone) throws UoWException {
         super(dataSource);
         this.name = name;
         this.address = address;
@@ -86,9 +86,9 @@ public class HotelGroup extends ReferenceObject{
         ArrayList<Booking> allBookings = new ArrayList<>();
         try {
             allBookings = dataSource.findBySearchCriteria(Booking.class, bookingsSearchCriteria);
-            System.out.println("In Hoel Group : Number of bookings fetched : " + allBookings.size());
+            System.out.println("In Hotel Group : Number of bookings fetched : " + allBookings.size());
         } catch (Exception e) {
-            System.out.println("Exception occured while fetching bookings for the hotel group");
+            System.out.println("Exception occurred while fetching bookings for the hotel group");
             System.out.println(e.getMessage());
         }
 

@@ -29,7 +29,28 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> DomainObject update(AbstractDomainObject domainObject) {
+    public Booking update(AbstractDomainObject domainObject) {
+        Booking booking = (Booking) domainObject;
+        String updateStatement = "UPDATE booking SET is_active = " + booking.getActive()  +  " WHERE id = " + booking.getId() + ";";
+
+        System.out.println("UPDATE BOOKING QUERY : ");
+        System.out.println(updateStatement);
+
+        try (PreparedStatement statement = connection.prepareStatement(updateStatement)) {
+            statement.executeQuery();
+            System.out.println("BookingMapper : Booking with id " + booking.getId() + " updated in DataMapper...");
+
+            BookingsSearchCriteria criteria = new BookingsSearchCriteria();
+            criteria.setBookingId(booking.getId());
+
+            ArrayList<Booking> bookings = findBySearchCriteria(criteria);
+            if(bookings.size() > 0) return bookings.get(0);
+            else return null;
+        } catch (Exception e) {
+            System.out.println("Exception occurred at BookingDataMapper:update() execution");
+            e.printStackTrace();
+        }
+
         return null;
     }
 
@@ -46,7 +67,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     @Override
     public ArrayList<Booking> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         BookingsSearchCriteria bookingsSearchCriteria = (BookingsSearchCriteria) criteria;
-        String findByCriteriaStatement = "SELECT b.id as id,h.id as hotel_id,h.name as hotel_name," +
+        String findByCriteriaStatement = "SELECT b.id as id, b.is_active as is_active, h.id as hotel_id,h.name as hotel_name," +
                 "u.name as user_name,c.id as customer_id, start_date, end_date," +
                 " s.type as room_type, m.id as room_id,no_of_guests,main_guest, hg.id as hotel_group_id\n" +
                 "    FROM booking b\n" +
@@ -61,6 +82,10 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                 "        JOIN app_user u on u.id = c.user_id " +
                 "        JOIN hotel_group hg on h.hotel_group_id = hg.id ";
 
+
+        if(bookingsSearchCriteria.getBookingId()!=null) {
+            findByCriteriaStatement += "WHERE  b.id = '" + bookingsSearchCriteria.getBookingId() + "'";
+        }
 
         if(bookingsSearchCriteria.getCustomerId()!=null) {
             findByCriteriaStatement += "WHERE b.customer_id = '" + bookingsSearchCriteria.getCustomerId() + "'";
@@ -82,7 +107,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
             e.printStackTrace();
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -101,7 +126,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                 resultSet.getDate("end_date"));
         Booking booking =
                 new Booking(id,dataSource, resultSet.getInt("hotel_id"),
-                        resultSet.getInt("customer_id"), dateRange);
+                        resultSet.getInt("customer_id"), dateRange, resultSet.getBoolean("is_active"));
         return booking;
     }
 

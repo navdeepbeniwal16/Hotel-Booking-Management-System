@@ -1,20 +1,20 @@
 package lans.hotels.datasource.search_criteria;
 
-public class CustomerSearchCriteria extends AbstractSearchCriteria {
-    private Integer customerId;
+public class HotelierSearchCriteria extends AbstractSearchCriteria {
+    private Integer hotelierId;
     private String name;
     private Boolean isActive;
     private String email;
 
-    public CustomerSearchCriteria() {
+    public HotelierSearchCriteria() {
     }
 
-    public Integer getCustomerId() {
-        return customerId;
+    public Integer getId() {
+        return hotelierId;
     }
 
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
+    public void setId(Integer hotelierId) {
+        this.hotelierId = hotelierId;
     }
 
     public String getName() {
@@ -40,5 +40,6 @@ public class CustomerSearchCriteria extends AbstractSearchCriteria {
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
+
 
 }

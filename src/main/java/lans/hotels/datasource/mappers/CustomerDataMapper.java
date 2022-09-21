@@ -7,6 +7,7 @@ import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.user_types.Customer;
+import lans.hotels.domain.user_types.Hotelier;
 import lans.hotels.domain.utils.District;
 import lans.hotels.domain.utils.Address;
 
@@ -20,7 +21,24 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
         super(connection, "customer", dataSource);
     }
     @Override
-    protected String findStatement() {return null;}
+    protected String findStatement() {
+        String statement =
+                "SELECT customer_id as id, name, email, password, role, " +
+                        "contact, age, line_1 as address_l1,line_2 AS address_l2, " +
+                        "district_name, postcode, city, is_active " +
+                        "FROM app_user u " +
+                        "JOIN ( " +
+                        "SELECT user_id,c.id AS customer_id, contact, age, is_active," +
+                        " line_1, line_2, city, postcode, name as district_name " +
+                        "FROM customer c " +
+                        "JOIN ( " +
+                        "address a JOIN district d ON a.district = d.id " +
+                        ") " +
+                        "ON c.address = a.id " +
+                        ") AS cc " +
+                        "ON u.id = cc.user_id ";
+        return statement;
+    }
 
     @Override
     protected String insertStatement() {
@@ -29,22 +47,7 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
 
     @Override
     public ArrayList<Customer> findAll() throws SQLException {
-        String findAllStatement = "SELECT customer_id as id, name, email, password, role, " +
-                "contact, age, line_1 as address_l1,line_2 AS address_l2, " +
-                "district_name, postcode, city " +
-                "FROM app_user u " +
-                "JOIN ( " +
-                "SELECT user_id,c.id AS customer_id, contact, age, line_1, line_2, city, postcode, name as district_name " +
-                "FROM customer c " +
-                "JOIN ( " +
-                "address a JOIN district d ON a.district = d.id " +
-                ") " +
-                "ON c.address = a.id " +
-                ") AS cc " +
-                "ON u.id = cc.user_id ";
-
-//        String findAllStatement = "SELECT h.id AS id, contact, age, line_1, line_2, city, postcode, name FROM " + this.table +" h JOIN ( address a JOIN district d ON a.district = d.id) ON h.address = a.id";
-        try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
+        try (PreparedStatement statement = connection.prepareStatement(findStatement())) {
             ResultSet resultSet = statement.executeQuery();
             while (load(resultSet) != null) {
                 load(resultSet);
@@ -65,26 +68,24 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     @Override
     public ArrayList<Customer> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         CustomerSearchCriteria customerSearchCriteria = (CustomerSearchCriteria) criteria;
-        String findByCriteriaStatement = "SELECT customer_id as id, name, email, password, role, " +
-                "contact, age, line_1 as address_l1,line_2 AS address_l2, " +
-                "district_name, postcode, city " +
-                "FROM app_user u " +
-                "JOIN ( " +
-                "SELECT user_id,c.id AS customer_id, contact, age, line_1, line_2, city, postcode, name as district_name " +
-                "FROM customer c " +
-                "JOIN ( " +
-                "address a JOIN district d ON a.district = d.id " +
-                ") " +
-                "ON c.address = a.id " +
-                ") AS cc " +
-                "ON u.id = cc.user_id ";
+        String findByCriteriaStatement = findStatement();
 
+        System.out.println(findByCriteriaStatement);
         if(customerSearchCriteria.getCustomerId()!=null) {
             findByCriteriaStatement += "WHERE customer_id ='" + customerSearchCriteria.getCustomerId() + "'";
         }
 
-        System.out.println("Prepared Query : ");
-        System.out.println(findByCriteriaStatement);
+        if (customerSearchCriteria.getName() != null){
+            findByCriteriaStatement += "WHERE name = '" + customerSearchCriteria.getName() + "'";
+        }
+
+        if (customerSearchCriteria.getEmail() != null){
+            findByCriteriaStatement += "WHERE email = '" + customerSearchCriteria.getEmail() + "'";
+        }
+
+        if (customerSearchCriteria.getIsActive() != null){
+            findByCriteriaStatement += "WHERE is_active = '" + customerSearchCriteria.getIsActive() + "'";
+        }
 
         try (PreparedStatement statement = connection.prepareStatement(findByCriteriaStatement)) {
             ResultSet resultSet = statement.executeQuery();
@@ -113,7 +114,7 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
         Customer customer =
                 new Customer(id,dataSource,rs.getString("name"),rs.getString("email"),
                         rs.getString("password"),rs.getInt("role"),address,
-                        rs.getString("contact"),rs.getInt("age"));
+                        rs.getString("contact"),rs.getInt("age"),rs.getBoolean("is_active"));
         return customer;
     }
 
@@ -123,8 +124,35 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) {
-        return null;
+    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject){
+        Customer customer = (Customer) domainObject;
+        String createStatement = "WITH insert_address AS ( " +
+                "        INSERT INTO address (line_1,line_2,district,city,postcode) " +
+                "        VALUES " +
+                "                ('1-15','College Cres',(SELECT id from district WHERE name = 'NSW'),'Melbourne',3052) " +
+                "RETURNING id " +
+                "), " +
+                "insert_app_user AS ( " +
+                "        INSERT INTO app_user (name,email,password,role) VALUES ( '" + customer.getName() + "',"
+                + "'" + customer.getEmail() + "'," + "'" + customer.getPassword() + "', 3 )" +
+                "RETURNING id ) " +
+                "INSERT INTO customer (user_id,address,contact,age,is_active) " +
+                "VALUES ((SELECT id FROM insert_app_user),(SELECT id FROM insert_address), '" + customer.getContact() + "'," +
+                customer.getAge() + ",true) returning * ";
+        System.out.println(createStatement);
+
+        try (PreparedStatement statement = connection.prepareStatement(createStatement)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next())
+                return true;
+            else return false;
+
+        }
+        catch (SQLException e)
+        {
+            return false;
+        }
     }
 
     @Override

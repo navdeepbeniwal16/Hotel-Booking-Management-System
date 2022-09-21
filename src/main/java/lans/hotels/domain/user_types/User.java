@@ -13,10 +13,20 @@ public class User extends ReferenceObject {
 
     public User(IDataSource dataSource){
         super(dataSource);
+//        try {
+//            //markNew();
+//        } catch (UoWException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public User(Integer id, IDataSource dataSource){
         super(id, dataSource);
+        try {
+            markClean();
+        } catch (UoWException e) {
+            e.printStackTrace();
+        }
     }
 
     public int getID()
