@@ -32,7 +32,11 @@ const MainNavbar = ({ username }: NavPropsType) => {
                 <Nav.Item className='text-light me-2'>
                   {user.name || user.email || 'User'}
                 </Nav.Item>
-                <Nav.Link onClick={() => logout()}>Log out</Nav.Link>
+                <Nav.Link
+                  onClick={() => logout({ returnTo: window.location.origin })}
+                >
+                  Log out
+                </Nav.Link>
               </>
             ) : null}
             {isLoading ? (
