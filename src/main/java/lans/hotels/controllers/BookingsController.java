@@ -61,7 +61,7 @@ public class BookingsController extends FrontCommand {
 
 
                                     for(Booking booking: customerBookings) {
-                                        System.out.println("Booking : " + booking.toString());
+                                        System.out.println("Booking : " + booking.getId());
                                     }
                                     JSONObject customersBookingsJson = getBookingsJson(customerBookings);
                                     sendResponse(customersBookingsJson);
@@ -117,8 +117,8 @@ public class BookingsController extends FrontCommand {
             abooking = new JSONObject();
             abooking.put("hotelId", booking.getHotelId());
             abooking.put("customerId", booking.getCustomerId());
-//            abooking.put("startDate", booking.getDateRange().getTo().toString());
-//            abooking.put("endDate", booking.getDateRange().getFrom().toString());
+            abooking.put("startDate", booking.getDateRange().getTo().toString());
+            abooking.put("endDate", booking.getDateRange().getFrom().toString());
             nestedBookingsArray.put(abooking);
         }
 

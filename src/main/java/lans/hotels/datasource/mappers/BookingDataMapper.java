@@ -6,6 +6,10 @@ import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.user_types.Customer;
+import lans.hotels.domain.utils.Address;
+import lans.hotels.domain.utils.DateRange;
+import lans.hotels.domain.utils.District;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,7 +46,9 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     @Override
     public ArrayList<Booking> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         BookingsSearchCriteria bookingsSearchCriteria = (BookingsSearchCriteria) criteria;
-        String findByCriteriaStatement = "SELECT b.id as id,h.name as hotel_name, start_date, end_date, s.type as room_type, m.id as room_id,no_of_guests,main_guest\n" +
+        String findByCriteriaStatement = "SELECT b.id as id,h.id as hotel_id,h.name as hotel_name," +
+                "u.name as user_name,c.id as customer_id, start_date, end_date," +
+                " s.type as room_type, m.id as room_id,no_of_guests,main_guest\n" +
                 "    FROM booking b\n" +
                 "        JOIN ( room_booking r\n" +
                 "            JOIN (room m\n" +
@@ -51,12 +57,14 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                 "            ON r.room_id=m.id)\n" +
                 "        ON b.id = r.booking_id\n" +
                 "        JOIN hotel h ON h.id = b.hotel_id\n" +
-                "        JOIN customer c ON c.id=b.customer_id\n";
+                "        JOIN customer c ON c.id=b.customer_id\n" +
+                "        JOIN app_user u on u.id = c.user_id ";
+
 
         if(bookingsSearchCriteria.getCustomerId()!=null) {
             findByCriteriaStatement += "WHERE b.customer_id = '" + bookingsSearchCriteria.getCustomerId() + "'";
         }
-
+        System.out.println("Booking query \n"+findByCriteriaStatement);
         try (PreparedStatement statement = connection.prepareStatement(findByCriteriaStatement)) {
             ResultSet resultSet = statement.executeQuery();
             Booking loadedBooking = load(resultSet);
@@ -85,7 +93,12 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
 
     @Override
     protected Booking doLoad(Integer id, ResultSet resultSet) throws Exception {
-        return null;
+        DateRange dateRange = new DateRange(resultSet.getDate("start_date"),
+                resultSet.getDate("end_date"));
+        Booking booking =
+                new Booking(id,dataSource, resultSet.getInt("hotel_id"),
+                        resultSet.getInt("customer_id"), dateRange);
+        return booking;
     }
 
     @Override
