@@ -5,13 +5,14 @@ import { useContext, useState } from 'react';
 import endpoints from '../api/endpoints';
 import { Room, defaultRoom } from '../types/RoomType';
 import { map } from 'lodash';
-
+import { useAuth0 } from '@auth0/auth0-react';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 
 const Hotel = () => {
+  const { loginWithRedirect, isAuthenticated } = useAuth0();
   const hotelState = useContext(AppContext.GlobalContext).hotel;
   const [rooms, setRooms] = useState([defaultRoom]);
 
@@ -40,7 +41,9 @@ const Hotel = () => {
                 <Card.Text>Guests: {`${room.occupancy}`}</Card.Text>
                 <Card.Text>Bed: {`${room.bed_type}`}</Card.Text>
                 <Button
-                  onClick={() => console.log('booked:', room.room_id)}
+                  onClick={() => {
+                    if (!isAuthenticated) loginWithRedirect();
+                  }}
                   variant='primary'
                 >
                   ${`${room.price}`}

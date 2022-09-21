@@ -21,7 +21,7 @@ const HotelsList = ({ hotels }: HotelListProps) => {
     <Container>
       {map(hotels, (hotel: Hotel) => {
         return (
-          <Row xs={1} md={1} className='g-4 mb-4'>
+          <Row key={`${hotel.hotel_id}`} xs={1} md={1} className='g-4 mb-4'>
             <Nav.Link
               as={Link}
               to={`/hotel/${hotel.hotel_id}`}

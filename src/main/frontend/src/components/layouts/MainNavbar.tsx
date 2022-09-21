@@ -9,11 +9,13 @@ interface NavPropsType {
 }
 
 const MainNavbar = ({ username }: NavPropsType) => {
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+  const { user, loginWithRedirect, logout, isLoading, isAuthenticated } =
+    useAuth0();
 
   return (
     <Navbar bg='dark' variant='dark' expand='lg'>
       <Container>
+        <Navbar.Brand href='/'>LANS Hotels</Navbar.Brand>
         <Navbar.Toggle aria-controls='navbarScroll' />
         <Navbar.Collapse id='navbarScroll'>
           <Nav
@@ -24,14 +26,23 @@ const MainNavbar = ({ username }: NavPropsType) => {
             <Nav.Link href='/'>Home</Nav.Link>
             <Nav.Link href='/bookings'>Bookings</Nav.Link>
           </Nav>
-          <Nav className='d-flex'>
-            {isAuthenticated ? (
-              <Nav.Link onClick={() => logout()}>Log out</Nav.Link>
-            ) : (
+          <Nav className='d-flex align-items-center'>
+            {!isLoading && isAuthenticated && user ? (
               <>
-                <Nav.Link onClick={() => loginWithRedirect()}>Log in</Nav.Link>
+                <Nav.Item className='text-light me-2'>
+                  {user.name || user.email || 'User'}
+                </Nav.Item>
+                <Nav.Link onClick={() => logout()}>Log out</Nav.Link>
               </>
-            )}
+            ) : null}
+            {isLoading ? (
+              <Nav.Item className='text-light text-sm me-2'>
+                Loading user
+              </Nav.Item>
+            ) : null}
+            {!isLoading && !isAuthenticated ? (
+              <Nav.Link onClick={() => loginWithRedirect()}>Log in</Nav.Link>
+            ) : null}
           </Nav>
         </Navbar.Collapse>
       </Container>
