@@ -25,7 +25,6 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
 
     @Override
     public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) {
-        // TODO: TBR - Just for testing
         return null;
     }
 
@@ -108,7 +107,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
             e.printStackTrace();
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

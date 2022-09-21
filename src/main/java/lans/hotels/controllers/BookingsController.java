@@ -6,6 +6,7 @@ import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.datasource.search_criteria.CustomerSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.domain.booking.Booking;
+import lans.hotels.domain.booking.RoomBooking;
 import lans.hotels.domain.hotel.Hotel;
 
 import lans.hotels.domain.hotel_group.HotelGroup;
@@ -22,6 +23,8 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BookingsController extends FrontCommand {
@@ -30,49 +33,41 @@ public class BookingsController extends FrontCommand {
         String[] commandPath = request.getPathInfo().split("/");
         switch (request.getMethod()) {
             case HttpMethod.GET:
-                // TODO: TBR - Just for testing
-//                System.out.println("Request transferred to Booking Controller GET Method");
-//                CustomerSearchCriteria criteria = new CustomerSearchCriteria();
-//                criteria.setCustomerId(1);
-//                try {
-//                    ArrayList<Customer> customers = dataSource.findBySearchCriteria(Customer.class, criteria);
-//                    if(!customers.isEmpty()) {
-//                        Customer customer = customers.get(0);
-//                        System.out.println("Number of bookings found:" + customer.getAllBookings().size());
-//                    }
-//                    System.out.println(customers.toString());
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-
                 if(commandPath.length == 2) {
-                     // GET: /api/bookings
+
+                    // GET: /api/bookings
                     JSONObject requestBody = getRequestBody(request);
                     if(requestBody.has("search")) {
                         JSONObject searchQuery = requestBody.getJSONObject("search");
-                        if(searchQuery.has("customerId")) {
+                        if(searchQuery.has("customer_id")) { // single customer query
                             CustomerSearchCriteria customerSearchCriteria = new CustomerSearchCriteria();
-                            Integer customerId = searchQuery.getInt("customerId");
+
+                            Integer customerId;
+                            try {
+                                customerId = searchQuery.getInt("customer_id");
+                            } catch (Exception e) {
+                                System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
+                                System.err.println("GET /api/bookings: " + e.getMessage());
+                                System.err.println("GET /api/bookings: " + e.getClass());
+                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
+                                return;
+                            }
+
                             if(customerId != null) customerSearchCriteria.setCustomerId(customerId);
-                            System.out.println("Customer id "+customerId);
                             Customer customer;
                             try {
-                                // Fetching the customer based on the customer id
+                                // Fetching the customer based on the customer_id
                                 ArrayList<Customer> customers = dataSource.findBySearchCriteria(Customer.class, customerSearchCriteria);
                                 if(!customers.isEmpty()) {
                                     customer = customers.get(0);
 
                                     // Making call to customer to fetch all of it's booking details
                                     ArrayList<Booking> customerBookings = customer.getAllBookings();
-
-
-                                    for(Booking booking: customerBookings) {
-                                        System.out.println("Booking : " + booking.getId());
-                                    }
                                     JSONObject customersBookingsJson = getBookingsJson(customerBookings);
                                     sendResponse(customersBookingsJson);
                                 } else {
-                                    System.out.println("Not a customer bookings query!!!");
+                                    System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
+                                    response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
                                 }
 
                             } catch (Exception e) {
@@ -82,18 +77,16 @@ public class BookingsController extends FrontCommand {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
                                 return;
                             }
-
-
-
                         }
-                        else if(searchQuery.has("hotel_group_id")) {
+
+                        else if(searchQuery.has("hotel_group_id")) { // TODO: Needs to be tackled, not using the right business rule
                             Integer hotelGroupID = searchQuery.getInt("hotel_group_id");
                             HotelGroupSearchCriteria hgSearchCriteria = new HotelGroupSearchCriteria();
                             if(hotelGroupID != null) hgSearchCriteria.setHotelGroupID(hotelGroupID);
 
                             HotelGroup hg;
                             try {
-                                // Fetching the customer based on the customer id
+                                // Fetching the hotel-group based on the customer id
                                 ArrayList<HotelGroup> hotelgroups = dataSource.findBySearchCriteria(HotelGroup.class, hgSearchCriteria);
                                 if(!hotelgroups.isEmpty()) {
                                     System.out.println("Hi");
@@ -119,9 +112,6 @@ public class BookingsController extends FrontCommand {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
                                 return;
                             }
-
-
-
                         }
                     }
 
@@ -137,7 +127,9 @@ public class BookingsController extends FrontCommand {
                     if(requestBody.has("booking")) {
                         JSONObject bookingJsonBody = requestBody.getJSONObject("booking");
                         if(!bookingJsonBody.has("id")) {
-                            // TODO: return some sensible error
+                            System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                            return;
                         } else {
                             Integer bookingId = bookingJsonBody.getInt("id");
                             System.out.println("Booking id being fetched : " + bookingId);
@@ -200,15 +192,33 @@ public class BookingsController extends FrontCommand {
     public JSONObject getBookingsJson(ArrayList<Booking> bookings) {
         JSONObject jsonBookingsObject = new JSONObject();
         JSONArray nestedBookingsArray = new JSONArray();
-
         JSONObject abooking;
+        JSONArray aRoomBookingArray;
         for (Booking booking: bookings) {
             abooking = new JSONObject();
-            abooking.put("hotelId", booking.getHotelId());
-            abooking.put("customerId", booking.getCustomerId());
-            abooking.put("startDate", booking.getDateRange().getTo().toString());
-            abooking.put("endDate", booking.getDateRange().getFrom().toString());
+            abooking.put("id", booking.getId());
+            abooking.put("hotel_id", booking.getHotelId());
+            abooking.put("hotel_name", booking.getHotelName());
+            abooking.put("customer_id", booking.getCustomerId());
+            abooking.put("start_date", booking.getDateRange().getTo().toString());
+            abooking.put("end_date", booking.getDateRange().getFrom().toString());
             abooking.put("is_active", booking.getActive());
+
+            aRoomBookingArray = new JSONArray();
+            JSONObject aRoomBooking;
+            HashMap<Integer, RoomBooking> roomBookingHashMap = booking.getRoomBookings();
+            for (Object roomBookingKey: roomBookingHashMap.keySet()){
+                RoomBooking roomBooking = roomBookingHashMap.get(roomBookingKey);
+                aRoomBooking = new JSONObject();
+                aRoomBooking.put("id", roomBooking.getId());
+                aRoomBooking.put("is_active", roomBooking.getActive());
+                aRoomBooking.put("room_id", roomBooking.getRoomId());
+                aRoomBooking.put("main_guest", roomBooking.getMainGuest());
+                aRoomBooking.put("no_of_guests", roomBooking.getNumOfGuests());
+                aRoomBookingArray.put(aRoomBooking);
+            }
+            abooking.put("room_bookings", aRoomBookingArray);
+
             nestedBookingsArray.put(abooking);
         }
 
@@ -227,7 +237,5 @@ public class BookingsController extends FrontCommand {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
 }
