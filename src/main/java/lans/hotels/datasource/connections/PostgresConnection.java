@@ -15,8 +15,8 @@ public class PostgresConnection extends DBConnection {
         Connection conn = null;
         try {
             DriverManager.registerDriver(new org.postgresql.Driver());
-            // TODO: set auto-commit to FALSE
             conn = DriverManager.getConnection(config.getUrl(), config.getUsername(), config.getPassword());
+            conn.setAutoCommit(false);
         } catch (SQLException e) {
             System.out.println(e);
         }
