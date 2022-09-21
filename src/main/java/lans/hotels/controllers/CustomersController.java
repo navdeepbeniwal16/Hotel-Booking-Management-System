@@ -1,6 +1,9 @@
 package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
+import lans.hotels.datasource.search_criteria.CustomerSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
+import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.user_types.Customer;
 
 import org.json.JSONArray;
@@ -37,7 +40,49 @@ public class CustomersController extends FrontCommand {
                     }
 
                     if (body.has("search")) {
-                        // perform search
+                        CustomerSearchCriteria criteria = new CustomerSearchCriteria();
+
+                        JSONObject searchQueryBody = body.getJSONObject("search");
+
+                        if(searchQueryBody.has("id")) {
+                            Integer customerID = searchQueryBody.getInt("id");
+                            if(customerID != null) criteria.setCustomerId(customerID);
+                        }
+
+                        ArrayList<Customer> c;
+                        try {
+                            c = dataSource.findBySearchCriteria(Customer.class, criteria);
+                        } catch (Exception e) {
+                            System.err.println("GET /api/hotel group: " + Arrays.toString(commandPath));
+                            System.err.println("GET /api/hotels group: " + e.getMessage());
+                            System.err.println("GET /api/hotel group: " + e.getClass());
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                            return;
+                        }
+
+                        JSONArray cArray = new JSONArray();
+                        PrintWriter out = response.getWriter();
+                        response.setStatus(200);
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+
+                        JSONObject aCustomer;
+                        for (Customer customer: c) {
+                            aCustomer = new JSONObject();
+                            aCustomer.put("customer_id", customer.getId());
+                            aCustomer.put("name",customer.getName());
+                            aCustomer.put("email",customer.getEmail());
+                            aCustomer.put("address", customer.getAddress().toString());
+                            aCustomer.put("contact", customer.getContact());
+                            aCustomer.put("age", customer.getAge());
+                            cArray.put(aCustomer);
+                        }
+
+                        JSONObject customerJSON = new JSONObject();
+                        customerJSON.put("result", cArray);
+                        out.print(customerJSON);
+                        out.flush();
+                        return;
                     } else {
                         ArrayList<Customer> customers;
                         try {
@@ -81,8 +126,6 @@ public class CustomersController extends FrontCommand {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
                     return;
                  }
-
-                return;
             case HttpMethod.POST:
                 case HttpMethod.PUT:
             case HttpMethod.DELETE:

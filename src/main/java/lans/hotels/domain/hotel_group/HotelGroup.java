@@ -1,9 +1,14 @@
 package lans.hotels.domain.hotel_group;
 
 import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.utils.Address;
+
+import lans.hotels.domain.booking.Booking;
+
+import java.util.ArrayList;
 
 
 public class HotelGroup extends ReferenceObject{
@@ -74,5 +79,21 @@ public class HotelGroup extends ReferenceObject{
 
     private void initMaps() {
     }
+
+    public ArrayList<Booking> getAllBookings() {
+        BookingsSearchCriteria bookingsSearchCriteria = new BookingsSearchCriteria();
+        bookingsSearchCriteria.setHotelGroupId(this.getId());
+        ArrayList<Booking> allBookings = new ArrayList<>();
+        try {
+            allBookings = dataSource.findBySearchCriteria(Booking.class, bookingsSearchCriteria);
+            System.out.println("In Hoel Group : Number of bookings fetched : " + allBookings.size());
+        } catch (Exception e) {
+            System.out.println("Exception occured while fetching bookings for the hotel group");
+            System.out.println(e.getMessage());
+        }
+
+        return allBookings;
+    }
+
 }
 

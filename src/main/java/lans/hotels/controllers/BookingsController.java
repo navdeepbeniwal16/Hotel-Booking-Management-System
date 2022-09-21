@@ -3,9 +3,13 @@ package lans.hotels.controllers;
 import lans.hotels.api.HttpMethod;
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.search_criteria.CustomerSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.hotel.Hotel;
+
+import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.user_types.Customer;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,33 +30,34 @@ public class BookingsController extends FrontCommand {
         switch (request.getMethod()) {
             case HttpMethod.GET:
                 // TODO: TBR - Just for testing
-                System.out.println("Request transferred to Booking Controller GET Method");
-                CustomerSearchCriteria criteria = new CustomerSearchCriteria();
-                criteria.setCustomerId(1);
-                try {
-                    ArrayList<Customer> customers = dataSource.findBySearchCriteria(Customer.class, criteria);
-                    if(!customers.isEmpty()) {
-                        Customer customer = customers.get(0);
-                        System.out.println("Number of bookings found:" + customer.getAllBookings().size());
-                    }
-                    System.out.println(customers.toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                System.out.println("Request transferred to Booking Controller GET Method");
+//                CustomerSearchCriteria criteria = new CustomerSearchCriteria();
+//                criteria.setCustomerId(1);
+//                try {
+//                    ArrayList<Customer> customers = dataSource.findBySearchCriteria(Customer.class, criteria);
+//                    if(!customers.isEmpty()) {
+//                        Customer customer = customers.get(0);
+//                        System.out.println("Number of bookings found:" + customer.getAllBookings().size());
+//                    }
+//                    System.out.println(customers.toString());
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
 
                 if(commandPath.length == 2) {
                      // GET: /api/bookings
                     JSONObject requestBody = getRequestBody(request);
                     if(requestBody.has("search")) {
                         JSONObject searchQuery = requestBody.getJSONObject("search");
-                        CustomerSearchCriteria customerSearchCriteria = new CustomerSearchCriteria();
                         if(searchQuery.has("customerId")) {
+                            CustomerSearchCriteria customerSearchCriteria = new CustomerSearchCriteria();
                             Integer customerId = searchQuery.getInt("customerId");
                             if(customerId != null) customerSearchCriteria.setCustomerId(customerId);
+                            System.out.println("Customer id "+customerId);
                             Customer customer;
                             try {
                                 // Fetching the customer based on the customer id
-                                ArrayList<Customer> customers = dataSource.findBySearchCriteria(Customer.class, criteria);
+                                ArrayList<Customer> customers = dataSource.findBySearchCriteria(Customer.class, customerSearchCriteria);
                                 if(!customers.isEmpty()) {
                                     customer = customers.get(0);
 
@@ -67,6 +72,43 @@ public class BookingsController extends FrontCommand {
                                     sendResponse(customersBookingsJson);
                                 } else {
                                     System.out.println("Not a customer bookings query!!!");
+                                }
+
+                            } catch (Exception e) {
+                                System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
+                                System.err.println("GET /api/bookings: " + e.getMessage());
+                                System.err.println("GET /api/bookings: " + e.getClass());
+                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
+                                return;
+                            }
+
+
+
+                        }
+                        else if(searchQuery.has("hotel_group_id")) {
+                            Integer hotelGroupID = searchQuery.getInt("hotel_group_id");
+                            HotelGroupSearchCriteria hgSearchCriteria = new HotelGroupSearchCriteria();
+                            if(hotelGroupID != null) hgSearchCriteria.setHotelGroupID(hotelGroupID);
+
+                            HotelGroup hg;
+                            try {
+                                // Fetching the customer based on the customer id
+                                ArrayList<HotelGroup> hotelgroups = dataSource.findBySearchCriteria(HotelGroup.class, hgSearchCriteria);
+                                if(!hotelgroups.isEmpty()) {
+                                    System.out.println("Hi");
+                                    hg = hotelgroups.get(0);
+
+                                    // Making call to hotel group to fetch all of it's booking details
+                                    ArrayList<Booking> hg_bookings = hg.getAllBookings();
+
+
+                                    for(Booking booking: hg_bookings) {
+                                        System.out.println("Booking : " + booking.getId());
+                                    }
+                                    JSONObject hgBookingsJSON = getBookingsJson(hg_bookings);
+                                    sendResponse(hgBookingsJSON);
+                                } else {
+                                    System.out.println("Not a hotel group bookings query!!!");
                                 }
 
                             } catch (Exception e) {

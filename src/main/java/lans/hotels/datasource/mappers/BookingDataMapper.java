@@ -48,7 +48,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         BookingsSearchCriteria bookingsSearchCriteria = (BookingsSearchCriteria) criteria;
         String findByCriteriaStatement = "SELECT b.id as id,h.id as hotel_id,h.name as hotel_name," +
                 "u.name as user_name,c.id as customer_id, start_date, end_date," +
-                " s.type as room_type, m.id as room_id,no_of_guests,main_guest\n" +
+                " s.type as room_type, m.id as room_id,no_of_guests,main_guest, hg.id as hotel_group_id\n" +
                 "    FROM booking b\n" +
                 "        JOIN ( room_booking r\n" +
                 "            JOIN (room m\n" +
@@ -58,11 +58,15 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                 "        ON b.id = r.booking_id\n" +
                 "        JOIN hotel h ON h.id = b.hotel_id\n" +
                 "        JOIN customer c ON c.id=b.customer_id\n" +
-                "        JOIN app_user u on u.id = c.user_id ";
+                "        JOIN app_user u on u.id = c.user_id " +
+                "        JOIN hotel_group hg on h.hotel_group_id = hg.id ";
 
 
         if(bookingsSearchCriteria.getCustomerId()!=null) {
             findByCriteriaStatement += "WHERE b.customer_id = '" + bookingsSearchCriteria.getCustomerId() + "'";
+        }
+        if(bookingsSearchCriteria.getHotelGroupId()!=null) {
+            findByCriteriaStatement += "WHERE hotel_group_id = '" + bookingsSearchCriteria.getHotelGroupId() + "'";
         }
         System.out.println("Booking query \n"+findByCriteriaStatement);
         try (PreparedStatement statement = connection.prepareStatement(findByCriteriaStatement)) {
