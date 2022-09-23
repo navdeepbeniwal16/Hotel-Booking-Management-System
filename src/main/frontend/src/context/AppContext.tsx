@@ -5,7 +5,6 @@ import React, {
   ReactNode,
   useEffect,
   ReactPropTypes,
-  useCallback,
 } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import UserState from '../types/UserType';
@@ -13,7 +12,7 @@ import { defaultHotel, defaultHotelState } from '../types/HotelType';
 import { defaultRoom, defaultRoomState } from '../types/RoomType';
 import AppContextType from '../types/AppContextType';
 import RoleT from '../types/RoleTypes';
-import JwtT, { customClaims } from '../types/JwtType';
+import JwtT from '../types/JwtType';
 import jwtDecode from 'jwt-decode';
 
 const defaultUser: UserState = {
@@ -102,7 +101,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
     return () => {
       setUserMetadata(defaultUserMetadata);
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, getAccessTokenSilently, getAccessTokenWithPopup]);
 
   return (
     <GlobalContext.Provider

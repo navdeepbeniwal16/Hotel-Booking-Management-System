@@ -18,13 +18,11 @@ const Hotel = () => {
 
   useEffect(() => {
     const fetchRooms = async () => {
-      console.log('fetching rooms for hotel:', hotelState.hotel.hotel_id);
       const fetchedRooms: Room[] = await endpoints.getAllRooms();
       setRooms(fetchedRooms);
-      console.log('fetched rooms:', rooms);
     };
     fetchRooms().catch(console.error);
-  }, []);
+  }, [hotelState.hotel.hotel_id, rooms]);
 
   const renderRoom = (room: Room): ReactNode => {
     if (room.hotel_id === hotelState.hotel.hotel_id) {
