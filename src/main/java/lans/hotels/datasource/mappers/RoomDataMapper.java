@@ -59,11 +59,6 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     }
 
     @Override
-    public ArrayList<Room> insert() throws Exception {
-        return null;
-    }
-
-    @Override
     public ArrayList<Room> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         return null;
     }
@@ -131,7 +126,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) {
+    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) {
         return null;
     }
 

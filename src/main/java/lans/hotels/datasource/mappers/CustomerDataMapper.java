@@ -61,11 +61,6 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     }
 
     @Override
-    public ArrayList<Customer> insert() throws Exception {
-        return null;
-    }
-
-    @Override
     public ArrayList<Customer> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         CustomerSearchCriteria customerSearchCriteria = (CustomerSearchCriteria) criteria;
         String findByCriteriaStatement = findStatement();
@@ -124,7 +119,7 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject){
+    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject){
         Customer customer = (Customer) domainObject;
         String createStatement = "WITH insert_address AS ( " +
                 "        INSERT INTO address (line_1,line_2,district,city,postcode) " +

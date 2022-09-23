@@ -17,7 +17,7 @@ public class RoomSpecificationMapper extends AbstractPostgresDataMapper<RoomSpec
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) {
+    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) {
         return null;
     }
 
@@ -56,10 +56,6 @@ public class RoomSpecificationMapper extends AbstractPostgresDataMapper<RoomSpec
         return null;
     }
 
-    @Override
-    public ArrayList<RoomSpecification> insert() throws Exception {
-        return null;
-    }
 
 //    public RoomSpecMapper(Connection connection, IDataSource dataSource) {
 //        super(connection, "room_spec", dataSource);

@@ -51,11 +51,6 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    public ArrayList<Hotelier> insert() throws Exception {
-        return null;
-    }
-
-    @Override
     public ArrayList<Hotelier> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         HotelierSearchCriteria hCriteria = (HotelierSearchCriteria) criteria;
         String findAllStatement = findStatement();
@@ -108,7 +103,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) throws Exception {
+    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws Exception {
         {
             Hotelier hotelier = (Hotelier) domainObject;
             String createStatement = "WITH insert_app_user AS ( " +

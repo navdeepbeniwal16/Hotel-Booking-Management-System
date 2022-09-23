@@ -1,12 +1,11 @@
 package lans.hotels.domain.booking;
 
 import lans.hotels.datasource.exceptions.UoWException;
-import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.datasource.search_criteria.RoomBookingSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.DateRange;
 
 import java.util.ArrayList;
@@ -117,8 +116,8 @@ public class Booking extends ReferenceObject {
     }
 
     private void loadHotelName() {
-        HotelsSearchCriteria criteria = new HotelsSearchCriteria();
-        criteria.setHotelId(this.getHotelId());
+        HotelSearchCriteria criteria = new HotelSearchCriteria();
+        criteria.setId(this.getHotelId());
         try {
             ArrayList<Hotel> hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
             hotelName = hotels.get(0).getName();

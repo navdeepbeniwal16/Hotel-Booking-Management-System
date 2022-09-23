@@ -51,10 +51,7 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
         return new ArrayList<>(loadedMap.values());
     }
 
-    @Override
-    public ArrayList<HotelGroupHotelier> insert() throws Exception {
-        return null;
-    }
+
 
     @Override
     public ArrayList<HotelGroupHotelier> findBySearchCriteria(AbstractSearchCriteria criteria){
@@ -94,7 +91,7 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) throws SQLException, UoWException {
+    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException, UoWException {
         HotelGroupHotelier hgHotelier = (HotelGroupHotelier) domainObject;
         String createStatement = "INSERT INTO hotel_group_hotelier (hotelier_id,hotel_group_id) VALUES ("
                 + hgHotelier.getHotelierId() + "," + hgHotelier.getHotelGroupId() + ") returning * ";

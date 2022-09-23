@@ -3,11 +3,9 @@ package lans.hotels.datasource.mappers;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
-import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel_group.HotelGroup;
-import lans.hotels.domain.user_types.Hotelier;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
 
@@ -58,11 +56,6 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
     }
 
     @Override
-    public ArrayList<HotelGroup> insert() throws Exception {
-        return null;
-    }
-
-    @Override
     public ArrayList<HotelGroup> findBySearchCriteria(AbstractSearchCriteria criteria){
         HotelGroupSearchCriteria hgCriteria = (HotelGroupSearchCriteria) criteria;
         String findAllStatement = findStatement();
@@ -105,7 +98,7 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) throws SQLException, UoWException {
+    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException, UoWException {
         HotelGroup hg = (HotelGroup) domainObject;
         String createStatement = "WITH insert_address AS ( " +
                 "INSERT INTO address (line_1,line_2,district,city,postcode) " +

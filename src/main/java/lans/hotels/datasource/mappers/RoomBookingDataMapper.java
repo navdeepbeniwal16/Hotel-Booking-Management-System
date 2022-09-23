@@ -22,7 +22,7 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
 
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) throws Exception {
+    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws Exception {
         return null;
     }
 
@@ -52,11 +52,6 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
     @Override
     public boolean delete(Integer id) {
         return false;
-    }
-
-    @Override
-    public ArrayList<RoomBooking> insert() throws Exception {
-        return null;
     }
 
     @Override

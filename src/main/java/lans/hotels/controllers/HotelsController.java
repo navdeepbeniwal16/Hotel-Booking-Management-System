@@ -2,11 +2,9 @@ package lans.hotels.controllers;
 
 import lans.hotels.api.HttpMethod;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
-import lans.hotels.datasource.search_criteria.HotelierSearchCriteria;
-import lans.hotels.datasource.search_criteria.HotelsSearchCriteria;
-import lans.hotels.domain.booking.Booking;
+import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.user_types.Hotelier;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
 import org.json.JSONArray;
@@ -19,7 +17,6 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,8 +36,6 @@ public class HotelsController extends FrontCommand {
                 case HttpMethod.GET:
                     try {
                         hotels = dataSource.findAll(Hotel.class);
-                        System.out.println("HotelsController.concreteProcess() ALL v1: " + hotels.toString());
-                        System.out.println("HotelsController.concreteProcess() ALL v2: " + dataSource.findAll(Hotel.class).toString());
                     } catch (Exception e) {
                         System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
                         System.err.println("GET /api/hotels: " + e.getMessage());
@@ -56,41 +51,22 @@ public class HotelsController extends FrontCommand {
                     JSONObject body = getRequestBody(request);
 
                     if (body.has("search")) {
-                        HotelsSearchCriteria criteria = new HotelsSearchCriteria();
+                        HotelSearchCriteria criteria = new HotelSearchCriteria();
 
                         JSONObject searchQueryBody = body.getJSONObject("search");
-                        if (searchQueryBody.has("location")) {
-                            String location = searchQueryBody.getString("location");
-                            if (location != null) criteria.setLocation(location);
-                        }
-
-                        if (searchQueryBody.has("startDate") && searchQueryBody.has("endDate")) {
-                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-
-                            String startDateInString = searchQueryBody.getString("startDate");
-                            String endDateInString = searchQueryBody.getString("endDate");
-                            try {
-                                Date startDate = formatter.parse(startDateInString);
-                                Date endDate = formatter.parse(endDateInString);
-                                criteria.setStartDate(startDate);
-                                criteria.setEndDate(endDate);
-                            } catch (Exception e) {
-                                System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
-                                System.err.println("GET /api/hotels: " + e.getMessage());
-                                System.err.println("GET /api/hotels: " + e.getClass());
-                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
-                                return;
-                            }
-                        }
-
-                        if (searchQueryBody.has("hotelGroupId")) {
-                            Integer hotelGroupId = searchQueryBody.getInt("hotelGroupId");
-                            if (hotelGroupId != null) criteria.setHotelGroupId(hotelGroupId);
-                        }
 
                         if (searchQueryBody.has("id")) {
                             Integer hotelId = searchQueryBody.getInt("id");
-                            if (hotelId != null) criteria.setHotelId(hotelId);
+                            if (hotelId != null) criteria.setId(hotelId);
+                        }
+                        if (searchQueryBody.has("city")) {
+                            String location = searchQueryBody.getString("city");
+                            if (location != null) criteria.setCity(location);
+                        }
+
+                        if (searchQueryBody.has("hotel_group_id")) {
+                            Integer hotelGroupId = searchQueryBody.getInt("hotel_group_id");
+                            if (hotelGroupId != null) criteria.setHotelGroupId(hotelGroupId);
                         }
 
                         try {
@@ -163,10 +139,8 @@ public class HotelsController extends FrontCommand {
                         }
                         else {
                             Integer id = JSONBody.getInt("id");
-                            HotelsSearchCriteria criteria = new HotelsSearchCriteria();
-                            criteria.setHotelId(id);
-                            System.out.println("Hotel id : "+criteria.getHotelId());
-
+                            HotelSearchCriteria criteria = new HotelSearchCriteria();
+                            criteria.setId(id);
 
                             boolean success = false;
 
@@ -176,10 +150,7 @@ public class HotelsController extends FrontCommand {
                                     Hotel hotel = hotels.get(0);
 
                                     if(JSONBody.has("is_active") && !JSONBody.getBoolean("is_active")==(hotel.getIsActive())) {
-                                        System.out.println("value : "+JSONBody.getBoolean("is_active")+"My value : "+hotel.getIsActive());
                                         hotel.setIs_Active(!hotel.getIsActive());
-                                        System.out.println("new value"+hotel.getIsActive());
-
 
                                         success = true;
                                     }
@@ -317,8 +288,12 @@ public class HotelsController extends FrontCommand {
             District district_ob = new District(district);
             Address address = new Address(l1, l2, district_ob, city, postcode);
 
-            h = new Hotel(dataSource,hotel_group_id,h_name,email,address,contact,
-                    city,postcode,is_active);
+            try {
+                h = new Hotel(dataSource,hotel_group_id,h_name,email,address,contact,
+                        city,postcode,is_active);
+            } catch (UoWException e) {
+                e.printStackTrace();
+            }
         }
         return h;
     }

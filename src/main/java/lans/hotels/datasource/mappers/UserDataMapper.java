@@ -37,10 +37,6 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
         return null;
     }
 
-    @Override
-    public ArrayList<User> insert() throws Exception {
-        return null;
-    }
 
     @Override
     public ArrayList<User> findBySearchCriteria(AbstractSearchCriteria criteria){
@@ -83,7 +79,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean create(DomainObject domainObject) throws SQLException, UoWException {
+    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException, UoWException {
         return null;
     }
 
