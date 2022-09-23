@@ -1,7 +1,7 @@
 import Hotel from '../types/HotelType';
 import Room from '../types/RoomType';
 
-const getHoteliers = async (accessToken: string): Promise<Room[]> => {
+const getHoteliers = async (accessToken: string): Promise<any[]> => {
   const res = await fetch('/api/hoteliers', {
     headers: {
       'Content-Type': 'application/json',

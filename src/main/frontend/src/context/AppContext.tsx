@@ -5,12 +5,16 @@ import React, {
   ReactNode,
   useEffect,
   ReactPropTypes,
+  useCallback,
 } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import UserState from '../types/UserType';
 import { defaultHotel, defaultHotelState } from '../types/HotelType';
 import { defaultRoom, defaultRoomState } from '../types/RoomType';
 import AppContextType from '../types/AppContextType';
+import RoleT from '../types/RoleTypes';
+import JwtT, { customClaims } from '../types/JwtType';
+import jwtDecode from 'jwt-decode';
 
 const defaultUser: UserState = {
   username: '',
@@ -18,12 +22,14 @@ const defaultUser: UserState = {
     console.error('Error: cannot call setUsername() without context'),
 };
 
-type UserMetadata = {
+export type UserMetadata = {
   apiAccessToken: string;
+  roles: RoleT[];
 };
 
 const defaultUserMetadata: UserMetadata = {
   apiAccessToken: '',
+  roles: [],
 };
 
 const defaultGlobalContext = {
@@ -43,7 +49,7 @@ interface IGlobalProvider {
 }
 
 const GlobalProvider = ({ children }: IGlobalProvider) => {
-  const { user, getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
+  const { getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
   const [username, setUsername] = useState('');
   const [hotel, setHotel] = useState(defaultHotel);
   const [room, setRoom] = useState(defaultRoom);
@@ -64,7 +70,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
     setRoom,
   };
 
-  const getAccessToken = async () => {
+  const getAccessToken = useCallback(async () => {
     let apiAccessToken;
     try {
       apiAccessToken = await getAccessTokenSilently({
@@ -82,17 +88,34 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
       }
     }
     return apiAccessToken;
-  };
+  }, [getAccessTokenSilently, getAccessTokenWithPopup]);
 
   useEffect(() => {
     const getUserMetadata = async () => {
+      console.log('x');
+      if (userMetadata.apiAccessToken !== '') return;
+      console.log('Initial user metadata', userMetadata);
       let apiAccessToken = await getAccessToken();
-      console.log('User access token:', apiAccessToken);
-      setUserMetadata({ apiAccessToken });
+      let decodedToken: JwtT = jwtDecode(apiAccessToken);
+      let roles: RoleT[] = [];
+
+      console.log('Access token:', apiAccessToken);
+      console.log('\n\tDecoded token:', jwtDecode(apiAccessToken));
+      if (customClaims.roles in decodedToken) {
+        roles = decodedToken['lans_hotels/roles'] || [];
+        console.log('Roles added to user metadata: ', roles);
+      }
+
+      setUserMetadata({
+        ...userMetadata,
+        roles,
+        apiAccessToken,
+      });
+      console.log('Set user metadata to:', userMetadata);
     };
 
     getUserMetadata();
-  }, []);
+  }, [userMetadata, setUserMetadata, getAccessToken]);
 
   return (
     <GlobalContext.Provider

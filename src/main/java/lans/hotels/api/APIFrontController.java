@@ -122,6 +122,7 @@ public class APIFrontController extends HttpServlet {
     }
 
     protected void handleAuth(HttpServletRequest request) {
+        String namespace = "lans_hotels/";
         try {
             String headerString = request.getHeader("Authorization");
             if (headerString == null || headerString.equals("")) {
@@ -151,8 +152,8 @@ public class APIFrontController extends HttpServlet {
             request.getSession().setAttribute("auth", true);
             Base64.Decoder decoder = Base64.getUrlDecoder();
             JSONObject payload = new JSONObject(new String(decoder.decode(jwt.getPayload())));
-            if (payload.has("email")) request.getSession().setAttribute("email", payload.get("email"));
-            if (payload.has("roles")) request.getSession().setAttribute("roles", payload.get("roles"));
+            if (payload.has("email")) request.getSession().setAttribute("email", payload.get(namespace + "email"));
+            if (payload.has("roles")) request.getSession().setAttribute("roles", payload.get(namespace + "roles"));
         } catch (Exception e) {
             System.out.println(e);
             request.getSession().setAttribute("auth", false);

@@ -16,7 +16,8 @@ import AppContext from './context/AppContext';
 import { Auth0Provider } from '@auth0/auth0-react';
 
 const App = (props: ReactPropTypes, context: ContextType<any>) => {
-  const { user } = useContext(AppContext.GlobalContext);
+  const { user, userMetadata } = useContext(AppContext.GlobalContext);
+  const { roles } = userMetadata;
 
   const auth0 = {
     domain: process.env.REACT_APP_AUTH0_DOMAIN || '',
@@ -37,7 +38,7 @@ const App = (props: ReactPropTypes, context: ContextType<any>) => {
       <AppContext.GlobalProvider>
         <div>
           <header>
-            <MainNavbar username={user.username}></MainNavbar>
+            <MainNavbar username={user.username} roles={roles}></MainNavbar>
           </header>
           <Container>
             <Routes>
