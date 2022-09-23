@@ -37,3 +37,6 @@ hs_err_pid*
 .settings/
 target/
 target/**
+
+# Ignore react build
+./src/main/webapp/static
