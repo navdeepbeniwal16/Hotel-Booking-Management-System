@@ -2,7 +2,7 @@ package lans.hotels.domain.utils;
 
 import lans.hotels.domain.IValueObject;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class DateRange implements IValueObject {
     Date from;
@@ -15,10 +15,7 @@ public class DateRange implements IValueObject {
 
     @Override
     public boolean equals(Object other) {
-        if (other.getClass() != DateRange.class) return false;
-        boolean sameFrom = ((DateRange) other).from == this.from;
-        boolean sameTo = ((DateRange) other).to == this.to;
-        return sameFrom && sameTo;
+        return true;
     }
 
     public Date getFrom() {
@@ -27,15 +24,5 @@ public class DateRange implements IValueObject {
 
     public Date getTo() {
         return to;
-    }
-
-    public DateRange startSooner(Date newFrom) {
-        if (newFrom.after(this.from)) return this;
-        return new DateRange(newFrom, this.to);
-    }
-
-    public DateRange endLater(Date newTo) {
-        if (newTo.before(this.to)) return this;
-        return new DateRange(this.from, newTo);
     }
 }

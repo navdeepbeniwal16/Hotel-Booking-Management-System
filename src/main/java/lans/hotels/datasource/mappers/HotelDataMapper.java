@@ -7,6 +7,7 @@ import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.utils.Address;
+import lans.hotels.domain.utils.DateRange;
 import lans.hotels.domain.utils.District;
 
 import java.sql.Connection;
@@ -14,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.Date;
 
 public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
 
@@ -24,8 +26,8 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     @Override
     protected String findStatement() {
         String statement =
-                "SELECT h.id,hotel_group_id,h.name as hotel_name, " +
-                        "email,contact,h.city as hotel_city,pin_code,is_active, " +
+                "SELECT h.id,hotel_group_id, h.name as hotel_name, " +
+                        "email,contact,h.city as hotel_city,pin_code,h.is_active as is_active, " +
                         "a.id as address_id,line_1,line_2,a.city as address_city, " +
                         "postcode,d.id as district_id, d.name as district_name " +
                         "FROM hotel h " +
@@ -69,13 +71,34 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
             statement = connection.prepareStatement(findBy +"h.id = ?");
             statement.setInt(1,hotelSearchCriteria.getId());
         }
-        else if (hotelSearchCriteria.getCity() != null){
-            statement = connection.prepareStatement(findBy + "h.city = ?");
-            statement.setString(1,hotelSearchCriteria.getCity());
-        }
         else if (hotelSearchCriteria.getHotelGroupId() != null){
             statement = connection.prepareStatement(findBy + "h.hotel_group_id = ?");
             statement.setInt(1,hotelSearchCriteria.getHotelGroupId());
+        }
+        else if (hotelSearchCriteria.getCity() != null && hotelSearchCriteria.getDateRange() != null){
+            System.out.println("Hi");
+            statement = connection.prepareStatement(findStatement() +
+                    "    JOIN room r ON h.id = r.hotel_id\n" +
+                    "WHERE h.city = ? AND\n" +
+                    "        h.is_active = TRUE AND\n" +
+                    "        r.is_active = TRUE AND\n" +
+                    "        r.id not in\n" +
+                    "        (\n" +
+                    "            SELECT r.id FROM room_booking rb\n" +
+                    "                                 JOIN room r ON rb.room_id = r.id\n" +
+                    "                                 JOIN booking b ON rb.booking_id = b.id\n" +
+                    "            WHERE (start_date >= ? AND end_date <= ?)\n" +
+                    "        ) ");
+            DateRange date_range = hotelSearchCriteria.getDateRange();
+            Date start_date = date_range.getFrom();
+            Date end_date = date_range.getTo();
+            statement.setString(1,hotelSearchCriteria.getCity());
+            statement.setDate(2,start_date);
+            statement.setDate(3,end_date);
+        }
+        else if (hotelSearchCriteria.getCity() != null){
+            statement = connection.prepareStatement(findBy + "h.city = ?");
+            statement.setString(1,hotelSearchCriteria.getCity());
         }
 
         System.out.println("Query : "+statement.toString());

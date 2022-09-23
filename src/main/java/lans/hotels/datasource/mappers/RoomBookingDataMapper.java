@@ -60,9 +60,7 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
         String findByCriteriaStatement = "SELECT r.id as id,h.name as hotel_name, start_date, end_date, s.type as room_type, m.id as room_id, r.is_active, no_of_guests,main_guest\n" +
                 "FROM booking b\n" +
                 "         JOIN ( room_booking r\n" +
-                "    JOIN (room m\n" +
-                "        JOIN room_spec s\n" +
-                "        ON m.room_spec_id=s.id)\n" +
+                "    JOIN room m\n" +
                 "    ON r.room_id=m.id)\n" +
                 "              ON b.id = r.booking_id\n" +
                 "         JOIN hotel h ON h.id = b.hotel_id\n" +

@@ -101,10 +101,6 @@ public class RoomsController extends FrontCommand {
                 if (searchQueryBody==null || (hotelId!=null && hotelId==room.getHotel().getId())) {
                     aRoom.put("room_id", room.getId());
                     aRoom.put("hotel_id", room.getHotel().getId());
-                    aRoom.put("occupancy", room.getSpecification().getOccupancy());
-                    aRoom.put("type", room.getSpecification().getRoomType());
-                    aRoom.put("bed_type", room.getSpecification().getBedType());
-                    aRoom.put("price", room.getSpecification().getPrice());
                     roomArray.put(aRoom);
                 }
             }

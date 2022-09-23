@@ -139,95 +139,45 @@ VALUES
     (3, 'Melbourne Hyatt', 'melbourne@hyatt.com.au', 16, '+615678901234', 'Melbourne', 8888,TRUE),
     (3, 'Sydney Hyatt', 'sydney@hyatt.com.au', 20, '+616789012345', 'Sydney', 7777,TRUE),
     (4, 'Brisbane Four Seasons', 'brisbane@fourseasons.com.au', 27, '+617890123456', 'Brisbane', 6666,TRUE),
-    (4, 'Perth Four Seasons', 'perth@fourseasons.com.au', 23, '+618901234567', 'Perth', 5555,FALSE),
+    (4, 'Perth Four Seasons', 'perth@fourseasons.com.au', 23, '+618901234567', 'Perth', 5555,TRUE),
     (5, 'Perth Novotel', 'perth@novotel.com.au', 24, '+619012345678', 'Perth', 4444,TRUE),
-    (5, 'Melbourne Novotel', 'melbourne@novotel.com.au', 17, '+610123456789', 'Melbourne', 3333,FALSE)
-;
-
-
-INSERT INTO
-    room_spec(hotel_id, type, max_occupancy, bed_type, room_price)
-VALUES
-    (1, 'Standard', 2, 'Double', 100),
-    (1, 'Deluxe', 3, 'Queen', 200),
-    (1, 'Suite', 3, 'King', 300),
-    (1, 'Studio', 1, 'Single', 40),
-    (5, 'Standard', 2, 'Double', 150),
-    (5, 'Deluxe', 3, 'Queen', 200),
-    (5, 'Suite', 3, 'King', 400),
-    (5, 'Studio', 1, 'Single', 100),
-    (9, 'Standard', 2, 'Double', 140),
-    (9, 'Deluxe', 3, 'Queen', 250),
-    (9, 'Suite', 3, 'King', 360),
-    (14, 'Standard', 2, 'Double', 100),
-    (14, 'Suite', 3, 'King', 150),
-    (14 ,'Studio', 1, 'Single', 70)
+    (5, 'Melbourne Novotel', 'melbourne@novotel.com.au', 17, '+610123456789', 'Melbourne', 3333,TRUE)
 ;
 
 INSERT INTO
-    room(hotel_id, room_spec_id, number, floor, is_active)
+    room(hotel_id, type, max_occupancy, bed_type, room_price , number, is_active)
 VALUES
-    (1, 1, 101, 1, true),
-    (1, 2, 302, 3, true),
-    (1, 2, 303, 3, true),
-    (1, 3, 505, 5, true),
-    (1, 4, 404, 4, true),
-    (1, 4, 407, 4, true),
-    (5, 5, 300, 3, true),
-    (5, 5, 310, 3, true),
-    (5, 6, 710, 7, true),
-    (5, 6, 702, 7, true),
-    (5, 7, 211, 2, true),
-    (5, 7, 213, 2, false),
-    (5, 8, 344, 3, true),
-    (5, 8, 333, 3, false),
-    (9, 9, 877, 8, true),
-    (9, 10, 407, 4, true),
-    (9, 9, 897, 8, true),
-    (9, 10, 423, 4, true)
+    (1, 'Standard', 2, 'Double', 100, 401 , TRUE),
+    (1, 'Deluxe', 3, 'Queen', 200, 502, TRUE),
+    (1, 'Deluxe', 3, 'Queen', 200, 709 , TRUE),
+    (1, 'Studio', 1, 'Single', 40, 21, TRUE),
+    (5, 'Standard', 2, 'Double', 150, 45, TRUE),
+    (5, 'Deluxe', 3, 'Queen', 200, 301, TRUE),
+    (5, 'Suite', 3, 'King', 400, 420, TRUE),
+    (5, 'Studio', 1, 'Single', 100, 509, TRUE),
+    (9, 'Standard', 2, 'Double', 140,765, TRUE),
+    (9, 'Deluxe', 3, 'Queen', 250, 323, TRUE),
+    (9, 'Suite', 3, 'King', 360, 734, TRUE),
+    (14, 'Standard', 2, 'Double', 100, 900, TRUE),
+    (14, 'Suite', 3, 'King', 150, 234, TRUE)
 ;
 
-
-INSERT INTO feature ("name",description)
-    VALUES ('Iron', 'To iron clothes'),
-           ('Kettle','To heat water'),
-           ('Dryer','To dry hair'),
-           ('Toiletries','Soap, shampoo, conditioner, body wash'),
-           ('Bath Robe','To keep dry'),
-           ('Wifi','Internet Access'),
-           ('Mini Fridge','Because its awesome'),
-           ('TV','Watch Netflix')
-;
-
-INSERT INTO room_spec_feature(feature_id,room_spec_id,quantity)
-    VALUES (1,1,1),
-           (1,1,1),
-           (1,1,1),
-           (1,2,1),
-           (2,2,1),
-           (2,2,1),
-           (2,2,1),
-           (3,2,1),
-           (3,3,1),
-           (3,3,1),
-           (3,3,1),
-           (4,3,1);
 
 INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
     VALUES
-           (1,DATE '2022-09-11',DATE '2022-09-15',TRUE,9),
-           (2,DATE '2022-10-17',DATE '2022-10-18',TRUE,1),
-           (2,DATE '2022-08-12',DATE '2022-08-18',TRUE,1),
-           (3,DATE '2022-06-05',DATE '2022-06-10',TRUE,1)
+           (1,DATE '2022-09-11',DATE '2022-09-15',TRUE,14)
+--            (2,DATE '2022-10-17',DATE '2022-10-18',TRUE,1),
+--            (2,DATE '2022-08-12',DATE '2022-08-18',TRUE,1),
+--            (3,DATE '2022-06-05',DATE '2022-06-10',TRUE,1)
 
 ;
 
 
 INSERT INTO room_booking(booking_id,room_id,is_active,main_guest,no_of_guests)
     VALUES
-           (1,15,TRUE,'Bertrand Russell',2),
-           --(1,16,TRUE,'Arman Arethna',2),
-           (2,2,TRUE,'Elvis Presley',1),
-           (2,2,TRUE,'John Lennon',2),
-           (3,3,TRUE,'AR Rahman',2)
+           (1,12,TRUE,'Bertrand Russell',2),
+           (1,13,TRUE,'Arman Arethna',2)
+--            (2,2,TRUE,'Elvis Presley',1),
+--            (2,2,TRUE,'John Lennon',2),
+--            (3,3,TRUE,'AR Rahman',2)
 ;

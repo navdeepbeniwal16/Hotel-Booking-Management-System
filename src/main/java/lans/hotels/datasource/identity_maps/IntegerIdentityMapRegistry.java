@@ -6,7 +6,6 @@ import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.room.Room;
-import lans.hotels.domain.room.RoomSpecification;
 import lans.hotels.domain.user_types.Customer;
 import lans.hotels.domain.user_types.Hotelier;
 import lans.hotels.domain.user_types.User;
@@ -23,8 +22,6 @@ public class IntegerIdentityMapRegistry extends AbstractIdentityMapRegistry {
         newRegistry.add(new CustomerMap(new HashMap<>()), Customer.class);
         newRegistry.add(new RoomMap(new HashMap<>()), Room.class);
         newRegistry.add(new HotelGroupMap(new HashMap<>()), HotelGroup.class);
-
-        newRegistry.add(new RoomSpecificationMap(new HashMap<>()), RoomSpecification.class);
         return newRegistry;
     }
 

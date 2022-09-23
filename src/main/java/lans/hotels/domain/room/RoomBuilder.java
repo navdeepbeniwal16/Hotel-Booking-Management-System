@@ -11,16 +11,13 @@ public class RoomBuilder implements IBuilder<Room> {
     private int roomNumber;
     private int roomFloor;
     private boolean isActive;
-    private RoomSpecification specification;
     private Integer id;
     private IDataSource dataSource;
 
     public RoomBuilder(Hotel hotel,
-                       RoomSpecification specification,
                        IDataSource dataSource) {
         this.dataSource = dataSource;
         this.hotel = hotel;
-        this.specification = specification;
         reset();
     }
 
@@ -54,7 +51,7 @@ public class RoomBuilder implements IBuilder<Room> {
     @Override
     public Room getResult() {
         if (this.room == null) {
-            this.room = new Room(hotel, specification, roomNumber, roomFloor, isActive, id, dataSource);
+            this.room = new Room(hotel, roomNumber, roomFloor, isActive, id, dataSource);
         }
         return this.room;
     }

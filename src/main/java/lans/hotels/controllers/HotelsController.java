@@ -56,17 +56,17 @@ public class HotelsController extends FrontCommand {
                         JSONObject searchQueryBody = body.getJSONObject("search");
 
                         if (searchQueryBody.has("id")) {
-                            Integer hotelId = searchQueryBody.getInt("id");
-                            if (hotelId != null) criteria.setId(hotelId);
+                            Integer hotel_id = searchQueryBody.getInt("id");
+                            if (hotel_id != null) criteria.setId(hotel_id);
                         }
                         if (searchQueryBody.has("city")) {
-                            String location = searchQueryBody.getString("city");
-                            if (location != null) criteria.setCity(location);
+                            String city = searchQueryBody.getString("city");
+                            if (city != null) criteria.setCity(city);
                         }
 
                         if (searchQueryBody.has("hotel_group_id")) {
-                            Integer hotelGroupId = searchQueryBody.getInt("hotel_group_id");
-                            if (hotelGroupId != null) criteria.setHotelGroupId(hotelGroupId);
+                            Integer hotel_group_id = searchQueryBody.getInt("hotel_group_id");
+                            if (hotel_group_id != null) criteria.setHotelGroupId(hotel_group_id);
                         }
 
                         try {

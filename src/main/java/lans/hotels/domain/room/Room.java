@@ -10,18 +10,14 @@ public class Room extends ReferenceObject {
     private int roomFloor;
     private boolean isActive;
     private Integer hotelId;
-    private RoomSpecification specification;
 
     protected Room(Hotel hotel,
-                   RoomSpecification specification,
                    IDataSource dataSource) {
         super(dataSource);
         this.hotel = hotel;
-        this.specification = specification;
     }
 
     public Room(Hotel hotel,
-                RoomSpecification specification,
                 int roomNumber,
                 int roomFloor,
                 boolean isActive,
@@ -32,7 +28,6 @@ public class Room extends ReferenceObject {
         this.roomNumber = roomNumber;
         this.roomFloor = roomFloor;
         this.isActive = isActive;
-        this.specification = specification;
     }
 
     public Hotel getHotel() { return this.hotel; }
@@ -43,10 +38,6 @@ public class Room extends ReferenceObject {
 
     public int getRoomNumber() {
         return roomNumber;
-    }
-    public RoomSpecification getSpecification() { return specification; }
-    public void setSpecification(RoomSpecification newSpec) {
-        this.specification = newSpec;
     }
 
 

@@ -7,13 +7,12 @@ import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
 import lans.hotels.domain.room.RoomBuilder;
-import lans.hotels.domain.room.RoomSpecification;
 
 import java.sql.*;
 import java.util.ArrayList;
 
 public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements IDataMapper<Room> {
-    private static final String COLUMNS = " hotel_id, number, floor, is_active, room_spec_id ";
+    private static final String COLUMNS = " hotel_id, number, floor, is_active";
 
     public RoomDataMapper(Connection connection, IDataSource dataSource) {
         super(connection, "room", dataSource);
@@ -24,7 +23,6 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     protected String findStatement() {
         return "SELECT " + " * " +
                 " FROM " + this.table + " r " +
-                " JOIN room_spec rs ON r.room_spec_id = rs.id" +
                 " WHERE r.id = ? ";
     }
 
@@ -40,8 +38,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
 
     @Override
     public ArrayList<Room> findAll() throws SQLException {
-        String findAllStatement = "SELECT " + " * " + " FROM " + this.table +
-                " JOIN room_spec rs ON room_spec_id=rs.id ";
+        String findAllStatement = "SELECT " + " * " + " FROM " + this.table +" ";
         System.out.println("RoomDataMapper.findAll(): " + findAllStatement);
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();
@@ -69,7 +66,6 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
             insertStatement.setInt(2, room.getRoomNumber());
             insertStatement.setInt(3, room.getRoomFloor());
             insertStatement.setBoolean(4, true);
-            insertStatement.setInt(5, room.getSpecification().getId());
             ResultSet keys = insertStatement.executeQuery();
             if (keys.next()) return keys.getInt("id");
             System.err.println("RoomMapper error: insertion did not return id");
@@ -99,19 +95,8 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
             throw new Exception("ERROR - no hotel with id = " + resultSet.getInt("hotel_id"));
         }
 
-        RoomSpecification specification = new RoomSpecification(
-                resultSet.getInt("room_spec_id"),
-                resultSet.getInt("hotel_id"),
-                resultSet.getInt("max_occupancy"),
-                resultSet.getString("bed_type"),
-                resultSet.getString("type"),
-                resultSet.getInt("room_price"),
-                dataSource
-        );
-
         return new Room(
                 hotel,
-                specification,
                 resultSet.getInt("number"),
                 resultSet.getInt("floor"),
                 resultSet.getBoolean("is_active"),

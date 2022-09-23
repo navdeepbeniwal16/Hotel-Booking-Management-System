@@ -2,13 +2,11 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.exceptions.MapperNotFoundException;
 import lans.hotels.datasource.facade.IMapperRegistry;
-import lans.hotels.datasource.identity_maps.RoomSpecificationMap;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
-import lans.hotels.domain.room.RoomSpecification;
 import lans.hotels.domain.user_types.Customer;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
@@ -33,7 +31,6 @@ public class PostgresMapperRegistry implements IMapperRegistry {
         registry.addMapper(Customer.class, new CustomerDataMapper(connection, dataSource));
         registry.addMapper(Hotelier.class, new HotelierDataMapper(connection, dataSource));
         registry.addMapper(HotelGroupHotelier.class, new HotelGroupHotelierDataMapper(connection, dataSource));
-        registry.addMapper(RoomSpecification.class, new RoomSpecificationMapper(connection, dataSource));
         registry.addMapper(Booking.class, new BookingDataMapper(connection, dataSource));
         registry.addMapper(RoomBooking.class, new RoomBookingDataMapper(connection, dataSource));
         return registry;

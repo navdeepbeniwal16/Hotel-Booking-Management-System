@@ -15,7 +15,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
-    private static final String COLUMNS = " number, floor, is_active, room_spec_id ";
+    private static final String COLUMNS = " number, floor, is_active  ";
 
     public CustomerDataMapper(Connection connection, IDataSource dataSource) {
         super(connection, "customer", dataSource);

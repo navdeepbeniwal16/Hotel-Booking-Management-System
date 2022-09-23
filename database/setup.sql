@@ -115,46 +115,18 @@ CREATE TABLE HOTEL(
                       FOREIGN KEY (hotel_group_id) REFERENCES HOTEL_GROUP(id)
 );
 
-CREATE TABLE ROOM_SPEC(
-                          id INT GENERATED ALWAYS AS IDENTITY,
-                          hotel_id INT NOT NULL,
-                          type VARCHAR(50),
-                          max_occupancy INT NOT NULL,
-                          bed_type VARCHAR(50) NOT NULL,
-                          room_price INTEGER NOT NULL,
-                          PRIMARY KEY (id),
-                          FOREIGN KEY (hotel_id) REFERENCES HOTEL(id)
-);
-
 CREATE TABLE ROOM(
                      id INT GENERATED ALWAYS AS IDENTITY,
                      hotel_id INT NOT NULL,
-                     room_spec_id INT NOT NULL,
-                     number INT NOT NULL,
-                     floor INT NOT NULL,
+                     type VARCHAR(50),
+                     max_occupancy INT NOT NULL,
+                     bed_type VARCHAR(50) NOT NULL,
+                     room_price INTEGER NOT NULL,
+                     number INT NOT NULL UNIQUE,
                      is_active BOOLEAN NOT NULL,
                      PRIMARY KEY (id),
-                     FOREIGN KEY (room_spec_id) REFERENCES ROOM_SPEC(id),
                      FOREIGN KEY (hotel_id) REFERENCES HOTEL(id)
 );
-
-CREATE TABLE FEATURE(
-    id INT GENERATED ALWAYS AS IDENTITY,
-    name VARCHAR(50) UNIQUE NOT NULL,
-    description VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE ROOM_SPEC_FEATURE(
-    id INT GENERATED ALWAYS AS IDENTITY,
-    feature_id INT NOT NULL,
-    room_spec_id INT NOT NULL,
-    quantity INT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (room_spec_id) REFERENCES ROOM_SPEC(id),
-    FOREIGN KEY (feature_id) REFERENCES FEATURE(id)
-);
-
 
 
 CREATE TABLE BOOKING( 

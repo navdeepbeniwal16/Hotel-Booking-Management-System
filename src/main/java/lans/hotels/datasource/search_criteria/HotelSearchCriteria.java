@@ -1,13 +1,11 @@
 package lans.hotels.datasource.search_criteria;
-
-import java.util.Date;
+import lans.hotels.domain.utils.DateRange;
 
 public class HotelSearchCriteria extends AbstractSearchCriteria {
     Integer id;
     String city;
     Integer hotel_group_id;
-
-
+    DateRange date_range;
 
     public HotelSearchCriteria() {
     }
@@ -32,5 +30,11 @@ public class HotelSearchCriteria extends AbstractSearchCriteria {
         this.hotel_group_id = hotelGroupId;
     }
 
+    public DateRange getDateRange() {
+        return this.date_range;
+    }
 
+    public void setDateRange(DateRange date_range) {
+        this.date_range = date_range;
+    }
 }

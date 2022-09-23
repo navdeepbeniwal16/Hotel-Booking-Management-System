@@ -12,6 +12,6 @@ class RoomMapperTest {
 
     // TODO: refactor to test BEHAVIOUR, not implementation!
     protected static final String findStatement = "SELECT " + " id, " +
-    " hotel_id, number, floor, is_active, room_spec_id " +
+    " hotel_id, number, floor, is_active " +
     " FROM room " + "WHERE id = ? ";
 }

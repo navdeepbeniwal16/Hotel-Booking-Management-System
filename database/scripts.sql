@@ -1,8 +1,8 @@
 --Search functionality---------------------------------------------
 --get all rooms based on hotel id
-SELECT r.id as id, h.id as room, max_occupancy, bed_type, description, room_price
-    FROM room_spec r
-        JOIN room h ON r.id = h.room_spec_id
+SELECT r.id as id, h.id as hotel_id, max_occupancy, bed_type, room_price
+    FROM room r
+             JOIN hotel h ON h.id = r.hotel_id
     WHERE r.hotel_id = ? AND h.is_active=TRUE;
 
 --get all rooms booked for the given dates
