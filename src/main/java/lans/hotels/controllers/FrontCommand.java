@@ -39,29 +39,4 @@ public abstract class FrontCommand implements IFrontCommand  {
     }
 
     abstract protected void concreteProcess() throws CommandException, IOException, SQLException;
-
-//    protected void handleAuth(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        AuthenticationController authController = (AuthenticationController) context.getAttribute("AuthenticationController");
-//        try {
-//            // TODO: removing access token when session ended?
-//            System.out.println("1");
-//            Tokens tokens = authController.handle(request, response);
-//            System.out.println("2");
-//            if (tokens.getAccessToken() != null && tokens.getIdToken() != null) {
-//                System.out.println("3");
-//                SessionUtils.set(request, "accessToken", tokens.getAccessToken());
-//                System.out.println("4");
-//                SessionUtils.set(request, "idToken", tokens.getIdToken());
-//                System.out.println("User access token:");
-//                System.out.println(tokens.getAccessToken());
-//                System.out.println("User ID token:");
-//                System.out.println(tokens.getIdToken());
-//            }
-//        } catch (IdentityVerificationException e) {
-//            e.printStackTrace();
-//            System.out.println("handleAuth: " + e);
-//            SessionUtils.set(request, "accessToken", null);
-//            SessionUtils.set(request, "idToken", null);
-//        }
-//    }
 }
