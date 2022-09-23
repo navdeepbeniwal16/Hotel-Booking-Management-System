@@ -1,19 +1,22 @@
-import React, { ReactPropTypes } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { useAuth0 } from '@auth0/auth0-react';
-import RoleT, { Roles } from '../../types/RoleTypes';
+import { Roles } from '../../types/RoleTypes';
+import AppContext from '../../context/AppContext';
 
-interface NavPropsType {
-  username: String;
-  roles: RoleT[];
-}
+const MainNavbar = () => {
+  const { userMetadata } = useContext(AppContext.GlobalContext);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-const MainNavbar = ({ username, roles }: NavPropsType) => {
   const { user, loginWithRedirect, logout, isLoading, isAuthenticated } =
     useAuth0();
-  console.log(`<MainNavbar roles={${roles}}/>`);
+
+  useEffect(() => {
+    setIsAdmin(userMetadata.roles.includes(Roles.ADMIN));
+  }, [userMetadata]);
+
   return (
     <Navbar bg='dark' variant='dark' expand='lg' className='mb-4'>
       <Container>
@@ -27,9 +30,7 @@ const MainNavbar = ({ username, roles }: NavPropsType) => {
           >
             <Nav.Link href='/'>Home</Nav.Link>
             <Nav.Link href='/bookings'>Bookings</Nav.Link>
-            {roles.includes(Roles.ADMIN) && (
-              <Nav.Link href='/admin'>Admin</Nav.Link>
-            )}
+            {isAdmin && <Nav.Link href='/admin'>Admin</Nav.Link>}
           </Nav>
           <Nav className='d-flex align-items-center'>
             {!isLoading && isAuthenticated && user ? (

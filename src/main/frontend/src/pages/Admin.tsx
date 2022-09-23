@@ -19,7 +19,7 @@ type Hotelier = {
 
 const Admin = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
-  const { userMetadata, getAccessToken } = useContext(AppContext.GlobalContext);
+  const { userMetadata } = useContext(AppContext.GlobalContext);
   const [hoteliers, setHoteliers] = useState<Hotelier[]>([]);
 
   useEffect(() => {
@@ -33,13 +33,7 @@ const Admin = () => {
     if (!isLoading && isAuthenticated && userMetadata.apiAccessToken !== '') {
       fetchHoteliers();
     }
-  }, [
-    isLoading,
-    isAuthenticated,
-    userMetadata.apiAccessToken,
-    getAccessToken,
-    setHoteliers,
-  ]);
+  }, [isLoading, isAuthenticated, userMetadata.apiAccessToken, setHoteliers]);
 
   return (
     <Container>

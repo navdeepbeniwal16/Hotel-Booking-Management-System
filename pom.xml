@@ -141,7 +141,8 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/src/main/webapp</outputDirectory>
+<!--                            <outputDirectory>${project.basedir}/src/main/webapp</outputDirectory>-->
+                            <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${frontend-dir}/build</directory>
@@ -162,12 +163,13 @@
                     <nodeVersion>${node.version}</nodeVersion>
                     <yarnVersion>${yarn.version}</yarnVersion>
                     <installDirectory>${project.build.directory}</installDirectory>
+                    <workingDirectory>${frontend-dir}</workingDirectory>
                 </configuration>
 
                 <executions>
 
                     <execution>
-                        <id>install node</id>
+                        <id>Install Node and Yarn</id>
                         <goals>
                             <goal>install-node-and-yarn</goal>
                         </goals>
@@ -178,10 +180,13 @@
                     </execution>
 
                     <execution>
-                        <id>yarn install</id>
+                        <id>Yarn install</id>
                         <goals>
                             <goal>yarn</goal>
                         </goals>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
                         <phase>generate-resources</phase>
                     </execution>
 
@@ -200,16 +205,15 @@
                     </execution>
 
                     <execution>
-                        <id>yarn build</id>
+                        <id>Build frontend</id>
                         <goals>
                             <goal>yarn</goal>
                         </goals>
-                        <phase>compile</phase>
+                        <phase>prepare-package</phase>
                         <configuration>
                             <arguments>build</arguments>
                         </configuration>
                     </execution>
-
                 </executions>
             </plugin>
         </plugins>

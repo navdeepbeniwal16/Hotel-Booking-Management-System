@@ -37,9 +37,6 @@ const defaultGlobalContext = {
   hotel: defaultHotelState,
   room: defaultRoomState,
   userMetadata: defaultUserMetadata,
-  getAccessToken: () => {
-    console.log('getAccessToken not set');
-  },
 };
 
 const GlobalContext = createContext(defaultGlobalContext);
@@ -49,7 +46,8 @@ interface IGlobalProvider {
 }
 
 const GlobalProvider = ({ children }: IGlobalProvider) => {
-  const { getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently, getAccessTokenWithPopup } =
+    useAuth0();
   const [username, setUsername] = useState('');
   const [hotel, setHotel] = useState(defaultHotel);
   const [room, setRoom] = useState(defaultRoom);
@@ -70,52 +68,45 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
     setRoom,
   };
 
-  const getAccessToken = useCallback(async () => {
-    let apiAccessToken;
-    try {
-      apiAccessToken = await getAccessTokenSilently({
-        audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
-      });
-    } catch (e: any) {
-      if (e.error === 'consent_required') {
-        console.log('getting consent');
-        apiAccessToken = await getAccessTokenWithPopup({
-          audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
-        });
-      } else {
-        console.log(e.message);
-        throw e;
-      }
-    }
-    return apiAccessToken;
-  }, [getAccessTokenSilently, getAccessTokenWithPopup]);
-
   useEffect(() => {
     const getUserMetadata = async () => {
-      console.log('x');
-      if (userMetadata.apiAccessToken !== '') return;
-      console.log('Initial user metadata', userMetadata);
-      let apiAccessToken = await getAccessToken();
-      let decodedToken: JwtT = jwtDecode(apiAccessToken);
-      let roles: RoleT[] = [];
-
-      console.log('Access token:', apiAccessToken);
-      console.log('\n\tDecoded token:', jwtDecode(apiAccessToken));
-      if (customClaims.roles in decodedToken) {
-        roles = decodedToken['lans_hotels/roles'] || [];
-        console.log('Roles added to user metadata: ', roles);
+      let apiAccessToken: string;
+      try {
+        apiAccessToken = await getAccessTokenSilently({
+          audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
+        });
+      } catch (e: any) {
+        if (e.error === 'consent_required') {
+          console.log('getting consent');
+          apiAccessToken = await getAccessTokenWithPopup({
+            audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
+          });
+        } else {
+          console.log(e.message);
+          throw e;
+        }
       }
 
-      setUserMetadata({
-        ...userMetadata,
-        roles,
-        apiAccessToken,
+      const decodedToken: JwtT = jwtDecode(apiAccessToken);
+      console.log('Access token:', apiAccessToken);
+      console.log('\n\tDecoded token:', jwtDecode(apiAccessToken));
+
+      setUserMetadata((previousMetadata) => {
+        const newMetadata = {
+          ...previousMetadata,
+          roles: decodedToken['lans_hotels/roles'] || [],
+          apiAccessToken,
+        };
+        return newMetadata;
       });
       console.log('Set user metadata to:', userMetadata);
     };
 
     getUserMetadata();
-  }, [userMetadata, setUserMetadata, getAccessToken]);
+    return () => {
+      setUserMetadata(defaultUserMetadata);
+    };
+  }, [isAuthenticated]);
 
   return (
     <GlobalContext.Provider
@@ -124,7 +115,6 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         hotel: hotelState,
         room: roomState,
         userMetadata,
-        getAccessToken,
       }}
     >
       {children}

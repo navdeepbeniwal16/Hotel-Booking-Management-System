@@ -1,4 +1,4 @@
-import React, { ReactPropTypes, ContextType } from 'react';
+import React, { ReactPropTypes, ContextType, useEffect } from 'react';
 import './App.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,15 +10,10 @@ import Bookings from './pages/Bookings';
 import Hotel from './pages/Hotel';
 import { Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
-
-import { useContext } from 'react';
 import AppContext from './context/AppContext';
 import { Auth0Provider } from '@auth0/auth0-react';
 
 const App = (props: ReactPropTypes, context: ContextType<any>) => {
-  const { user, userMetadata } = useContext(AppContext.GlobalContext);
-  const { roles } = userMetadata;
-
   const auth0 = {
     domain: process.env.REACT_APP_AUTH0_DOMAIN || '',
     childId: process.env.REACT_APP_AUTH0_CLIENTID || '',
@@ -38,7 +33,7 @@ const App = (props: ReactPropTypes, context: ContextType<any>) => {
       <AppContext.GlobalProvider>
         <div>
           <header>
-            <MainNavbar username={user.username} roles={roles}></MainNavbar>
+            <MainNavbar />
           </header>
           <Container>
             <Routes>
