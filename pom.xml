@@ -135,14 +135,29 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>copy-resources</id>
+                        <id>Copy frontend - production build target</id>
                          <phase>process-classes</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-<!--                            <outputDirectory>${project.basedir}/src/main/webapp</outputDirectory>-->
                             <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${frontend-dir}/build</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Copy frontend - local build target</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/src/main/webapp</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${frontend-dir}/build</directory>
@@ -180,7 +195,7 @@
                     </execution>
 
                     <execution>
-                        <id>Yarn install</id>
+                        <id>Install frontend dependencies</id>
                         <goals>
                             <goal>yarn</goal>
                         </goals>
@@ -191,7 +206,7 @@
                     </execution>
 
                     <execution>
-                        <id>yarn test</id>
+                        <id>Test frontend</id>
                         <goals>
                             <goal>yarn</goal>
                         </goals>
