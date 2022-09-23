@@ -11,6 +11,8 @@ import UserState from '../types/UserType';
 import { defaultHotel, defaultHotelState } from '../types/HotelType';
 import { defaultRoom, defaultRoomState } from '../types/RoomType';
 import AppContextType from '../types/AppContextType';
+import RoleT from '../types/RoleTypes';
+import jwtDecode from 'jwt-decode';
 
 const defaultUser: UserState = {
   username: '',
@@ -18,12 +20,14 @@ const defaultUser: UserState = {
     console.error('Error: cannot call setUsername() without context'),
 };
 
-type UserMetadata = {
+export type UserMetadata = {
   apiAccessToken: string;
+  roles: RoleT[];
 };
 
 const defaultUserMetadata: UserMetadata = {
   apiAccessToken: '',
+  roles: [],
 };
 
 const defaultGlobalContext = {
@@ -43,7 +47,7 @@ interface IGlobalProvider {
 }
 
 const GlobalProvider = ({ children }: IGlobalProvider) => {
-  const { user, getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
+  const { getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
   const [username, setUsername] = useState('');
   const [hotel, setHotel] = useState(defaultHotel);
   const [room, setRoom] = useState(defaultRoom);
@@ -64,7 +68,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
     setRoom,
   };
 
-  const getAccessToken = async () => {
+  async function getAccessToken() {
     let apiAccessToken;
     try {
       apiAccessToken = await getAccessTokenSilently({
@@ -82,13 +86,16 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
       }
     }
     return apiAccessToken;
-  };
+  }
 
   useEffect(() => {
     const getUserMetadata = async () => {
       let apiAccessToken = await getAccessToken();
-      console.log('User access token:', apiAccessToken);
-      setUserMetadata({ apiAccessToken });
+      let decodedToken: object = jwtDecode(apiAccessToken);
+      console.log('Access token:', apiAccessToken);
+      console.log('\tDecoded:', jwtDecode(apiAccessToken));
+      if (decodedToken['lans_hotels/roles'])
+        setUserMetadata({ ...userMetadata, apiAccessToken });
     };
 
     getUserMetadata();

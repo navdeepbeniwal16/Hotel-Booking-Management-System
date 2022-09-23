@@ -3,12 +3,14 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { useAuth0 } from '@auth0/auth0-react';
+import RoleT, { Roles } from '../../types/RoleTypes';
 
 interface NavPropsType {
   username: String;
+  roles: RoleT[];
 }
 
-const MainNavbar = ({ username }: NavPropsType) => {
+const MainNavbar = ({ username, roles }: NavPropsType) => {
   const { user, loginWithRedirect, logout, isLoading, isAuthenticated } =
     useAuth0();
 
@@ -25,6 +27,9 @@ const MainNavbar = ({ username }: NavPropsType) => {
           >
             <Nav.Link href='/'>Home</Nav.Link>
             <Nav.Link href='/bookings'>Bookings</Nav.Link>
+            {roles.includes(Roles.ADMIN) && (
+              <Nav.Link href='/admin'>Admin</Nav.Link>
+            )}
           </Nav>
           <Nav className='d-flex align-items-center'>
             {!isLoading && isAuthenticated && user ? (
