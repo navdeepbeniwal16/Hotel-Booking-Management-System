@@ -13,7 +13,7 @@ interface NavPropsType {
 const MainNavbar = ({ username, roles }: NavPropsType) => {
   const { user, loginWithRedirect, logout, isLoading, isAuthenticated } =
     useAuth0();
-
+  console.log(`<MainNavbar roles={${roles}}/>`);
   return (
     <Navbar bg='dark' variant='dark' expand='lg' className='mb-4'>
       <Container>

@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useEffect,
   ReactPropTypes,
+  useCallback,
 } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import UserState from '../types/UserType';
@@ -12,6 +13,7 @@ import { defaultHotel, defaultHotelState } from '../types/HotelType';
 import { defaultRoom, defaultRoomState } from '../types/RoomType';
 import AppContextType from '../types/AppContextType';
 import RoleT from '../types/RoleTypes';
+import JwtT, { customClaims } from '../types/JwtType';
 import jwtDecode from 'jwt-decode';
 
 const defaultUser: UserState = {
@@ -68,7 +70,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
     setRoom,
   };
 
-  async function getAccessToken() {
+  const getAccessToken = useCallback(async () => {
     let apiAccessToken;
     try {
       apiAccessToken = await getAccessTokenSilently({
@@ -86,20 +88,34 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
       }
     }
     return apiAccessToken;
-  }
+  }, [getAccessTokenSilently, getAccessTokenWithPopup]);
 
   useEffect(() => {
     const getUserMetadata = async () => {
+      console.log('x');
+      if (userMetadata.apiAccessToken !== '') return;
+      console.log('Initial user metadata', userMetadata);
       let apiAccessToken = await getAccessToken();
-      let decodedToken: object = jwtDecode(apiAccessToken);
+      let decodedToken: JwtT = jwtDecode(apiAccessToken);
+      let roles: RoleT[] = [];
+
       console.log('Access token:', apiAccessToken);
-      console.log('\tDecoded:', jwtDecode(apiAccessToken));
-      if (decodedToken['lans_hotels/roles'])
-        setUserMetadata({ ...userMetadata, apiAccessToken });
+      console.log('\n\tDecoded token:', jwtDecode(apiAccessToken));
+      if (customClaims.roles in decodedToken) {
+        roles = decodedToken['lans_hotels/roles'] || [];
+        console.log('Roles added to user metadata: ', roles);
+      }
+
+      setUserMetadata({
+        ...userMetadata,
+        roles,
+        apiAccessToken,
+      });
+      console.log('Set user metadata to:', userMetadata);
     };
 
     getUserMetadata();
-  }, []);
+  }, [userMetadata, setUserMetadata, getAccessToken]);
 
   return (
     <GlobalContext.Provider
