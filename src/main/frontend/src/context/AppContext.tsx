@@ -77,7 +77,6 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         });
       } catch (e: any) {
         if (e.error === 'consent_required') {
-          console.log('getting consent');
           apiAccessToken = await getAccessTokenWithPopup({
             audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
           });
@@ -88,8 +87,6 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
       }
 
       const decodedToken: JwtT = jwtDecode(apiAccessToken);
-      console.log('Access token:', apiAccessToken);
-      console.log('\n\tDecoded token:', jwtDecode(apiAccessToken));
 
       setUserMetadata((previousMetadata) => {
         const newMetadata = {
@@ -99,7 +96,6 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         };
         return newMetadata;
       });
-      console.log('Set user metadata to:', userMetadata);
     };
 
     getUserMetadata();

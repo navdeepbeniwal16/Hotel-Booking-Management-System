@@ -5,22 +5,28 @@ import Navbar from 'react-bootstrap/Navbar';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Roles } from '../../types/RoleTypes';
 import AppContext from '../../context/AppContext';
+import { useNavigate } from 'react-router-dom';
 
 const MainNavbar = () => {
+  const navigate = useNavigate();
   const { userMetadata } = useContext(AppContext.GlobalContext);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isHotelier, setIsHotelier] = useState(false);
 
   const { user, loginWithRedirect, logout, isLoading, isAuthenticated } =
     useAuth0();
 
   useEffect(() => {
     setIsAdmin(userMetadata.roles.includes(Roles.ADMIN));
+    setIsHotelier(userMetadata.roles.includes(Roles.HOTELIER));
   }, [userMetadata]);
 
   return (
     <Navbar bg='dark' variant='dark' expand='lg' className='mb-4'>
       <Container>
-        <Navbar.Brand href='/'>LANS Hotels</Navbar.Brand>
+        <Navbar.Brand>
+          <Nav.Link onClick={() => navigate('/')}>LANS Hotels</Nav.Link>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls='navbarScroll' />
         <Navbar.Collapse id='navbarScroll'>
           <Nav
@@ -28,9 +34,16 @@ const MainNavbar = () => {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            <Nav.Link href='/'>Home</Nav.Link>
-            <Nav.Link href='/bookings'>Bookings</Nav.Link>
-            {isAdmin && <Nav.Link href='/admin'>Admin</Nav.Link>}
+            <Nav.Link onClick={() => navigate('/')}>Home</Nav.Link>
+            <Nav.Link onClick={() => navigate('/bookings')}>Bookings</Nav.Link>
+
+            {isHotelier && (
+              <Nav.Link onClick={() => navigate('/hotel')}>Admin</Nav.Link>
+            )}
+
+            {isAdmin && (
+              <Nav.Link onClick={() => navigate('/admin')}>Admin</Nav.Link>
+            )}
           </Nav>
           <Nav className='d-flex align-items-center'>
             {!isLoading && isAuthenticated && user ? (

@@ -13,10 +13,6 @@ type Hotelier = {
   email: string;
 };
 
-// const defaultHotelier = {
-//   email: '',
-// };
-
 const Admin = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const { userMetadata } = useContext(AppContext.GlobalContext);

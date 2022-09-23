@@ -8,7 +8,7 @@ import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Bookings from './pages/Bookings';
 import Hotel from './pages/Hotel';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import AppContext from './context/AppContext';
 import { Auth0Provider } from '@auth0/auth0-react';
