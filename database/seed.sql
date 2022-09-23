@@ -144,7 +144,7 @@ VALUES
     (5, 'Melbourne Novotel', 'melbourne@novotel.com.au', 17, '+610123456789', 'Melbourne', 3333,FALSE)
 ;
 
-1,5,9,14
+
 INSERT INTO
     room_spec(hotel_id, type, max_occupancy, bed_type, room_price)
 VALUES
