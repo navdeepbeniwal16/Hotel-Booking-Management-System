@@ -3,8 +3,6 @@ package lans.hotels.controllers;
 import lans.hotels.api.HttpMethod;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
-import lans.hotels.domain.utils.Address;
-import lans.hotels.domain.utils.District;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -155,25 +153,17 @@ public class HotelgrouphoteliersController extends FrontCommand {
             case HttpMethod.PUT:
             case HttpMethod.DELETE:
             {
-                if (!(boolean) request.getSession().getAttribute("auth")) {
-                    System.err.println("UNAUTHURISED - HGH Controller: auth = " + request.getSession().getAttribute("auth"));
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                if (!auth.isAdmin()) {
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    JSONObject error = new JSONObject();
+                    error.put("message", HttpServletResponse.SC_UNAUTHORIZED + ": unauthorized");
+                    PrintWriter out = response.getWriter();
+                    out.println(error);
+                    out.flush();
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
-
-                if (request.getSession().getAttribute("roles") == null) {
-                    System.err.println("UNAUTHURISED - HGH Controller: roles = " + request.getSession().getAttribute("roles"));
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    return;
-                }
-
-
-                if (!((ArrayList<String>) request.getSession().getAttribute("roles")).contains("Admin")) {
-                    System.err.println("UNAUTHURISED - HGH Controller: roles = " + request.getSession().getAttribute("roles").toString());
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    return;
-                }
-
 
                 String[] commandPath2 = request.getPathInfo().split("/");
                 int id = -1;
@@ -190,7 +180,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     }
 
                     PrintWriter out = response.getWriter();
-                    response.setStatus(200);
+                    response.setStatus(HttpServletResponse.SC_OK);
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
 

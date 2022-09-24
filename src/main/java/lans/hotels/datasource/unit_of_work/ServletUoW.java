@@ -148,7 +148,7 @@ public class ServletUoW implements IUnitOfWork {
 
         } catch (Exception e) {
             connection.rollback();
-            System.err.println("UoW FAILED TO COMMIT");
+            System.err.println("UoW Error: failed to commit");
             e.printStackTrace();
         } finally {
             for(IIdentityMap<?> identityMap: identityMaps.getAll()) {

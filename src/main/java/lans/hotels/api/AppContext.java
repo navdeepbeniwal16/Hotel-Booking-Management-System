@@ -1,9 +1,8 @@
 package lans.hotels.api;
 
-import com.auth0.AuthenticationController;
-import com.auth0.Tokens;
 import com.auth0.jwk.JwkProvider;
 import com.auth0.jwk.JwkProviderBuilder;
+import lans.hotels.api.auth.AuthorizationFactory;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.datasource.connections.PostgresConnection;
 import lans.hotels.environment.Environment;
@@ -29,16 +28,14 @@ public class AppContext implements ServletContextListener {
         String auth0ClientSecret = ctx.getInitParameter("com.auth0.clientSecret");
         String auth0Audience = ctx.getInitParameter("com.auth0.audience");
 
-        if (auth0Domain == null || auth0ClientId == null || auth0ClientSecret == null) {
-            System.err.println("CONTEXT ERROR: invalid auth0");
+        if (auth0Domain == null || auth0ClientId == null || auth0ClientSecret == null || auth0Audience == null) {
+            System.err.println("CONTEXT ERROR: invalid auth0 configuration");
             System.out.println("\t" + auth0Domain);
             System.out.println("\t" + auth0ClientId);
             System.out.println("\t" + auth0ClientSecret);
             System.out.println("\t" + auth0Audience);
             System.exit(1);
         }
-
-
 
         System.out.println("Auth0:");
         System.out.println("\tDomain: " + auth0Domain);
@@ -54,17 +51,15 @@ public class AppContext implements ServletContextListener {
 
             // Authentication and authorisation using Auth0
             JwkProvider jwkProvider = new JwkProviderBuilder(auth0Domain).build();
-            AuthenticationController authenticationController = AuthenticationController
-                    .newBuilder(auth0Domain, auth0ClientId, auth0ClientSecret)
-                    .withJwkProvider(jwkProvider)
-                    .build();
-            ctx.setAttribute("AuthenticationController", authenticationController);
-            ctx.setAttribute("jwkProvider", jwkProvider);
-            ctx.setAttribute("authDomain", auth0Domain);
-            ctx.setAttribute("audience", auth0Audience);
+            AuthorizationFactory authFactory = new AuthorizationFactory(jwkProvider);
+            authFactory.withAudience("https://swen90007-2022-lans.herokuapp.com/api");
+            authFactory.withAudience("https://dev-easqepri.us.auth0.com/userinfo");
+            authFactory.withIssuer("https://dev-easqepri.us.auth0.com/");
+            authFactory.withNamespace("lans_hotels/");
+            ctx.setAttribute("AuthFactory", authFactory);
         } catch (InvalidEnvironmentException invalidEnvironmentException) {
             System.err.println("AppContext | InvalidEnvironmentException: " + invalidEnvironmentException.getMessage());
-            System.err.println(invalidEnvironmentException);
+            System.err.println(invalidEnvironmentException.getMessage());
             System.exit(1); // TODO: centralise error codes
         }
     }

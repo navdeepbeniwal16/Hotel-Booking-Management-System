@@ -1,10 +1,7 @@
 package lans.hotels.controllers;
 
-import com.auth0.AuthenticationController;
-import com.auth0.IdentityVerificationException;
-import com.auth0.SessionUtils;
-import com.auth0.Tokens;
 import lans.hotels.api.IFrontCommand;
+import lans.hotels.api.auth.CustomAuthorization;
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.domain.IDataSource;
 import org.json.JSONObject;
@@ -23,6 +20,7 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected ServletContext context;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
+    protected CustomAuthorization auth;
 
     public void init(ServletContext context,
                      HttpServletRequest request,
@@ -32,6 +30,7 @@ public abstract class FrontCommand implements IFrontCommand  {
         this.request = request;
         this.response = response;
         this.dataSource = dataSource;
+        this.auth = CustomAuthorization.getAuthorization(request);
     }
 
     public void process() throws ServletException, IOException, CommandException, SQLException {
@@ -45,7 +44,6 @@ public abstract class FrontCommand implements IFrontCommand  {
 
     public JSONObject getRequestBody(HttpServletRequest request) throws IOException {
         BufferedReader requestReader = request.getReader();
-
         String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
         JSONObject body;
         if (lines.length() > 0) {

@@ -1,25 +1,16 @@
 package lans.hotels.api;
 
-
-import com.auth0.jwk.Jwk;
-import com.auth0.jwk.JwkProvider;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import lans.hotels.api.auth.AuthorizationFactory;
 import lans.hotels.controllers.UnknownController;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 
-import java.security.interfaces.RSAPublicKey;
 import java.util.*;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
@@ -30,7 +21,8 @@ public class APIFrontController extends HttpServlet {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            IFrontCommand command = getCommand(request);
+            IFrontCommand command = getCommandWithAuth(request);
+
             // Dynamically instantiate the appropriate controller
             command.init(getServletContext(), request, response, dataSourceLayer);
             // Execute the controller
@@ -47,7 +39,8 @@ public class APIFrontController extends HttpServlet {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            IFrontCommand command = getCommand(request);
+            IFrontCommand command = getCommandWithAuth(request);
+
             // Dynamically instantiate the appropriate controller
             command.init(getServletContext(), request, response, dataSourceLayer);
             // Execute the controller
@@ -64,7 +57,8 @@ public class APIFrontController extends HttpServlet {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            IFrontCommand command = getCommand(request);
+            IFrontCommand command = getCommandWithAuth(request);
+
             // Dynamically instantiate the appropriate controller
             command.init(getServletContext(), request, response, dataSourceLayer);
             // Execute the controller
@@ -81,7 +75,8 @@ public class APIFrontController extends HttpServlet {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            IFrontCommand command = getCommand(request);
+            IFrontCommand command = getCommandWithAuth(request);
+
             // Dynamically instantiate the appropriate controller
             command.init(getServletContext(), request, response, dataSourceLayer);
             // Execute the controller
@@ -93,9 +88,11 @@ public class APIFrontController extends HttpServlet {
         }
     }
 
-    private IFrontCommand getCommand(HttpServletRequest request) throws ServletException {
+    private IFrontCommand getCommandWithAuth(HttpServletRequest request) throws ServletException {
         try {
-            handleAuth(request);
+            AuthorizationFactory authFactory = (AuthorizationFactory) getServletContext().getAttribute("AuthFactory");
+
+            authFactory.injectAuthorization(request);
             String[] commandPath = request.getPathInfo().split("/");
             return (IFrontCommand) getCommandClass(commandPath).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
@@ -124,60 +121,5 @@ public class APIFrontController extends HttpServlet {
 
     private String capitalise(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
-    }
-
-    protected void handleAuth(HttpServletRequest request) {
-        String namespace = "lans_hotels/";
-        try {
-            String headerString = request.getHeader("Authorization");
-            if (headerString == null || headerString.equals("")) {
-                System.out.println("APIFrontController.handleAuth(): " + request.getRequestURI() + " | null Authorization header");
-                request.getSession().setAttribute("auth", false);
-                return;
-            }
-
-            String authorizationType = headerString.split(" ")[0];
-            if (!authorizationType.equals("Bearer")) {
-                System.out.println("APIFrontController.handleAuth(): Invalid authorisation type: " + authorizationType);
-                request.getSession().setAttribute("auth", false);
-                return;
-            }
-
-            String tokenString = headerString.split(" ")[1];
-            DecodedJWT decodedJwt = JWT.decode(tokenString);
-            JwkProvider jwkProvider = (JwkProvider) getServletContext().getAttribute("jwkProvider");
-            Jwk jwk = jwkProvider.get(decodedJwt.getKeyId());
-            RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
-            Algorithm algorithm = Algorithm.RSA256(publicKey, null);
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer("https://dev-easqepri.us.auth0.com/")
-                    .withAudience("https://swen90007-2022-lans.herokuapp.com/api", "https://dev-easqepri.us.auth0.com/userinfo")
-                    .build();
-            DecodedJWT jwt = verifier.verify(tokenString);
-            request.getSession().setAttribute("auth", true);
-            Base64.Decoder decoder = Base64.getUrlDecoder();
-            JSONObject payload = new JSONObject(new String(decoder.decode(jwt.getPayload())));
-//            System.out.println("PAYLOAD:\n\t" + payload);
-            String email = (String) payload.get(namespace + "email");
-            JSONArray rolesArray = (JSONArray) payload.get(namespace + "roles");
-            ArrayList<String> roles = new ArrayList<>();
-            for(Object role: rolesArray) roles.add((String) role);
-
-            if (payload.has(namespace + "email")) {
-                request.getSession().setAttribute("email", email);
-            } else {
-                request.getSession().setAttribute("email", "");
-            }
-            if (payload.has(namespace + "roles")) {
-                for(Object role: rolesArray) roles.add((String) role);
-            }
-            request.getSession().setAttribute("roles", roles);
-
-//            System.out.println("AUTHORISATION:\n\t" + email + "\n\t" + roles);
-        } catch (Exception e) {
-            System.err.println("AUTH ERROR - APIFrontController:\n\t" + e);
-            e.printStackTrace();
-            request.getSession().setAttribute("auth", false);
-        }
     }
 }
