@@ -15,6 +15,13 @@ public class Hotel extends ReferenceObject {
     int pin_code;
     boolean is_active;
 
+    public Hotel(Integer id, IDataSource dataSource, Integer hotel_group_id) throws UoWException {
+        super(id, dataSource);
+        this.hotel_group_id = hotel_group_id;
+        markClean();
+        markGhost();
+    }
+
     public Hotel(IDataSource dataSource,
                  Integer hotel_group_id, String name, String email,Address address,
                  String contact, String city, Integer pin_code, boolean is_active) throws UoWException {
@@ -27,6 +34,8 @@ public class Hotel extends ReferenceObject {
         this.city = city;
         this.pin_code = pin_code;
         this.is_active = is_active;
+        markNew();
+        markLoaded();
     }
 
     public Hotel(Integer id, IDataSource dataSource,
@@ -42,6 +51,7 @@ public class Hotel extends ReferenceObject {
         this.pin_code = pin_code;
         this.is_active = is_active;
         markClean();
+        markLoaded();
     }
 
     public int getID() {

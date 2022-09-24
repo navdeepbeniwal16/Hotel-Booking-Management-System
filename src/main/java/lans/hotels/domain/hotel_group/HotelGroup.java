@@ -29,9 +29,19 @@ public class HotelGroup extends ReferenceObject{
         markClean();
     }
 
+    public HotelGroup(Integer id, IDataSource dataSource, String name) throws UoWException {
+        super(id, dataSource);
+        this.name = name;
+        initMaps();
+        markClean();
+    }
 
-    public HotelGroup(Integer id, IDataSource dataSource,
-                 String name,Address address, String phone) throws UoWException {
+
+    public HotelGroup(Integer id,
+                      IDataSource dataSource,
+                      String name,
+                      Address address,
+                      String phone) throws UoWException {
         super(id, dataSource);
         this.name = name;
         this.address = address;

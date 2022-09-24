@@ -24,10 +24,16 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     @Override
     protected String findStatement() {
         String statement =
-                "SELECT ho.id AS id, name, email, password, role, user_id, is_active " +
-                        "FROM app_user u  " +
-                        "JOIN hotelier ho " +
-                        "ON u.id = ho.user_id ";
+                "SELECT ho.id AS id, u.name AS name, email, password, role, user_id, is_active, hotel_group_id AS hg_id, hg.name AS hg_name " +
+                        " FROM app_user u  " +
+                        " JOIN hotelier ho " +
+                        " ON u.id = ho.user_id " +
+                        " LEFT JOIN hotel_group_hotelier hgh " +
+                        " ON ho.id = hgh.hotelier_id " +
+                        " LEFT JOIN hotel_group hg " +
+                        " ON hgh.hotel_group_id = hg.id;";
+        System.out.println("HotelierDataMapper.findStatement()");
+        System.out.println(statement);
         return statement;
     }
 
@@ -86,12 +92,26 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    protected Hotelier doLoad(Integer id, ResultSet rs) throws SQLException {
-        Hotelier hotelier = new Hotelier(rs.getInt("user_id"), dataSource,rs.getInt("id"),
-                rs.getString("name"),rs.getString("email"),
-                rs.getString("password"),rs.getInt("role"),
+    protected Hotelier doLoad(Integer id, ResultSet rs) throws SQLException, UoWException {
+        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+            System.out.println(i + ". " + rs.getMetaData().getColumnName(i));
+        }
+        Hotelier hotelier = new Hotelier(
+                rs.getInt("user_id"),
+                dataSource,
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("password"),
+                rs.getInt("role"),
                 rs.getBoolean("is_active"));
-
+        if (rs.getInt("hg_id") != 0 && rs.getString("hg_name") != null) {
+            HotelGroup hotelGroup = new HotelGroup(
+                    Integer.valueOf(rs.getString("hg_id")),
+                    dataSource,
+                    rs.getString("hg_name"));
+            hotelier.setHotelGroup(hotelGroup);
+        }
         return hotelier;
     }
 
