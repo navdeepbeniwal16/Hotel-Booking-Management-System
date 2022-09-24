@@ -93,9 +93,6 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
 
     @Override
     protected Hotelier doLoad(Integer id, ResultSet rs) throws SQLException, UoWException {
-        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-            System.out.println(i + ". " + rs.getMetaData().getColumnName(i));
-        }
         Hotelier hotelier = new Hotelier(
                 rs.getInt("user_id"),
                 dataSource,
@@ -106,6 +103,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
                 rs.getInt("role"),
                 rs.getBoolean("is_active"));
         if (rs.getInt("hg_id") != 0 && rs.getString("hg_name") != null) {
+            System.out.println("Hotel Group: " + rs.getString("hg_name") + "(" + rs.getInt("hg_id") + ")");
             HotelGroup hotelGroup = new HotelGroup(
                     Integer.valueOf(rs.getString("hg_id")),
                     dataSource,

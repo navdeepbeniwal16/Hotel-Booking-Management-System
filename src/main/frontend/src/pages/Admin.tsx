@@ -63,6 +63,7 @@ const Admin = () => {
                 <th>Active?</th>
                 <th>Email</th>
                 <th>Name</th>
+                <th>Hotel Group</th>
               </tr>
             </thead>
             <tbody>
@@ -73,7 +74,11 @@ const Admin = () => {
                   <td>{hotelier.isActive ? <Check2Circle /> : <XCircle />}</td>
                   <td>{`${hotelier.email}`}</td>
                   <td>{`${hotelier.name}`}</td>
-                  <td>{`${hotelier.hotel_group_id}`}</td>
+                  <td>
+                    {hotelier.hotel_group.name
+                      ? `${hotelier.hotel_group.name}`
+                      : 'N/A'}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -86,5 +91,5 @@ const Admin = () => {
 
 export default withAuthenticationRequired(Admin, {
   // Show a message while the user waits to be redirected to the login page.
-  onRedirecting: () => <div>Redirecting you to the login page...</div>,
+  onRedirecting: () => <div>Please wait: checking Admin authorisation</div>,
 });

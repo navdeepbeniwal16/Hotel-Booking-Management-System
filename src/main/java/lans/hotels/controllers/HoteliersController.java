@@ -48,9 +48,9 @@ public class HoteliersController extends FrontCommand{
                     } catch (Exception e) {
                         System.err.println("GET /api/hoteliers: " + Arrays.toString(commandPath));
                         System.err.println("\t" + Arrays.toString(commandPath));
-                        System.err.println("\t" + e.getStackTrace().toString());
                         System.err.println("\t" + e.getMessage());
                         System.err.println("\t" + e.getClass());
+                        e.printStackTrace();
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                         return;
                     }
@@ -170,8 +170,11 @@ public class HoteliersController extends FrontCommand{
 
             // Add hotel group information
             aHotelGroup = new JSONObject();
-            aHotelGroup.put("id", hotelier.getHotelGroup().getName());
-            aHotelGroup.put("name", hotelier.getHotelGroup().getId());
+            if (hotelier.getHotelGroup() != null) {
+                aHotelGroup.put("id", hotelier.getHotelGroup().getId());
+                aHotelGroup.put("name", hotelier.getHotelGroup().getName());
+            }
+
             aHotelier.put("hotel_group", aHotelGroup);
 
             // Put hotelier in hoteliers array
