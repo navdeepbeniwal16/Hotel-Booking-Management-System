@@ -64,7 +64,7 @@ public abstract class DataSourceFacade implements IDataSource {
             if (mapper==null) {
                 System.err.println("Null mapper for class: " + aClass.getName());
             } else {
-                System.out.println("DataSourceFacade.findAll(): getting objects for class" + aClass.getName());
+//                System.out.println("DataSourceFacade.findAll(): getting objects for class" + aClass.getName());
                 return mapper.findAll();
             }
         } catch (Exception e) {

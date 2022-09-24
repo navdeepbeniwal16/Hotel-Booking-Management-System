@@ -3,7 +3,6 @@ package lans.hotels.datasource.identity_maps;
 import lans.hotels.datasource.exceptions.IdentityMapException;
 import lans.hotels.datasource.facade.IIdentityMap;
 import lans.hotels.domain.AbstractDomainObject;
-import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 
 import java.util.ArrayList;

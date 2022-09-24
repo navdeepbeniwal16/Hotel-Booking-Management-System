@@ -155,6 +155,18 @@ public class HotelgrouphoteliersController extends FrontCommand {
             case HttpMethod.PUT:
             case HttpMethod.DELETE:
             {
+                if (!(boolean) request.getSession().getAttribute("auth")) {
+                    System.err.println("UNAUTHURISED - HGH Controller: auth = " + request.getSession().getAttribute("auth"));
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+                ArrayList<?> roles = (ArrayList<?>) request.getSession().getAttribute("roles");
+
+                if (!roles.contains("Admin")) {
+                    System.err.println("UNAUTHURISED - HGH Controller: roles = " + request.getSession().getAttribute("roles").toString());
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
                 String[] commandPath2 = request.getPathInfo().split("/");
                 int id = -1;
                 if (commandPath2.length == 2) {

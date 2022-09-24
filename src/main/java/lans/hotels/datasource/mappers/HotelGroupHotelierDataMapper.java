@@ -23,7 +23,7 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
     protected String findStatement() {
         String statement =
                 "SELECT * FROM hotel_group_hotelier ";
-        System.out.println("HotelGroupDataMapper.findStatement(): " + statement);
+//        System.out.println("HotelGroupDataMapper.findStatement(): " + statement);
         return statement;
     }
 
@@ -39,7 +39,6 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
             ResultSet resultSet = statement.executeQuery();
             HotelGroupHotelier aHotelGroupHotelier = load(resultSet);
             while (aHotelGroupHotelier != null) {
-                System.out.println(aHotelGroupHotelier);
                 aHotelGroupHotelier = load(resultSet);
             }
         } catch (Exception e) {

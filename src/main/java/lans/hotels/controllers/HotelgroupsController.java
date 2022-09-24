@@ -30,7 +30,6 @@ public class HotelgroupsController extends FrontCommand {
             System.err.println("HotelGroup controller: " + Arrays.toString(commandPath));
             System.err.println("HotelGroup controller: commandPath.length = " + commandPath.length);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
-            return;
         }
         else {
             ArrayList<HotelGroup> hotel_groups;

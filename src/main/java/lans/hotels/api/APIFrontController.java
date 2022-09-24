@@ -11,6 +11,7 @@ import lans.hotels.controllers.UnknownController;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.*;
@@ -19,8 +20,7 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
-import java.util.Base64;
+import java.util.*;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
 public class APIFrontController extends HttpServlet {
@@ -152,10 +152,19 @@ public class APIFrontController extends HttpServlet {
             request.getSession().setAttribute("auth", true);
             Base64.Decoder decoder = Base64.getUrlDecoder();
             JSONObject payload = new JSONObject(new String(decoder.decode(jwt.getPayload())));
-            if (payload.has("email")) request.getSession().setAttribute("email", payload.get(namespace + "email"));
-            if (payload.has("roles")) request.getSession().setAttribute("roles", payload.get(namespace + "roles"));
+            System.out.println("PAYLOAD:\n\t" + payload);
+            String email = (String) payload.get(namespace + "email");
+            JSONArray rolesArray = (JSONArray) payload.get(namespace + "roles");
+            ArrayList<String> roles = new ArrayList<>();
+            for(Object role: rolesArray) roles.add((String) role);
+
+            if (payload.has("email")) request.getSession().setAttribute("email", email);
+            if (payload.has("roles")) request.getSession().setAttribute("roles", roles);
+
+            System.out.println("AUTHORISATION:\n\t" + email + "\n\t" + roles.toString());
         } catch (Exception e) {
-            System.out.println(e);
+            System.err.println("AUTH ERROR - APIFrontController:\n\t" + e);
+            e.printStackTrace();
             request.getSession().setAttribute("auth", false);
         }
     }

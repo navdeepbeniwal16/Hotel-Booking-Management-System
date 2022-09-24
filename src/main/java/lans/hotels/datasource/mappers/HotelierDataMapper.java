@@ -103,7 +103,6 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
                 rs.getInt("role"),
                 rs.getBoolean("is_active"));
         if (rs.getInt("hg_id") != 0 && rs.getString("hg_name") != null) {
-            System.out.println("Hotel Group: " + rs.getString("hg_name") + "(" + rs.getInt("hg_id") + ")");
             HotelGroup hotelGroup = new HotelGroup(
                     Integer.valueOf(rs.getString("hg_id")),
                     dataSource,
