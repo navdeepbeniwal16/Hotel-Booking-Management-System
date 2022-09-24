@@ -44,8 +44,6 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
         } catch (Exception e) {
             System.err.println("ERROR HotelGroupHotelierDataMapper.findAll(): " + e);
             e.printStackTrace();
-        } finally {
-            System.out.println("HotelGroupHotelierDataMapper.findAll() - loaded hotel groups: " + loadedMap);
         }
         return new ArrayList<>(loadedMap.values());
     }

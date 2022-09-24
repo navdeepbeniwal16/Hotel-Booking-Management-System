@@ -146,7 +146,7 @@ public class APIFrontController extends HttpServlet {
             Algorithm algorithm = Algorithm.RSA256(publicKey, null);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("https://dev-easqepri.us.auth0.com/")
-                    .withAudience()
+                    .withAudience("https://swen90007-2022-lans.herokuapp.com/api", "https://dev-easqepri.us.auth0.com/userinfo")
                     .build();
             DecodedJWT jwt = verifier.verify(tokenString);
             request.getSession().setAttribute("auth", true);
