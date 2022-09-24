@@ -36,7 +36,8 @@ public class APIFrontController extends HttpServlet {
             // Execute the controller
             command.process();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("APIFrontController.doGet(): " + e.getMessage());
+            e.printStackTrace();
             throw new ServletException("doGet():" + e);
         }
     }
@@ -52,7 +53,8 @@ public class APIFrontController extends HttpServlet {
             // Execute the controller
             command.process();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("APIFrontController.doPost(): " + e.getMessage());
+            e.printStackTrace();
             throw new ServletException("doPost():" + e);
         }
     }
@@ -68,7 +70,8 @@ public class APIFrontController extends HttpServlet {
             // Execute the controller
             command.process();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("APIFrontController.doPut(): " + e.getMessage());
+            e.printStackTrace();
             throw new ServletException("doPut():" + e);
         }
     }
@@ -84,7 +87,8 @@ public class APIFrontController extends HttpServlet {
             // Execute the controller
             command.process();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("APIFrontController.doDelete(): " + e.getMessage());
+            e.printStackTrace();
             throw new ServletException("doDelete():" + e);
         }
     }
@@ -95,7 +99,8 @@ public class APIFrontController extends HttpServlet {
             String[] commandPath = request.getPathInfo().split("/");
             return (IFrontCommand) getCommandClass(commandPath).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            System.out.println("getCommand():" + e.getMessage());
+            System.out.println("APIFrontController.getCommand(): " + e.getMessage());
+            e.printStackTrace();
             throw new ServletException(e.getMessage());
         }
     }
@@ -152,16 +157,23 @@ public class APIFrontController extends HttpServlet {
             request.getSession().setAttribute("auth", true);
             Base64.Decoder decoder = Base64.getUrlDecoder();
             JSONObject payload = new JSONObject(new String(decoder.decode(jwt.getPayload())));
-            System.out.println("PAYLOAD:\n\t" + payload);
+//            System.out.println("PAYLOAD:\n\t" + payload);
             String email = (String) payload.get(namespace + "email");
             JSONArray rolesArray = (JSONArray) payload.get(namespace + "roles");
             ArrayList<String> roles = new ArrayList<>();
             for(Object role: rolesArray) roles.add((String) role);
 
-            if (payload.has("email")) request.getSession().setAttribute("email", email);
-            if (payload.has("roles")) request.getSession().setAttribute("roles", roles);
+            if (payload.has(namespace + "email")) {
+                request.getSession().setAttribute("email", email);
+            } else {
+                request.getSession().setAttribute("email", "");
+            }
+            if (payload.has(namespace + "roles")) {
+                for(Object role: rolesArray) roles.add((String) role);
+            }
+            request.getSession().setAttribute("roles", roles);
 
-            System.out.println("AUTHORISATION:\n\t" + email + "\n\t" + roles.toString());
+//            System.out.println("AUTHORISATION:\n\t" + email + "\n\t" + roles);
         } catch (Exception e) {
             System.err.println("AUTH ERROR - APIFrontController:\n\t" + e);
             e.printStackTrace();

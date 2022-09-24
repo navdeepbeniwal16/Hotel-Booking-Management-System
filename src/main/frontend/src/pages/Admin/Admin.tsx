@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 
-import Table from 'react-bootstrap/Table';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';

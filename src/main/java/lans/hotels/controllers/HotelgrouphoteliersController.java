@@ -160,13 +160,21 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
-                ArrayList<?> roles = (ArrayList<?>) request.getSession().getAttribute("roles");
 
-                if (!roles.contains("Admin")) {
+                if (request.getSession().getAttribute("roles") == null) {
+                    System.err.println("UNAUTHURISED - HGH Controller: roles = " + request.getSession().getAttribute("roles"));
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+
+
+                if (!((ArrayList<String>) request.getSession().getAttribute("roles")).contains("Admin")) {
                     System.err.println("UNAUTHURISED - HGH Controller: roles = " + request.getSession().getAttribute("roles").toString());
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
+
+
                 String[] commandPath2 = request.getPathInfo().split("/");
                 int id = -1;
                 if (commandPath2.length == 2) {
