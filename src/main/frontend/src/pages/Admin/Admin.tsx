@@ -7,33 +7,39 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import { Check2Circle, XCircle } from 'react-bootstrap-icons';
 
 import endpoints from '../../api/endpoints';
 import AppContext from '../../context/AppContext';
 
 import Hotelier from '../../types/HotelierType';
 import HoteliersTable from './HoteliersTable';
+import { Roles } from '../../types/RoleTypes';
 
 const Admin = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const { userMetadata } = useContext(AppContext.GlobalContext);
   const [hoteliers, setHoteliers] = useState<Hotelier[]>([]);
+  const [tabKey, setTabKey] = useState('Users');
 
-  useEffect(() => {
-    const fetchHoteliers = async () => {
-      if (hoteliers.length) return;
-      const fetchedHoteliers = await endpoints.getHoteliers(
-        userMetadata.apiAccessToken
-      );
-      setHoteliers(fetchedHoteliers);
-    };
-
-    if (!isLoading && isAuthenticated && userMetadata.apiAccessToken !== '') {
-      fetchHoteliers();
+  const loadTab = async (tabKey: string) => {
+    if (
+      !isLoading &&
+      isAuthenticated &&
+      userMetadata.apiAccessToken !== '' &&
+      userMetadata.roles.includes(Roles.ADMIN)
+    ) {
+      switch (tabKey) {
+        case 'Hoteliers':
+          const fetchedHoteliers = await endpoints.getHoteliers(
+            userMetadata.apiAccessToken
+          );
+          setHoteliers(fetchedHoteliers);
+          return;
+        default:
+      }
     }
-  }, [isLoading, isAuthenticated, userMetadata.apiAccessToken, setHoteliers]);
-
+    setTabKey(tabKey);
+  };
   return (
     <Container>
       <Row>
@@ -50,21 +56,33 @@ const Admin = () => {
           </p>
         </Col>
       </Row>
-      <Tabs defaultActiveKey='Users' id='admin-tabs' className='mb-3'>
-        <Tab eventKey='Users' title='Users'>
-          <p>Users</p>
-        </Tab>
-        <Tab eventKey='Hoteliers' title='Hoteliers'>
-          <Row>
-            <Col>
-              <HoteliersTable hoteliers={hoteliers} />
-            </Col>
-          </Row>
-        </Tab>
-        <Tab eventKey='Hotels' title='Hotels'>
-          <p>Hotels</p>
-        </Tab>
-      </Tabs>
+      {isLoading ? (
+        <h2>Loading</h2>
+      ) : !(isAuthenticated && userMetadata.roles.includes(Roles.ADMIN)) ? (
+        <h2>Not authorised</h2>
+      ) : (
+        <Tabs
+          defaultActiveKey='Users'
+          id='admin-tabs'
+          activeKey={tabKey}
+          onSelect={(k) => loadTab(k || 'Users')}
+          className='mb-3'
+        >
+          <Tab eventKey='Users' title='Users'>
+            <p>Users</p>
+          </Tab>
+          <Tab eventKey='Hoteliers' title='Hoteliers'>
+            <Row>
+              <Col>
+                <HoteliersTable hoteliers={hoteliers} />
+              </Col>
+            </Row>
+          </Tab>
+          <Tab eventKey='Hotels' title='Hotels'>
+            <p>Hotels</p>
+          </Tab>
+        </Tabs>
+      )}
     </Container>
   );
 };
