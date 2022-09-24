@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import MainNavbar from './components/layouts/MainNavbar';
 
 import Home from './pages/Home';
-import Admin from './pages/Admin';
+import Admin from './pages/Admin/Admin';
 import Bookings from './pages/Bookings';
 import Hotel from './pages/Hotel';
 import { Route, Routes } from 'react-router-dom';

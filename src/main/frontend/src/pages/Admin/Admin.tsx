@@ -5,12 +5,15 @@ import Table from 'react-bootstrap/Table';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 import { Check2Circle, XCircle } from 'react-bootstrap-icons';
 
-import endpoints from '../api/endpoints';
-import AppContext from '../context/AppContext';
-import map from 'lodash/map';
-import Hotelier from '../types/HotelierType';
+import endpoints from '../../api/endpoints';
+import AppContext from '../../context/AppContext';
+
+import Hotelier from '../../types/HotelierType';
+import HoteliersTable from './HoteliersTable';
 
 const Admin = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
@@ -47,44 +50,21 @@ const Admin = () => {
           </p>
         </Col>
       </Row>
-
-      <Row>
-        <Col>
-          <h2>Hoteliers</h2>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Table>
-            <thead>
-              <tr>
-                <th>User ID</th>
-                <th>Hotelier ID</th>
-                <th>Active?</th>
-                <th>Email</th>
-                <th>Name</th>
-                <th>Hotel Group</th>
-              </tr>
-            </thead>
-            <tbody>
-              {map(hoteliers, (hotelier: Hotelier) => (
-                <tr key={hotelier.hotelier_id}>
-                  <td>{`${hotelier.user_id}`}</td>
-                  <td>{`${hotelier.hotelier_id}`}</td>
-                  <td>{hotelier.isActive ? <Check2Circle /> : <XCircle />}</td>
-                  <td>{`${hotelier.email}`}</td>
-                  <td>{`${hotelier.name}`}</td>
-                  <td>
-                    {hotelier.hotel_group.name
-                      ? `${hotelier.hotel_group.name}`
-                      : 'N/A'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
+      <Tabs defaultActiveKey='Users' id='admin-tabs' className='mb-3'>
+        <Tab eventKey='Users' title='Users'>
+          <p>Users</p>
+        </Tab>
+        <Tab eventKey='Hoteliers' title='Hoteliers'>
+          <Row>
+            <Col>
+              <HoteliersTable hoteliers={hoteliers} />
+            </Col>
+          </Row>
+        </Tab>
+        <Tab eventKey='Hotels' title='Hotels'>
+          <p>Hotels</p>
+        </Tab>
+      </Tabs>
     </Container>
   );
 };
