@@ -1,7 +1,8 @@
 import Hotel from '../types/HotelType';
 import Room from '../types/RoomType';
+import Hotelier from '../types/HotelierType';
 
-const getHoteliers = async (accessToken: string): Promise<any[]> => {
+const getHoteliers = async (accessToken: string): Promise<Hotelier[]> => {
   const res = await fetch('/api/hoteliers', {
     headers: {
       'Content-Type': 'application/json',
@@ -9,7 +10,7 @@ const getHoteliers = async (accessToken: string): Promise<any[]> => {
     },
   });
   const data = await res.json();
-  const hoteliers: Array<any> = data.result;
+  const hoteliers: Array<Hotelier> = data.result;
   console.log('getHoteliers:', hoteliers);
   return hoteliers;
 };

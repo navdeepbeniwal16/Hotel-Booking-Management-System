@@ -70,7 +70,4 @@ public class User extends ReferenceObject {
 
     private void initMaps() {
     }
-
-
-
 }

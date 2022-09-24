@@ -70,6 +70,10 @@ public abstract class AbstractDomainObject implements IGhost {
     }
 
     // TODO: #lazyload markGhost?
+    protected void markGhost() {
+        assert loadStatus == null;
+        loadStatus = LoadStatus.GHOST;
+    }
     protected void markLoaded() {
         assert loadStatus == LoadStatus.LOADING;
         loadStatus = LoadStatus.LOADED;

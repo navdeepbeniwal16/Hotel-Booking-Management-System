@@ -41,17 +41,19 @@ public class HoteliersController extends FrontCommand{
             switch(request.getMethod()) {
                 case HttpMethod.GET:
                     try {
-                        hoteliers = (ArrayList<Hotelier>) dataSource.findAll(Hotelier.class);
+                        System.out.println("GET /api/hoteliers - getting all hoteliers");
+                        hoteliers = dataSource.findAll(Hotelier.class);
+                        returnHotelierJSON(hoteliers);
+                        return;
                     } catch (Exception e) {
                         System.err.println("GET /api/hoteliers: " + Arrays.toString(commandPath));
-                        System.err.println("GET /api/hoteliers: " + e.getMessage());
-                        System.err.println("GET /api/hoteliers: " + e.getClass());
+                        System.err.println("\t" + Arrays.toString(commandPath));
+                        System.err.println("\t" + e.getMessage());
+                        System.err.println("\t" + e.getClass());
+                        e.printStackTrace();
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                         return;
                     }
-
-                    returnHotelierJSON(hoteliers);
-                    return;
                 case HttpMethod.POST:
                 {
                     JSONObject body = getRequestBody(request);
@@ -157,6 +159,7 @@ public class HoteliersController extends FrontCommand{
         response.setCharacterEncoding("UTF-8");
 
         JSONObject aHotelier;
+        JSONObject aHotelGroup;
         for (Hotelier hotelier: hoteliers) {
             aHotelier = new JSONObject();
             aHotelier.put("hotelier_id", hotelier.getHotelierID());
@@ -164,6 +167,17 @@ public class HoteliersController extends FrontCommand{
             aHotelier.put("email",hotelier.getEmail());
             aHotelier.put("user_id", hotelier.getUserID());
             aHotelier.put("isActive", hotelier.getStatus());
+
+            // Add hotel group information
+            aHotelGroup = new JSONObject();
+            if (hotelier.getHotelGroup() != null) {
+                aHotelGroup.put("id", hotelier.getHotelGroup().getId());
+                aHotelGroup.put("name", hotelier.getHotelGroup().getName());
+            }
+
+            aHotelier.put("hotel_group", aHotelGroup);
+
+            // Put hotelier in hoteliers array
             hotelierArray.put(aHotelier);
         }
 
@@ -171,21 +185,9 @@ public class HoteliersController extends FrontCommand{
         hotelierJson.put("result", hotelierArray);
         out.print(hotelierJson);
         out.flush();
-        return;
     }
 
-    public JSONObject getRequestBody(HttpServletRequest request) throws IOException {
-        BufferedReader requestReader = request.getReader();
 
-        String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        JSONObject body;
-        if (lines.length() > 0) {
-            body = new JSONObject(lines);
-        } else {
-            return null;
-        }
-        return body;
-    }
 
     public Hotelier getHotelierFromJsonObject(JSONObject jsonObject) {
 

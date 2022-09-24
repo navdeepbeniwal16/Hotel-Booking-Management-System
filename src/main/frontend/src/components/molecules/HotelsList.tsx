@@ -15,7 +15,6 @@ interface HotelListProps {
 }
 
 const HotelsList = ({ hotels }: HotelListProps) => {
-  console.log(hotels);
   const context = useContext(AppContext.GlobalContext);
   return (
     <Container>
@@ -26,7 +25,6 @@ const HotelsList = ({ hotels }: HotelListProps) => {
               as={Link}
               to={`/hotel/${hotel.hotel_id}`}
               onClick={() => {
-                console.log('updating hotel context:', hotel);
                 context.hotel.setHotel(hotel);
               }}
             >
