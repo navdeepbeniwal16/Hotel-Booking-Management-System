@@ -1,18 +1,29 @@
 import React from 'react';
 import map from 'lodash/map';
 
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
-import { Check2Circle, XCircle } from 'react-bootstrap-icons';
+import Button from 'react-bootstrap/Button';
+import { Check2Circle, XCircle, DashCircle } from 'react-bootstrap-icons';
 
 import Hotelier from '../../types/HotelierType';
+import { Row, Col } from 'react-bootstrap';
 
 interface IHoteliersProps {
   hoteliers: Hotelier[];
 }
 
 const Hoteliers = ({ hoteliers }: IHoteliersProps) => {
+  const renderHotelGroupName = (hotel_group_name: string | undefined) => {
+    if (hotel_group_name === undefined) return 'N/A';
+    return (
+      <div className='flex'>
+        <p>{`${hotel_group_name}`}</p>
+        <Button variant='outline-danger' size='sm'>
+          <DashCircle />
+        </Button>
+      </div>
+    );
+  };
   return (
     <Table>
       <thead>
@@ -33,11 +44,7 @@ const Hoteliers = ({ hoteliers }: IHoteliersProps) => {
             <td>{hotelier.isActive ? <Check2Circle /> : <XCircle />}</td>
             <td>{`${hotelier.email}`}</td>
             <td>{`${hotelier.name}`}</td>
-            <td>
-              {hotelier.hotel_group.name
-                ? `${hotelier.hotel_group.name}`
-                : 'N/A'}
-            </td>
+            <td>{renderHotelGroupName(hotelier.hotel_group.name)}</td>
           </tr>
         ))}
       </tbody>
