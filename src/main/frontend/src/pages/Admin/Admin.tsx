@@ -34,12 +34,20 @@ const Admin = () => {
             userMetadata.apiAccessToken
           );
           setHoteliers(fetchedHoteliers);
-          return;
+          break;
         default:
       }
     }
     setTabKey(tabKey);
   };
+
+  const tabKeys = {
+    users: 'Users',
+    hotelGroups: 'Hotel Groups',
+    hoteliers: 'Hoteliers',
+    hotels: 'Hotels',
+  };
+
   return (
     <Container>
       <Row>
@@ -62,24 +70,27 @@ const Admin = () => {
         <h2>Not authorised</h2>
       ) : (
         <Tabs
-          defaultActiveKey='Users'
+          defaultActiveKey={tabKeys.users}
           id='admin-tabs'
           activeKey={tabKey}
-          onSelect={(k) => loadTab(k || 'Users')}
+          onSelect={(k) => loadTab(k || tabKeys.users)}
           className='mb-3'
         >
-          <Tab eventKey='Users' title='Users'>
-            <p>Users</p>
+          <Tab eventKey={tabKeys.users} title={tabKeys.users}>
+            <p>{`${tabKeys.users}`}</p>
           </Tab>
-          <Tab eventKey='Hoteliers' title='Hoteliers'>
+          <Tab eventKey={tabKeys.hotelGroups} title={tabKeys.hotelGroups}>
+            <p>{`${tabKeys.hotelGroups}`}</p>
+          </Tab>
+          <Tab eventKey={tabKeys.hoteliers} title={tabKeys.hoteliers}>
             <Row>
               <Col>
                 <HoteliersTable hoteliers={hoteliers} />
               </Col>
             </Row>
           </Tab>
-          <Tab eventKey='Hotels' title='Hotels'>
-            <p>Hotels</p>
+          <Tab eventKey={tabKeys.hotels} title={tabKeys.hotels}>
+            <p>{`${tabKeys.hotels}`}</p>
           </Tab>
         </Tabs>
       )}
