@@ -9,6 +9,8 @@ import lans.hotels.datasource.identity_maps.IntegerIdentityMapRegistry;
 import lans.hotels.domain.AbstractDomainObject;
 
 import javax.servlet.http.HttpSession;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -81,6 +83,7 @@ public class ServletUoW implements IUnitOfWork {
         try {
             identityMaps.get(obj.getClass()).add(obj);
         } catch (IdentityMapException e) {
+            System.err.println("ERROR UoW.registerNew(): " + e.getMessage());
             throw new UoWException(e.getMessage());
         }
         newObjects.add(obj);
@@ -111,46 +114,54 @@ public class ServletUoW implements IUnitOfWork {
         try {
             identityMaps.get(obj.getClass()).add(obj);
         } catch (IdentityMapException e) {
+            System.err.println("ERROR UoW.registerClean(): " + e.getMessage());
             throw new UoWException(e.getMessage());
         }
     }
 
     @Override
-    public void commit(IMapperRegistry mappers) {
-        newObjects.forEach(obj -> {
-            try {
-                mappers.getMapper(obj.getClass()).insert(obj);
-            } catch (Exception e) {
-                System.err.println(e);
+    public void commit(Connection connection, IMapperRegistry mappers) throws Exception {
+        try {
+            newObjects.forEach(obj -> {
+                try {
+                    mappers.getMapper(obj.getClass()).insert(obj);
+                } catch (Exception e) {
+                    System.err.println(e);
+                }
+            });
+            dirtyObjects.forEach(obj -> {
+                try {
+                    mappers.getMapper(obj.getClass()).update(obj);
+                } catch (MapperNotFoundException e) {
+                    System.err.println(e);
+                }
+            });
+            removedObjects.forEach(obj -> {
+                try {
+                    mappers.getMapper(obj.getClass()).delete(obj.getId());
+                } catch (MapperNotFoundException e) {
+                    System.err.println(e);
+                }
+                identityMaps.get(obj.getClass()).remove(obj.getId());
+            });
+            connection.commit();
+            connection.close();
+        } catch (Exception e) {
+            connection.rollback();
+            System.err.println("UoW FAILED TO COMMIT");
+            e.printStackTrace();
+        } finally {
+            for(IIdentityMap<?> identityMap: identityMaps.getAll()) {
+                identityMap.clear();
             }
-        });
-        dirtyObjects.forEach(obj -> {
-            try {
-                mappers.getMapper(obj.getClass()).update(obj);
-            } catch (MapperNotFoundException e) {
-                System.err.println(e);
-            }
-        });
-        removedObjects.forEach(obj -> {
-            try {
-                mappers.getMapper(obj.getClass()).delete(obj.getId());
-            } catch (MapperNotFoundException e) {
-                System.err.println(e);
-            }
-            identityMaps.get(obj.getClass()).remove(obj.getId());
-        });
 
-
-        for(Object identityMap: identityMaps.getAll()) {
-            ((IIdentityMap<?>) identityMap).clear();
+            newObjects.clear();
+            dirtyObjects.clear();
+            removedObjects.clear();
+            cleanObjects.clear();
+            // TODO: flush identity maps #bug
+            // mappers.clear();
+            // TODO: @levimk - how does commit actually work with JDBC?
         }
-
-        newObjects.clear();
-        dirtyObjects.clear();
-        removedObjects.clear();
-        cleanObjects.clear();
-        // TODO: flush identity maps #bug
-        // mappers.clear();
-        // TODO: @levimk - how does commit actually work with JDBC?
     }
 }

@@ -110,8 +110,7 @@ public abstract class DataSourceFacade implements IDataSource {
 
     public void commit() throws DataSourceLayerException {
         try {
-            uow.commit(dataMapperRegistry);
-            connection.commit();
+            uow.commit(connection, dataMapperRegistry);
         } catch (Exception e) {
             throw new DataSourceLayerException(e.getMessage());
         }

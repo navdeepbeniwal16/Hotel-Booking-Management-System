@@ -170,9 +170,14 @@ public class HoteliersController extends FrontCommand{
 
             // Add hotel group information
             aHotelGroup = new JSONObject();
-            if (hotelier.getHotelGroup() != null) {
-                aHotelGroup.put("id", hotelier.getHotelGroup().getId());
-                aHotelGroup.put("name", hotelier.getHotelGroup().getName());
+            try {
+                if (hotelier.getHotelGroup() != null) {
+                    aHotelGroup.put("id", hotelier.getHotelGroup().getId());
+                    aHotelGroup.put("name", hotelier.getHotelGroup().getName());
+                }
+            } catch (NullPointerException e) {
+                System.err.println("Null pointer to hotel group. Hotelier = " + hotelier.getId());
+                e.printStackTrace();
             }
 
             aHotelier.put("hotel_group", aHotelGroup);

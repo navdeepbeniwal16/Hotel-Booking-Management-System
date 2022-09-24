@@ -54,37 +54,37 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     if (body.has("search")) {
                     } else {
                         ArrayList<HotelGroupHotelier> hg_hoteliers;
+                        JSONArray hotelArray = new JSONArray();
+                        PrintWriter out = response.getWriter();
+                        JSONObject aHGHotelier;
+                        JSONObject hotelJson = new JSONObject();
                         try {
                             hg_hoteliers = dataSource.findAll(HotelGroupHotelier.class);
-//                            System.out.println("HotelGroupsController.concreteProcess() ALL v1: " + hotel_groups.toString());
-//                            System.out.println("HotelGroupsController.concreteProcess() ALL v2: " + dataSource.findAll(HotelGroup.class).toString());
+                            response.setStatus(200);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+
+
+                            for (HotelGroupHotelier hotelGroupHotelier: hg_hoteliers) {
+                                aHGHotelier = new JSONObject();
+                                aHGHotelier.put("id", hotelGroupHotelier.getId());
+                                aHGHotelier.put("hotelier_id", hotelGroupHotelier.getHotelierId());
+                                aHGHotelier.put("hotel_group_id", hotelGroupHotelier.getHotelGroupId());
+                                hotelArray.put(aHGHotelier);
+                            }
+
+                            hotelJson.put("result", hotelArray);
+                            out.print(hotelJson);
+                            out.flush();
+                            return;
                         } catch (Exception e) {
                             System.err.println("GET /api/hotelgrouphoteliers: " + Arrays.toString(commandPath));
+                            e.printStackTrace();
                             System.err.println("GET /api/hotelgrouphoteliers: " + e.getMessage());
                             System.err.println("GET /api/hotelgrouphoteliers: " + e.getClass());
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                             return;
                         }
-
-                        JSONArray hotelArray = new JSONArray();
-                        PrintWriter out = response.getWriter();
-                        response.setStatus(200);
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("UTF-8");
-
-                        JSONObject aHGHotelier;
-                        for (HotelGroupHotelier hotelGroupHotelier: hg_hoteliers) {
-                            aHGHotelier = new JSONObject();
-                            aHGHotelier.put("hotelier_id", hotelGroupHotelier.getHotelierId());
-                            aHGHotelier.put("hotel_group_id", hotelGroupHotelier.getHotelGroupId());
-                            hotelArray.put(aHGHotelier);
-                        }
-
-                        JSONObject hotelJson = new JSONObject();
-                        hotelJson.put("result", hotelArray);
-                        out.print(hotelJson);
-                        out.flush();
-                        return;
                     }
                 } else {
                     System.err.println("Hotelgrouphotelier contoller: " + Arrays.toString(commandPath));
@@ -180,29 +180,25 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     if(id==-1)
                         returnBody.put("deleted", false);
 
-                   boolean success;
+                    JSONObject hgJSON = new JSONObject();
                     try{
-                        success = dataSource.delete(HotelGroupHotelier.class,id);
+                        HotelGroupHotelier hotelGroupHotelier = new HotelGroupHotelier(id, dataSource);
+                        hotelGroupHotelier.remove();
+                        dataSource.commit();
+                        returnBody.put("deleted",true);
                     } catch (Exception e) {
+                        returnBody.put("deleted",false);
                         System.err.println("DELETE /api/hotelgrouphotleiers: " + Arrays.toString(commandPath2));
+                        e.printStackTrace();
                         System.err.println("DELETE /api/hotelgrouphotleiers: " + e.getMessage());
                         System.err.println("DELETE /api/hotelgrouphotleiers: " + e.getClass());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                    } finally {
+                        hgJSON.put("result", returnBody);
+                        out.print(hgJSON);
+                        out.flush();
                         return;
                     }
-
-                    if(success)
-                        returnBody.put("deleted", success);
-                    else
-                        returnBody.put("deleted",success);
-
-                    JSONObject hgJSON = new JSONObject();
-                    hgJSON.put("result", returnBody);
-                    out.print(hgJSON);
-                    out.flush();
-                    return;
-
-
                 }
                 else {
                     System.err.println("Hotel Group controller: " + Arrays.toString(commandPath2));

@@ -12,28 +12,39 @@ import endpoints from '../../api/endpoints';
 import AppContext from '../../context/AppContext';
 
 import Hotelier from '../../types/HotelierType';
-import HoteliersTable from './HoteliersTable';
+import HotelGroupHotelier from '../../types/HotelGroupHotelier';
 import { Roles } from '../../types/RoleTypes';
+
+import HoteliersTable from './HoteliersTable';
 
 const Admin = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
-  const { userMetadata } = useContext(AppContext.GlobalContext);
+  const {
+    userMetadata: { apiAccessToken, roles },
+  } = useContext(AppContext.GlobalContext);
   const [hoteliers, setHoteliers] = useState<Hotelier[]>([]);
+  const [hotelGroupHoteliers, setHotelGroupHoteliers] = useState<
+    Array<HotelGroupHotelier>
+  >([]);
   const [tabKey, setTabKey] = useState('Users');
 
   const loadTab = async (tabKey: string) => {
     if (
       !isLoading &&
       isAuthenticated &&
-      userMetadata.apiAccessToken !== '' &&
-      userMetadata.roles.includes(Roles.ADMIN)
+      apiAccessToken !== '' &&
+      roles.includes(Roles.ADMIN)
     ) {
       switch (tabKey) {
         case 'Hoteliers':
-          const fetchedHoteliers = await endpoints.getHoteliers(
-            userMetadata.apiAccessToken
-          );
-          setHoteliers(fetchedHoteliers);
+          if (!hoteliers.length) {
+            const fetchedHoteliers = await endpoints.getHoteliers(
+              apiAccessToken
+            );
+            setHoteliers(fetchedHoteliers);
+            const hgh = await endpoints.getHotelGroupHoteliers(apiAccessToken);
+            setHotelGroupHoteliers(hgh);
+          }
           break;
         default:
       }
@@ -66,7 +77,7 @@ const Admin = () => {
       </Row>
       {isLoading ? (
         <h2>Loading</h2>
-      ) : !(isAuthenticated && userMetadata.roles.includes(Roles.ADMIN)) ? (
+      ) : !(isAuthenticated && roles.includes(Roles.ADMIN)) ? (
         <h2>Not authorised</h2>
       ) : (
         <Tabs
@@ -85,7 +96,13 @@ const Admin = () => {
           <Tab eventKey={tabKeys.hoteliers} title={tabKeys.hoteliers}>
             <Row>
               <Col>
-                <HoteliersTable hoteliers={hoteliers} />
+                <HoteliersTable
+                  apiAccessToken={apiAccessToken}
+                  hoteliers={hoteliers}
+                  hotelGroupHoteliers={hotelGroupHoteliers}
+                  setHoteliers={setHoteliers}
+                  setHotelGroupHoteliers={setHotelGroupHoteliers}
+                />
               </Col>
             </Row>
           </Tab>

@@ -1,6 +1,35 @@
 import Hotel from '../types/HotelType';
 import Room from '../types/RoomType';
 import Hotelier from '../types/HotelierType';
+import HotelGroupHotelier from '../types/HotelGroupHotelier';
+
+const removeHotelierFromHotelGroup = async (
+  accessToken: string,
+  id: number
+): Promise<any> => {
+  const res = await fetch('/api/hotelgrouphoteliers', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ hotel_group_hotelier: { id } }),
+  });
+  return res;
+};
+
+const getHotelGroupHoteliers = async (
+  accessToken: string
+): Promise<HotelGroupHotelier[]> => {
+  const res = await fetch('/api/hotelgrouphoteliers', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await res.json();
+  const hgh: HotelGroupHotelier[] = data.result;
+  return hgh;
+};
 
 const getHoteliers = async (accessToken: string): Promise<Hotelier[]> => {
   const res = await fetch('/api/hoteliers', {
@@ -11,7 +40,6 @@ const getHoteliers = async (accessToken: string): Promise<Hotelier[]> => {
   });
   const data = await res.json();
   const hoteliers: Array<Hotelier> = data.result;
-  console.log('getHoteliers:', hoteliers);
   return hoteliers;
 };
 
@@ -82,6 +110,8 @@ const endpoints = {
   getHotelRooms,
   getAllRooms,
   getHoteliers,
+  getHotelGroupHoteliers,
+  removeHotelierFromHotelGroup,
 };
 
 export default endpoints;
