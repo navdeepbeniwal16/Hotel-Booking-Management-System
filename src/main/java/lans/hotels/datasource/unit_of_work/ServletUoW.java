@@ -145,7 +145,7 @@ public class ServletUoW implements IUnitOfWork {
                 identityMaps.get(obj.getClass()).remove(obj.getId());
             });
             connection.commit();
-            connection.close();
+
         } catch (Exception e) {
             connection.rollback();
             System.err.println("UoW FAILED TO COMMIT");
@@ -154,14 +154,11 @@ public class ServletUoW implements IUnitOfWork {
             for(IIdentityMap<?> identityMap: identityMaps.getAll()) {
                 identityMap.clear();
             }
-
             newObjects.clear();
             dirtyObjects.clear();
             removedObjects.clear();
             cleanObjects.clear();
-            // TODO: flush identity maps #bug
-            // mappers.clear();
-            // TODO: @levimk - how does commit actually work with JDBC?
+            connection.close();
         }
     }
 }
