@@ -2,14 +2,14 @@ package lans.hotels.api.controllers;
 
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
-import lans.hotels.datasource.search_criteria.CustomerSearchCriteria;
+import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
 
 import lans.hotels.domain.hotel_group.HotelGroup;
-import lans.hotels.domain.user_types.Customer;
 
+import lans.hotels.domain.user_types.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -37,7 +37,7 @@ public class BookingsController extends FrontCommand {
                     if(requestBody.has("search")) {
                         JSONObject searchQuery = requestBody.getJSONObject("search");
                         if(searchQuery.has("customer_id")) { // single customer query
-                            CustomerSearchCriteria customerSearchCriteria = new CustomerSearchCriteria();
+                            UserSearchCriteria userSearchCriteria = new UserSearchCriteria();
 
                             Integer customerId;
                             try {
@@ -50,16 +50,16 @@ public class BookingsController extends FrontCommand {
                                 return;
                             }
 
-                            if(customerId != null) customerSearchCriteria.setCustomerId(customerId);
-                            Customer customer;
+                            if(customerId != null) userSearchCriteria.setId(customerId);
+                            User user;
                             try {
                                 // Fetching the customer based on the customer_id
-                                ArrayList<Customer> customers = dataSource.findBySearchCriteria(Customer.class, customerSearchCriteria);
-                                if(!customers.isEmpty()) {
-                                    customer = customers.get(0);
+                                ArrayList<User> users = dataSource.findBySearchCriteria(User.class, userSearchCriteria);
+                                if(!users.isEmpty()) {
+                                    user = users.get(0);
 
                                     // Making call to customer to fetch all of it's booking details
-                                    ArrayList<Booking> customerBookings = customer.getAllBookings();
+                                    ArrayList<Booking> customerBookings = user.getAllBookings();
                                     JSONObject customersBookingsJson = getBookingsJson(customerBookings);
                                     sendResponse(customersBookingsJson);
                                 } else {

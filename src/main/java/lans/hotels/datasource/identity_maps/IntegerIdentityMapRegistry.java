@@ -7,8 +7,6 @@ import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 import lans.hotels.domain.room.Room;
-import lans.hotels.domain.user_types.Customer;
-import lans.hotels.domain.user_types.Hotelier;
 import lans.hotels.domain.user_types.User;
 
 import java.util.ArrayList;
@@ -19,8 +17,6 @@ public class IntegerIdentityMapRegistry extends AbstractIdentityMapRegistry {
         IntegerIdentityMapRegistry newRegistry = new IntegerIdentityMapRegistry(new HashMap<>(), dataSource);
         newRegistry.add(new HotelMap(new HashMap<>()), Hotel.class);
         newRegistry.add(new UserMap(new HashMap<>()), User.class);
-        newRegistry.add(new HotelierMap(new HashMap<>()), Hotelier.class);
-        newRegistry.add(new CustomerMap(new HashMap<>()), Customer.class);
         newRegistry.add(new RoomMap(new HashMap<>()), Room.class);
         newRegistry.add(new HotelGroupMap(new HashMap<>()), HotelGroup.class);
         newRegistry.add(new HotelGroupHotelierMap(new HashMap<>()), HotelGroupHotelier.class);

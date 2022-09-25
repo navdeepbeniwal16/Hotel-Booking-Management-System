@@ -1,16 +1,22 @@
 package lans.hotels.domain.user_types;
 
 import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
+import lans.hotels.domain.booking.Booking;
+import lans.hotels.domain.utils.Address;
+
+import java.util.ArrayList;
 
 public class User extends ReferenceObject {
 
     String name;
     String email;
-    String password;
-
+    Address address;
     Role role;
+    String contact;
+    Integer age;
 
     public User(IDataSource dataSource){
         super(dataSource);
@@ -34,11 +40,16 @@ public class User extends ReferenceObject {
                 IDataSource dataSource,
                 String name,
                 String email,
-                Integer role) throws Exception {
+                Address address,
+                Role role,
+                String contact,
+                Integer age
+                ) throws Exception {
         super(id, dataSource);
         this.name = name;
         this.email = email;
-        this.role = new Role(role);
+        this.address = address;
+        this.role = role;
         try {
             markClean();
         } catch (UoWException e) {
@@ -65,18 +76,16 @@ public class User extends ReferenceObject {
     {
         return this.email;
     }
-    public String getPassword()
-    {
-        return this.password;
-    }
 
     public void setEmail(String email) throws UoWException {
         this.email = email;
         markDirty();
     }
 
-    public void setPassword(String password) throws UoWException {
-        this.password = password;
+    public Address getAddress() { return this.address; }
+
+    public void setAddress(Address address) throws UoWException {
+        this.address = address;
         markDirty();
     }
 
@@ -89,6 +98,38 @@ public class User extends ReferenceObject {
         return role.name;
     }
 
+    public String getContact() { return this.contact; }
+
+    public void setContact(String contact) throws UoWException {
+        this.contact = contact;
+        markDirty();}
+
+    public int getAge() { return this.age; }
+
+    public void setAge(int contact) throws UoWException {
+        this.age = age;
+        markDirty();
+    }
+
+    public ArrayList<Booking> getAllBookings() {
+        BookingsSearchCriteria bookingsSearchCriteria = new BookingsSearchCriteria();
+        bookingsSearchCriteria.setCustomerId(this.getId());
+        ArrayList<Booking> allBookings = new ArrayList<>();
+        try {
+            allBookings = dataSource.findBySearchCriteria(Booking.class, bookingsSearchCriteria);
+            System.out.println("Users : Number of bookings fetched : " + allBookings.size());
+        } catch (Exception e) {
+            System.out.println("Exception occured while fetching bookings for the customer");
+            System.out.println(e.getMessage());
+        }
+
+        return allBookings;
+    }
+
     private void initMaps() {
+    }
+
+    @Override public String toString() {
+        return "User(" + id + ")";
     }
 }

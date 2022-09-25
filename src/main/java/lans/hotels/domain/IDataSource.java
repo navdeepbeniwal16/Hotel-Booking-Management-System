@@ -3,7 +3,6 @@ package lans.hotels.domain;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
-import lans.hotels.domain.user_types.Hotelier;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

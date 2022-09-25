@@ -5,11 +5,7 @@ import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.booking.Booking;
-import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.user_types.Customer;
-import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.DateRange;
-import lans.hotels.domain.utils.District;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

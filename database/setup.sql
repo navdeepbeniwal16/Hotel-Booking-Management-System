@@ -59,40 +59,13 @@ CREATE TABLE ADDRESS(
 
 CREATE TABLE APP_USER(
                          id INT GENERATED ALWAYS AS IDENTITY,
-                         name VARCHAR(50) NOT NULL,
+                         name VARCHAR(50),
                          email VARCHAR(50) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
-                         password VARCHAR(50) NOT NULL,
+                         address INT,
                          role INT NOT NULL,
+                         contact VARCHAR(13),
+                         age INT,
                          PRIMARY KEY (id)
-);
-
-CREATE TABLE CUSTOMER(
-                         id INT GENERATED ALWAYS AS IDENTITY,
-                         user_id INT NOT NULL,
-                         address INT NOT NULL,
-                         contact VARCHAR(13) NOT NULL,
-                         age INT NOT NULL,
-                         is_active BOOLEAN NOT NULL,
-                         PRIMARY KEY (id),
-                         FOREIGN KEY (user_id) REFERENCES APP_USER(id),
-                         FOREIGN KEY (address) REFERENCES ADDRESS(id)
-);
-
-
-
-CREATE TABLE SYSTEM_ADMIN(
-                             id INT GENERATED ALWAYS AS IDENTITY,
-                             user_id INT NOT NULL,
-                             PRIMARY KEY (id),
-                             FOREIGN KEY (user_id) REFERENCES APP_USER(id)
-);
-
-CREATE TABLE HOTELIER(
-                         id INT GENERATED ALWAYS AS IDENTITY,
-                         user_id INT NOT NULL,
-                         is_active BOOLEAN NOT NULL,
-                         PRIMARY KEY (id),
-                         FOREIGN KEY (user_id) REFERENCES APP_USER(id)
 );
 
 CREATE TABLE HOTEL_GROUP(
@@ -109,7 +82,7 @@ CREATE TABLE HOTEL_GROUP_HOTELIER(
                                      hotelier_id INT NOT NULL UNIQUE ,
                                      hotel_group_id INT NOT NULL,
                                      PRIMARY KEY (id),
-                                     FOREIGN KEY (hotelier_id) REFERENCES HOTELIER(id),
+                                     FOREIGN KEY (hotelier_id) REFERENCES APP_USER(id),
                                      FOREIGN KEY (hotel_group_id) REFERENCES HOTEL_GROUP(id)
 );
 
@@ -150,7 +123,7 @@ CREATE TABLE BOOKING(
     end_date DATE NOT NULL,
     is_active BOOLEAN NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (customer_id) REFERENCES CUSTOMER(id),
+    FOREIGN KEY (customer_id) REFERENCES APP_USER(id),
     FOREIGN KEY (hotel_id) REFERENCES HOTEL(id)
 );
 

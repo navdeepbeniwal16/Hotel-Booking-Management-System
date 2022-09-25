@@ -12,9 +12,9 @@ public class Address {
     String line_2 = "";
     District district;
     String city;
-    int postcode;
+    Integer postcode;
 
-    public Address (String line_1, String line_2, District district, String city, int postcode) {
+    public Address (String line_1, String line_2, District district, String city, Integer postcode) {
         this.line_1 = line_1;
         this.line_2 = line_2;
         this.district = district;

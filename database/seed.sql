@@ -45,59 +45,28 @@ VALUES
 ;
 
 INSERT INTO
-    app_user(name,email,"password",role)
+    app_user(name,email,address,role,contact,age)
 VALUES
-    ('Admin','admin@gmail.com','admin',1),
-    ('Arman','arman@gmail.com','arman',2),
-    ('Levi','levi@gmail.com','levi',2),
-    ('Saood','saood@gmail.com','saood',2),
-    ('Navdeep','navdeep@gmail.com','navdeep',2),
-    ('Max','max@gmail.com','max',2),
-    ('Luke','luke@gmail.com','luke',2),
-    ('Eduardo','eduardo@gmail.com','eduardo',2),
-    ('Daniel','daniel@gmail.com','daniel',2),
-    ('Matthew','matthew@gmail.com','matthew',2),
-    ('Anthony','anthony@gmail.com','anthony',2),
-    ('Mark','mark@gmail.com','mark',2),
-    ('Donald','donald@gmail.com','donald',2),
-    ('Robert','robert@gmail.com','robert',3),
-    ('John','john@gmail.com','john',3),
-    ('Michael','michael@gmail.com','michael',3),
-    ('David','david@gmail.com','david',3),
-    ('William','william@gmail.com','william',3),
-    ('Richard','richard@gmail.com','richard',3),
-    ('Joseph','joseph@gmail.com','joseph',3),
-    ('Thomas','thomas@gmail.com','thomas',3)
-;
-INSERT INTO
-    customer(user_id,address,contact,age,is_active)
-VALUES
-    (13,1, '+614153726767', 25,TRUE),
-    (14,2, '+615676546734', 31,TRUE),
-    (15,3, '+613456783245', 18,TRUE),
-    (16,4, '+617492838487', 56,TRUE),
-    (17,5, '+618492840284', 42,TRUE),
-    (18,6, '+612387242240', 75,TRUE),
-    (19,7, '+612809238924', 98,TRUE),
-    (20,8, '+611742681943', 26,TRUE)
-;
-
-INSERT INTO system_admin(user_id) VALUES (1);
-
-INSERT INTO
-    hotelier(user_id,is_active)
-VALUES
-       (2,TRUE),
-       (3,TRUE),
-       (4,TRUE),
-       (5,TRUE),
-       (6,TRUE),
-       (7,TRUE),
-       (8,TRUE),
-       (9,TRUE),
-       (10,TRUE),
-       (11,TRUE),
-       (12,TRUE)
+    (NULL,'admin@gmail.com',NULL,1,NULL,NULL),
+    ('Arman','arman@gmail.com',NULL,2,NULL,NULL),
+    ('Levi','levi@gmail.com',NULL,2,NULL,NULL),
+    ('Saood','saood@gmail.com',NULL,2,NULL,NULL),
+    ('Navdeep','navdeep@gmail.com',NULL,2,NULL,NULL),
+    ('Max','max@gmail.com',NULL,2,NULL,NULL),
+    ('Luke','luke@gmail.com',NULL,2,NULL,NULL),
+    ('Eduardo','eduardo@gmail.com',NULL,2,NULL,NULL),
+    ('Daniel','daniel@gmail.com',NULL,2,NULL,NULL),
+    ('Matthew','matthew@gmail.com',NULL,2,NULL,NULL),
+    ('Anthony','anthony@gmail.com',NULL,2,NULL,NULL),
+    ('Mark','mark@gmail.com',NULL,2,NULL,NULL),
+    ('Donald','donald@gmail.com',1,2,'+614153726767',25),
+    ('Robert','robert@gmail.com',2,3,'+615676546734',31),
+    ('John','john@gmail.com',3,3,'+613456783245',18),
+    ('Michael','michael@gmail.com',4,3,'+617492838487',56),
+    ('David','david@gmail.com',5,3,'+618492840284',42),
+    ('William','william@gmail.com',6,3,'+612387242240',75),
+    ('Richard','richard@gmail.com',7,3,'+612809238924',98),
+    ('Joseph','joseph@gmail.com',8,3,'+611742681943',26)
 ;
 
 INSERT INTO
@@ -112,17 +81,17 @@ VALUES
 
 INSERT INTO hotel_group_hotelier(hotelier_id,hotel_group_id)
 VALUES
-       (1,1),
        (2,1),
        (3,1),
-       (4,2),
+       (4,1),
        (5,2),
-       (6,3),
+       (6,2),
        (7,3),
        (8,3),
        (9,3),
-       (10,4),
-       (11,5)
+       (10,3),
+       (11,4),
+       (12,5)
 ;
 
 INSERT INTO
@@ -165,7 +134,7 @@ VALUES
 
 INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
     VALUES
-           (1,DATE '2022-09-11',DATE '2022-09-15',TRUE,14)
+           (13,DATE '2022-09-11',DATE '2022-09-15',TRUE,14)
 --            (2,DATE '2022-10-17',DATE '2022-10-18',TRUE,1),
 --            (2,DATE '2022-08-12',DATE '2022-08-18',TRUE,1),
 --            (3,DATE '2022-06-05',DATE '2022-06-10',TRUE,1)

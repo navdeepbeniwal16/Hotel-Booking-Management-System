@@ -3,6 +3,7 @@ package lans.hotels.api.controllers;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 
 import lans.hotels.domain.user_types.User;
+import lans.hotels.use_cases.GetAllHoteliers;
 import lans.hotels.use_cases.GetAllUsers;
 import lans.hotels.use_cases.UseCase;
 import org.json.JSONArray;
@@ -29,6 +30,7 @@ public class UsersController extends FrontCommand {
 
         } else {
             ArrayList<User> users;
+            int statusCode;
             switch (request.getMethod()) {
                 case HttpMethod.GET:
                     if (!auth.isAdmin()) {
@@ -37,12 +39,13 @@ public class UsersController extends FrontCommand {
                     }
                     useCase = new GetAllUsers(dataSource);
                     useCase.execute();
-                    int statusCode = useCase.succeeded() ?
+                    statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
                     sendJsonResponse(response, useCase.getResult(), statusCode);
                     return;
                 case HttpMethod.POST:
+
                     JSONObject body = getRequestBody(request);
                     if (body.has("search")) {
                         UserSearchCriteria criteria = new UserSearchCriteria();
@@ -52,18 +55,27 @@ public class UsersController extends FrontCommand {
                             Integer userID = searchQueryBody.getInt("id");
                             if (userID != null) criteria.setId(userID);
                         }
+                        if (searchQueryBody.has("name")) {
+                            String name = searchQueryBody.getString("name");
+                            if (name != null) criteria.setName(name);
+                        }
+                        if (searchQueryBody.has("email")) {
+                            String email = searchQueryBody.getString("email");
+                            if (email != null) criteria.setEmail(email);
+                        }
+                        if (searchQueryBody.has("role")) {
 
-                        try {
-                            users = dataSource.findBySearchCriteria(User.class, criteria);
-                        } catch (Exception e) {
-                            System.err.println("POST /api/customers group: " + Arrays.toString(commandPath));
-                            System.err.println("POST /api/customers group: " + e.getMessage());
-                            System.err.println("POST /api/customers group: " + e.getClass());
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                            return;
+                            Integer role = searchQueryBody.getInt("role");
+                            if (role != null) criteria.setRole(role);
                         }
 
-                        returnUserJSON(users);
+
+                        useCase = new GetAllHoteliers(dataSource,criteria);
+                        useCase.execute();
+                        statusCode = useCase.succeeded() ?
+                                HttpServletResponse.SC_OK :
+                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                        sendJsonResponse(response, useCase.getResult(), statusCode);
                         return;
                     }
                     else
@@ -94,28 +106,17 @@ public class UsersController extends FrontCommand {
 
             aUser = new JSONObject();
             aUser.put("id", user.getId());
+            aUser.put("name",user.getName());
+            aUser.put("address", user.getAddress().toString());
             aUser.put("role", user.getRoleId());
+            aUser.put("contact", user.getContact());
+            aUser.put("age", user.getAge());
             userArray.put(aUser);
         }
         JSONObject customerJson = new JSONObject();
         customerJson.put("result", userArray);
         out.print(customerJson);
         out.flush();
-    }
-
-    public JSONObject getRequestBody(HttpServletRequest request) throws IOException {
-        BufferedReader requestReader = request.getReader();
-
-        String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        System.out.println("Request Body Lines + " + lines);
-        JSONObject body;
-        if (lines.length() > 0) {
-            System.out.println(lines);
-            body = new JSONObject(lines);
-        } else {
-            return null;
-        }
-        return body;
     }
 
 }
