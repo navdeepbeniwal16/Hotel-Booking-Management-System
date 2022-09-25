@@ -19,6 +19,12 @@ import UsersTable from './UsersTable';
 import UserDataType from '../../types/UserDataType';
 
 const Admin = () => {
+  const tabKeys = {
+    users: 'Users',
+    hotelGroups: 'Hotel Groups',
+    hoteliers: 'Hoteliers',
+    hotels: 'Hotels',
+  };
   const { user, isLoading, isAuthenticated } = useAuth0();
   const {
     userMetadata: { apiAccessToken, roles },
@@ -27,7 +33,7 @@ const Admin = () => {
   const [hotelGroupHoteliers, setHotelGroupHoteliers] = useState<
     Array<HotelGroupHotelier>
   >([]);
-  const [tabKey, setTabKey] = useState('Users');
+  const [tabKey, setTabKey] = useState(tabKeys.users);
   const [users, setUsers] = useState<UserDataType[]>([]);
 
   useEffect(() => {
@@ -37,13 +43,6 @@ const Admin = () => {
     };
     getUsersOnLoad();
   }, []);
-
-  const tabKeys = {
-    users: 'Users',
-    hotelGroups: 'Hotel Groups',
-    hoteliers: 'Hoteliers',
-    hotels: 'Hotels',
-  };
 
   const loadTab = async (tabKey: string) => {
     if (
