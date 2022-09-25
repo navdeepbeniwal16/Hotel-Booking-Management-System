@@ -1,4 +1,4 @@
-package lans.hotels.api;
+package lans.hotels.api.entrypoint;
 
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.domain.IDataSource;

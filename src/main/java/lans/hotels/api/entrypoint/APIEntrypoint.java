@@ -1,7 +1,7 @@
-package lans.hotels.api;
+package lans.hotels.api.entrypoint;
 
 import lans.hotels.api.auth.AuthorizationFactory;
-import lans.hotels.controllers.UnknownController;
+import lans.hotels.api.controllers.UnknownController;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.*;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
-public class APIFrontController extends HttpServlet {
+public class APIEntrypoint extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -105,7 +105,7 @@ public class APIFrontController extends HttpServlet {
     private Class getCommandClass(String[] commandPath) {
         if (commandPath.length == 0) return UnknownController.class;
         Class result;
-        final String commandClassName = "lans.hotels.controllers." +
+        final String commandClassName = "lans.hotels.api.controllers." +
                 capitalise(commandPath[1]) + "Controller";
         try {
             result = Class.forName(commandClassName);

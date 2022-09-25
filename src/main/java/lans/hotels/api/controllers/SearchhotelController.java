@@ -1,6 +1,5 @@
-package lans.hotels.controllers;
+package lans.hotels.api.controllers;
 
-import lans.hotels.api.HttpMethod;
 import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.utils.DateRange;

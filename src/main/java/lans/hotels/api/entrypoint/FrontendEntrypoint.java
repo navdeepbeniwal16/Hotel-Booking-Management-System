@@ -1,4 +1,4 @@
-package lans.hotels.api;
+package lans.hotels.api.entrypoint;
 
 import javax.servlet.*;
 import javax.servlet.http.*;

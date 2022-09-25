@@ -1,12 +1,9 @@
-package lans.hotels.controllers;
+package lans.hotels.api.controllers;
 
-import lans.hotels.api.HttpMethod;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.search_criteria.CustomerSearchCriteria;
-import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.user_types.Customer;
 
-import lans.hotels.domain.user_types.Hotelier;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
 import org.json.JSONArray;
@@ -18,8 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.PrintWriter;
-import java.sql.Array;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;

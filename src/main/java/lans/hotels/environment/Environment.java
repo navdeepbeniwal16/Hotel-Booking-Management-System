@@ -1,6 +1,6 @@
 package lans.hotels.environment;
 
-import lans.hotels.api.EnvironmentI;
+import lans.hotels.api.entrypoint.EnvironmentI;
 import lans.hotels.datasource.DBConfiguration;
 
 import java.net.URISyntaxException;

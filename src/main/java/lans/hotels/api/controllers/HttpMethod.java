@@ -1,4 +1,4 @@
-package lans.hotels.api;
+package lans.hotels.api.controllers;
 
 public class HttpMethod {
     public static final String GET = "GET";

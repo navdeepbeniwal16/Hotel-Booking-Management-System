@@ -1,28 +1,18 @@
-package lans.hotels.controllers;
+package lans.hotels.api.controllers;
 
-import lans.hotels.api.HttpMethod;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
-import lans.hotels.datasource.exceptions.UoWException;
-import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelierSearchCriteria;
-import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.user_types.Hotelier;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.PrintWriter;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import java.util.stream.Collectors;
 
 public class HoteliersController extends FrontCommand{
 

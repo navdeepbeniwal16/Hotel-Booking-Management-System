@@ -1,6 +1,5 @@
-package lans.hotels.controllers;
+package lans.hotels.api.controllers;
 
-import lans.hotels.api.HttpMethod;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 import org.json.JSONArray;

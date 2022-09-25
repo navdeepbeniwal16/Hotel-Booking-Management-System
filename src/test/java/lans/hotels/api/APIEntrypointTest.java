@@ -1,8 +1,7 @@
 package lans.hotels.api;
 
-import lans.hotels.api.APIFrontController;
+import lans.hotels.api.entrypoint.APIEntrypoint;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -16,16 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class APIFrontControllerTest {
+class APIEntrypointTest {
     private final String mockHotelName = "Mock Hotel";
     private final String mockHotelEmail = "hotel@mock.com";
     private final String mockHotelAddress = "123 Mock Street";
@@ -34,7 +31,7 @@ class APIFrontControllerTest {
     private final Integer mockHotelNumber = 3456;
     private JSONObject mockHotelJson;
 
-    @Spy private APIFrontController servlet;
+    @Spy private APIEntrypoint servlet;
     @Mock private ServletConfig config;
     @Mock private ServletContext context;
     @Mock private HttpServletRequest request;

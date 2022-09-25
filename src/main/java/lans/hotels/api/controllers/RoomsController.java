@@ -1,9 +1,6 @@
-package lans.hotels.controllers;
+package lans.hotels.api.controllers;
 
-import jdk.jshell.spi.ExecutionControl;
-import lans.hotels.api.HttpMethod;
 import lans.hotels.api.exceptions.CommandException;
-import lans.hotels.datasource.search_criteria.RoomSearchCriteria;
 import lans.hotels.domain.room.Room;
 import org.json.JSONArray;
 import org.json.JSONObject;

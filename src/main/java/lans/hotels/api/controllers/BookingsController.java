@@ -1,13 +1,11 @@
-package lans.hotels.controllers;
+package lans.hotels.api.controllers;
 
-import lans.hotels.api.HttpMethod;
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.datasource.search_criteria.CustomerSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
-import lans.hotels.domain.hotel.Hotel;
 
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.user_types.Customer;
@@ -24,7 +22,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BookingsController extends FrontCommand {

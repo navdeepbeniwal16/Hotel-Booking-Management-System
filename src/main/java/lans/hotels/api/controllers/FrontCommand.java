@@ -1,6 +1,6 @@
-package lans.hotels.controllers;
+package lans.hotels.api.controllers;
 
-import lans.hotels.api.IFrontCommand;
+import lans.hotels.api.entrypoint.IFrontCommand;
 import lans.hotels.api.auth.CustomAuthorization;
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.domain.IDataSource;

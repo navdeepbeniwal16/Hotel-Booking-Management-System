@@ -1,4 +1,4 @@
-package lans.hotels.api;
+package lans.hotels.api.entrypoint;
 
 import com.auth0.jwk.JwkProvider;
 import com.auth0.jwk.JwkProviderBuilder;
