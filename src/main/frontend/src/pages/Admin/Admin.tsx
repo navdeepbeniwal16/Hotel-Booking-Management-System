@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 
 import Container from 'react-bootstrap/Container';
@@ -15,6 +15,8 @@ import HotelGroupHotelier from '../../types/HotelGroupHotelier';
 import { Roles } from '../../types/RoleTypes';
 
 import HoteliersTable from './HoteliersTable';
+import UsersTable from './UsersTable';
+import UserDataType from '../../types/UserDataType';
 
 const Admin = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
@@ -26,6 +28,22 @@ const Admin = () => {
     Array<HotelGroupHotelier>
   >([]);
   const [tabKey, setTabKey] = useState('Users');
+  const [users, setUsers] = useState<UserDataType[]>([]);
+
+  useEffect(() => {
+    const getUsersOnLoad = async () => {
+      const fetchedUsers = await endpoints.getAllUsers(apiAccessToken);
+      setUsers(fetchedUsers);
+    };
+    getUsersOnLoad();
+  }, []);
+
+  const tabKeys = {
+    users: 'Users',
+    hotelGroups: 'Hotel Groups',
+    hoteliers: 'Hoteliers',
+    hotels: 'Hotels',
+  };
 
   const loadTab = async (tabKey: string) => {
     if (
@@ -35,7 +53,7 @@ const Admin = () => {
       roles.includes(Roles.ADMIN)
     ) {
       switch (tabKey) {
-        case 'Hoteliers':
+        case tabKeys.hoteliers:
           if (!hoteliers.length) {
             const fetchedHoteliers = await endpoints.getHoteliers(
               apiAccessToken
@@ -45,17 +63,16 @@ const Admin = () => {
             setHotelGroupHoteliers(hgh);
           }
           break;
+        case tabKeys.users:
+          if (!users.length) {
+            const fetchedUsers = await endpoints.getAllUsers(apiAccessToken);
+            setUsers(fetchedUsers);
+          }
+          break;
         default:
       }
     }
     setTabKey(tabKey);
-  };
-
-  const tabKeys = {
-    users: 'Users',
-    hotelGroups: 'Hotel Groups',
-    hoteliers: 'Hoteliers',
-    hotels: 'Hotels',
   };
 
   return (
@@ -87,7 +104,11 @@ const Admin = () => {
           className='mb-3'
         >
           <Tab eventKey={tabKeys.users} title={tabKeys.users}>
-            <p>{`${tabKeys.users}`}</p>
+            <Row>
+              <Col>
+                <UsersTable users={users} />
+              </Col>
+            </Row>
           </Tab>
           <Tab eventKey={tabKeys.hotelGroups} title={tabKeys.hotelGroups}>
             <p>{`${tabKeys.hotelGroups}`}</p>

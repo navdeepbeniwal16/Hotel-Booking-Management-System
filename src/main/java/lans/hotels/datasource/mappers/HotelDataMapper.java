@@ -50,13 +50,10 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
             ResultSet resultSet = statement.executeQuery();
             Hotel aHotel = load(resultSet);
             while (aHotel != null) {
-                System.out.println(aHotel);
                 aHotel = load(resultSet);
             }
         } catch (Exception e) {
             System.err.println("ERROR HotelDataMapper.findAll(): " + e);
-        } finally {
-            System.out.println("HotelDataMapper.findAll() - loaded hotels: " + loadedMap);
         }
         return new ArrayList<>(loadedMap.values());
     }

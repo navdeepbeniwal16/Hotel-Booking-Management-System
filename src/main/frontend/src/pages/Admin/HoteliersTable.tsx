@@ -3,12 +3,7 @@ import { map, filter } from 'lodash';
 
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import {
-  Check2Circle,
-  XCircle,
-  DashCircle,
-  PlusCircle,
-} from 'react-bootstrap-icons';
+import { Check2Circle, XCircle, DashCircle } from 'react-bootstrap-icons';
 
 import Hotelier from '../../types/HotelierType';
 import HotelGroup from '../../types/HotelGroup';

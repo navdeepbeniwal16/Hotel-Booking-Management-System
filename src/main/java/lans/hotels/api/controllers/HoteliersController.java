@@ -31,7 +31,6 @@ public class HoteliersController extends FrontCommand{
             switch(request.getMethod()) {
                 case HttpMethod.GET:
                     try {
-                        System.out.println("GET /api/hoteliers - getting all hoteliers");
                         hoteliers = dataSource.findAll(Hotelier.class);
                         returnHotelierJSON(hoteliers);
                         return;

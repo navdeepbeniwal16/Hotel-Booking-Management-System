@@ -49,7 +49,7 @@ public abstract class UseCase {
     public JSONObject getResult() {
         constructResult();
         result.put("success", succeeded());
-        result.put("data", responseData);
+        result.put("result", responseData);
         return this.result;
     }
 

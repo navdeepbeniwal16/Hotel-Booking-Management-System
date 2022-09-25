@@ -31,8 +31,6 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
                         " ON ho.id = hgh.hotelier_id " +
                         " LEFT JOIN hotel_group hg " +
                         " ON hgh.hotel_group_id = hg.id;";
-        System.out.println("HotelierDataMapper.findStatement()");
-        System.out.println(statement);
         return statement;
     }
 

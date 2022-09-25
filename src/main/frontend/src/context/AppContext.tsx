@@ -84,7 +84,11 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
           throw e;
         }
       }
-      console.log(apiAccessToken);
+
+      if (process.env.REACT_APP_ENV === 'dev') {
+        console.log('Development mode');
+        console.log('JWT:\n', apiAccessToken);
+      }
 
       const decodedToken: JwtT = jwtDecode(apiAccessToken);
 
