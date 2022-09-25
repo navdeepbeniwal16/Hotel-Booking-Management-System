@@ -22,7 +22,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     @Override
     protected String findStatement() {
         String statement =
-                "SELECT * FROM app_user u ";
+                "SELECT * FROM app_user u";
         System.out.println("HotelDataMapper.findStatement(): " + statement);
         return statement;
     }
@@ -34,7 +34,28 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
 
     @Override
     public ArrayList<User> findAll() throws SQLException {
-        return null;
+        ArrayList<User> users = new ArrayList<>();
+        String findAllQuery = "SELECT u.id AS uid, u.name, u.email, r.id AS rid" +
+                " FROM app_user u " +
+                " LEFT JOIN roles r on u.role = r.id; ";
+        try(PreparedStatement statement = connection.prepareStatement(findAllQuery)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            Integer uid;
+            String name;
+            String email;
+            Integer roleId;
+            while(resultSet.next()) {
+                uid = resultSet.getInt("uid");
+                name = resultSet.getString("name");
+                email = resultSet.getString("email");
+                roleId = resultSet.getInt("rid");
+                users.add(new User(uid, dataSource, name, email, roleId));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return users;
     }
 
 

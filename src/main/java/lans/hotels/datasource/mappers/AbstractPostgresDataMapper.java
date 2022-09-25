@@ -35,6 +35,12 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         idPrefix = "";
     }
 
+    protected void printAllResultSetColumnNames(ResultSet resultSet) throws SQLException {
+        for(int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+            System.out.println(i + ". " + resultSet.getMetaData().getColumnName(i));
+        }
+    }
+
     public DomainObject getById(Integer id) {
         try {
             return getFromDb(id);

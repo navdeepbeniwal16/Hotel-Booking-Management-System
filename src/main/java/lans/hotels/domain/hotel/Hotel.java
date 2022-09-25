@@ -23,7 +23,8 @@ public class Hotel extends ReferenceObject {
     }
 
     public Hotel(IDataSource dataSource,
-                 Integer hotel_group_id, String name, String email,Address address,
+                 Integer hotel_group_id,
+                 String name, String email,Address address,
                  String contact, String city, Integer pin_code, boolean is_active) throws UoWException {
         super(dataSource);
         this.hotel_group_id = hotel_group_id;

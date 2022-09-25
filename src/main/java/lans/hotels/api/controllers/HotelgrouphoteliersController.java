@@ -150,6 +150,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                 }
             }
             case HttpMethod.PUT:
+                return;
             case HttpMethod.DELETE:
             {
                 if (!auth.isAdmin()) {
@@ -194,9 +195,9 @@ public class HotelgrouphoteliersController extends FrontCommand {
                         HotelGroupHotelier hotelGroupHotelier = new HotelGroupHotelier(id, dataSource);
                         hotelGroupHotelier.remove();
                         dataSource.commit();
-                        returnBody.put("deleted",true);
+                        returnBody.put("deleted", true);
                     } catch (Exception e) {
-                        returnBody.put("deleted",false);
+                        returnBody.put("deleted", false);
                         System.err.println("DELETE /api/hotelgrouphotleiers: " + Arrays.toString(commandPath2));
                         e.printStackTrace();
                         System.err.println("DELETE /api/hotelgrouphotleiers: " + e.getMessage());

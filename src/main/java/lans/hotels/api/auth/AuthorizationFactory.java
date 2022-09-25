@@ -28,7 +28,7 @@ public class AuthorizationFactory {
         this.namespace = namespace;
     }
 
-    public CustomAuthorization injectAuthorization(HttpServletRequest request) {
-        return new CustomAuthorization(jwkProvider, issuer, audiences, namespace, request);
+    public Auth0Adapter injectAuthorization(HttpServletRequest request) {
+        return new Auth0Adapter(jwkProvider, issuer, audiences, namespace, request);
     }
 }

@@ -85,7 +85,11 @@ public class HoteliersController extends FrontCommand{
 
                         Hotelier hotelier = null;
 
-                        hotelier = getHotelierFromJsonObject(body);
+                        try {
+                            hotelier = getHotelierFromJsonObject(body);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         if(hotelier == null)
                                 throw new InvalidObjectException("Failed to parse hotelier object from request body");
@@ -184,7 +188,7 @@ public class HoteliersController extends FrontCommand{
 
 
 
-    public Hotelier getHotelierFromJsonObject(JSONObject jsonObject) {
+    public Hotelier getHotelierFromJsonObject(JSONObject jsonObject) throws Exception {
 
         Hotelier hotelier = null;
         String name = "";

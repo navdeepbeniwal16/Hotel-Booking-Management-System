@@ -98,18 +98,22 @@ public class CustomerDataMapper extends AbstractPostgresDataMapper<Customer> {
     }
 
     @Override
-    protected Customer doLoad(Integer id, ResultSet rs) throws SQLException {
+    protected Customer doLoad(Integer id, ResultSet rs) throws Exception {
         District district = new District(rs.getString("district_name"));
         Address address = new Address(rs.getString("address_l1"),
                 rs.getString("address_l2"),
                 district,
                 rs.getString("city"),
                 rs.getInt("postcode"));
-
-        Customer customer =
+        Customer customer;
+        try {
+            customer =
                 new Customer(id,dataSource,rs.getString("name"),rs.getString("email"),
                         rs.getString("password"),rs.getInt("role"),address,
                         rs.getString("contact"),rs.getInt("age"),rs.getBoolean("is_active"));
+        } catch (Exception e) {
+            throw e;
+        }
         return customer;
     }
 

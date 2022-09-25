@@ -69,6 +69,7 @@ public abstract class DataSourceFacade implements IDataSource {
             }
         } catch (Exception e) {
             System.err.println("ERROR DataSourceFacade.findAll(): " + e);
+            throw e;
         }
         return null;
     }

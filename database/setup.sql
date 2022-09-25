@@ -23,8 +23,21 @@ DROP TABLE IF EXISTS hotel_group_business_detail CASCADE;
 DROP TABLE IF EXISTS hotel_amenity CASCADE;
 DROP TABLE IF EXISTS amenity CASCADE;
 DROP TABLE IF EXISTS room_feature CASCADE;
+DROP TABLE IF EXISTS roles CASCADE;
 
 
+CREATE TABLE ROLES(
+    id INT UNIQUE,
+    name VARCHAR(10) NOT NULL UNIQUE,
+    PRIMARY KEY (id)
+);
+
+INSERT INTO
+    ROLES(id, name)
+VALUES
+    (1, 'Admin'),
+    (2, 'Hotelier'),
+    (3, 'Customer');
 
 
 CREATE TABLE DISTRICT(

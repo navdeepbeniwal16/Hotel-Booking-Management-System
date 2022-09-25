@@ -9,7 +9,8 @@ public class User extends ReferenceObject {
     String name;
     String email;
     String password;
-    int role;
+
+    Role role;
 
     public User(IDataSource dataSource){
         super(dataSource);
@@ -22,6 +23,22 @@ public class User extends ReferenceObject {
 
     public User(Integer id, IDataSource dataSource){
         super(id, dataSource);
+        try {
+            markClean();
+        } catch (UoWException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public User(Integer id,
+                IDataSource dataSource,
+                String name,
+                String email,
+                Integer role) throws Exception {
+        super(id, dataSource);
+        this.name = name;
+        this.email = email;
+        this.role = new Role(role);
         try {
             markClean();
         } catch (UoWException e) {
@@ -63,9 +80,13 @@ public class User extends ReferenceObject {
         markDirty();
     }
 
-    public Integer getRole()
+    public Integer getRoleId()
     {
-        return this.role;
+        return this.role.id;
+    }
+
+    public String getRoleName() {
+        return role.name;
     }
 
     private void initMaps() {

@@ -84,6 +84,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
           throw e;
         }
       }
+      console.log(apiAccessToken);
 
       const decodedToken: JwtT = jwtDecode(apiAccessToken);
 

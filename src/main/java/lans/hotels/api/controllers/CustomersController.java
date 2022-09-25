@@ -200,34 +200,38 @@ public class CustomersController extends FrontCommand {
         String district = "";
         String contact = "";
         int age=0;
-        if(jsonObject.has("customer")) {
-            JSONObject nestedJsonObject = jsonObject.getJSONObject("customer");
+        try {
+            if(jsonObject.has("customer")) {
+                JSONObject nestedJsonObject = jsonObject.getJSONObject("customer");
 
-            if(nestedJsonObject.has("name"))
-                name = nestedJsonObject.getString("name");
-            if(nestedJsonObject.has("email"))
-                email = nestedJsonObject.getString("email");
-            if(nestedJsonObject.has("password"))
-                password = nestedJsonObject.getString("password");
-            if(nestedJsonObject.has("l1"))
-                l1 = nestedJsonObject.getString("l1");
-            if(nestedJsonObject.has("l2"))
-                l2 = nestedJsonObject.getString("l2");
-            if(nestedJsonObject.has("city"))
-                city = nestedJsonObject.getString("city");
-            if(nestedJsonObject.has("postcode"))
-                postcode = nestedJsonObject.getInt("postcode");
-            if(nestedJsonObject.has("district"))
-                district = nestedJsonObject.getString("district");
-            if(nestedJsonObject.has("contact"))
-                contact = nestedJsonObject.getString("contact");
-            if(nestedJsonObject.has("age"))
-                age = nestedJsonObject.getInt("age");
+                if(nestedJsonObject.has("name"))
+                    name = nestedJsonObject.getString("name");
+                if(nestedJsonObject.has("email"))
+                    email = nestedJsonObject.getString("email");
+                if(nestedJsonObject.has("password"))
+                    password = nestedJsonObject.getString("password");
+                if(nestedJsonObject.has("l1"))
+                    l1 = nestedJsonObject.getString("l1");
+                if(nestedJsonObject.has("l2"))
+                    l2 = nestedJsonObject.getString("l2");
+                if(nestedJsonObject.has("city"))
+                    city = nestedJsonObject.getString("city");
+                if(nestedJsonObject.has("postcode"))
+                    postcode = nestedJsonObject.getInt("postcode");
+                if(nestedJsonObject.has("district"))
+                    district = nestedJsonObject.getString("district");
+                if(nestedJsonObject.has("contact"))
+                    contact = nestedJsonObject.getString("contact");
+                if(nestedJsonObject.has("age"))
+                    age = nestedJsonObject.getInt("age");
 
-            District district_ob = new District(district);
-            Address address = new Address(l1, l2, district_ob, city, postcode);
+                District district_ob = new District(district);
+                Address address = new Address(l1, l2, district_ob, city, postcode);
 
-            customer = new Customer(dataSource,name,email,password,3,address,contact,age,true);
+                customer = new Customer(dataSource,name,email,password,3,address,contact,age,true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return customer;
     }

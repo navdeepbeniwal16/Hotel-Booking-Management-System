@@ -2,7 +2,6 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
-import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelierSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
@@ -92,22 +91,27 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
     }
 
     @Override
-    protected Hotelier doLoad(Integer id, ResultSet rs) throws SQLException, UoWException {
-        Hotelier hotelier = new Hotelier(
-                rs.getInt("user_id"),
-                dataSource,
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("email"),
-                rs.getString("password"),
-                rs.getInt("role"),
-                rs.getBoolean("is_active"));
-        if (rs.getInt("hg_id") != 0 && rs.getString("hg_name") != null) {
-            HotelGroup hotelGroup = new HotelGroup(
-                    Integer.valueOf(rs.getString("hg_id")),
+    protected Hotelier doLoad(Integer id, ResultSet rs) throws Exception {
+        Hotelier hotelier;
+        try {
+            hotelier = new Hotelier(
+                    rs.getInt("user_id"),
                     dataSource,
-                    rs.getString("hg_name"));
-            hotelier.setHotelGroup(hotelGroup);
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getInt("role"),
+                    rs.getBoolean("is_active"));
+            if (rs.getInt("hg_id") != 0 && rs.getString("hg_name") != null) {
+                HotelGroup hotelGroup = new HotelGroup(
+                        Integer.valueOf(rs.getString("hg_id")),
+                        dataSource,
+                        rs.getString("hg_name"));
+                hotelier.setHotelGroup(hotelGroup);
+            }
+        } catch (Exception e) {
+            throw e;
         }
         return hotelier;
     }
@@ -128,7 +132,7 @@ public class HotelierDataMapper extends AbstractPostgresDataMapper<Hotelier> {
                     "VALUES ( " + "'" + hotelier.getName() + "'," +
                     "'" + hotelier.getEmail() + "'," +
                     "'" + hotelier.getPassword() + "'," +
-                    "'" + hotelier.getRole() + "') " +
+                    "'" + hotelier.getRoleId() + "') " +
                     "RETURNING id " +
                     ") " +
                     "INSERT INTO hotelier (user_id, is_active) " +

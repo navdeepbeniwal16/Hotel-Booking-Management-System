@@ -29,14 +29,14 @@ public class Hotelier extends User {
                     String email,
                     String password,
                     Integer role,
-                    boolean isActive) {
+                    boolean isActive) throws Exception {
         super(userID,dataSource);
         this.hotelierID = id;
         this.isActive = isActive;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.role = new Role(role);
         hotelGroup = null;
         initMaps();
     }
@@ -46,13 +46,13 @@ public class Hotelier extends User {
                     String email,
                     String password,
                     Integer role,
-                    boolean isActive) {
+                    boolean isActive) throws Exception {
         super(dataSource);
         this.isActive = isActive;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.role = new Role(role);
         initMaps();
     }
 

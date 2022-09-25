@@ -26,12 +26,12 @@ public class Customer extends User{
     }
 
     public Customer(Integer id,IDataSource dataSource,String name, String email,
-                    String password, Integer role, Address address, String contact, Integer age,Boolean isActive) {
+                    String password, Integer role, Address address, String contact, Integer age,Boolean isActive) throws Exception {
         super(id,dataSource);
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.role = new Role(role);
         this.address = address;
         this.contact = contact;
         this.age = age;
@@ -40,12 +40,12 @@ public class Customer extends User{
     }
 
     public Customer(IDataSource dataSource,String name, String email,
-                    String password, Integer role, Address address, String contact, Integer age,Boolean isActive) {
+                    String password, Integer role, Address address, String contact, Integer age,Boolean isActive) throws Exception {
         super(dataSource);
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.role = new Role(role);
         this.address = address;
         this.contact = contact;
         this.age = age;

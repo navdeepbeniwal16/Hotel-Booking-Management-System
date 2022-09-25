@@ -144,8 +144,9 @@ public class ServletUoW implements IUnitOfWork {
                 }
                 identityMaps.get(obj.getClass()).remove(obj.getId());
             });
-            connection.commit();
 
+            // Commit all statements
+            connection.commit();
         } catch (Exception e) {
             connection.rollback();
             System.err.println("UoW Error: failed to commit");
@@ -158,6 +159,8 @@ public class ServletUoW implements IUnitOfWork {
             dirtyObjects.clear();
             removedObjects.clear();
             cleanObjects.clear();
+
+            // Close the connection
             connection.close();
         }
     }

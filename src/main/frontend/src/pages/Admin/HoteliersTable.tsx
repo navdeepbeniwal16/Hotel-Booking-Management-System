@@ -95,11 +95,6 @@ const Hoteliers = ({
       return (
         <Row>
           <Col>N/A</Col>
-          <Col>
-            <Button variant='outline-primary' size='sm'>
-              <PlusCircle />
-            </Button>
-          </Col>
         </Row>
       );
     } else {

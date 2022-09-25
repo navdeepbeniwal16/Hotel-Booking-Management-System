@@ -3,6 +3,8 @@ package lans.hotels.api.controllers;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 
 import lans.hotels.domain.user_types.User;
+import lans.hotels.use_cases.GetAllUsers;
+import lans.hotels.use_cases.UseCase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,6 +31,17 @@ public class UsersController extends FrontCommand {
             ArrayList<User> users;
             switch (request.getMethod()) {
                 case HttpMethod.GET:
+                    if (!auth.isAdmin()) {
+                        sendUnauthorizedJsonResponse(response);
+                        return;
+                    }
+                    useCase = new GetAllUsers(dataSource);
+                    useCase.execute();
+                    int statusCode = useCase.succeeded() ?
+                            HttpServletResponse.SC_OK :
+                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                    sendJsonResponse(response, useCase.getResult(), statusCode);
+                    return;
                 case HttpMethod.POST:
                     JSONObject body = getRequestBody(request);
                     if (body.has("search")) {
@@ -81,14 +94,13 @@ public class UsersController extends FrontCommand {
 
             aUser = new JSONObject();
             aUser.put("id", user.getId());
-            aUser.put("role", user.getRole());
+            aUser.put("role", user.getRoleId());
             userArray.put(aUser);
         }
         JSONObject customerJson = new JSONObject();
         customerJson.put("result", userArray);
         out.print(customerJson);
         out.flush();
-        return;
     }
 
     public JSONObject getRequestBody(HttpServletRequest request) throws IOException {

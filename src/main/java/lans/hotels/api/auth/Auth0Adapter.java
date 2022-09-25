@@ -16,7 +16,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
 
-public class CustomAuthorization {
+public class Auth0Adapter {
     public static final String AUTHORIZATION = "Authorization";
     private enum Roles {
         Customer,
@@ -41,11 +41,11 @@ public class CustomAuthorization {
     ArrayList<String> roles;
     private final static Base64.Decoder decoder = Base64.getUrlDecoder();
 
-    protected CustomAuthorization(JwkProvider jwkProvider,
-                                  String issuer,
-                                  ArrayList<String> audiences,
-                                  String namespace,
-                                  HttpServletRequest request) {
+    protected Auth0Adapter(JwkProvider jwkProvider,
+                           String issuer,
+                           ArrayList<String> audiences,
+                           String namespace,
+                           HttpServletRequest request) {
         this.jwkProvider = jwkProvider;
         this.issuer = issuer;
         this.audiences = audiences;
@@ -58,15 +58,23 @@ public class CustomAuthorization {
         request.getSession().setAttribute(AUTHORIZATION, this);
     }
 
-    private CustomAuthorization(boolean authenticated, String email, ArrayList<String> roles) {
+    private Auth0Adapter(boolean authenticated, String email, ArrayList<String> roles) {
         this.authenticated = authenticated;
         this.email = email;
         this.roles = roles;
     }
 
-    public static CustomAuthorization getAuthorization(HttpServletRequest request) {
-        CustomAuthorization auth = (CustomAuthorization) request.getSession().getAttribute(CustomAuthorization.AUTHORIZATION);
-        if (auth == null) auth = new CustomAuthorization(false, "", new ArrayList<>());
+    public String toString() {
+        return "auth0(authenticated=" + authenticated +
+                " | email=" + email +
+                " | admin=" + isAdmin() +
+                " | hotelier=" + isHotelier() +
+                " | customer=" + isCustomer() + ")";
+    }
+
+    public static Auth0Adapter getAuthorization(HttpServletRequest request) {
+        Auth0Adapter auth = (Auth0Adapter) request.getSession().getAttribute(Auth0Adapter.AUTHORIZATION);
+        if (auth == null) auth = new Auth0Adapter(false, "", new ArrayList<>());
         return auth;
     }
 
@@ -75,15 +83,15 @@ public class CustomAuthorization {
     }
 
     public boolean isCustomer() {
-        return roles.contains(Roles.Customer.toString());
+        return authenticated && !isHotelier() && !isAdmin();
     }
 
     public boolean isHotelier() {
-        return roles.contains(Roles.Hotelier.toString());
+        return authenticated && roles.contains(Roles.Hotelier.toString());
     }
 
     public boolean isAdmin() {
-        return roles.contains(Roles.Admin.toString());
+        return authenticated && roles.contains(Roles.Admin.toString());
     }
 
     private void processRequestAuth() {
@@ -93,6 +101,7 @@ public class CustomAuthorization {
             String tokenString = headerString.split(" ")[1];
             verifyTokenString(tokenString);
             processPayload();
+            authenticated = true;
         } catch (Exception e) {
             authenticated = false;
         }
