@@ -1,0 +1,33 @@
+{
+  "result": {
+    "success": true,
+    "hotel_groups": [
+      {
+        "id": 1,
+        "name": "hotel group",
+        "phone":"+61412345678",
+        "address": {
+          "line_1": "123 Example Street",
+          "line_2": "",
+          "district": "VIC",
+          "city" : "Melbourne",
+          "postcode": 3000
+        },
+        "hoteliers": [
+          {
+            "id": 1,
+            "role": 2,
+            "email": "hotelier@gmail.com",
+            "name": "Mr Hotelier"
+          },
+          {
+            "id": 2,
+            "role": 2,
+            "email": "hotelier@gmail.com",
+            "name": "Mrs Hotelier"
+          }
+        ]
+      }
+    ]
+  }
+}
