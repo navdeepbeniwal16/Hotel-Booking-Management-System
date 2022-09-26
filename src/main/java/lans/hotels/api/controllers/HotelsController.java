@@ -6,8 +6,10 @@ import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
+import lans.hotels.use_cases.ChangeHotelStatus;
 import lans.hotels.use_cases.CreateHotel;
 import lans.hotels.use_cases.GetAllHotelGroupDetails;
+import lans.hotels.use_cases.GetSpecificHotelGroup;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -118,56 +120,22 @@ public class HotelsController extends FrontCommand {
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                             return;
                         }
+
                         else {
-                            Integer id = JSONBody.getInt("id");
-                            HotelSearchCriteria criteria = new HotelSearchCriteria();
-                            criteria.setId(id);
+                            Integer hotel_id = JSONBody.getInt("id");
+//                            if (!auth.isAdmin()) {
+//                                sendUnauthorizedJsonResponse(response);
+//                                return;
+//                            }
 
-                            boolean success = false;
-
-                            try {
-                                hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
-                                if(hotels.size() > 0) {
-                                    Hotel hotel = hotels.get(0);
-
-                                    if(JSONBody.has("is_active") && !JSONBody.getBoolean("is_active")==(hotel.getIsActive())) {
-                                        hotel.setIs_Active(!hotel.getIsActive());
-
-                                        success = true;
-                                    }
-                                    dataSource.commit();
-
-                                    PrintWriter out = response.getWriter();
-                                    response.setStatus(200);
-                                    response.setContentType("application/json");
-                                    response.setCharacterEncoding("UTF-8");
-
-                                    JSONObject aHG;
-                                    aHG = new JSONObject();
-
-                                    if (success)
-                                        aHG.put("updated", success);
-                                    else
-                                        aHG.put("updated", success);
-
-                                    JSONObject hgJSON = new JSONObject();
-                                    hgJSON.put("result", aHG);
-                                    out.print(hgJSON);
-                                    out.flush();
-                                    return;
-
-                                } else {
-                                    System.err.println("PUT /api/hotels: " + Arrays.toString(commandPath));
-                                    response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
-                                    return;
-                                }
-
-                            } catch (Exception e) {
-                                System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
-                                System.err.println("GET /api/bookings: " + e.getMessage());
-                                System.err.println("GET /api/bookings: " + e.getClass());
-                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                                e.printStackTrace();
+                            if(JSONBody.has("is_active")) {
+                                Boolean is_active = JSONBody.getBoolean("is_active");
+                                useCase = new ChangeHotelStatus(dataSource, hotel_id,is_active);
+                                useCase.execute();
+                                statusCode = useCase.succeeded() ?
+                                        HttpServletResponse.SC_OK :
+                                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                                sendJsonResponse(response, useCase.getResult(), statusCode);
                                 return;
                             }
 
@@ -219,10 +187,8 @@ public class HotelsController extends FrontCommand {
         BufferedReader requestReader = request.getReader();
 
         String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        System.out.println("Request Body Lines + " + lines);
         JSONObject body;
         if (lines.length() > 0) {
-            System.out.println(lines);
             body = new JSONObject(lines);
         } else {
             return null;
@@ -233,6 +199,7 @@ public class HotelsController extends FrontCommand {
     public Hotel getHotelFromJsonObject(JSONObject jsonObject) {
 
         Hotel h = null;
+        int id;
         int hotel_group_id = 0;
         String h_name = "";
         String email ="";

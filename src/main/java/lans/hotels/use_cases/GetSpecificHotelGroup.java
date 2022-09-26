@@ -2,7 +2,9 @@ package lans.hotels.use_cases;
 
 import lans.hotels.datasource.search_criteria.HotelGroupHotelierSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 import org.json.JSONArray;
@@ -14,12 +16,14 @@ public class GetSpecificHotelGroup extends UseCase {
 
     Integer hotel_group_id;
     ArrayList<HotelGroupHotelier> hoteliers;
+    ArrayList<Hotel> hotels;
     ArrayList<HotelGroup> hotel_groups;
 
     public GetSpecificHotelGroup(IDataSource dataSource,Integer hotel_group_id) {
         super(dataSource);
         this.hotel_group_id = hotel_group_id;
         this.hoteliers = new ArrayList<>();
+        this.hotels = new ArrayList<>();
         this.hotel_groups = new ArrayList<>();
     }
 
@@ -31,9 +35,13 @@ public class GetSpecificHotelGroup extends UseCase {
 
         HotelGroupHotelierSearchCriteria  hgh_criteria= new HotelGroupHotelierSearchCriteria();
         hgh_criteria.setHotelGroupID(hotel_group_id);
+
+        HotelSearchCriteria hotel_criteria = new HotelSearchCriteria();
+        hotel_criteria.setHotelGroupId(hotel_group_id);
         try {
             hotel_groups = dataSource.findBySearchCriteria(HotelGroup.class,hotel_group_criteria);
             hoteliers = dataSource.findBySearchCriteria(HotelGroupHotelier.class,hgh_criteria);
+            hotels = dataSource.findBySearchCriteria(Hotel.class,hotel_criteria);
             succeed();
         } catch (Exception e) {
             fail();
@@ -64,7 +72,7 @@ public class GetSpecificHotelGroup extends UseCase {
         JSONArray jsonArray = new JSONArray();
         try {
             if (hotel_groups == null) {
-                System.err.println("null hoteliers");
+                System.err.println("null hotel groups");
             }
             hotel_groups.forEach(hotel_group -> {
                 JSONObject hg_entry;
@@ -79,6 +87,28 @@ public class GetSpecificHotelGroup extends UseCase {
                     address.put("city",hotel_group.getAddress().getCity());
                     address.put("postcode",hotel_group.getAddress().getPostCode());
                 hg_entry.put("address",address);
+
+                    JSONArray hotels_array = new JSONArray();
+                    hotels.forEach(hotel -> {
+                        JSONObject hotel_entry = new JSONObject();
+                        hotel_entry.put("hotel_group_id", hotel.getHotelGroupID());
+                        hotel_entry.put("name", hotel.getName());
+                        hotel_entry.put("hotel_id", hotel.getID());
+                        hotel_entry.put("email", hotel.getEmail());
+                            JSONObject hotel_address = new JSONObject();
+                            hotel_address.put("line_1",hotel_group.getAddress().getLine1());
+                            hotel_address.put("line_2",hotel_group.getAddress().getLine2());
+                            hotel_address.put("district",hotel_group.getAddress().getDistrict().toString());
+                            hotel_address.put("city",hotel_group.getAddress().getCity());
+                            hotel_address.put("postcode",hotel_group.getAddress().getPostCode());
+                        hotel_entry.put("address",hotel_address);
+                        hotel_entry.put("contact", hotel.getContact());
+                        hotel_entry.put("city", hotel.getCity());
+                        hotel_entry.put("pincode", hotel.getPinCode());
+                        hotel_entry.put("is_active", hotel.getIsActive());
+                        hotels_array.put(hotel_entry);
+                    });
+                    hg_entry.put("hotels",hotels_array);
 
                     JSONArray hoteliers_array = new JSONArray();
                     hoteliers.forEach(hotelier -> {

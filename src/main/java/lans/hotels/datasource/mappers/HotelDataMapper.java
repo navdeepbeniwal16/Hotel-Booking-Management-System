@@ -73,7 +73,6 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
             statement.setInt(1,hotelSearchCriteria.getHotelGroupId());
         }
         else if (hotelSearchCriteria.getCity() != null && hotelSearchCriteria.getDateRange() != null){
-            System.out.println("Hi");
             statement = connection.prepareStatement(findStatement() +
                     "    JOIN room r ON h.id = r.hotel_id\n" +
                     "WHERE h.city = ? AND\n" +
@@ -136,12 +135,10 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
         Hotel hotel = (Hotel) domainObject;
         String updateStatement = "UPDATE hotel SET is_active = " + hotel.getIsActive()  +  " WHERE id = " + hotel.getId() + ";";
 
-        System.out.println("UPDATE BOOKING QUERY : ");
         System.out.println(updateStatement);
 
         try (PreparedStatement statement = connection.prepareStatement(updateStatement)) {
             statement.executeUpdate();
-            System.out.println("Hotel mapper : Hotel with id " + hotel.getId() + " updated in DataMapper...");
 
             HotelSearchCriteria criteria = new HotelSearchCriteria();
             criteria.setId(hotel.getId());
