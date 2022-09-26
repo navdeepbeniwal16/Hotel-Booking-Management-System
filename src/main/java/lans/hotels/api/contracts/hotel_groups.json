@@ -13,6 +13,20 @@
           "city" : "Melbourne",
           "postcode": 3000
         },
+        "hotels": [
+          {
+            "address": "13 Abbey St,,VIC,Melbourne-3078",
+            "is_active": true,
+            "hotel_group_id": 1,
+            "city": "Melbourne",
+            "hotel_id": 1,
+            "contact": "+614737373737",
+            "pin_code": 3000,
+            "district": "VIC",
+            "name": "Melbourne Marriott",
+            "email": "melbourne@marriott.com"
+          }
+        ],
         "hoteliers": [
           {
             "id": 1,
