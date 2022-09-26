@@ -49,7 +49,7 @@ public abstract class FrontCommand implements IFrontCommand  {
         BufferedReader requestReader = request.getReader();
 
         String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        System.out.println("Request Body Lines + ");
+//        System.out.println("Request Body Lines + ");
         JSONObject body;
         if (lines.length() > 0) {
             System.out.println(lines);

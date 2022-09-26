@@ -17,4 +17,12 @@ public class Role {
         if (id==3) name = RoleNames.Customer.toString();
         this.id = id;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 }
