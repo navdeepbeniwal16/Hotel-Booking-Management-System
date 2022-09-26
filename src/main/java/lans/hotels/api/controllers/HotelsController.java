@@ -90,7 +90,7 @@ public class HotelsController extends FrontCommand {
                         Hotel h = getHotelFromJsonObject(body);
 
                         if (h == null)
-                            throw new InvalidObjectException("Failed to parse hotel group object from request body");
+                            throw new InvalidObjectException("Failed to parse hotel object from request body");
 
 //                        if (!auth.isHotelier()) {
 //                            sendUnauthorizedJsonResponse(response);

@@ -3,9 +3,12 @@ package lans.hotels.api.controllers;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
+import lans.hotels.use_cases.CreateHotel;
+import lans.hotels.use_cases.CreateHotelGroup;
 import lans.hotels.use_cases.GetAllHotelGroupDetails;
 import lans.hotels.use_cases.GetSpecificHotelGroup;
 import org.json.JSONArray;
@@ -75,12 +78,25 @@ public class HotelgroupsController extends FrontCommand {
                         }
                     }
                     else if (body.has("hotel_group")) {
-                        HotelGroup hg = null;
-                        try {
-                            hg = getHotelGroupFromJsonObject(body);
-                        } catch (UoWException e) {
-                            e.printStackTrace();
+                        HotelGroup hg = getHotelGroupFromJsonObject(body);
+
+                        if (hg == null)
+                            throw new InvalidObjectException("Failed to parse hotel group object from request body");
+
+                        if (!auth.isAdmin()) {
+                            sendUnauthorizedJsonResponse(response);
+                            return;
                         }
+                        useCase = new CreateHotelGroup(dataSource);
+                        useCase.execute();
+                        statusCode = useCase.succeeded() ?
+                                HttpServletResponse.SC_OK :
+                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                        sendJsonResponse(response, useCase.getResult(), statusCode);
+                        return;
+                    }
+                    else if (body.has("hotel_group")) {
+                        HotelGroup hg = getHotelGroupFromJsonObject(body);
 
                         if (hg == null)
                             throw new InvalidObjectException("Failed to parse hotel group object from request body");
@@ -172,7 +188,7 @@ public class HotelgroupsController extends FrontCommand {
         return;
     }
 
-    public HotelGroup getHotelGroupFromJsonObject(JSONObject jsonObject) throws UoWException {
+    public HotelGroup getHotelGroupFromJsonObject(JSONObject jsonObject) {
 
         HotelGroup hg = null;
         String hg_name = "";
@@ -204,7 +220,11 @@ public class HotelgroupsController extends FrontCommand {
             District district_ob = new District(district);
             Address address = new Address(l1, l2, district_ob, city, postcode);
 
-            hg = new HotelGroup(dataSource,hg_name,address,phone);
+            try {
+                hg = new HotelGroup(dataSource,hg_name,address,phone);
+            } catch (UoWException e) {
+                e.printStackTrace();
+            }
         }
         return hg;
     }

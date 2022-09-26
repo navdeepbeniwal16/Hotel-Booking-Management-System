@@ -47,6 +47,7 @@ public class HotelGroup extends ReferenceObject{
         this.address = address;
         this.phone = phone;
         initMaps();
+        markClean();
     }
 
     public HotelGroup(IDataSource dataSource, String name, Address address, String phone) throws UoWException {
@@ -55,6 +56,7 @@ public class HotelGroup extends ReferenceObject{
         this.address = address;
         this.phone = phone;
         initMaps();
+        markNew();
     }
 
     public Integer getId() {
