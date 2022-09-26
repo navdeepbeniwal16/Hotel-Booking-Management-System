@@ -50,6 +50,8 @@ public class User extends ReferenceObject {
         this.email = email;
         this.address = address;
         this.role = role;
+        this.contact = contact;
+        this.age = age;
         try {
             markClean();
         } catch (UoWException e) {
@@ -106,7 +108,7 @@ public class User extends ReferenceObject {
 
     public int getAge() { return this.age; }
 
-    public void setAge(int contact) throws UoWException {
+    public void setAge(int age) throws UoWException {
         this.age = age;
         markDirty();
     }

@@ -1,27 +1,24 @@
 package lans.hotels.use_cases;
 
-import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.user_types.User;
+import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class GetAllHoteliers extends UseCase {
-    ArrayList<User> users;
-    UserSearchCriteria criteria;
+    ArrayList<HotelGroupHotelier> hotleiers;
 
-    public GetAllHoteliers(IDataSource dataSource, UserSearchCriteria criteria) {
+    public GetAllHoteliers(IDataSource dataSource) {
         super(dataSource);
-        this.criteria = criteria;
-        this.users = new ArrayList<>();
+        this.hotleiers = new ArrayList<>();
     }
 
     @Override
     public void doExecute() throws Exception {
         try {
-            users = dataSource.findBySearchCriteria(User.class, criteria);
+            hotleiers = dataSource.findAll(HotelGroupHotelier.class);
             succeed();
         } catch (Exception e) {
             fail();
@@ -35,30 +32,31 @@ public class GetAllHoteliers extends UseCase {
         JSONArray jsonArray = new JSONArray();
         try {
             if (succeeded) {
-                jsonArray = createUsersJson();
+                jsonArray = createHoteliersJSON();
             }
         } catch (Exception e) {
             fail();
             e.printStackTrace();
             setResponseErrorMessage("Server Error: " + e.getMessage());
         } finally {
-            responseData.put("users", jsonArray);
+            responseData.put("hoteliers", jsonArray);
         }
     }
 
-    private JSONArray createUsersJson() {
+    private JSONArray createHoteliersJSON() {
         JSONArray jsonArray = new JSONArray();
         try {
-            if (users == null) {
-                System.err.println("null users");
+            if (hotleiers == null) {
+                System.err.println("null hoteliers");
             }
-            users.forEach(user -> {
+            hotleiers.forEach(hotelier -> {
                 JSONObject userJson;
                 userJson = new JSONObject();
-                userJson.put("id", user.getID());
-                userJson.put("role", user.getRoleId());
-                userJson.put("name", user.getName());
-                userJson.put("email", user.getEmail());
+                userJson.put("id", hotelier.getID());
+                userJson.put("name", hotelier.getName());
+                userJson.put("email", hotelier.getEmail());
+                userJson.put("role", hotelier.getRole().getName());
+                userJson.put("hotel_group", hotelier.getHotelGroup());
                 jsonArray.put(userJson);
             });
         } catch (Exception e) {

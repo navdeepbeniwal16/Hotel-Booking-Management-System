@@ -5,7 +5,10 @@ import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelGroupHotelierSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
+import lans.hotels.domain.user_types.Role;
+import lans.hotels.domain.user_types.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,8 +25,12 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
     @Override
     protected String findStatement() {
         String statement =
-                "SELECT * FROM hotel_group_hotelier ";
-//        System.out.println("HotelGroupDataMapper.findStatement(): " + statement);
+                "SELECT u.id AS id, u.name,email,r.id AS role_id,hg.name AS hotel_group_name from app_user u " +
+                "LEFT JOIN roles r on u.role = r.id " +
+                "LEFT JOIN ( hotel_group_hotelier hgh LEFT JOIN hotel_group hg on hgh.hotel_group_id = hg.id) " +
+                "ON u.id = hgh.hotelier_id " +
+                "WHERE r.id = 2 ";
+        System.out.println("HotelGroupHotelierDataMapper.findStatement(): " + statement);
         return statement;
     }
 
@@ -34,18 +41,17 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
 
     @Override
     public ArrayList<HotelGroupHotelier> findAll() throws SQLException {
-
         try (PreparedStatement statement = connection.prepareStatement(findStatement())) {
             ResultSet resultSet = statement.executeQuery();
-            HotelGroupHotelier aHotelGroupHotelier = load(resultSet);
-            while (aHotelGroupHotelier != null) {
-                aHotelGroupHotelier = load(resultSet);
+            while (load(resultSet) != null) {
+                load(resultSet);
             }
+            return new ArrayList<>(loadedMap.values());
+        } catch (UoWException e) {
+            throw new RuntimeException(e);
         } catch (Exception e) {
-            System.err.println("ERROR HotelGroupHotelierDataMapper.findAll(): " + e);
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return new ArrayList<>(loadedMap.values());
     }
 
 
@@ -56,30 +62,52 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
         String findAllStatement = findStatement();
 
         if (hgCriteria.getHotelGroupID() != null){
-            findAllStatement += "WHERE h.id = '" + hgCriteria.getHotelGroupID() + "'";
-            System.out.println("ID passed to HotelGroupHotelierDataMapper : " + hgCriteria.getHotelGroupID());
+            findAllStatement += "AND hgh.hotel_group_id = '" + hgCriteria.getHotelGroupID() + "'";
+            System.out.println("Find by criteria statement : \n "+findAllStatement);
+            System.out.println("HotelGroupID passed to HotelGroupHotelierDataMapper : " + hgCriteria.getHotelGroupID());
         }
 
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();
-            HotelGroupHotelier currentHgHotelier = load(resultSet);
-            while (currentHgHotelier != null) {
-                currentHgHotelier = load(resultSet);
+            while (load(resultSet) != null) {
+                load(resultSet);
             }
             return new ArrayList<>(loadedMap.values());
+        } catch (UoWException e) {
+            throw new RuntimeException(e);
         } catch (Exception e) {
-            System.out.println("Exception occurred at findBySearchCriteria");
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     @Override
-    protected HotelGroupHotelier doLoad(Integer id, ResultSet rs) throws SQLException, UoWException {
-        HotelGroupHotelier hotelGroup = new HotelGroupHotelier(id,dataSource,
-                rs.getInt("hotelier_id"),rs.getInt("hotel_group_id"));
-        return hotelGroup;
+    protected HotelGroupHotelier doLoad(Integer id, ResultSet rs) throws Exception {
+        HotelGroupHotelier hg_hotelier = null;
+        Integer uid;
+        String name;
+        String email;
+        Integer role_id;
+        String hg;
+
+        uid = rs.getInt("id");
+        name = rs.getString("name");
+        email = rs.getString("email");
+        role_id = rs.getInt("role_id");
+        hg = rs.getString("hotel_group_name");
+
+        Role role = new Role(role_id);
+
+        try {
+            hg_hotelier = new HotelGroupHotelier(uid,
+                    dataSource,
+                    name,
+                    email,
+                    role,
+                    hg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return hg_hotelier;
     }
 
     @Override
@@ -90,8 +118,11 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
     @Override
     public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException, UoWException {
         HotelGroupHotelier hgHotelier = (HotelGroupHotelier) domainObject;
-        String createStatement = "INSERT INTO hotel_group_hotelier (hotelier_id,hotel_group_id) VALUES ("
-                + hgHotelier.getHotelierId() + "," + hgHotelier.getHotelGroupId() + ") returning * ";
+        String createStatement =null;
+//
+//
+//        String createStatement = "INSERT INTO hotel_group_hotelier (hotelier_id,hotel_group_id) VALUES ("
+//                + hgHotelier.getHotelierId() + "," + hgHotelier.getHotelGroupId() + ") returning * ";
 
         System.out.println(createStatement);
         try (PreparedStatement statement = connection.prepareStatement(createStatement)) {

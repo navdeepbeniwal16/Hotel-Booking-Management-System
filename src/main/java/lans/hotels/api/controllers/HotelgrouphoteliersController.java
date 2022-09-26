@@ -65,8 +65,8 @@ public class HotelgrouphoteliersController extends FrontCommand {
                             for (HotelGroupHotelier hotelGroupHotelier: hg_hoteliers) {
                                 aHGHotelier = new JSONObject();
                                 aHGHotelier.put("id", hotelGroupHotelier.getId());
-                                aHGHotelier.put("hotelier_id", hotelGroupHotelier.getHotelierId());
-                                aHGHotelier.put("hotel_group_id", hotelGroupHotelier.getHotelGroupId());
+//                                aHGHotelier.put("hotelier_id", hotelGroupHotelier.getHotelierId());
+//                                aHGHotelier.put("hotel_group_id", hotelGroupHotelier.getHotelGroupId());
                                 hotelArray.put(aHGHotelier);
                             }
 
@@ -235,9 +235,9 @@ public class HotelgrouphoteliersController extends FrontCommand {
             response.setStatus(200);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            json.put("id", hotelGroupHotelier.getId());
-            json.put("hotelier_id", hotelGroupHotelier.getHotelierId());
-            json.put("hotel_group_id", hotelGroupHotelier.getHotelGroupId());
+//            json.put("id", hotelGroupHotelier.getId());
+//            json.put("hotelier_id", hotelGroupHotelier.getHotelierId());
+//            json.put("hotel_group_id", hotelGroupHotelier.getHotelGroupId());
             out.print(json);
             out.flush();
         }
@@ -261,20 +261,20 @@ public class HotelgrouphoteliersController extends FrontCommand {
     public HotelGroupHotelier getHotelGroupHotelierFromJsonObject(JSONObject body) {
 
         HotelGroupHotelier hgHotelier = null;
-        int hotelier_id = 0;
-        int hotel_group_id = 0;
-
-        if(body.has("hotel_group_hotelier")) {
-            JSONObject nestedJsonObject = body.getJSONObject("hotel_group_hotelier");
-
-            if(nestedJsonObject.has("hotelier_id"))
-                hotelier_id = nestedJsonObject.getInt("hotelier_id");
-            if(nestedJsonObject.has("hotel_group_id"))
-                hotel_group_id = nestedJsonObject.getInt("hotel_group_id");
-
-
-            hgHotelier = new HotelGroupHotelier(dataSource,hotelier_id,hotel_group_id);
-        }
+//        int hotelier_id = 0;
+//        int hotel_group_id = 0;
+//
+//        if(body.has("hotel_group_hotelier")) {
+//            JSONObject nestedJsonObject = body.getJSONObject("hotel_group_hotelier");
+//
+//            if(nestedJsonObject.has("hotelier_id"))
+//                hotelier_id = nestedJsonObject.getInt("hotelier_id");
+//            if(nestedJsonObject.has("hotel_group_id"))
+//                hotel_group_id = nestedJsonObject.getInt("hotel_group_id");
+//
+//
+//            hgHotelier = new HotelGroupHotelier(dataSource,hotelier_id,hotel_group_id);
+//        }
         return hgHotelier;
     }
 }

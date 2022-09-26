@@ -19,10 +19,11 @@ public class Role {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public Integer getId() {
-        return id;
+        return this.id;
     }
+
 }

@@ -3,57 +3,87 @@ package lans.hotels.domain.hotel_group;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
-import lans.hotels.domain.utils.Address;
+import lans.hotels.domain.user_types.Role;
 
 
 public class HotelGroupHotelier extends ReferenceObject{
-    int hotelier_id;
-    int hotel_group_id;
+    String name;
+    String email;
+    Role role;
+    String hotel_group;
 
 
-    public HotelGroupHotelier(IDataSource dataSource) throws UoWException {
+    public HotelGroupHotelier(IDataSource dataSource) {
         super(dataSource);
-        initMaps();
-        markNew();
+        try {
+            markNew();
+        } catch (UoWException e) {
+            e.printStackTrace();
+        }
     }
 
-    public HotelGroupHotelier(Integer id, IDataSource dataSource) throws UoWException {
+    public HotelGroupHotelier(Integer id, IDataSource dataSource) {
         super(id, dataSource);
-        initMaps();
-        markClean();
+        try {
+            markClean();
+        } catch (UoWException e) {
+            e.printStackTrace();
+        }
     }
 
-    public HotelGroupHotelier(Integer id, IDataSource dataSource,
-                      Integer hotelier_id, Integer hotel_group_id) throws UoWException {
+    public HotelGroupHotelier(Integer id,
+                              IDataSource dataSource,
+                              String name,
+                              String email,
+                              Role role,
+                              String hotel_group) throws Exception {
         super(id, dataSource);
-        this.hotelier_id = hotelier_id;
-        this.hotel_group_id = hotel_group_id;
-        initMaps();
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.hotel_group = hotel_group;
+        try {
+            markClean();
+        } catch (UoWException e) {
+            e.printStackTrace();
+        }
     }
 
-    public HotelGroupHotelier(IDataSource dataSource, Integer hotelier_id, Integer hotel_group_id) {
-        super(dataSource);
-        this.hotelier_id = hotelier_id;
-        this.hotel_group_id = hotel_group_id;
-        initMaps();
+    public int getID()
+    {
+        return this.id;
     }
 
-    public Integer getId() {
-        return id;
-    }
-    public Integer getHotelierId() {
-        return hotelier_id;
-    }
-    public Integer getHotelGroupId() {
-        return hotel_group_id;
+    public String getName()
+    {
+        return this.name;
     }
 
-    public void setHotelierID(Integer hotelier_id) throws UoWException {
-        this.hotelier_id = hotelier_id;
+    public void setName(String name) throws UoWException {
+        this.name = name;
         markDirty();
     }
-    public void setHotelGroupID(Integer hotel_group_id) throws UoWException {
-        this.hotel_group_id = hotel_group_id;
+
+    public String getEmail()
+    {
+        return this.email;
+    }
+
+    public void setEmail(String email) throws UoWException {
+        this.email = email;
+        markDirty();
+    }
+
+    public Role getRole() {
+        return this.role;
+    }
+
+    public String getHotelGroup() {
+        return hotel_group;
+    }
+
+    public void setHotelGroup(String hotel_group) throws UoWException {
+        this.hotel_group = hotel_group;
         markDirty();
     }
 

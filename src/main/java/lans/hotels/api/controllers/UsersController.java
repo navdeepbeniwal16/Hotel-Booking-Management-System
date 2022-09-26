@@ -29,7 +29,6 @@ public class UsersController extends FrontCommand {
             return;
 
         } else {
-            ArrayList<User> users;
             int statusCode;
             switch (request.getMethod()) {
                 case HttpMethod.GET:
@@ -64,7 +63,6 @@ public class UsersController extends FrontCommand {
                             if (email != null) criteria.setEmail(email);
                         }
                         if (searchQueryBody.has("role")) {
-
                             Integer role = searchQueryBody.getInt("role");
                             if (role != null) criteria.setRole(role);
                         }
@@ -76,7 +74,7 @@ public class UsersController extends FrontCommand {
                         }
 
                         if (userType.equals("hotelier")) {
-                            useCase = new GetAllHoteliers(dataSource,criteria);
+                            useCase = new GetAllHoteliers(dataSource);
                         } else {
                             useCase = new GetAllUsers(dataSource);
                         }
