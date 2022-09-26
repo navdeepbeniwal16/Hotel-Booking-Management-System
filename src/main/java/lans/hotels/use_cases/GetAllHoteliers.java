@@ -21,7 +21,7 @@ public class GetAllHoteliers extends UseCase {
     @Override
     public void doExecute() throws Exception {
         try {
-            users = dataSource.findBySearchCriteria(User.class,criteria);
+            users = dataSource.findBySearchCriteria(User.class, criteria);
             succeed();
         } catch (Exception e) {
             fail();
