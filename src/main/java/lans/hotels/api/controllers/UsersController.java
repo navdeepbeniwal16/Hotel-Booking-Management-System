@@ -69,8 +69,18 @@ public class UsersController extends FrontCommand {
                             if (role != null) criteria.setRole(role);
                         }
 
+                        String userType = "";
+                        if (searchQueryBody.has("type")) {
+                            userType = searchQueryBody.getString("type");
 
-                        useCase = new GetAllHoteliers(dataSource,criteria);
+                        }
+
+                        if (userType.equals("hotelier")) {
+                            useCase = new GetAllHoteliers(dataSource,criteria);
+                        } else {
+                            useCase = new GetAllUsers(dataSource);
+                        }
+
                         useCase.execute();
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :

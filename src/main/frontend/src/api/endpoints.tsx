@@ -45,14 +45,18 @@ const getHotelGroupHoteliers = async (
 };
 
 const getHoteliers = async (accessToken: string): Promise<Hotelier[]> => {
-  const res = await fetch('/api/hoteliers', {
+  const res = await fetch('/api/users', {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
+    body: JSON.stringify({
+      search: { type: 'hotelier' },
+    }),
   });
   const data = await res.json();
-  const hoteliers: Array<Hotelier> = data.result;
+  const hoteliers: Array<Hotelier> = data.result.users;
   return hoteliers;
 };
 

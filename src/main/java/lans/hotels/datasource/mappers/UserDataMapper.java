@@ -26,7 +26,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     protected String findStatement() {
         String statement =
                 "SELECT u.id AS id, u.name AS name, u.email, line_1 AS address_l1, line_2 AS address_l2, " +
-                "d.name AS district_name, postcode, city, r.id AS rid, contact, age " +
+                "d.name AS district_name, postcode, city, r.id AS rid, r.name AS role_name, contact, age " +
                 "FROM app_user u " +
                 "LEFT JOIN roles r on u.role = r.id " +
                 "LEFT JOIN ( address a LEFT JOIN district d ON a.district = d.id ) " +

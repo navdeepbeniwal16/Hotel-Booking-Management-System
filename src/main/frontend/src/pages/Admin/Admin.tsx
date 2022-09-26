@@ -84,7 +84,7 @@ const Admin = () => {
       <Row>
         <Col>
           <p>
-            {!isLoading && isAuthenticated
+            {!isLoading && isAuthenticated && user
               ? user?.name || user?.email || 'Admin'
               : 'Not Allowed'}
           </p>

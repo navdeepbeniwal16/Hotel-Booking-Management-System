@@ -3,7 +3,7 @@ import { map, filter } from 'lodash';
 
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import { Check2Circle, XCircle, DashCircle } from 'react-bootstrap-icons';
+import { DashCircle } from 'react-bootstrap-icons';
 
 import Hotelier from '../../types/HotelierType';
 import HotelGroup from '../../types/HotelGroup';
@@ -53,7 +53,7 @@ const Hoteliers = ({
       if (data.result.deleted) {
         setHoteliers(() => {
           return map(hoteliers, (hotelier) => {
-            if (hotelier.hotelier_id === remove_hotelier_id)
+            if (hotelier.id === remove_hotelier_id)
               return {
                 ...hotelier,
                 hotel_group: { id: -1 },
@@ -86,7 +86,7 @@ const Hoteliers = ({
     hotelier_id: number,
     hotel_group: HotelGroup
   ) => {
-    if (hotel_group.name === undefined) {
+    if (!hotel_group || hotel_group.name === undefined) {
       return (
         <Row>
           <Col>N/A</Col>
@@ -116,8 +116,6 @@ const Hoteliers = ({
       <thead>
         <tr>
           <th>User ID</th>
-          <th>Hotelier ID</th>
-          <th>Active?</th>
           <th>Email</th>
           <th>Name</th>
           <th>Hotel Group</th>
@@ -125,15 +123,11 @@ const Hoteliers = ({
       </thead>
       <tbody>
         {map(hoteliers, (hotelier: Hotelier) => (
-          <tr key={hotelier.hotelier_id}>
-            <td>{`${hotelier.user_id}`}</td>
-            <td>{`${hotelier.hotelier_id}`}</td>
-            <td>{hotelier.isActive ? <Check2Circle /> : <XCircle />}</td>
+          <tr key={hotelier.id}>
+            <td>{`${hotelier.id}`}</td>
             <td>{`${hotelier.email}`}</td>
             <td>{`${hotelier.name}`}</td>
-            <td>
-              {renderHotelGroupName(hotelier.hotelier_id, hotelier.hotel_group)}
-            </td>
+            <td>{renderHotelGroupName(hotelier.id, hotelier.hotel_group)}</td>
           </tr>
         ))}
       </tbody>
