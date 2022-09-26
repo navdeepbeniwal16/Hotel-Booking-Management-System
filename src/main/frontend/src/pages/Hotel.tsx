@@ -40,10 +40,7 @@ const Hotel = () => {
                 <Card.Text>Bed: {`${room.bed_type}`}</Card.Text>
                 <Button
                   onClick={() => {
-                    if (!isAuthenticated) {
-                      loginWithRedirect({});
-                    } else {
-                    }
+                    if (!isAuthenticated) loginWithRedirect({});
                   }}
                   variant='primary'
                 >

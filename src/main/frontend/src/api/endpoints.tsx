@@ -19,7 +19,7 @@ const getAllUsers = async (accessToken: string): Promise<UserDataType[]> => {
 const removeHotelierFromHotelGroup = async (
   accessToken: string,
   id: number
-): Promise<any> => {
+): Promise<Response> => {
   const res = await fetch('/api/hotelgrouphoteliers', {
     method: 'DELETE',
     headers: {
@@ -57,7 +57,7 @@ const getHoteliers = async (accessToken: string): Promise<Hotelier[]> => {
 };
 
 const getHotelRooms = async (
-  hotel_id: Number,
+  hotel_id: number,
   headers: HeadersInit = {}
 ): Promise<Room[]> => {
   const res = await fetch('/api/hotels', {
@@ -78,8 +78,8 @@ const getHotelRooms = async (
 };
 
 const searchHotels = async (
-  hotel_id: Number = -1,
-  location: String = '',
+  hotel_id = -1,
+  location = '',
   startDate: Date = new Date(),
   endDate: Date = new Date()
 ): Promise<Hotel[]> => {

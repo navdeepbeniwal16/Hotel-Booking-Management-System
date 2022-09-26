@@ -32,11 +32,12 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "lint": "yarn run eslint ./.eslintrc.json",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "CI=true react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "reset-proxy": "rm package-lock.json node_modules && rm yarn.lock"
+    "reset-proxy": "rm yarn.lock && rm -rf ./node_modules"
   },
   "proxy": "http://localhost:8080/lans_hotels_war_exploded/",
   "homepage": ".",
@@ -59,6 +60,10 @@
     ]
   },
   "devDependencies": {
-    "@types/react-router-bootstrap": "^0.24.5"
+    "@types/react-router-bootstrap": "^0.24.5",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "eslint": "^8.24.0",
+    "eslint-plugin-react": "^7.31.8"
   }
 }

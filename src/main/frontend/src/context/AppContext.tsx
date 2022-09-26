@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, {
   Context,
   createContext,
@@ -124,7 +125,8 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
 
 const withGlobalContext =
   (Child: React.FC<ReactPropTypes>) =>
-  (props: ReactPropTypes, context: Context<AppContextType>) => {
+  // eslint-disable-next-line react/display-name, @typescript-eslint/no-unused-vars
+  (props: ReactPropTypes, _context: Context<AppContextType>) => {
     if (!Child) return null;
     return (
       <GlobalContext.Consumer>

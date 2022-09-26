@@ -17,8 +17,8 @@
         <junit.version>5.8.1</junit.version>
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <frontend-dir>${project.basedir}/src/main/frontend</frontend-dir>
-        <node.version>v14.19.1</node.version>
-        <yarn.version>v1.12.1</yarn.version>
+        <node.version>14.19.1</node.version>
+        <yarn.version>1.12.1</yarn.version>
         <spring-security-version>5.7.3</spring-security-version>
     </properties>
 

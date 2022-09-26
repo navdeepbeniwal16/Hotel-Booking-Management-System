@@ -1,11 +1,11 @@
 import React, { Dispatch } from 'react';
 
 type Hotel = {
-  address: String;
-  phone: String;
-  name: String;
-  hotel_id: Number;
-  email: String;
+  address: string;
+  phone: string;
+  name: string;
+  hotel_id: number;
+  email: string;
 };
 
 export type HotelState = {

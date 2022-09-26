@@ -1,12 +1,12 @@
 import React, { Dispatch } from 'react';
 
 export type Room = {
-  room_id: Number;
-  hotel_id: Number;
-  type: String;
-  occupancy: Number;
-  bed_type?: String;
-  price?: Number;
+  room_id: number;
+  hotel_id: number;
+  type: string;
+  occupancy: number;
+  bed_type?: string;
+  price?: number;
 };
 
 export type RoomState = {

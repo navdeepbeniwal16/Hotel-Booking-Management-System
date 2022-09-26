@@ -51,7 +51,7 @@ const Hoteliers = ({
         data
       );
       if (data.result.deleted) {
-        setHoteliers((_) => {
+        setHoteliers(() => {
           return map(hoteliers, (hotelier) => {
             if (hotelier.hotelier_id === remove_hotelier_id)
               return {
@@ -61,7 +61,7 @@ const Hoteliers = ({
             return hotelier;
           });
         });
-        setHotelGroupHoteliers((_) => {
+        setHotelGroupHoteliers(() => {
           return filter(
             hotelGroupHoteliers,
             (hgh) =>

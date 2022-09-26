@@ -13,6 +13,7 @@ import { Container } from 'react-bootstrap';
 import AppContext from './context/AppContext';
 import { Auth0Provider } from '@auth0/auth0-react';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 const App = (props: ReactPropTypes, context: ContextType<any>) => {
   const auth0 = {
     domain: process.env.REACT_APP_AUTH0_DOMAIN || '',
