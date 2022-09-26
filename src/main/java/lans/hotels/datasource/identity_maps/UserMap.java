@@ -18,11 +18,6 @@ public class UserMap implements IIdentityMap<User> {
 
     @Override
     public void add(AbstractDomainObject users) throws IdentityMapException {
-        if (users.getClass()==User.class && users.hasId()) {
-            this.users.put(users.getId(), (User) users);
-        } else {
-            throw new IdentityMapException("attempted to add object without an ID to identity map");
-        }
     }
 
     @Override

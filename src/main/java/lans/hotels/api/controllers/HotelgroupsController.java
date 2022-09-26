@@ -59,6 +59,10 @@ public class HotelgroupsController extends FrontCommand {
                     if (body.has("search")) {
                         JSONObject searchQueryBody = body.getJSONObject("search");
                         if (searchQueryBody.has("id")) {
+                            if (!auth.isAdmin()) {
+                                sendUnauthorizedJsonResponse(response);
+                                return;
+                            }
                             Integer hotelGroupId = searchQueryBody.getInt("id");
 
                         useCase = new GetSpecificHotelGroup(dataSource, hotelGroupId);

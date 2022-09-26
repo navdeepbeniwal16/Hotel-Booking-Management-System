@@ -74,6 +74,10 @@ public class UsersController extends FrontCommand {
                         }
 
                         if (userType.equals("hotelier")) {
+                            if (!auth.isAdmin()) {
+                                sendUnauthorizedJsonResponse(response);
+                                return;
+                            }
                             useCase = new GetAllHoteliers(dataSource);
                         } else {
                             useCase = new GetAllUsers(dataSource);

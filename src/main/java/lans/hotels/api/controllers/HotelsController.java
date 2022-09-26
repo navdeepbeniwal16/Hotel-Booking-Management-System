@@ -6,6 +6,8 @@ import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
+import lans.hotels.use_cases.CreateHotel;
+import lans.hotels.use_cases.GetAllHotelGroupDetails;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -23,6 +25,7 @@ public class HotelsController extends FrontCommand {
     @Override
     protected void concreteProcess() throws IOException, SQLException {
         String[] commandPath = request.getPathInfo().split("/");
+        int statusCode;
 
         if (commandPath.length != 2) {
             System.err.println("Hotels controller: " + Arrays.toString(commandPath));
@@ -87,39 +90,18 @@ public class HotelsController extends FrontCommand {
                         if (h == null)
                             throw new InvalidObjectException("Failed to parse hotel group object from request body");
 
-                        boolean success;
-                        try {
-                            success = dataSource.insert(Hotel.class, h);
-                        } catch (Exception e) {
-                            System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
-                            System.err.println("POST /api/hotels: " + e.getMessage());
-                            System.err.println("POST /api/hotels: " + e.getClass());
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                            return;
-                        }
-                        try {
-                            dataSource.commit();
-                        } catch (DataSourceLayerException e) {
-                            e.printStackTrace();
-                        }
-
-                        PrintWriter out = response.getWriter();
-                        response.setStatus(200);
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("UTF-8");
-
-                        JSONObject aHG;
-                        aHG = new JSONObject();
-                        if (success)
-                            aHG.put("created", success);
-                        else
-                            aHG.put("created", success);
-
-                        JSONObject hgJSON = new JSONObject();
-                        hgJSON.put("result", aHG);
-                        out.print(hgJSON);
-                        out.flush();
+//                        if (!auth.isHotelier()) {
+//                            sendUnauthorizedJsonResponse(response);
+//                            return;
+//                        }
+                        useCase = new CreateHotel(dataSource);
+                        useCase.execute();
+                        statusCode = useCase.succeeded() ?
+                                HttpServletResponse.SC_OK :
+                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                        sendJsonResponse(response, useCase.getResult(), statusCode);
                         return;
+
                     } else {
                         System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());

@@ -18,11 +18,6 @@ public class HotelGroupHotelierMap implements IIdentityMap<HotelGroupHotelier> {
 
     @Override
     public void add(AbstractDomainObject hotelGroupHotelier) throws IdentityMapException {
-        if (hotelGroupHotelier.getClass()==HotelGroupHotelier.class && hotelGroupHotelier.hasId()) {
-            hotelGroupHoteliers.put(hotelGroupHotelier.getId(), (HotelGroupHotelier) hotelGroupHotelier);
-        } else {
-            throw new IdentityMapException("attempted to add object without an ID to identity map");
-        }
     }
 
     @Override

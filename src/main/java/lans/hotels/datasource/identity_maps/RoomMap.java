@@ -17,11 +17,6 @@ public class RoomMap implements IIdentityMap<Room> {
 
     @Override
     public void add(AbstractDomainObject room) throws IdentityMapException {
-        if (room.getClass() == Room.class && room.hasId()) {
-            rooms.put(room.getId(), (Room) room);
-        } else {
-            throw new IdentityMapException("attempted to add object without an ID to identity map");
-        }
     }
 
     @Override
