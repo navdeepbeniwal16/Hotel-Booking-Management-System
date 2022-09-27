@@ -95,6 +95,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
         else if (hotelSearchCriteria.getCity() != null){
             statement = connection.prepareStatement(findBy + "h.city = ?");
             statement.setString(1,hotelSearchCriteria.getCity());
+            System.out.println("Find by statement : \n"+statement);
         }
 
         System.out.println("Query : "+statement.toString());

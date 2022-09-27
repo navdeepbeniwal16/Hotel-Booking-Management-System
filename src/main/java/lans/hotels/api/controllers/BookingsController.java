@@ -10,6 +10,8 @@ import lans.hotels.domain.booking.RoomBooking;
 import lans.hotels.domain.hotel_group.HotelGroup;
 
 import lans.hotels.domain.user_types.User;
+import lans.hotels.use_cases.GetSpecificHotelGroup;
+import lans.hotels.use_cases.ViewHotelGroupBookings;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,93 +30,33 @@ public class BookingsController extends FrontCommand {
     @Override
     protected void concreteProcess() throws CommandException, IOException, SQLException {
         String[] commandPath = request.getPathInfo().split("/");
+        int statusCode;
         switch (request.getMethod()) {
             case HttpMethod.GET:
-                if(commandPath.length == 2) {
-
-                    // GET: /api/bookings
-                    JSONObject requestBody = getRequestBody(request);
-                    if(requestBody.has("search")) {
-                        JSONObject searchQuery = requestBody.getJSONObject("search");
-                        if(searchQuery.has("customer_id")) { // single customer query
-                            UserSearchCriteria userSearchCriteria = new UserSearchCriteria();
-
-                            Integer customerId;
-                            try {
-                                customerId = searchQuery.getInt("customer_id");
-                            } catch (Exception e) {
-                                System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
-                                System.err.println("GET /api/bookings: " + e.getMessage());
-                                System.err.println("GET /api/bookings: " + e.getClass());
-                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
-                                return;
-                            }
-
-                            if(customerId != null) userSearchCriteria.setId(customerId);
-                            User user;
-                            try {
-                                // Fetching the customer based on the customer_id
-                                ArrayList<User> users = dataSource.findBySearchCriteria(User.class, userSearchCriteria);
-                                if(!users.isEmpty()) {
-                                    user = users.get(0);
-
-                                    // Making call to customer to fetch all of it's booking details
-                                    ArrayList<Booking> customerBookings = user.getAllBookings();
-                                    JSONObject customersBookingsJson = getBookingsJson(customerBookings);
-                                    sendResponse(customersBookingsJson);
-                                } else {
-                                    System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
-                                    response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
-                                }
-
-                            } catch (Exception e) {
-                                System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
-                                System.err.println("GET /api/bookings: " + e.getMessage());
-                                System.err.println("GET /api/bookings: " + e.getClass());
-                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
-                                return;
-                            }
-                        }
-
-                        else if(searchQuery.has("hotel_group_id")) { // TODO: Needs to be tackled, not using the right business rule
-                            Integer hotelGroupID = searchQuery.getInt("hotel_group_id");
-                            HotelGroupSearchCriteria hgSearchCriteria = new HotelGroupSearchCriteria();
-                            if(hotelGroupID != null) hgSearchCriteria.setHotelGroupID(hotelGroupID);
-
-                            HotelGroup hg;
-                            try {
-                                // Fetching the hotel-group based on the customer id
-                                ArrayList<HotelGroup> hotelgroups = dataSource.findBySearchCriteria(HotelGroup.class, hgSearchCriteria);
-                                if(!hotelgroups.isEmpty()) {
-                                    System.out.println("Hi");
-                                    hg = hotelgroups.get(0);
-
-                                    // Making call to hotel group to fetch all of it's booking details
-                                    ArrayList<Booking> hg_bookings = hg.getAllBookings();
-
-
-                                    for(Booking booking: hg_bookings) {
-                                        System.out.println("Booking : " + booking.getId());
-                                    }
-                                    JSONObject hgBookingsJSON = getBookingsJson(hg_bookings);
-                                    sendResponse(hgBookingsJSON);
-                                } else {
-                                    System.out.println("Not a hotel group bookings query!!!");
-                                }
-
-                            } catch (Exception e) {
-                                System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
-                                System.err.println("GET /api/bookings: " + e.getMessage());
-                                System.err.println("GET /api/bookings: " + e.getClass());
-                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
-                                return;
-                            }
-                        }
-                    }
-
-                }
-                break;
             case HttpMethod.POST:
+            {
+                JSONObject requestBody = getRequestBody(request);
+
+                if(requestBody.has("search"))
+                {
+                    JSONObject searchQuery = requestBody.getJSONObject("search");
+
+                    if(searchQuery.has("hotel_group_id")) {
+                        Integer hotelGroupID = searchQuery.getInt("hotel_group_id");
+                        if (!auth.isHotelier()) {
+                            sendUnauthorizedJsonResponse(response);
+                            return;
+                        }
+                        useCase = new ViewHotelGroupBookings(dataSource, hotelGroupID);
+                        useCase.execute();
+                        statusCode = useCase.succeeded() ?
+                                HttpServletResponse.SC_OK :
+                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                        sendJsonResponse(response, useCase.getResult(), statusCode);
+                        return;
+                    }
+                }
+            }
 
                 break;
             case HttpMethod.PUT:

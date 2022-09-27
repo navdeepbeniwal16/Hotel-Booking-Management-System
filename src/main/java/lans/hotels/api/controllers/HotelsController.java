@@ -6,10 +6,7 @@ import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
-import lans.hotels.use_cases.ChangeHotelStatus;
-import lans.hotels.use_cases.CreateHotel;
-import lans.hotels.use_cases.GetAllHotelGroupDetails;
-import lans.hotels.use_cases.GetSpecificHotelGroup;
+import lans.hotels.use_cases.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -65,7 +62,15 @@ public class HotelsController extends FrontCommand {
                         }
                         if (searchQueryBody.has("city")) {
                             String city = searchQueryBody.getString("city");
-                            if (city != null) criteria.setCity(city);
+                            if (city != null){
+                                useCase = new SearchHotelsByLocation(dataSource,city);
+                                useCase.execute();
+                                statusCode = useCase.succeeded() ?
+                                        HttpServletResponse.SC_OK :
+                                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                                sendJsonResponse(response, useCase.getResult(), statusCode);
+                                return;
+                            }
                         }
 
                         if (searchQueryBody.has("hotel_group_id")) {
@@ -92,10 +97,10 @@ public class HotelsController extends FrontCommand {
                         if (h == null)
                             throw new InvalidObjectException("Failed to parse hotel object from request body");
 
-//                        if (!auth.isHotelier()) {
-//                            sendUnauthorizedJsonResponse(response);
-//                            return;
-//                        }
+                        if (!auth.isHotelier()) {
+                            sendUnauthorizedJsonResponse(response);
+                            return;
+                        }
                         useCase = new CreateHotel(dataSource);
                         useCase.execute();
                         statusCode = useCase.succeeded() ?

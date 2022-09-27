@@ -2,21 +2,34 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.booking.Booking;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.utils.DateRange;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     protected BookingDataMapper(Connection connection, IDataSource dataSource) {
         super(connection, "booking", dataSource);
         idPrefix = "b.";
+    }
+
+    @Override
+    protected String findStatement() {
+        String statement =
+                "SELECT b.id as id, b.hotel_id as hotel_id, customer_id, hotel_group_id, " +
+                        "start_date, end_date, b.is_active as is_active, " +
+                        "h.name as hotel_name, " +
+                        "u.name as user_name " +
+                        "FROM booking b " +
+                        "JOIN hotel h ON h.id = b.hotel_id " +
+                        "JOIN app_user u on u.id = b.customer_id ";
+        System.out.println("BookingDataMapper.findStatement(): " + statement);
+        return statement;
     }
 
     @Override
@@ -60,50 +73,27 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     @Override
     public ArrayList<Booking> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         BookingsSearchCriteria bookingsSearchCriteria = (BookingsSearchCriteria) criteria;
-        String findByCriteriaStatement = "SELECT b.id as id, b.is_active as is_active, h.id as hotel_id,h.name as hotel_name," +
-                "u.name as user_name,c.id as customer_id, start_date, end_date," +
-                " s.type as room_type, m.id as room_id,no_of_guests,main_guest, hg.id as hotel_group_id\n" +
-                "    FROM booking b\n" +
-                "        JOIN ( room_booking r\n" +
-                "            JOIN room m\n" +
-                "            ON r.room_id=m.id)\n" +
-                "        ON b.id = r.booking_id\n" +
-                "        JOIN hotel h ON h.id = b.hotel_id\n" +
-                "        JOIN customer c ON c.id=b.customer_id\n" +
-                "        JOIN app_user u on u.id = c.user_id " +
-                "        JOIN hotel_group hg on h.hotel_group_id = hg.id ";
 
+        String findBy = findStatement() + "WHERE ";
 
-        if(bookingsSearchCriteria.getBookingId()!=null) {
-            findByCriteriaStatement += "WHERE  b.id = '" + bookingsSearchCriteria.getBookingId() + "'";
+        PreparedStatement statement = null;
+        if (bookingsSearchCriteria.getCustomerId() != null){
+            statement = connection.prepareStatement(findBy +"b.customer_id = ?");
+            statement.setInt(1,bookingsSearchCriteria.getCustomerId());
+        }
+        else if (bookingsSearchCriteria.getHotelGroupId() != null){
+            statement = connection.prepareStatement(findBy + "hotel_group_id = ?");
+            statement.setInt(1,bookingsSearchCriteria.getHotelGroupId());
         }
 
-        if(bookingsSearchCriteria.getCustomerId()!=null) {
-            findByCriteriaStatement += "WHERE b.customer_id = '" + bookingsSearchCriteria.getCustomerId() + "'";
-        }
-        if(bookingsSearchCriteria.getHotelGroupId()!=null) {
-            findByCriteriaStatement += "WHERE hotel_group_id = '" + bookingsSearchCriteria.getHotelGroupId() + "'";
-        }
-        System.out.println("Booking query \n"+findByCriteriaStatement);
-        try (PreparedStatement statement = connection.prepareStatement(findByCriteriaStatement)) {
-            ResultSet resultSet = statement.executeQuery();
-            Booking loadedBooking = load(resultSet);
-            while (loadedBooking != null) {
-                loadedBooking = load(resultSet);
-            }
-            System.out.println("BookingMapper : All Bookings loaded...");
-            return new ArrayList<>(loadedMap.values());
-        } catch (Exception e) {
-            System.out.println("Exception occurred at findBySearchCriteria");
-            e.printStackTrace();
-        }
+        System.out.println("Query : "+statement.toString());
 
-        return new ArrayList<>();
-    }
-
-    @Override
-    protected String findStatement() {
-        return null;
+        ResultSet resultSet = statement.executeQuery();
+        Booking bookings = load(resultSet);
+        while (bookings != null) {
+            bookings = load(resultSet);
+        }
+        return new ArrayList<>(loadedMap.values());
     }
 
     @Override

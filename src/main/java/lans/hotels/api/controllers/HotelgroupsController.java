@@ -66,7 +66,7 @@ public class HotelgroupsController extends FrontCommand {
                                 sendUnauthorizedJsonResponse(response);
                                 return;
                             }
-                            Integer hotelGroupId = searchQueryBody.getInt("id");
+                        Integer hotelGroupId = searchQueryBody.getInt("id");
 
                         useCase = new GetSpecificHotelGroup(dataSource, hotelGroupId);
                         useCase.execute();
