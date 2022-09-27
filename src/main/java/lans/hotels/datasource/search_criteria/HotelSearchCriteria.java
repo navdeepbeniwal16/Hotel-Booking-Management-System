@@ -29,12 +29,4 @@ public class HotelSearchCriteria extends AbstractSearchCriteria {
     public void setHotelGroupId(Integer hotelGroupId) {
         this.hotel_group_id = hotelGroupId;
     }
-
-    public DateRange getDateRange() {
-        return this.date_range;
-    }
-
-    public void setDateRange(DateRange date_range) {
-        this.date_range = date_range;
-    }
 }

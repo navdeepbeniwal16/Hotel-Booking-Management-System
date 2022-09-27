@@ -1,12 +1,12 @@
 package lans.hotels.use_cases;
 
-import lans.hotels.datasource.search_criteria.HotelGroupHotelierSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
+import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel_group.HotelGroup;
-import lans.hotels.domain.hotel_group.HotelGroupHotelier;
+import lans.hotels.domain.user_types.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class GetSpecificHotelGroup extends UseCase {
 
     Integer hotel_group_id;
-    ArrayList<HotelGroupHotelier> hoteliers;
+    ArrayList<User> hoteliers;
     ArrayList<Hotel> hotels;
     ArrayList<HotelGroup> hotel_groups;
 
@@ -33,14 +33,14 @@ public class GetSpecificHotelGroup extends UseCase {
         HotelGroupSearchCriteria  hotel_group_criteria= new HotelGroupSearchCriteria();
         hotel_group_criteria.setHotelGroupID(hotel_group_id);
 
-        HotelGroupHotelierSearchCriteria  hgh_criteria= new HotelGroupHotelierSearchCriteria();
-        hgh_criteria.setHotelGroupID(hotel_group_id);
+        UserSearchCriteria u_criteria= new UserSearchCriteria();
+        u_criteria.setHotelierHotelGroupID(hotel_group_id);
 
         HotelSearchCriteria hotel_criteria = new HotelSearchCriteria();
         hotel_criteria.setHotelGroupId(hotel_group_id);
         try {
             hotel_groups = dataSource.findBySearchCriteria(HotelGroup.class,hotel_group_criteria);
-            hoteliers = dataSource.findBySearchCriteria(HotelGroupHotelier.class,hgh_criteria);
+            hoteliers = dataSource.findBySearchCriteria(User.class,u_criteria);
             hotels = dataSource.findBySearchCriteria(Hotel.class,hotel_criteria);
             succeed();
         } catch (Exception e) {

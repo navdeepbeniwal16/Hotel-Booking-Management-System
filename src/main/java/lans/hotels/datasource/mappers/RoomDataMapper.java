@@ -1,12 +1,10 @@
 package lans.hotels.datasource.mappers;
-import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
-import lans.hotels.domain.room.RoomBuilder;
 
 import java.sql.*;
 import java.util.ArrayList;

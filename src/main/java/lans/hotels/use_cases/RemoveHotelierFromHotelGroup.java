@@ -2,9 +2,9 @@ package lans.hotels.use_cases;
 import lans.hotels.domain.IDataSource;
 import org.json.JSONObject;
 
-public class CreateHotelGroup extends UseCase {
+public class RemoveHotelierFromHotelGroup extends UseCase {
 
-    public CreateHotelGroup(IDataSource dataSource) {
+    public RemoveHotelierFromHotelGroup(IDataSource dataSource) {
         super(dataSource);
     }
 
@@ -18,10 +18,10 @@ public class CreateHotelGroup extends UseCase {
         JSONObject aHG = new JSONObject();
         try {
             if (succeeded) {
-                aHG.put("created", succeeded);
+                aHG.put("removed", succeeded);
             }
         } catch (Exception e) {
-            aHG.put("created", succeeded);
+            aHG.put("removed", succeeded);
             e.printStackTrace();
             setResponseErrorMessage("Server Error: " + e.getMessage());
         }

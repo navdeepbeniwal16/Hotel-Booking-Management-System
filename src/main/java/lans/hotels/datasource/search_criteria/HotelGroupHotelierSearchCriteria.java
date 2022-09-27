@@ -1,13 +1,11 @@
 package lans.hotels.datasource.search_criteria;
 
-import java.util.Date;
-
 public class HotelGroupHotelierSearchCriteria extends AbstractSearchCriteria {
-    Integer hotelGroupID;
+    Integer hotelier_id;
 
     public HotelGroupHotelierSearchCriteria() {
     }
-    public Integer getHotelGroupID() { return this.hotelGroupID; }
-    public void setHotelGroupID(Integer id) { this.hotelGroupID = id; }
+    public Integer getHotelierID() { return this.hotelier_id; }
+    public void setHotelierID(Integer hotelier_id) { this.hotelier_id = hotelier_id; }
 
 }

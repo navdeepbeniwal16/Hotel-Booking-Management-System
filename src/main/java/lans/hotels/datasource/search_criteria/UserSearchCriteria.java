@@ -1,10 +1,13 @@
 package lans.hotels.datasource.search_criteria;
 
+import lans.hotels.domain.user_types.Role;
+
 public class UserSearchCriteria extends AbstractSearchCriteria {
     private Integer userId;
     private String name;
     private String email;
-    private Integer role;
+    private Role role;
+    private Integer hotelier_hotel_group_id;
 
     public UserSearchCriteria() {
     }
@@ -33,13 +36,20 @@ public class UserSearchCriteria extends AbstractSearchCriteria {
         this.email = email;
     }
 
-    public Integer getRole() {
+    public Role getRole() {
         return this.role;
     }
 
-    public void setRole(Integer role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
+    public Integer getHotelierHotelGroupID() {
+        return hotelier_hotel_group_id;
+    }
+
+    public void setHotelierHotelGroupID(Integer hotelier_hotel_group_id) {
+        this.hotelier_hotel_group_id = hotelier_hotel_group_id;
+    }
 
 }

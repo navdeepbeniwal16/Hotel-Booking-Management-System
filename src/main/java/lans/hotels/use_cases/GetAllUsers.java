@@ -53,7 +53,7 @@ public class GetAllUsers extends UseCase {
                 JSONObject userJson;
                 userJson = new JSONObject();
                 userJson.put("id", user.getID());
-                userJson.put("role", user.getRoleId());
+                userJson.put("role", user.getRole().getName());
                 userJson.put("name", user.getName());
                 userJson.put("email", user.getEmail());
                 jsonArray.put(userJson);

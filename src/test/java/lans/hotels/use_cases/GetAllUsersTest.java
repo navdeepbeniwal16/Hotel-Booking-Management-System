@@ -59,7 +59,7 @@ class GetAllUsersTest {
 
         // User domain object
         users = new ArrayList<>();
-        user = new User(1, mockDataSource, name, email, address, role, contact, age);
+        user = new User(1, mockDataSource, name, email, address, role, contact, age,null,null);
         users.add(user);
 
         // JSON

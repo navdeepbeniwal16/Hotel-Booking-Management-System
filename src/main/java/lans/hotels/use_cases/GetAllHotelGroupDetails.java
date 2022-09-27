@@ -1,10 +1,6 @@
 package lans.hotels.use_cases;
-
-import lans.hotels.datasource.search_criteria.HotelGroupHotelierSearchCriteria;
-import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel_group.HotelGroup;
-import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

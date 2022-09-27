@@ -17,6 +17,8 @@ public class User extends ReferenceObject {
     Role role;
     String contact;
     Integer age;
+    Integer hotelier_hotel_group_id;
+    String hotelier_hotel_group_name;
 
     public User(IDataSource dataSource){
         super(dataSource);
@@ -42,8 +44,10 @@ public class User extends ReferenceObject {
                 Address address,
                 Role role,
                 String contact,
-                Integer age
-    ) throws Exception {
+                Integer age,
+                Integer hotelier_hotel_group_id,
+                String hotelier_hotel_group_name
+                ) throws Exception {
         super(dataSource);
         this.name = name;
         this.email = email;
@@ -51,6 +55,8 @@ public class User extends ReferenceObject {
         this.role = role;
         this.contact = contact;
         this.age = age;
+        this.hotelier_hotel_group_id = hotelier_hotel_group_id;
+        this.hotelier_hotel_group_name = hotelier_hotel_group_name;
         markNew();
         markLoaded();
     }
@@ -62,7 +68,9 @@ public class User extends ReferenceObject {
                 Address address,
                 Role role,
                 String contact,
-                Integer age
+                Integer age,
+                Integer hotelier_hotel_group_id,
+                String hotelier_hotel_group_name
                 ) throws Exception {
         super(id, dataSource);
         this.name = name;
@@ -71,6 +79,8 @@ public class User extends ReferenceObject {
         this.role = role;
         this.contact = contact;
         this.age = age;
+        this.hotelier_hotel_group_id = hotelier_hotel_group_id;
+        this.hotelier_hotel_group_name = hotelier_hotel_group_name;
         markClean();
         markLoaded();
     }
@@ -107,13 +117,11 @@ public class User extends ReferenceObject {
         markDirty();
     }
 
-    public Integer getRoleId()
-    {
-        return this.role.id;
-    }
+    public Role getRole() { return this.role; }
 
-    public String getRoleName() {
-        return role.name;
+    public void setRole(Role role) throws UoWException {
+        this.role = role;
+        markDirty();
     }
 
     public String getContact() { return this.contact; }
@@ -126,6 +134,20 @@ public class User extends ReferenceObject {
 
     public void setAge(int age) throws UoWException {
         this.age = age;
+        markDirty();
+    }
+
+    public int getHotelierHotelGroupID() { return this.hotelier_hotel_group_id; }
+
+    public void setHotelierHotelGroupID(Integer hotelier_hotel_group_id) throws UoWException {
+        this.hotelier_hotel_group_id = hotelier_hotel_group_id;
+        markDirty();
+    }
+
+    public String getHotelierHotelGroupName() { return this.hotelier_hotel_group_name; }
+
+    public void getHotelierHotelGroupName(String hotelier_hotel_group_name) throws UoWException {
+        this.hotelier_hotel_group_name = hotelier_hotel_group_name;
         markDirty();
     }
 

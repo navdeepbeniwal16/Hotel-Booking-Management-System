@@ -1,14 +1,15 @@
 package lans.hotels.use_cases;
-
+import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.hotel_group.HotelGroupHotelier;
+import lans.hotels.domain.user_types.Role;
+import lans.hotels.domain.user_types.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class GetAllHoteliers extends UseCase {
-    ArrayList<HotelGroupHotelier> hotleiers;
+    ArrayList<User> hotleiers;
 
     public GetAllHoteliers(IDataSource dataSource) {
         super(dataSource);
@@ -17,8 +18,14 @@ public class GetAllHoteliers extends UseCase {
 
     @Override
     public void doExecute() throws Exception {
+
+        UserSearchCriteria u_criteria= new UserSearchCriteria();
+
+        Role r = new Role(2);
+        u_criteria.setRole(r);
+
         try {
-            hotleiers = dataSource.findAll(HotelGroupHotelier.class);
+            hotleiers = dataSource.findBySearchCriteria(User.class, u_criteria);
             succeed();
         } catch (Exception e) {
             fail();
@@ -56,7 +63,7 @@ public class GetAllHoteliers extends UseCase {
                 userJson.put("name", hotelier.getName());
                 userJson.put("email", hotelier.getEmail());
                 userJson.put("role", hotelier.getRole().getName());
-                userJson.put("hotel_group", hotelier.getHotelGroup());
+                userJson.put("hotel_group", hotelier.getHotelierHotelGroupName());
                 jsonArray.put(userJson);
             });
         } catch (Exception e) {

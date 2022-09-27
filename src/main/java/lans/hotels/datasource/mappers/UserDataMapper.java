@@ -26,12 +26,13 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     @Override
     protected String findStatement() {
         String statement =
-                "SELECT u.id AS id, u.name AS name, u.email, line_1 AS address_l1, line_2 AS address_l2, " +
-                "d.name AS district_name, postcode, city, r.id AS rid, r.name AS role_name, contact, age " +
-                "FROM app_user u " +
-                "LEFT JOIN roles r on u.role = r.id " +
-                "LEFT JOIN ( address a LEFT JOIN district d ON a.district = d.id ) " +
-                "ON u.address = a.id ";
+                "SELECT u.id AS id, u.name AS name, u.email, line_1 AS address_l1, line_2 AS address_l2, \n" +
+                "d.name AS district_name, postcode, city, r.id AS rid, r.name AS role_name, contact, age, \n" +
+                "hg.id AS hotelier_hotel_group_id, hg.name AS hotelier_hotel_group_name\n" +
+                "FROM app_user u \n" +
+                "LEFT JOIN roles r on u.role = r.id \n" +
+                "LEFT JOIN ( address a LEFT JOIN district d ON a.district = d.id ) ON u.address = a.id \n" +
+                "LEFT JOIN ( hotel_group_hotelier hgh JOIN hotel_group hg ON hg.id = hgh.hotel_group_id ) ON hgh.hotelier_id = u.id \n";
         System.out.println("UserDataMapper.findStatement(): " + statement);
         return statement;
     }
@@ -43,10 +44,6 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
 
     @Override
     public ArrayList<User> findAll() throws SQLException {
-        ArrayList<User> users = new ArrayList<>();
-//        String findAllQuery = "SELECT u.id AS uid, u.name, u.email, r.id AS rid" +
-//                " FROM app_user u " +
-//                " LEFT JOIN roles r on u.role = r.id; ";
         try (PreparedStatement statement = connection.prepareStatement(findStatement())) {
             ResultSet resultSet = statement.executeQuery();
             while (load(resultSet) != null) {
@@ -77,18 +74,23 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
             System.out.println(findByStatement);
             System.out.println("ID passed to HotelDataMapper : " + userSearchCriteria.getId());
         }
-        if (userSearchCriteria.getName() != null){
+        else if (userSearchCriteria.getName() != null){
             findByStatement += "WHERE u.name = '" + userSearchCriteria.getName() + "'";
             System.out.println(findByStatement);
             System.out.println("Name passed to HotelDataMapper : " + userSearchCriteria.getId());
         }
-        if (userSearchCriteria.getEmail() != null){
+        else if (userSearchCriteria.getEmail() != null){
             findByStatement += "WHERE u.email = '" + userSearchCriteria.getEmail() + "'";
             System.out.println(findByStatement);
             System.out.println("Email passed to HotelDataMapper : " + userSearchCriteria.getEmail());
         }
-        if (userSearchCriteria.getRole() != null){
-            findByStatement += "WHERE u.role = '" + userSearchCriteria.getRole() + "'";
+        else if (userSearchCriteria.getRole() != null){
+            findByStatement += "WHERE u.role = '" + userSearchCriteria.getRole().getId() + "'";
+            System.out.println(findByStatement);
+            System.out.println("Role passed to HotelDataMapper : " + userSearchCriteria.getRole());
+        }
+        else if (userSearchCriteria.getHotelierHotelGroupID() != null){
+            findByStatement += "WHERE hg.id = '" + userSearchCriteria.getHotelierHotelGroupID() + "'";
             System.out.println(findByStatement);
             System.out.println("Role passed to HotelDataMapper : " + userSearchCriteria.getRole());
         }
@@ -123,6 +125,8 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
         Integer role_id;
         String contact;
         Integer age;
+        Integer hotelier_hotel_group_id;
+        String hotelier_hotel_group_name;
 
         uid = rs.getInt("id");
         name = rs.getString("name");
@@ -135,6 +139,8 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
         postcode = rs.getInt("postcode");
         contact = rs.getString("contact");
         age = rs.getInt("age");
+        hotelier_hotel_group_id = rs.getInt("hotelier_hotel_group_id");
+        hotelier_hotel_group_name = rs.getString("hotelier_hotel_group_name");
 
         District district = new District(district_name);
         Address address = new Address(address_l1,
@@ -153,7 +159,9 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
                     address,
                     role,
                     contact,
-                    age
+                    age,
+                    hotelier_hotel_group_id,
+                    hotelier_hotel_group_name
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,7 +186,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
 
 
         statement.setString(1,u.getEmail());
-        statement.setInt(2,u.getRoleId());
+        statement.setInt(2,u.getRole().getId());
 
         System.out.println(statement);
         ResultSet resultSet = statement.executeQuery();
