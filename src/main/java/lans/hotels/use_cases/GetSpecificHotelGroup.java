@@ -95,13 +95,9 @@ public class GetSpecificHotelGroup extends UseCase {
                         hotel_entry.put("name", hotel.getName());
                         hotel_entry.put("hotel_id", hotel.getID());
                         hotel_entry.put("email", hotel.getEmail());
-                            JSONObject hotel_address = new JSONObject();
-                            hotel_address.put("line_1",hotel_group.getAddress().getLine1());
-                            hotel_address.put("line_2",hotel_group.getAddress().getLine2());
-                            hotel_address.put("district",hotel_group.getAddress().getDistrict().toString());
-                            hotel_address.put("city",hotel_group.getAddress().getCity());
-                            hotel_address.put("postcode",hotel_group.getAddress().getPostCode());
-                        hotel_entry.put("address",hotel_address);
+                        hotel_entry.put("address",(hotel.getAddress().getLine1()+", "+hotel.getAddress().getLine2()
+                        +" ,"+hotel.getAddress().getCity()+" ,"+hotel.getAddress().getPostCode()));
+                        hotel_entry.put("district",hotel.getAddress().getDistrict().toString());
                         hotel_entry.put("contact", hotel.getContact());
                         hotel_entry.put("city", hotel.getCity());
                         hotel_entry.put("pincode", hotel.getPinCode());
