@@ -5,6 +5,7 @@ import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.user_types.Role;
 import lans.hotels.domain.user_types.User;
 import lans.hotels.domain.utils.Address;
@@ -169,7 +170,21 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
 
     @Override
     public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException, UoWException {
-        return null;
+        User u = (User) domainObject;
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO " +
+                "app_user(name,email,address,role,contact,age) " +
+                "VALUES " +
+                "(NULL,?,NULL,?,NULL,NULL) returning * ");
+
+
+        statement.setString(1,u.getEmail());
+        statement.setInt(2,u.getRoleId());
+
+        System.out.println(statement);
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next())
+            return true;
+        else return false;
     }
 
     @Override

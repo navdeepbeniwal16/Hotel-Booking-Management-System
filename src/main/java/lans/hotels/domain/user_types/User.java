@@ -36,6 +36,25 @@ public class User extends ReferenceObject {
         }
     }
 
+    public User(IDataSource dataSource,
+                String name,
+                String email,
+                Address address,
+                Role role,
+                String contact,
+                Integer age
+    ) throws Exception {
+        super(dataSource);
+        this.name = name;
+        this.email = email;
+        this.address = address;
+        this.role = role;
+        this.contact = contact;
+        this.age = age;
+        markNew();
+        markLoaded();
+    }
+
     public User(Integer id,
                 IDataSource dataSource,
                 String name,
@@ -52,11 +71,8 @@ public class User extends ReferenceObject {
         this.role = role;
         this.contact = contact;
         this.age = age;
-        try {
-            markClean();
-        } catch (UoWException e) {
-            e.printStackTrace();
-        }
+        markClean();
+        markLoaded();
     }
 
     public int getID()

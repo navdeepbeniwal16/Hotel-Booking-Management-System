@@ -5,15 +5,13 @@ import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelGroupHotelierSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 import lans.hotels.domain.user_types.Role;
 import lans.hotels.domain.user_types.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<HotelGroupHotelier> {
@@ -117,26 +115,27 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
 
     @Override
     public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException, UoWException {
-        HotelGroupHotelier hgHotelier = (HotelGroupHotelier) domainObject;
-        String createStatement =null;
+//        HotelGroupHotelier hgh = (HotelGroupHotelier) domainObject;
+//        PreparedStatement statement = connection.prepareStatement(
+//                "INSERT INTO " +
+//                "app_user(name,email,address,role,contact,age) " +
+//                "VALUES " +
+//                "(?,?,NULL,3,NULL,NULL) returning * ");
 //
 //
-//        String createStatement = "INSERT INTO hotel_group_hotelier (hotelier_id,hotel_group_id) VALUES ("
-//                + hgHotelier.getHotelierId() + "," + hgHotelier.getHotelGroupId() + ") returning * ";
-
-        System.out.println(createStatement);
-        try (PreparedStatement statement = connection.prepareStatement(createStatement)) {
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next())
-                return true;
-            else return false;
-
-        }
-        catch (SQLException e)
-        {
-            return false;
-        }
+//        if (hgh.getName() == null) {
+//            statement.setNull(1, Types.VARCHAR);
+//        } else {
+//            statement.setString(1,hgh.getName());
+//        }
+//        statement.setString(2,hgh.getEmail());
+//
+//        System.out.println("Insert hotelier query is : \n"+statement);
+//        ResultSet resultSet = statement.executeQuery();
+//        if (resultSet.next())
+//            return true;
+//        else return false;
+        return true;
     }
 
     @Override

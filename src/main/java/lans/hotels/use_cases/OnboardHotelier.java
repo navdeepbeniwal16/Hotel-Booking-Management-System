@@ -1,10 +1,11 @@
 package lans.hotels.use_cases;
+
 import lans.hotels.domain.IDataSource;
 import org.json.JSONObject;
 
-public class CreateHotel extends UseCase {
+public class OnboardHotelier extends UseCase {
 
-    public CreateHotel(IDataSource dataSource) {
+    public OnboardHotelier(IDataSource dataSource) {
         super(dataSource);
     }
 

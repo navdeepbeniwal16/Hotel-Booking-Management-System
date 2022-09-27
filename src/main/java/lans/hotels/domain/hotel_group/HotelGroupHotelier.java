@@ -13,22 +13,28 @@ public class HotelGroupHotelier extends ReferenceObject{
     String hotel_group;
 
 
-    public HotelGroupHotelier(IDataSource dataSource) {
+    public HotelGroupHotelier(IDataSource dataSource) throws UoWException{
         super(dataSource);
-        try {
-            markNew();
-        } catch (UoWException e) {
-            e.printStackTrace();
-        }
+        markNew();
     }
 
-    public HotelGroupHotelier(Integer id, IDataSource dataSource) {
+    public HotelGroupHotelier(Integer id, IDataSource dataSource) throws UoWException{
         super(id, dataSource);
-        try {
-            markClean();
-        } catch (UoWException e) {
-            e.printStackTrace();
-        }
+        markClean();
+    }
+
+    public HotelGroupHotelier(IDataSource dataSource,
+                              String name,
+                              String email,
+                              Role role,
+                              String hg) throws UoWException {
+        super(dataSource);
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.hotel_group = hg;
+        markNew();
+        markLoaded();
     }
 
     public HotelGroupHotelier(Integer id,
@@ -36,17 +42,14 @@ public class HotelGroupHotelier extends ReferenceObject{
                               String name,
                               String email,
                               Role role,
-                              String hotel_group) throws Exception {
+                              String hotel_group) throws UoWException {
         super(id, dataSource);
         this.name = name;
         this.email = email;
         this.role = role;
         this.hotel_group = hotel_group;
-        try {
-            markClean();
-        } catch (UoWException e) {
-            e.printStackTrace();
-        }
+        markClean();
+        markLoaded();
     }
 
     public int getID()

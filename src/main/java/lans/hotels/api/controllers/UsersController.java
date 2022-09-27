@@ -1,22 +1,20 @@
 package lans.hotels.api.controllers;
 
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 
+import lans.hotels.domain.hotel_group.HotelGroupHotelier;
+import lans.hotels.domain.user_types.Role;
 import lans.hotels.domain.user_types.User;
 import lans.hotels.use_cases.GetAllHoteliers;
 import lans.hotels.use_cases.GetAllUsers;
-import lans.hotels.use_cases.UseCase;
-import org.json.JSONArray;
+import lans.hotels.use_cases.OnboardHotelier;
 import org.json.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.io.InvalidObjectException;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class UsersController extends FrontCommand {
     @Override
@@ -89,6 +87,26 @@ public class UsersController extends FrontCommand {
                                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
                         sendJsonResponse(response, useCase.getResult(), statusCode);
                         return;
+
+                    }
+                    else if (body.has("hotelier")) {
+                        User user = getUserFromJSONObject(body);
+
+                        if (user == null)
+                            throw new InvalidObjectException("Failed to parse hotelier object from request body");
+
+                        if (!auth.isAdmin()) {
+                            sendUnauthorizedJsonResponse(response);
+                            return;
+                        }
+                        useCase = new OnboardHotelier(dataSource);
+                        useCase.execute();
+                        statusCode = useCase.succeeded() ?
+                                HttpServletResponse.SC_OK :
+                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                        sendJsonResponse(response, useCase.getResult(), statusCode);
+                        return;
+
                     }
                     else
                     {
@@ -105,30 +123,31 @@ public class UsersController extends FrontCommand {
             }
         }
     }
+    public User getUserFromJSONObject(JSONObject body) {
 
-    public void returnUserJSON(ArrayList<User> users) throws IOException {
-        JSONArray userArray = new JSONArray();
-        PrintWriter out = response.getWriter();
-        response.setStatus(200);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        User user = null;
+        String email = null;
 
-        JSONObject aUser;
-        for (User user: users) {
+        if(body.has("hotelier")) {
+            JSONObject nestedJsonObject = body.getJSONObject("hotelier");
 
-            aUser = new JSONObject();
-            aUser.put("id", user.getId());
-            aUser.put("name",user.getName());
-            aUser.put("address", user.getAddress().toString());
-            aUser.put("role", user.getRoleId());
-            aUser.put("contact", user.getContact());
-            aUser.put("age", user.getAge());
-            userArray.put(aUser);
+            if(nestedJsonObject.has("email"))
+                email = nestedJsonObject.getString("email");
+
+            Role role = null;
+            try {
+                role = new Role(2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                user = new User(dataSource,null,email,null,role,null,null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        JSONObject customerJson = new JSONObject();
-        customerJson.put("result", userArray);
-        out.print(customerJson);
-        out.flush();
+        return user;
     }
 
 }
