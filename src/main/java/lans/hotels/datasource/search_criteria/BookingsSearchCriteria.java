@@ -3,6 +3,7 @@ package lans.hotels.datasource.search_criteria;
 public class BookingsSearchCriteria extends AbstractSearchCriteria {
     private Integer bookingId;
     private Integer customerId;
+    private String customerName;
     private Integer hotelGroupID;
 
     public BookingsSearchCriteria() {
@@ -14,6 +15,14 @@ public class BookingsSearchCriteria extends AbstractSearchCriteria {
 
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
+    }
+
+    public String getCustomerName() {
+        return this.customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public Integer getHotelGroupId() {

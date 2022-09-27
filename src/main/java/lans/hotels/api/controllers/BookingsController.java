@@ -4,6 +4,7 @@ import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
+import lans.hotels.use_cases.ViewCustomerBookings;
 import lans.hotels.use_cases.ViewHotelGroupBookings;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,6 +39,21 @@ public class BookingsController extends FrontCommand {
                             return;
                         }
                         useCase = new ViewHotelGroupBookings(dataSource, hotelGroupID);
+                        useCase.execute();
+                        statusCode = useCase.succeeded() ?
+                                HttpServletResponse.SC_OK :
+                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                        sendJsonResponse(response, useCase.getResult(), statusCode);
+                        return;
+                    }
+
+                    if(searchQuery.has("customer_email")) {
+                        String customer_email = searchQuery.getString("customer_email");
+                        if (!auth.isCustomer()) {
+                            sendUnauthorizedJsonResponse(response);
+                            return;
+                        }
+                        useCase = new ViewCustomerBookings(dataSource, customer_email);
                         useCase.execute();
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :

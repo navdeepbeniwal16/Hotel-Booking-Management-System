@@ -2,11 +2,9 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
-import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.booking.Booking;
-import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.utils.DateRange;
 
 import java.sql.*;
@@ -81,6 +79,10 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         if (bookingsSearchCriteria.getCustomerId() != null){
             statement = connection.prepareStatement(findBy +"b.customer_id = ?");
             statement.setInt(1,bookingsSearchCriteria.getCustomerId());
+        }
+        else if (bookingsSearchCriteria.getCustomerName() != null){
+            statement = connection.prepareStatement(findBy +"u.email = ?");
+            statement.setString(1,bookingsSearchCriteria.getCustomerName());
         }
         else if (bookingsSearchCriteria.getHotelGroupId() != null){
             statement = connection.prepareStatement(findBy + "hotel_group_id = ?");
