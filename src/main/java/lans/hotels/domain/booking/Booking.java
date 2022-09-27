@@ -12,12 +12,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Booking extends ReferenceObject {
-    Integer hotelId;
-    Integer customerId;
-    DateRange dateRange;
-    Boolean isActive;
-    HashMap<Integer, RoomBooking> roomBookings;
-    String hotelName;
+    Integer hotel_id;
+    Integer customer_id;
+    DateRange date_range;
+    Boolean is_active;
+    String hotel_name;
+    String customer_name;
+    HashMap<Integer, RoomBooking> room_bookings;
 
     public Booking(IDataSource dataSource) throws UoWException {
         super(dataSource);
@@ -29,62 +30,108 @@ public class Booking extends ReferenceObject {
         markClean();
     }
 
-   public Booking(Integer id, IDataSource dataSource, Integer hotelId, Integer customerId, DateRange dateRange, Boolean isActive){
+    public Booking(IDataSource dataSource,
+                   Integer hotel_id,
+                   Integer customer_id,
+                   DateRange date_range,
+                   Boolean is_active,
+                   String hotel_name,
+                   String customer_name) throws UoWException {
+        super(dataSource);
+        this.hotel_id = hotel_id;
+        this.customer_id = customer_id;
+        this.date_range = date_range;
+        this.is_active = is_active;
+        this.hotel_name = hotel_name;
+        this.customer_name = customer_name;
+        markNew();
+        markLoaded();
+    }
+
+   public Booking(Integer id,
+                  IDataSource dataSource,
+                  Integer hotel_id,
+                  Integer customer_id,
+                  DateRange date_range,
+                  Boolean is_active,
+                  String hotel_name,
+                  String customer_name) throws UoWException {
        super(id, dataSource);
-       this.hotelId = hotelId;
-       this.customerId = customerId;
-       this.dateRange = dateRange;
-       this.isActive = isActive;
-       initRoomBookings();
+       this.hotel_id = hotel_id;
+       this.customer_id = customer_id;
+       this.date_range = date_range;
+       this.is_active = is_active;
+       this.hotel_name = hotel_name;
+       this.customer_name = customer_name;
+       markClean();
+       markLoaded();
    }
 
     private void initRoomBookings() {
-        this.roomBookings = new HashMap<>();
+        this.room_bookings = new HashMap<>();
     }
 
     public Integer getHotelId() {
-        return hotelId;
+        return hotel_id;
     }
 
     public void setHotelId(Integer hotelId) throws UoWException {
-        this.hotelId = hotelId;
+        this.hotel_id = hotelId;
         markDirty();
     }
 
     public Integer getCustomerId() {
-        return customerId;
+        return customer_id;
     }
 
-    public void setCustomerId(Integer customerId) throws UoWException {
-        this.customerId = customerId;
+    public void setCustomerId(Integer customer_id) throws UoWException {
+        this.customer_id = customer_id;
         markDirty();
     }
 
     public DateRange getDateRange() {
-        return dateRange;
+        return date_range;
     }
 
-    public void setDateRange(DateRange dateRange) throws UoWException {
-        this.dateRange = dateRange;
+    public void setDateRange(DateRange date_range) throws UoWException {
+        this.date_range = date_range;
         markDirty();
     }
 
     public Boolean getActive() {
-        return isActive;
+        return is_active;
     }
 
-    public void setActive(Boolean active) throws UoWException {
-        isActive = active;
+    public void setActive(Boolean is_active) throws UoWException {
+        this.is_active = is_active;
+        markDirty();
+    }
+
+    public String getHotelName() {
+        return this.hotel_name;
+    }
+
+    public void setHotelName(String hotel_name) throws UoWException {
+        this.hotel_name = hotel_name;
+        markDirty();
+    }
+
+    public String getCustomerName() {
+        return this.customer_name;
+    }
+
+    public void setCustomerName(String customer_name) throws UoWException {
+        this.customer_name = customer_name;
         markDirty();
     }
 
     // Fetching room-bookings on the go, either locally from the object, or from the backend if not present locally
     public HashMap<Integer, RoomBooking> getRoomBookings() {
         if(isLoaded()) {
-            return roomBookings;
+            return room_bookings;
         } else {
             loadRemainingData();
-            return roomBookings;
+            return room_bookings;
         }
     }
 
@@ -97,7 +144,7 @@ public class Booking extends ReferenceObject {
             if(roomBookingArrayList.size() > 0) {
                 markLoading();
                 for(RoomBooking roomBooking: roomBookingArrayList) {
-                    roomBookings.put(roomBooking.getId(), roomBooking);
+                    room_bookings.put(roomBooking.getId(), roomBooking);
                 }
                 markLoaded();
             }
@@ -107,20 +154,14 @@ public class Booking extends ReferenceObject {
         }
     }
 
-    public String getHotelName() {
-        if(hotelName != null) return hotelName;
-        else {
-            loadRemainingData();
-            return hotelName;
-        }
-    }
+
 
     private void loadHotelName() {
         HotelSearchCriteria criteria = new HotelSearchCriteria();
         criteria.setId(this.getHotelId());
         try {
             ArrayList<Hotel> hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
-            hotelName = hotels.get(0).getName();
+            hotel_name = hotels.get(0).getName();
         } catch (Exception e) {
             System.out.println("In Booking: Exception while fetching hotel details");
             System.out.println(e.getMessage());
@@ -140,10 +181,10 @@ public class Booking extends ReferenceObject {
     @Override
     public String toString() {
         return "Booking{" +
-                "hotelId=" + hotelId +
-                ", customerId=" + customerId +
-                ", dateRange=" + dateRange +
-                ", isActive=" + isActive +
+                "hotelId=" + hotel_id +
+                ", customerId=" + customer_id +
+                ", dateRange=" + date_range +
+                ", isActive=" + is_active +
                 '}';
     }
 }

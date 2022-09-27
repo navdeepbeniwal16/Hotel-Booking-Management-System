@@ -21,10 +21,11 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     @Override
     protected String findStatement() {
         String statement =
-                "SELECT b.id as id, b.hotel_id as hotel_id, customer_id, hotel_group_id, " +
-                        "start_date, end_date, b.is_active as is_active, " +
+                "SELECT b.id as id, b.hotel_id as hotel_id, b.customer_id, " +
+                        "b.start_date, b.end_date, b.is_active as is_active, " +
+                        "h.hotel_group_id, " +
                         "h.name as hotel_name, " +
-                        "u.name as user_name " +
+                        "u.name as customer_name " +
                         "FROM booking b " +
                         "JOIN hotel h ON h.id = b.hotel_id " +
                         "JOIN app_user u on u.id = b.customer_id ";
@@ -106,8 +107,15 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         DateRange dateRange = new DateRange(resultSet.getDate("start_date"),
                 resultSet.getDate("end_date"));
         Booking booking =
-                new Booking(id,dataSource, resultSet.getInt("hotel_id"),
-                        resultSet.getInt("customer_id"), dateRange, resultSet.getBoolean("is_active"));
+                new Booking(id,
+                        dataSource,
+                        resultSet.getInt("hotel_id"),
+                        resultSet.getInt("customer_id"),
+                        dateRange,
+                        resultSet.getBoolean("is_active"),
+                        resultSet.getString("hotel_name"),
+                        resultSet.getString("customer_name")
+                        );
         return booking;
     }
 

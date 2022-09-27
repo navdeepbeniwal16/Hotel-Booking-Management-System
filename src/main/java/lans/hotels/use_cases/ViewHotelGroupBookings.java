@@ -63,6 +63,9 @@ public class ViewHotelGroupBookings extends UseCase {
                 JSONObject b_entry;
                 b_entry = new JSONObject();
                 b_entry.put("id", booking.getId());
+                b_entry.put("customer_id", booking.getCustomerId());
+                b_entry.put("customer_name", booking.getCustomerName());
+                b_entry.put("hotel_id", booking.getHotelId());
                 b_entry.put("hotel_name", booking.getHotelName());
                 b_entry.put("start_date", booking.getDateRange().getFrom().toString());
                 b_entry.put("end_date", booking.getDateRange().getFrom().toString());

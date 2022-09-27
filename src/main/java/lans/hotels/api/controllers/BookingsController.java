@@ -2,29 +2,19 @@ package lans.hotels.api.controllers;
 
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
-import lans.hotels.datasource.search_criteria.UserSearchCriteria;
-import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
-
-import lans.hotels.domain.hotel_group.HotelGroup;
-
-import lans.hotels.domain.user_types.User;
-import lans.hotels.use_cases.GetSpecificHotelGroup;
 import lans.hotels.use_cases.ViewHotelGroupBookings;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class BookingsController extends FrontCommand {
     @Override
@@ -138,21 +128,6 @@ public class BookingsController extends FrontCommand {
             case HttpMethod.DELETE:
                 break;
         }
-    }
-
-    public JSONObject getRequestBody(HttpServletRequest request) throws IOException {
-        BufferedReader requestReader = request.getReader();
-
-        String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        System.out.println("Request Body Lines + " + lines);
-        JSONObject body;
-        if (lines.length() > 0) {
-            System.out.println(lines);
-            body = new JSONObject(lines);
-        } else {
-            return null;
-        }
-        return body;
     }
 
     public JSONObject getBookingsJson(ArrayList<Booking> bookings) {
