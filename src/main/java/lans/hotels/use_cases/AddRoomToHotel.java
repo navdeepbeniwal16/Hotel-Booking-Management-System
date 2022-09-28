@@ -3,9 +3,9 @@ import lans.hotels.domain.IDataSource;
 import lans.hotels.use_cases.UseCase;
 import org.json.JSONObject;
 
-public class CreateHotelGroup extends UseCase {
+public class AddRoomToHotel extends UseCase {
 
-    public CreateHotelGroup(IDataSource dataSource) {
+    public AddRoomToHotel(IDataSource dataSource) {
         super(dataSource);
     }
 

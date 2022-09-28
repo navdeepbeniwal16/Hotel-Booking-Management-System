@@ -1,5 +1,6 @@
 package lans.hotels.use_cases;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.use_cases.UseCase;
 import org.json.JSONObject;
 
 public class CreateHotel extends UseCase {

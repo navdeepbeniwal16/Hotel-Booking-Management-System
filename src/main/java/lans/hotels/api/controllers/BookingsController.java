@@ -32,13 +32,13 @@ public class BookingsController extends FrontCommand {
                 {
                     JSONObject searchQuery = requestBody.getJSONObject("search");
 
-                    if(searchQuery.has("hotel_group_id")) {
-                        Integer hotelGroupID = searchQuery.getInt("hotel_group_id");
+                    if(searchQuery.has("hotelier_email")) {
+                        String hotelier_email = searchQuery.getString("hotelier_email");
                         if (!auth.isHotelier()) {
                             sendUnauthorizedJsonResponse(response);
                             return;
                         }
-                        useCase = new ViewHotelGroupBookings(dataSource, hotelGroupID);
+                        useCase = new ViewHotelGroupBookings(dataSource, hotelier_email);
                         useCase.execute();
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :

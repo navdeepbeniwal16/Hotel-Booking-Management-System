@@ -2,7 +2,6 @@ package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.HotelGroupHotelierSearchCriteria;
-import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 import lans.hotels.use_cases.AddHotelierToHotelGroup;
 import lans.hotels.use_cases.RemoveHotelierFromHotelGroup;

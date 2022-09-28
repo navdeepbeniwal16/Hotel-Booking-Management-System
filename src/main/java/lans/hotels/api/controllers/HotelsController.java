@@ -1,12 +1,14 @@
 package lans.hotels.api.controllers;
 
-import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
+import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.user_types.User;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
 import lans.hotels.use_cases.*;
+import lans.hotels.use_cases.CreateHotel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -71,6 +73,20 @@ public class HotelsController extends FrontCommand {
                                 sendJsonResponse(response, useCase.getResult(), statusCode);
                                 return;
                             }
+                        }
+                        if(searchQueryBody.has("hotelier_email")) {
+                            String hotelier_email = searchQueryBody.getString("hotelier_email");
+                            if (!auth.isHotelier()) {
+                                sendUnauthorizedJsonResponse(response);
+                                return;
+                            }
+                            useCase = new ViewHotelGroupHotels(dataSource, hotelier_email);
+                            useCase.execute();
+                            statusCode = useCase.succeeded() ?
+                                    HttpServletResponse.SC_OK :
+                                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                            sendJsonResponse(response, useCase.getResult(), statusCode);
+                            return;
                         }
 
                         if (searchQueryBody.has("hotel_group_id")) {
@@ -216,12 +232,31 @@ public class HotelsController extends FrontCommand {
         String contact = "";
         boolean is_active = true;
 
+        if(jsonObject.has("hotelier_email")) {
+            String hotelier_email = jsonObject.getString("hotelier_email");
+
+            ArrayList<User> hoteliers = null;
+
+            UserSearchCriteria u_criteria = new UserSearchCriteria();
+            u_criteria.setEmail(hotelier_email);
+
+            try {
+                hoteliers = dataSource.findBySearchCriteria(User.class, u_criteria);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if(hoteliers.size() > 0) {
+                User hgh = hoteliers.get(0);
+
+                hotel_group_id = hgh.getHotelierHotelGroupID();
+            }
+        }
+
         if(jsonObject.has("hotel")) {
             JSONObject nestedJsonObject = jsonObject.getJSONObject("hotel");
 
-            if(nestedJsonObject.has("hotel_group_id"))
-                hotel_group_id = nestedJsonObject.getInt("hotel_group_id");
-            if(nestedJsonObject.has("h_name"))
+           if(nestedJsonObject.has("h_name"))
                 h_name = nestedJsonObject.getString("h_name");
             if(nestedJsonObject.has("email"))
                 email = nestedJsonObject.getString("email");

@@ -74,13 +74,9 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
             System.out.println(findByStatement);
             System.out.println("ID passed to HotelDataMapper : " + userSearchCriteria.getId());
         }
-        else if (userSearchCriteria.getName() != null){
-            findByStatement += "WHERE u.name = '" + userSearchCriteria.getName() + "'";
-            System.out.println(findByStatement);
-            System.out.println("Name passed to HotelDataMapper : " + userSearchCriteria.getId());
-        }
         else if (userSearchCriteria.getEmail() != null){
-            findByStatement += "WHERE u.email = '" + userSearchCriteria.getEmail() + "'";
+            findByStatement += "WHERE u.email = '" + userSearchCriteria.getEmail() + "' " +
+                    "AND r.id = 2 ";
             System.out.println(findByStatement);
             System.out.println("Email passed to HotelDataMapper : " + userSearchCriteria.getEmail());
         }

@@ -48,14 +48,6 @@ public class UsersController extends FrontCommand {
                             Integer userID = searchQueryBody.getInt("id");
                             if (userID != null) criteria.setId(userID);
                         }
-                        if (searchQueryBody.has("name")) {
-                            String name = searchQueryBody.getString("name");
-                            if (name != null) criteria.setName(name);
-                        }
-                        if (searchQueryBody.has("email")) {
-                            String email = searchQueryBody.getString("email");
-                            if (email != null) criteria.setEmail(email);
-                        }
                         if (searchQueryBody.has("role")) {
                             Integer role = searchQueryBody.getInt("role");
                             Role r = null;

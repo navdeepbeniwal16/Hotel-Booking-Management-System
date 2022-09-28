@@ -51,7 +51,7 @@ public class ChangeHotelStatus extends UseCase {
                 resposeObject.put("updated", succeeded);
             }
         } catch (Exception e) {
-            resposeObject.put("created", succeeded);
+            resposeObject.put("updated", succeeded);
             e.printStackTrace();
             setResponseErrorMessage("Server Error: " + e.getMessage());
         }

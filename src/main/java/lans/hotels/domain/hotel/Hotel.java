@@ -6,14 +6,14 @@ import lans.hotels.domain.ReferenceObject;
 import lans.hotels.domain.utils.Address;
 
 public class Hotel extends ReferenceObject {
-    int hotel_group_id;
+    Integer hotel_group_id;
     String name;
     String email;
     Address address;
     String contact;
     String city;
-    int pin_code;
-    boolean is_active;
+    Integer pin_code;
+    Boolean is_active;
 
     public Hotel(Integer id, IDataSource dataSource, Integer hotel_group_id) throws UoWException {
         super(id, dataSource);

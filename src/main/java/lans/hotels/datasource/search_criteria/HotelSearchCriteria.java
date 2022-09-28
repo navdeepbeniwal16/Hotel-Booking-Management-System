@@ -5,7 +5,6 @@ public class HotelSearchCriteria extends AbstractSearchCriteria {
     Integer id;
     String city;
     Integer hotel_group_id;
-    DateRange date_range;
 
     public HotelSearchCriteria() {
     }

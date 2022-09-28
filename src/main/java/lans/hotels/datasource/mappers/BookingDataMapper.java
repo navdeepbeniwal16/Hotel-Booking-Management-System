@@ -80,9 +80,9 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
             statement = connection.prepareStatement(findBy +"b.customer_id = ?");
             statement.setInt(1,bookingsSearchCriteria.getCustomerId());
         }
-        else if (bookingsSearchCriteria.getCustomerName() != null){
+        else if (bookingsSearchCriteria.getCustomerEmail() != null){
             statement = connection.prepareStatement(findBy +"u.email = ?");
-            statement.setString(1,bookingsSearchCriteria.getCustomerName());
+            statement.setString(1,bookingsSearchCriteria.getCustomerEmail());
         }
         else if (bookingsSearchCriteria.getHotelGroupId() != null){
             statement = connection.prepareStatement(findBy + "hotel_group_id = ?");

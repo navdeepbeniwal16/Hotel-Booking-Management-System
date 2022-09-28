@@ -1,6 +1,8 @@
 package lans.hotels.datasource.mappers;
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.facade.IDataMapper;
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
+import lans.hotels.datasource.search_criteria.RoomSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
@@ -19,9 +21,9 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
 
     @Override
     protected String findStatement() {
-        return "SELECT " + " * " +
-                " FROM " + this.table + " r " +
-                " WHERE r.id = ? ";
+        return "SELECT r.id AS id, number AS room_number , name AS hotel_name, \n" +
+                "hotel_id, type, bed_type, max_occupancy, room_price, r.is_active from room r \n" +
+                "JOIN hotel h ON h.id = r.hotel_id ";
     }
 
     @Override
@@ -55,52 +57,40 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
 
     @Override
     public ArrayList<Room> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
-        return null;
-    }
+        RoomSearchCriteria r_criteria = (RoomSearchCriteria) criteria;
+        String findBy = findStatement() + "WHERE ";
 
-    private Integer prepareAndExecuteInsertion(Room room) {
-        try (PreparedStatement insertStatement = connection.prepareStatement(insertStatement())){
-            insertStatement.setInt(1, room.getHotel().getId());
-            insertStatement.setInt(2, room.getRoomNumber());
-            insertStatement.setInt(3, room.getRoomFloor());
-            insertStatement.setBoolean(4, true);
-            ResultSet keys = insertStatement.executeQuery();
-            if (keys.next()) return keys.getInt("id");
-            System.err.println("RoomMapper error: insertion did not return id");
-            return null;
-        } catch (SQLException e) {
-            System.err.println("Room.prepareAndExecuteInsertion(room): " + e.getMessage());
-            return null;
+        PreparedStatement statement = null;
+        if (r_criteria.getHotelId() != null){
+            statement = connection.prepareStatement(findBy + "hotel_id = ?");
+            statement.setInt(1,r_criteria.getHotelId());
         }
+
+        ResultSet resultSet = statement.executeQuery();
+        Room currentRoom = load(resultSet);
+        while (currentRoom != null) {
+            currentRoom = load(resultSet);
+        }
+        return new ArrayList<>(loadedMap.values());
     }
 
     @Override
-    protected Room doLoad(Integer id, ResultSet resultSet) throws Exception {
-        System.out.println("RoomDataMapper.doLoad():");
-        for (int i = 1; i < resultSet.getMetaData().getColumnCount(); i++) {
-            System.out.println("\t" + i + ". " + resultSet.getMetaData().getColumnName(i));
+    protected Room doLoad(Integer id, ResultSet rs) throws Exception {
+        Room room = null;
+        try {
+            room = new Room(id,
+                    dataSource,
+                    rs.getInt("hotel_id"),
+                    rs.getString("type"),
+                    rs.getInt("max_occupancy"),
+                    rs.getString("bed_type"),
+                    rs.getInt("room_price"),
+                    rs.getInt("room_number"),
+                    rs.getBoolean("is_active"));
+        } catch (UoWException e) {
+            e.printStackTrace();
         }
-        if (!resultSet.next()) return null;
-        ArrayList<Hotel> hotels = dataSource.findAll(Hotel.class);
-
-        Hotel hotel = null;
-        for(Hotel h: hotels) {
-            if (h.getId()==resultSet.getInt("hotel_id")) {
-                hotel = h;
-            }
-        }
-        if (hotel == null) {
-            throw new Exception("ERROR - no hotel with id = " + resultSet.getInt("hotel_id"));
-        }
-
-        return new Room(
-                hotel,
-                resultSet.getInt("number"),
-                resultSet.getInt("floor"),
-                resultSet.getBoolean("is_active"),
-                id,
-                dataSource
-        );
+        return room;
     }
 
     @Override
@@ -109,8 +99,26 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) {
-        return null;
+    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException {
+        Room r = (Room) domainObject;
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO \n" +
+                "room(hotel_id, type, max_occupancy, bed_type, room_price , number, is_active)\n" +
+                "VALUES \n" +
+                "(?, ?, ?, ?, ?, ? , ?) returning * ");
+
+        statement.setInt(1,r.getHotelID());
+        statement.setString(2,r.getType());
+        statement.setInt(3,r.getMaxOccupancy());
+        statement.setString(4,r.getBedType());
+        statement.setInt(5,r.getRoomPrice());
+        statement.setInt(6,r.getRoomNumber());
+        statement.setBoolean(7,r.getIsActive());
+
+        System.out.println(statement.toString());
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next())
+            return true;
+        else return false;
     }
 
     @Override

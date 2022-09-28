@@ -2,12 +2,9 @@ package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
-import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
-import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
-import lans.hotels.use_cases.CreateHotel;
 import lans.hotels.use_cases.CreateHotelGroup;
 import lans.hotels.use_cases.GetAllHotelGroupDetails;
 import lans.hotels.use_cases.GetSpecificHotelGroup;

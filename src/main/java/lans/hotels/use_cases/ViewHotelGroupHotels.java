@@ -1,25 +1,25 @@
 package lans.hotels.use_cases;
 
-import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.booking.Booking;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.user_types.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class ViewHotelGroupBookings extends UseCase {
+public class ViewHotelGroupHotels extends UseCase {
 
     String hotelier_email;
-    ArrayList<Booking> bookings;
+    ArrayList<Hotel> hotels;
 
 
-    public ViewHotelGroupBookings(IDataSource dataSource,String hotelier_email) {
+    public ViewHotelGroupHotels(IDataSource dataSource,String hotelier_email) {
         super(dataSource);
         this.hotelier_email = hotelier_email;
-        this.bookings = new ArrayList<>();
+        this.hotels = new ArrayList<>();
     }
 
     @Override
@@ -35,10 +35,10 @@ public class ViewHotelGroupBookings extends UseCase {
         if(hoteliers.size() > 0) {
             User hgh = hoteliers.get(0);
 
-            BookingsSearchCriteria b_criteria = new BookingsSearchCriteria();
-            b_criteria.setHotelGroupId(hgh.getHotelierHotelGroupID());
+            HotelSearchCriteria h_criteria = new HotelSearchCriteria();
+            h_criteria.setHotelGroupId(hgh.getHotelierHotelGroupID());
             try {
-                bookings = dataSource.findBySearchCriteria(Booking.class, b_criteria);
+                hotels = dataSource.findBySearchCriteria(Hotel.class, h_criteria);
                 succeed();
             } catch (Exception e) {
                 fail();
@@ -63,33 +63,32 @@ public class ViewHotelGroupBookings extends UseCase {
         } finally {
             succeeded();
             responseData.put("success",true);
-            responseData.put("bookings", jsonArray);
+            responseData.put("hotels", jsonArray);
         }
     }
 
     private JSONArray createHotelGroupsJSON() {
         JSONArray jsonArray = new JSONArray();
         try {
-            if (bookings == null) {
+            if (hotels == null) {
                 System.err.println("null bookings");
             }
-            bookings.forEach(booking -> {
+            hotels.forEach(hotel -> {
                 JSONObject b_entry;
                 b_entry = new JSONObject();
-                b_entry.put("id", booking.getId());
-                b_entry.put("customer_id", booking.getCustomerId());
-                b_entry.put("customer_name", booking.getCustomerName());
-                b_entry.put("hotel_id", booking.getHotelId());
-                b_entry.put("hotel_name", booking.getHotelName());
-                b_entry.put("start_date", booking.getDateRange().getFrom().toString());
-                b_entry.put("end_date", booking.getDateRange().getFrom().toString());
-                b_entry.put("is_active", booking.getActive());
+                b_entry.put("id", hotel.getId());
+                b_entry.put("hotel_name", hotel.getName());
+                b_entry.put("hotel_email", hotel.getEmail());
+                b_entry.put("contact", hotel.getContact());
+                b_entry.put("city", hotel.getCity());
+                b_entry.put("pin_code", hotel.getPinCode());
+                b_entry.put("is_active", hotel.getIsActive());
                 jsonArray.put(b_entry);
             });
         } catch (Exception e) {
             e.printStackTrace();
             fail();
-            setResponseErrorMessage("error marshalling hotel group data");
+            setResponseErrorMessage("error marshalling rooms data");
         }
         return jsonArray;
     }

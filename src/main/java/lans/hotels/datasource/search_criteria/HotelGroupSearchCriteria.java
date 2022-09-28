@@ -1,7 +1,7 @@
 package lans.hotels.datasource.search_criteria;
 
 public class HotelGroupSearchCriteria extends AbstractSearchCriteria {
-    Integer hotelGroupID;
+    private Integer hotelGroupID;
     private String name;
 
     public HotelGroupSearchCriteria() {

@@ -1,36 +1,75 @@
 package lans.hotels.api.controllers;
 
 import lans.hotels.api.exceptions.CommandException;
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.domain.room.Room;
-import org.json.JSONArray;
+import lans.hotels.use_cases.AddRoomToHotel;
+import lans.hotels.use_cases.ViewHotelRoomsHotelier;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.io.InvalidObjectException;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class RoomsController extends FrontCommand {
 
     @Override
     protected void concreteProcess() throws CommandException, IOException {
+        String[] commandPath = request.getPathInfo().split("/");
+        int statusCode;
+
         System.out.println("RoomsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
         switch(request.getMethod()) {
             case HttpMethod.GET:
-                try {
-                    handleGet();
-                } catch (Exception e) {
-                    System.err.println("ERROR RoomsContoller:" + e);
-                    throw new CommandException(e.getMessage());
+            case HttpMethod.POST:{
+                JSONObject body = getRequestBody(request);
+
+                if (body.has("search")) {
+                    JSONObject searchQueryBody = body.getJSONObject("search");
+
+                    if (searchQueryBody.has("hotel_id")) {
+                        if (!auth.isHotelier()) {
+                            sendUnauthorizedJsonResponse(response);
+                            return;
+                        }
+                        Integer hotel_id = searchQueryBody.getInt("hotel_id");
+                        if (hotel_id != null){
+                            useCase = new ViewHotelRoomsHotelier(dataSource,hotel_id);
+                            useCase.execute();
+                            statusCode = useCase.succeeded() ?
+                                    HttpServletResponse.SC_OK :
+                                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                            sendJsonResponse(response, useCase.getResult(), statusCode);
+                            return;
+                        }
+                    }
+                    return;
                 }
-                return;
-            case HttpMethod.POST:
-                System.err.println("POST /rooms: ENDPOINT NOT IMPLEMENTED");
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
+                else if (body.has("room")) {
+                    if (!auth.isHotelier()) {
+                        sendUnauthorizedJsonResponse(response);
+                        return;
+                    }
+                    Room r = getRoomFromJsonObject(body);
+
+                    if (r == null)
+                        throw new InvalidObjectException("Failed to parse room object from request body");
+                    useCase = new AddRoomToHotel(dataSource);
+                    useCase.execute();
+                    statusCode = useCase.succeeded() ?
+                            HttpServletResponse.SC_OK :
+                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                    sendJsonResponse(response, useCase.getResult(), statusCode);
+                    return;
+
+                }
+                else {
+                    System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+                    return;
+                }
+            }
             case HttpMethod.PUT:
                 System.err.println("PUT /rooms: NOT IMPLEMENTED");
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -44,71 +83,48 @@ public class RoomsController extends FrontCommand {
         }
     }
 
-    private void handleGet() throws Exception {
-        String[] commandPath = request.getPathInfo().split("/");
-        BufferedReader requestReader = request.getReader();
-        String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        JSONObject body = new JSONObject();
+    public Room getRoomFromJsonObject(JSONObject jsonObject) {
 
-        if (lines.length() > 0) {
-            System.out.println(lines);
-            body = new JSONObject(lines);
-        }
+        Room r = null;
+        Integer hotel_id = null;
+        String type = null;
+        Integer max_occupancy = null;
+        String bed_type = null;
+        Integer room_price = null;
+        Integer number = null;
+        Boolean is_active = true;
 
-        if (commandPath.length == 3) {
-            // GET /api/rooms/:id
-            Integer id;
+
+        if(jsonObject.has("room")) {
+            JSONObject nestedJsonObject = jsonObject.getJSONObject("room");
+
+            if(nestedJsonObject.has("hotel_id"))
+                hotel_id = nestedJsonObject.getInt("hotel_id");
+            if(nestedJsonObject.has("type"))
+                type = nestedJsonObject.getString("type");
+            if(nestedJsonObject.has("max_occupancy"))
+                max_occupancy = nestedJsonObject.getInt("max_occupancy");
+            if(nestedJsonObject.has("bed_type"))
+                bed_type = nestedJsonObject.getString("bed_type");
+            if(nestedJsonObject.has("room_price"))
+                room_price = nestedJsonObject.getInt("room_price");
+            if(nestedJsonObject.has("number"))
+                number = nestedJsonObject.getInt("number");
+
             try {
-                id = Integer.parseInt(commandPath[2]);
-                System.err.println("GET /rooms/:id: NOT IMPLEMENTED");
-                System.err.println(commandPath.toString());
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            } catch (Exception e) {
-                System.err.println("GET /api/rooms/:id: " + Arrays.toString(commandPath));
-                System.err.println("GET /api/rooms/:id: " + e.getMessage());
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
+                r = new Room(dataSource,
+                        hotel_id,
+                        type,
+                        max_occupancy,
+                        bed_type,
+                        room_price,
+                        number,
+                        is_active);
+            } catch (UoWException e) {
+                e.printStackTrace();
             }
-        } else if (commandPath.length==2) {
-            ArrayList<Room> rooms;
-            try {
-                rooms = dataSource.findAll(Room.class);
-            } catch (Exception e) {
-                System.err.println(e);
-                throw new CommandException(e.getMessage());
-            }
-
-            Integer hotelId = null;
-            JSONObject searchQueryBody = null;
-            if (body.has("search")) {
-                searchQueryBody = body.getJSONObject("search");
-                if(searchQueryBody.has("hotel_id")){
-                    hotelId = (Integer) searchQueryBody.get("hotel_id");
-                }
-            }
-
-            JSONArray roomArray = new JSONArray();
-            PrintWriter out = response.getWriter();
-            response.setStatus(200);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            JSONObject aRoom;
-            for (Room room: rooms) {
-                System.out.println(room.toString());
-                aRoom = new JSONObject();
-                if (searchQueryBody==null || (hotelId!=null && hotelId==room.getHotel().getId())) {
-                    aRoom.put("room_id", room.getId());
-                    aRoom.put("hotel_id", room.getHotel().getId());
-                    roomArray.put(aRoom);
-                }
-            }
-
-            JSONObject roomJson = new JSONObject();
-            roomJson.put("result", roomArray);
-            out.print(roomJson);
-            out.flush();
-        } else {
-            System.err.println("GET /rooms: bad request");
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
+        return r;
     }
+
 }
