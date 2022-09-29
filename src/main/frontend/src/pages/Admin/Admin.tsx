@@ -7,7 +7,6 @@ import Col from 'react-bootstrap/Col';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 
-import endpoints from '../../api/endpoints';
 import AppContext from '../../context/AppContext';
 
 import Hotelier from '../../types/HotelierType';
@@ -17,6 +16,7 @@ import { Roles } from '../../types/RoleTypes';
 import HoteliersTable from './HoteliersTable';
 import UsersTable from './UsersTable';
 import UserDataType from '../../types/UserDataType';
+import HotelGroup from '../../types/HotelGroup';
 
 const Admin = () => {
   const tabKeys = {
@@ -27,8 +27,10 @@ const Admin = () => {
   };
   const { user, isLoading, isAuthenticated } = useAuth0();
   const {
+    backend,
     userMetadata: { apiAccessToken, roles },
   } = useContext(AppContext.GlobalContext);
+  const [hotelGroups, setHotelGroups] = useState<HotelGroup[]>([]);
   const [hoteliers, setHoteliers] = useState<Hotelier[]>([]);
   const [hotelGroupHoteliers, setHotelGroupHoteliers] = useState<
     Array<HotelGroupHotelier>
@@ -38,7 +40,7 @@ const Admin = () => {
 
   useEffect(() => {
     const getUsersOnLoad = async () => {
-      const fetchedUsers = await endpoints.getAllUsers(apiAccessToken);
+      const fetchedUsers = await backend.getAllUsers();
       setUsers(fetchedUsers);
     };
     getUsersOnLoad();
@@ -53,18 +55,22 @@ const Admin = () => {
     ) {
       switch (tabKey) {
         case tabKeys.hoteliers:
-          if (!hoteliers.length) {
-            const fetchedHoteliers = await endpoints.getHoteliers(
-              apiAccessToken
-            );
+          if (hoteliers == undefined || !hoteliers.length) {
+            const fetchedHoteliers = await backend.getHoteliers();
+            console.log('Hoteliers tab\n', fetchedHoteliers);
             setHoteliers(fetchedHoteliers);
-            const hgh = await endpoints.getHotelGroupHoteliers(apiAccessToken);
-            setHotelGroupHoteliers(hgh);
+          }
+          break;
+        case tabKeys.hotelGroups:
+          if (!hotelGroups.length) {
+            const fetchedHotelGroups = await backend.getHotelGroups();
+
+            setHotelGroups(fetchedHotelGroups);
           }
           break;
         case tabKeys.users:
           if (!users.length) {
-            const fetchedUsers = await endpoints.getAllUsers(apiAccessToken);
+            const fetchedUsers = await backend.getAllUsers();
             setUsers(fetchedUsers);
           }
           break;
@@ -115,13 +121,7 @@ const Admin = () => {
           <Tab eventKey={tabKeys.hoteliers} title={tabKeys.hoteliers}>
             <Row>
               <Col>
-                <HoteliersTable
-                  apiAccessToken={apiAccessToken}
-                  hoteliers={hoteliers}
-                  hotelGroupHoteliers={hotelGroupHoteliers}
-                  setHoteliers={setHoteliers}
-                  setHotelGroupHoteliers={setHotelGroupHoteliers}
-                />
+                <HoteliersTable hoteliers={hoteliers} />
               </Col>
             </Row>
           </Tab>

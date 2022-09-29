@@ -63,7 +63,10 @@ public class GetAllHoteliers extends UseCase {
                 userJson.put("name", hotelier.getName());
                 userJson.put("email", hotelier.getEmail());
                 userJson.put("role", hotelier.getRole().getName());
-                userJson.put("hotel_group", hotelier.getHotelierHotelGroupName());
+                JSONObject hotelGroupJson = new JSONObject();
+                hotelGroupJson.put("name", hotelier.getHotelierHotelGroupName());
+                hotelGroupJson.put("id", hotelier.getHotelierHotelGroupID());
+                userJson.put("hotel_group", hotelGroupJson);
                 jsonArray.put(userJson);
             });
         } catch (Exception e) {

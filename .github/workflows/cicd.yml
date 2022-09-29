@@ -8,6 +8,10 @@ on:
 
 jobs:
   build_and_test:
+    env:
+      ADMIN_ACCESS_TOKEN: ${{ secrets.ADMIN_ACCESS_TOKEN }}
+      HOTELIER_ACCESS_TOKEN: ${{ secrets.HOTELIER_ACCESS_TOKEN }}
+      CUSTOMER_ACCESS_TOKEN: ${{ secrets.CUSTOMER_ACCESS_TOKEN }}
 
     runs-on: ubuntu-latest
 
