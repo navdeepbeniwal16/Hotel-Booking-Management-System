@@ -9,9 +9,9 @@ type HotelGroup = {
 
 export const defaultHotelGroup: HotelGroup = {
   id: -1,
-  name: 'Hotel Group',
+  name: '',
   address: defaultAddress,
-  phone: '-1',
+  phone: '+61',
 };
 
 export default HotelGroup;
