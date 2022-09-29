@@ -87,6 +87,19 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         else if (bookingsSearchCriteria.getHotelGroupId() != null){
             statement = connection.prepareStatement(findBy + "hotel_group_id = ?");
             statement.setInt(1,bookingsSearchCriteria.getHotelGroupId());
+        } else if (bookingsSearchCriteria.getHotelId() != null){
+            statement = connection.prepareStatement(findBy + "hotel_id = ?");
+            statement.setInt(1,bookingsSearchCriteria.getHotelId());
+        }
+
+        if(statement != null && bookingsSearchCriteria.getStartDate() != null && bookingsSearchCriteria.getEndDate() !=  null) {
+            statement = connection.prepareStatement(statement + " AND " + "(start_date >= ? AND start_date <= ?) OR (end_date >= ? AND end_date <= ?) OR (start_date <= ? AND end_date >= ?)");
+            statement.setDate(1, new java.sql.Date(bookingsSearchCriteria.getStartDate().getTime()));
+            statement.setDate(2, new java.sql.Date(bookingsSearchCriteria.getEndDate().getTime()));
+            statement.setDate(3, new java.sql.Date(bookingsSearchCriteria.getStartDate().getTime()));
+            statement.setDate(4, new java.sql.Date(bookingsSearchCriteria.getEndDate().getTime()));
+            statement.setDate(5, new java.sql.Date(bookingsSearchCriteria.getStartDate().getTime()));
+            statement.setDate(6, new java.sql.Date(bookingsSearchCriteria.getEndDate().getTime()));
         }
 
         System.out.println("Query : "+statement.toString());

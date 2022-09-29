@@ -128,7 +128,8 @@ VALUES
     (9, 'Deluxe', 3, 'Queen', 250, 323, TRUE),
     (9, 'Suite', 3, 'King', 360, 734, TRUE),
     (14, 'Standard', 2, 'Double', 100, 900, TRUE),
-    (14, 'Suite', 3, 'King', 150, 234, TRUE)
+    (14, 'Suite', 3, 'King', 150, 234, TRUE),
+    (14, 'Suite', 4, 'King', 160, 239, TRUE)
 ;
 
 

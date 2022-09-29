@@ -18,7 +18,7 @@ public class Booking extends ReferenceObject {
     Boolean is_active;
     String hotel_name;
     String customer_name;
-    HashMap<Integer, RoomBooking> room_bookings;
+    HashMap<Integer, RoomBooking> room_bookings = new HashMap<>();
 
     public Booking(IDataSource dataSource) throws UoWException {
         super(dataSource);
@@ -45,7 +45,6 @@ public class Booking extends ReferenceObject {
         this.hotel_name = hotel_name;
         this.customer_name = customer_name;
         markNew();
-        markLoaded();
     }
 
    public Booking(Integer id,
@@ -64,7 +63,6 @@ public class Booking extends ReferenceObject {
        this.hotel_name = hotel_name;
        this.customer_name = customer_name;
        markClean();
-       markLoaded();
    }
 
     private void initRoomBookings() {

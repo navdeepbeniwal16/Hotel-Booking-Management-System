@@ -1,16 +1,21 @@
 package lans.hotels.use_cases;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.datasource.search_criteria.RoomSearchCriteria;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ViewHotelRoomsHotelier extends UseCase {
-
     Integer hotel_id;
     ArrayList<Room> rooms;
+    Utils.RoomResultsInclude include;
+    Date startDate;
+    Date endDate;
 
     public ViewHotelRoomsHotelier(IDataSource dataSource, Integer hotel_id) {
         super(dataSource);
@@ -18,14 +23,36 @@ public class ViewHotelRoomsHotelier extends UseCase {
         this.rooms = new ArrayList<>();
     }
 
+    public void setInclude(Utils.RoomResultsInclude include) {
+        this.include = include;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
     @Override
     public void doExecute() throws Exception {
-
         try {
-            RoomSearchCriteria r_criteria = new RoomSearchCriteria();
-            r_criteria.setHotelId(hotel_id);
+            HotelSearchCriteria hotelSearchCriteria = new HotelSearchCriteria();
+            hotelSearchCriteria.setId(hotel_id);
+            ArrayList<Hotel> hotels = dataSource.findBySearchCriteria(Hotel.class, hotelSearchCriteria);
+            if(hotels.size() > 0) {
+                Hotel hotel = hotels.get(0);
 
-            rooms = dataSource.findBySearchCriteria(Room.class,r_criteria);
+                if(include == Utils.RoomResultsInclude.ALL) {
+                    rooms = hotel.getAllRooms();
+                } else if(include == Utils.RoomResultsInclude.AVAILABLE) {
+                    rooms = hotel.getAllAvailableRooms(startDate, endDate);
+                } else {
+                    rooms = hotel.getAllUnAvailableRooms(startDate, endDate);
+                }
+            }
+
             succeed();
         } catch (Exception e) {
             fail();
