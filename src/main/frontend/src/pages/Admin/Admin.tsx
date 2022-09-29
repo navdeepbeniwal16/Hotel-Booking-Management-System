@@ -10,13 +10,15 @@ import Tabs from 'react-bootstrap/Tabs';
 import AppContext from '../../context/AppContext';
 
 import Hotelier from '../../types/HotelierType';
-import HotelGroupHotelier from '../../types/HotelGroupHotelier';
 import { Roles } from '../../types/RoleTypes';
 
 import HoteliersTable from './HoteliersTable';
+import HotelGroupsTable from './HotelGroupsTable';
 import UsersTable from './UsersTable';
 import UserDataType from '../../types/UserDataType';
 import HotelGroup from '../../types/HotelGroup';
+import Hotel from '../../types/HotelType';
+import HotelTable from './HotelTable';
 
 const Admin = () => {
   const tabKeys = {
@@ -30,11 +32,9 @@ const Admin = () => {
     backend,
     userMetadata: { apiAccessToken, roles },
   } = useContext(AppContext.GlobalContext);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
   const [hotelGroups, setHotelGroups] = useState<HotelGroup[]>([]);
   const [hoteliers, setHoteliers] = useState<Hotelier[]>([]);
-  const [hotelGroupHoteliers, setHotelGroupHoteliers] = useState<
-    Array<HotelGroupHotelier>
-  >([]);
   const [tabKey, setTabKey] = useState(tabKeys.users);
   const [users, setUsers] = useState<UserDataType[]>([]);
 
@@ -54,11 +54,10 @@ const Admin = () => {
       roles.includes(Roles.ADMIN)
     ) {
       switch (tabKey) {
-        case tabKeys.hoteliers:
-          if (hoteliers == undefined || !hoteliers.length) {
-            const fetchedHoteliers = await backend.getHoteliers();
-            console.log('Hoteliers tab\n', fetchedHoteliers);
-            setHoteliers(fetchedHoteliers);
+        case tabKeys.users:
+          if (!users.length) {
+            const fetchedUsers = await backend.getAllUsers();
+            setUsers(fetchedUsers);
           }
           break;
         case tabKeys.hotelGroups:
@@ -68,10 +67,16 @@ const Admin = () => {
             setHotelGroups(fetchedHotelGroups);
           }
           break;
-        case tabKeys.users:
-          if (!users.length) {
-            const fetchedUsers = await backend.getAllUsers();
-            setUsers(fetchedUsers);
+        case tabKeys.hoteliers:
+          if (hoteliers == undefined || !hoteliers.length) {
+            const fetchedHoteliers = await backend.getHoteliers();
+            setHoteliers(fetchedHoteliers);
+          }
+          break;
+        case tabKeys.hotels:
+          if (hotels == undefined || !hotels.length) {
+            const fetchHotels = await backend.getAllHotels();
+            setHotels(fetchHotels);
           }
           break;
         default:
@@ -116,7 +121,11 @@ const Admin = () => {
             </Row>
           </Tab>
           <Tab eventKey={tabKeys.hotelGroups} title={tabKeys.hotelGroups}>
-            <p>{`${tabKeys.hotelGroups}`}</p>
+            <Row>
+              <Col>
+                <HotelGroupsTable hotel_groups={hotelGroups} />
+              </Col>
+            </Row>
           </Tab>
           <Tab eventKey={tabKeys.hoteliers} title={tabKeys.hoteliers}>
             <Row>
@@ -126,7 +135,11 @@ const Admin = () => {
             </Row>
           </Tab>
           <Tab eventKey={tabKeys.hotels} title={tabKeys.hotels}>
-            <p>{`${tabKeys.hotels}`}</p>
+            <Row>
+              <Col>
+                <HotelTable hotels={hotels} />
+              </Col>
+            </Row>
           </Tab>
         </Tabs>
       )}

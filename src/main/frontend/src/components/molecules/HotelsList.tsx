@@ -20,10 +20,10 @@ const HotelsList = ({ hotels }: HotelListProps) => {
     <Container>
       {map(hotels, (hotel: Hotel) => {
         return (
-          <Row key={`${hotel.hotel_id}`} xs={1} md={1} className='g-4 mb-4'>
+          <Row key={`${hotel.id}`} xs={1} md={1} className='g-4 mb-4'>
             <Nav.Link
               as={Link}
-              to={`/hotel/${hotel.hotel_id}`}
+              to={`/hotel/${hotel.id}`}
               onClick={() => {
                 context.hotel.setHotel(hotel);
               }}

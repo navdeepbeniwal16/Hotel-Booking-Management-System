@@ -58,17 +58,22 @@ public class SearchHotelsByLocation extends UseCase {
             }
             hotels.forEach(hotel -> {
                 JSONObject hotel_entry = new JSONObject();
+                hotel_entry.put("id", hotel.getID());
                 hotel_entry.put("hotel_group_id", hotel.getHotelGroupID());
                 hotel_entry.put("name", hotel.getName());
-                hotel_entry.put("hotel_id", hotel.getID());
                 hotel_entry.put("email", hotel.getEmail());
-                hotel_entry.put("address",(hotel.getAddress().getLine1()+", "+hotel.getAddress().getLine2()
-                        +" ,"+hotel.getAddress().getCity()+" ,"+hotel.getAddress().getPostCode()));
-                hotel_entry.put("district",hotel.getAddress().getDistrict().toString());
-                hotel_entry.put("contact", hotel.getContact());
-                hotel_entry.put("city", hotel.getCity());
+                hotel_entry.put("phone", hotel.getContact());
                 hotel_entry.put("pincode", hotel.getPinCode());
                 hotel_entry.put("is_active", hotel.getIsActive());
+
+                JSONObject addressJson = new JSONObject();
+                addressJson.put("line_1", hotel.getAddress().getLine1());
+                addressJson.put("line_2", hotel.getAddress().getLine2());
+                addressJson.put("city", hotel.getAddress().getCity());
+                addressJson.put("district", hotel.getAddress().getDistrict());
+                addressJson.put("postcode", hotel.getAddress().getPostCode());
+
+                hotel_entry.put("address", addressJson);
                 hotels_array.put(hotel_entry);
             });
         } catch (Exception e) {

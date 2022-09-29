@@ -9,12 +9,6 @@ interface UserTableProps {
 }
 
 const UsersTable = ({ users }: UserTableProps) => {
-  const roleIdToString = (id: number) => {
-    if (id === 1) return 'Admin';
-    if (id === 2) return 'Hotelier';
-    if (id === 3) return 'Customer';
-    return 'Unknown';
-  };
   return (
     <Table>
       <thead>
@@ -31,7 +25,7 @@ const UsersTable = ({ users }: UserTableProps) => {
             <td>{`${user.id}`}</td>
             <td>{`${user.name}`}</td>
             <td>{`${user.email}`}</td>
-            <td>{`${roleIdToString(user.role)}`}</td>
+            <td>{`${user.role}`}</td>
           </tr>
         ))}
       </tbody>

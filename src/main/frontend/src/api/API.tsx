@@ -1,7 +1,5 @@
 import Hotel from '../types/HotelType';
-import Room from '../types/RoomType';
 import Hotelier from '../types/HotelierType';
-import HotelGroupHotelier from '../types/HotelGroupHotelier';
 import UserDataType from '../types/UserDataType';
 import HotelGroup from '../types/HotelGroup';
 
@@ -32,6 +30,7 @@ class LANS_API {
     this.usersEndpoint = this.baseURL + 'users';
   }
 
+  // Users
   public async getAllUsers(): Promise<UserDataType[]> {
     const res = await fetch(this.usersEndpoint, {
       headers: this.headers,
@@ -40,6 +39,8 @@ class LANS_API {
     const users: Array<UserDataType> = data.result.users;
     return users;
   }
+
+  // Hoteliers
 
   public async getHoteliers(): Promise<Hotelier[]> {
     const res = await fetch(this.usersEndpoint, {
@@ -50,11 +51,11 @@ class LANS_API {
       }),
     });
     const data = await res.json();
-    console.log('getHoteliers:\n', data);
     const hoteliers: Array<Hotelier> = data.result.hoteliers;
     return hoteliers;
   }
 
+  // Hotel groups
   public async getHotelGroups(): Promise<HotelGroup[]> {
     const res = await fetch(this.hotelGroupsEndpoint, {
       headers: this.headers,
@@ -62,6 +63,16 @@ class LANS_API {
     const data = await res.json();
     const hotelGroups: Array<HotelGroup> = data.result.hotel_groups;
     return hotelGroups;
+  }
+
+  // Hotels
+  public async getAllHotels(): Promise<Hotel[]> {
+    const res = await fetch(this.hotelsEndpoint, {
+      headers: this.headers,
+    });
+    const data = await res.json();
+    const hotels: Array<Hotel> = data.result.hotels;
+    return hotels;
   }
 }
 

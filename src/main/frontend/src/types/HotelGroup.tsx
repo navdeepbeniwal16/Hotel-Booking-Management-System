@@ -1,25 +1,16 @@
+import Address, { defaultAddress } from './AddressType';
+
 type HotelGroup = {
   id: number;
   name?: string;
-  address?: {
-    line_1?: string;
-    line_2?: string;
-    city?: string;
-    district?: string;
-    postcode?: number;
-  };
   phone?: string;
+  address?: Address;
 };
 
 export const defaultHotelGroup: HotelGroup = {
   id: -1,
   name: 'Hotel Group',
-  address: {
-    line_1: '100 Collins Street',
-    city: 'Melbourne',
-    district: 'VIC',
-    postcode: 3000,
-  },
+  address: defaultAddress,
   phone: '-1',
 };
 

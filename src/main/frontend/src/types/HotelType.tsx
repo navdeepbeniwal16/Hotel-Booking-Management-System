@@ -1,11 +1,12 @@
 import React, { Dispatch } from 'react';
-
+import Address, { defaultAddress } from './AddressType';
 type Hotel = {
-  address: string;
-  phone: string;
+  id: number;
+  hotel_group_id: number;
   name: string;
-  hotel_id: number;
+  phone: string;
   email: string;
+  address: Address;
 };
 
 export type HotelState = {
@@ -14,11 +15,12 @@ export type HotelState = {
 };
 
 export const defaultHotel: Hotel = {
-  address: '',
-  phone: '',
-  name: '',
-  hotel_id: -1,
-  email: '',
+  id: -1,
+  hotel_group_id: -1,
+  name: 'default hotel',
+  address: defaultAddress,
+  phone: '123',
+  email: 'hotel@default.com',
 };
 
 export const defaultHotelState: HotelState = {

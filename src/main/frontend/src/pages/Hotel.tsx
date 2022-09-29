@@ -22,10 +22,10 @@ const Hotel = () => {
       setRooms(fetchedRooms);
     };
     fetchRooms().catch(console.error);
-  }, [hotelState.hotel.hotel_id, rooms]);
+  }, [hotelState.hotel.id, rooms]);
 
   const renderRoom = (room: Room): ReactNode => {
-    if (room.hotel_id === hotelState.hotel.hotel_id) {
+    if (room.hotel_id === hotelState.hotel.id) {
       return (
         <Row xs={1} md={1} className='g-4 mb-4'>
           <Col>
@@ -59,7 +59,11 @@ const Hotel = () => {
       <h1>{hotelState.hotel.name}</h1>
 
       <div>
-        <p>{hotelState.hotel.address}</p>
+        <p>
+          {hotelState.hotel.address.line_1
+            ? hotelState.hotel.address.line_1
+            : '-'}
+        </p>
       </div>
 
       <h2>Rooms</h2>

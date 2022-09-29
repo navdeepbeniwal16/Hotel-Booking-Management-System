@@ -16,16 +16,16 @@ public class Address {
 
     public Address (String line_1, String line_2, District district, String city, Integer postcode) {
         this.line_1 = line_1;
-        this.line_2 = line_2;
+        this.line_2 = line_2 != null ? line_2 : "";
         this.district = district;
         this.city = city;
         this.postcode = postcode;
     }
     public String toString() {
-        if(line_2!=null)
-            return ""+ line_1 + "," +line_2+","+district+","+city+"-"+postcode;
+        if(line_2!=null && !line_2.equals(""))
+            return ""+ line_1 + ", " +line_2+", "+district+", "+city+", "+postcode;
         else
-            return ""+ line_1 + "," +district+","+city+"-"+postcode;
+            return ""+ line_1 + ", " +district+", "+city+", "+postcode;
     }
 
     public String getLine1 () {

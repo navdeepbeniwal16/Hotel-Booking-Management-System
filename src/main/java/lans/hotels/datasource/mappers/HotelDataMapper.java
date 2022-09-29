@@ -25,8 +25,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
     @Override
     protected String findStatement() {
-        String statement =
-                "SELECT h.id,hotel_group_id, h.name as hotel_name, " +
+        String statement = "SELECT h.id,hotel_group_id, h.name as hotel_name, " +
                         "email,contact,h.city as hotel_city,pin_code,h.is_active as is_active, " +
                         "a.id as address_id,line_1,line_2,a.city as address_city, " +
                         "postcode,d.id as district_id, d.name as district_name " +
