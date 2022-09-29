@@ -57,14 +57,14 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
     @Override
     public ArrayList<RoomBooking> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         RoomBookingSearchCriteria roomBookingSearchCriteria = (RoomBookingSearchCriteria) criteria;
-        String findByCriteriaStatement = "SELECT r.id as id,h.name as hotel_name, start_date, end_date, s.type as room_type, m.id as room_id, r.is_active, no_of_guests,main_guest\n" +
+        String findByCriteriaStatement = "SELECT r.id as id,h.name as hotel_name, start_date, end_date, m.id as room_id, r.is_active, no_of_guests,main_guest\n" +
                 "FROM booking b\n" +
                 "         JOIN ( room_booking r\n" +
                 "    JOIN room m\n" +
                 "    ON r.room_id=m.id)\n" +
                 "              ON b.id = r.booking_id\n" +
                 "         JOIN hotel h ON h.id = b.hotel_id\n" +
-                "         JOIN customer c ON c.id=b.customer_id\n";
+                "         JOIN app_user u ON u.id=b.customer_id\n";
 
         if(roomBookingSearchCriteria.getBookingId()!=null) {
             findByCriteriaStatement += "WHERE b.id ='" + roomBookingSearchCriteria.getBookingId() + "';";
@@ -79,7 +79,6 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
             while (loadedRoomBooking != null) {
                 loadedRoomBooking = load(resultSet);
             }
-            System.out.println("RoomBookingMapper : All Room Bookings loaded...");
             return new ArrayList<>(loadedMap.values());
         } catch (Exception e) {
             System.out.println("Exception occurred at findBySearchCriteria");

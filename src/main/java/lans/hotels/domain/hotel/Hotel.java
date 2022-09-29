@@ -1,9 +1,20 @@
 package lans.hotels.domain.hotel;
 
 import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
+import lans.hotels.datasource.search_criteria.RoomBookingSearchCriteria;
+import lans.hotels.datasource.search_criteria.RoomSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.ReferenceObject;
+import lans.hotels.domain.booking.Booking;
+import lans.hotels.domain.booking.RoomBooking;
+import lans.hotels.domain.room.Room;
 import lans.hotels.domain.utils.Address;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Hotel extends ReferenceObject {
     Integer hotel_group_id;
@@ -12,8 +23,9 @@ public class Hotel extends ReferenceObject {
     Address address;
     String contact;
     String city;
-    Integer pin_code;
-    Boolean is_active;
+    int pin_code;
+    boolean is_active;
+    ArrayList<Room> rooms;
 
     public Hotel(Integer id, IDataSource dataSource, Integer hotel_group_id) throws UoWException {
         super(id, dataSource);
@@ -124,6 +136,64 @@ public class Hotel extends ReferenceObject {
     public void setIs_Active(Boolean is_active) throws UoWException {
         this.is_active = is_active;
         markDirty();
+    }
+
+    public ArrayList<Room> getAllRooms() {
+        RoomSearchCriteria criteria = new RoomSearchCriteria();
+        criteria.setHotelId(this.getID());
+        try {
+            this.rooms = dataSource.findBySearchCriteria(Room.class, criteria);
+        } catch (Exception e) {
+            System.out.println("Exception occurred in Hotel: getAllRooms()");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return rooms;
+    }
+
+    public ArrayList<Room> getAllUnAvailableRooms(Date startDate, Date endDate) {
+        ArrayList<Room> unAvailableRooms = new ArrayList<>();
+        BookingsSearchCriteria bookingsSearchCriteria = new BookingsSearchCriteria();
+        bookingsSearchCriteria.setHotelId(this.getID());
+        bookingsSearchCriteria.setStartDate(startDate);
+        bookingsSearchCriteria.setEndDate(endDate);
+        try {
+            ArrayList<Booking> bookings = dataSource.findBySearchCriteria(Booking.class, bookingsSearchCriteria);
+            for(Booking booking: bookings) {
+                Map<Integer, RoomBooking> roomBookingMap = booking.getRoomBookings();
+                if(roomBookingMap.isEmpty()) throw new RuntimeException("No room bookings are available for Booking with id : " + booking.getId());
+
+                for(Object key: roomBookingMap.keySet()) {
+                    RoomBooking rb = roomBookingMap.get(key);
+                    for(Room room: getAllRooms()) {
+                        if(rb.getRoomId() == room.getId()) {
+                            unAvailableRooms.add(room);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return unAvailableRooms;
+    }
+
+    public ArrayList<Room> getAllAvailableRooms(Date startDate, Date endDate) {
+        ArrayList<Room> allRooms =  getAllRooms();
+        ArrayList<Room> unAvailableRooms = getAllUnAvailableRooms(startDate, endDate);
+        ArrayList<Room> availableRooms = new ArrayList<>();
+        for(Room room: allRooms) {
+            boolean isUnAvailable = false;
+            for(Room unRoom: unAvailableRooms) {
+                if(room.getId() == unRoom.getId()) {
+                    isUnAvailable = true;
+                    break;
+                }
+            }
+            if(!isUnAvailable) availableRooms.add(room);
+        }
+        return availableRooms;
     }
 
     public void remove() throws UoWException {
