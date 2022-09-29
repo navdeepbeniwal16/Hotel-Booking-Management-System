@@ -41,7 +41,6 @@ class LANS_API {
   }
 
   // Hoteliers
-
   public async getHoteliers(): Promise<Hotelier[]> {
     const res = await fetch(this.usersEndpoint, {
       method: 'POST',
@@ -53,6 +52,22 @@ class LANS_API {
     const data = await res.json();
     const hoteliers: Array<Hotelier> = data.result.hoteliers;
     return hoteliers;
+  }
+
+  // HGH
+  public async removeHotelierFromHotelGroup(
+    hotelier_id: number
+  ): Promise<boolean> {
+    const res = await fetch(this.hghEndpoint, {
+      method: 'DELETE',
+      headers: this.headers,
+      body: JSON.stringify({
+        hotel_group_hotelier: { hotelier_id: hotelier_id },
+      }),
+    });
+    const data = await res.json();
+    const success: boolean = data.success;
+    return success;
   }
 
   // Hotel groups

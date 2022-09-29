@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
-
+import { map } from 'lodash';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -16,7 +16,7 @@ import HoteliersTable from './HoteliersTable';
 import HotelGroupsTable from './HotelGroupsTable';
 import UsersTable from './UsersTable';
 import UserDataType from '../../types/UserDataType';
-import HotelGroup from '../../types/HotelGroup';
+import HotelGroup, { defaultHotelGroup } from '../../types/HotelGroup';
 import Hotel from '../../types/HotelType';
 import HotelTable from './HotelTable';
 
@@ -85,6 +85,22 @@ const Admin = () => {
     setTabKey(tabKey);
   };
 
+  const handleRemoveHotelier = (hotelier_id: number): void => {
+    const updatedHoteliers: Hotelier[] = map(
+      hoteliers,
+      (hotelier: Hotelier) => {
+        if (hotelier.id == hotelier_id) {
+          return {
+            ...hotelier,
+            hotel_group: defaultHotelGroup,
+          };
+        }
+        return hotelier;
+      }
+    );
+    setHoteliers(updatedHoteliers);
+  };
+
   return (
     <Container>
       <Row>
@@ -130,7 +146,10 @@ const Admin = () => {
           <Tab eventKey={tabKeys.hoteliers} title={tabKeys.hoteliers}>
             <Row>
               <Col>
-                <HoteliersTable hoteliers={hoteliers} />
+                <HoteliersTable
+                  hoteliers={hoteliers}
+                  removeHotelier={handleRemoveHotelier}
+                />
               </Col>
             </Row>
           </Tab>
