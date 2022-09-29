@@ -15,6 +15,7 @@ import AppContextType from '../types/AppContextType';
 import RoleT from '../types/RoleTypes';
 import JwtT from '../types/JwtType';
 import jwtDecode from 'jwt-decode';
+import LANS_API from '../api/API';
 
 const defaultUser: UserState = {
   username: '',
@@ -33,6 +34,7 @@ const defaultUserMetadata: UserMetadata = {
 };
 
 const defaultGlobalContext = {
+  backend: new LANS_API(''),
   user: defaultUser,
   hotel: defaultHotelState,
   room: defaultRoomState,
@@ -52,6 +54,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
   const [hotel, setHotel] = useState(defaultHotel);
   const [room, setRoom] = useState(defaultRoom);
   const [userMetadata, setUserMetadata] = useState(defaultUserMetadata);
+  const [backend, setBackend] = useState(new LANS_API(''));
 
   const userState = {
     username,
@@ -71,15 +74,18 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
   useEffect(() => {
     const getUserMetadata = async () => {
       let apiAccessToken: string;
+      let lans_api: LANS_API;
       try {
         apiAccessToken = await getAccessTokenSilently({
           audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
         });
+        lans_api = new LANS_API(apiAccessToken);
       } catch (e: any) {
         if (e.error === 'consent_required') {
           apiAccessToken = await getAccessTokenWithPopup({
             audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
           });
+          lans_api = new LANS_API(apiAccessToken);
         } else {
           console.log(e.message);
           throw e;
@@ -93,6 +99,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
 
       const decodedToken: JwtT = jwtDecode(apiAccessToken);
 
+      setBackend(lans_api);
       setUserMetadata((previousMetadata) => {
         const newMetadata = {
           ...previousMetadata,
@@ -112,6 +119,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
   return (
     <GlobalContext.Provider
       value={{
+        backend,
         user: userState,
         hotel: hotelState,
         room: roomState,

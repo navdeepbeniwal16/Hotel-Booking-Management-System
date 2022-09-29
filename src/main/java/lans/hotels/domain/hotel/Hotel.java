@@ -36,7 +36,7 @@ public class Hotel extends ReferenceObject {
 
     public Hotel(IDataSource dataSource,
                  Integer hotel_group_id,
-                 String name, String email,Address address,
+                 String name, String email, Address address,
                  String contact, String city, Integer pin_code, boolean is_active) throws UoWException {
         super(dataSource);
         this.hotel_group_id = hotel_group_id;
@@ -52,7 +52,7 @@ public class Hotel extends ReferenceObject {
     }
 
     public Hotel(Integer id, IDataSource dataSource,
-            Integer hotel_group_id, String name, String email,Address address,
+                 Integer hotel_group_id, String name, String email, Address address,
                  String contact, String city, Integer pin_code, boolean is_active) throws UoWException {
         super(id, dataSource);
         this.hotel_group_id = hotel_group_id;
@@ -70,27 +70,35 @@ public class Hotel extends ReferenceObject {
     public int getID() {
         return id;
     }
+
     public int getHotelGroupID() {
         return this.hotel_group_id;
     }
+
     public String getName() {
         return this.name;
     }
+
     public String getEmail() {
         return this.email;
     }
+
     public Address getAddress() {
         return this.address;
     }
+
     public String getContact() {
         return this.contact;
     }
+
     public String getCity() {
         return this.city;
     }
+
     public int getPinCode() {
         return this.pin_code;
     }
+
     public boolean getIsActive() {
         return this.is_active;
     }
@@ -99,22 +107,27 @@ public class Hotel extends ReferenceObject {
         this.name = name;
         markDirty();
     }
+
     public void setEmail(String email) throws UoWException {
         this.email = email;
         markDirty();
     }
+
     public void setAddress(Address address) throws UoWException {
         this.address = address;
         markDirty();
     }
+
     public void setContact(String contact) throws UoWException {
         this.contact = contact;
         markDirty();
     }
+
     public void setCity(String city) throws UoWException {
         this.city = city;
         markDirty();
     }
+
     public void setPincode(Integer pin_code) throws UoWException {
         this.pin_code = pin_code;
         markDirty();
@@ -184,6 +197,6 @@ public class Hotel extends ReferenceObject {
     }
 
     public void remove() throws UoWException {
-            markRemoved();
+        markRemoved();
     }
 }

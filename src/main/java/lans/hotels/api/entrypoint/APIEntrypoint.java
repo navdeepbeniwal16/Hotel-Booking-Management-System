@@ -28,6 +28,7 @@ public class APIEntrypoint extends HttpServlet {
             // Execute the controller
             command.process();
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("APIFrontController.doGet(): " + e.getMessage());
             e.printStackTrace();
             throw new ServletException("doGet():" + e);

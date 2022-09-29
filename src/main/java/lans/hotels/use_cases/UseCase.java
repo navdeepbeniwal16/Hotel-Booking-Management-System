@@ -7,14 +7,14 @@ import org.json.JSONObject;
 public abstract class UseCase {
     IDataSource dataSource;
     protected boolean succeeded;
-    private JSONObject result;
+    protected JSONObject result;
     protected JSONObject responseData;
 
     protected UseCase(IDataSource dataSource) {
-        result = new JSONObject();
-        responseData = new JSONObject();
+        this.result = new JSONObject();
+        this.responseData = new JSONObject();
         this.dataSource = dataSource;
-        succeeded = false;
+        this.succeeded = false;
     }
 
     public abstract void doExecute() throws Exception;
@@ -48,8 +48,8 @@ public abstract class UseCase {
 
     public JSONObject getResult() {
         constructResult();
-        result.put("success", succeeded());
-        result.put("result", responseData);
+        this.result.put("success", succeeded());
+        this.result.put("result", responseData);
         return this.result;
     }
 

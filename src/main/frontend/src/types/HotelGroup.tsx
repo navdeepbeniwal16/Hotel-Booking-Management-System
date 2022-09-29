@@ -1,14 +1,16 @@
+import Address, { defaultAddress } from './AddressType';
+
 type HotelGroup = {
   id: number;
   name?: string;
-  address?: string;
   phone?: string;
+  address?: Address;
 };
 
 export const defaultHotelGroup: HotelGroup = {
   id: -1,
   name: 'Hotel Group',
-  address: '123 Default Street',
+  address: defaultAddress,
   phone: '-1',
 };
 

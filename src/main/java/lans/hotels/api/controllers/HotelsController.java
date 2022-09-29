@@ -32,21 +32,16 @@ public class HotelsController extends FrontCommand {
             System.err.println("Hotels controller: " + Arrays.toString(commandPath));
             System.err.println("Hotels controller: commandPath.length = " + commandPath.length);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
-            return;
         } else {
             ArrayList<Hotel> hotels;
             switch (request.getMethod()) {
                 case HttpMethod.GET:
-                    try {
-                        hotels = dataSource.findAll(Hotel.class);
-                    } catch (Exception e) {
-                        System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
-                        System.err.println("GET /api/hotels: " + e.getMessage());
-                        System.err.println("GET /api/hotels: " + e.getClass());
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                        return;
-                    }
-                    returnHotelJSON(hotels);
+                    useCase = new GetAllHotels(dataSource);
+                    useCase.execute();
+                    statusCode = useCase.succeeded() ?
+                            HttpServletResponse.SC_OK :
+                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                    sendJsonResponse(response, useCase.getResult(), statusCode);
                     return;
 
                 case HttpMethod.POST: {
