@@ -138,6 +138,22 @@ public class Hotel extends ReferenceObject {
         markDirty();
     }
 
+    public ArrayList<Booking> getBookings(Date startDate, Date endDate) {
+        BookingsSearchCriteria bookingsSearchCriteria = new BookingsSearchCriteria();
+        bookingsSearchCriteria.setHotelId(this.getID());
+        bookingsSearchCriteria.setStartDate(startDate);
+        bookingsSearchCriteria.setEndDate(endDate);
+
+        ArrayList<Booking> bookings = new ArrayList<>();
+        try {
+            bookings = dataSource.findBySearchCriteria(Booking.class, bookingsSearchCriteria);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return bookings;
+    }
+
     public ArrayList<Room> getAllRooms() {
         RoomSearchCriteria criteria = new RoomSearchCriteria();
         criteria.setHotelId(this.getID());
@@ -151,6 +167,7 @@ public class Hotel extends ReferenceObject {
         return rooms;
     }
 
+    // TODO: Refactor to use getBookings() method defined above
     public ArrayList<Room> getAllUnAvailableRooms(Date startDate, Date endDate) {
         ArrayList<Room> unAvailableRooms = new ArrayList<>();
         BookingsSearchCriteria bookingsSearchCriteria = new BookingsSearchCriteria();

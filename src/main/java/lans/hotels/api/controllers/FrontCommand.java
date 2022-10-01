@@ -15,6 +15,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public abstract class FrontCommand implements IFrontCommand  {
@@ -24,6 +27,7 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected HttpServletResponse response;
     protected Auth0Adapter auth;
     protected UseCase useCase;
+    protected DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
     public void init(ServletContext context,
                      HttpServletRequest request,
@@ -66,6 +70,17 @@ public abstract class FrontCommand implements IFrontCommand  {
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
         out.println(responseBody);
+        out.flush();
+    }
+
+    protected void sendJsonErrorResponse(HttpServletResponse response, String errorMessage, int statusCode) throws IOException {
+        response.setStatus(statusCode);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        JSONObject errorBody = new JSONObject();
+        errorBody.put("errorMessage", errorMessage);
+        out.println(errorBody);
         out.flush();
     }
 
