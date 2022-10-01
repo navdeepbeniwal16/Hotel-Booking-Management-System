@@ -37,17 +37,35 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     }
 
     @Override
-    public Booking update(AbstractDomainObject domainObject) {
+    public Booking update(AbstractDomainObject domainObject) throws SQLException {
         Booking booking = (Booking) domainObject;
-        String updateStatement = "UPDATE booking SET is_active = " + booking.getActive()  +  " WHERE id = " + booking.getId() + ";";
+
+        PreparedStatement updateStatement = connection.prepareStatement("UPDATE booking ");
+
+        int criteriasCount = 0;
+        if(booking.getActive() != null) {
+            updateStatement = connection.prepareStatement(updateStatement + "SET is_active = ?");
+            updateStatement.setBoolean(1, booking.getActive());
+            criteriasCount++;
+        }
+
+        if(booking.getDateRange() != null) {
+            updateStatement = connection.prepareStatement(updateStatement + (criteriasCount > 0 ? ", " : "") + "start_date = ?");
+            updateStatement.setDate(1, booking.getDateRange().getFrom());
+            criteriasCount++;
+            updateStatement = connection.prepareStatement(updateStatement + (criteriasCount > 0 ? ", " : "") + "end_date = ?");
+            updateStatement.setDate(1, booking.getDateRange().getTo());
+            criteriasCount++;
+        }
+
+        updateStatement = connection.prepareStatement(updateStatement + " WHERE id = ?;");
+        updateStatement.setInt(1, booking.getId());
 
         System.out.println("UPDATE BOOKING QUERY : ");
         System.out.println(updateStatement);
 
-        try (PreparedStatement statement = connection.prepareStatement(updateStatement)) {
-            statement.executeUpdate();
-//            statement.executeQuery();
-//            connection.commit();
+        try {
+            updateStatement.executeUpdate();
             System.out.println("BookingMapper : Booking with id " + booking.getId() + " updated in DataMapper...");
 
             BookingsSearchCriteria criteria = new BookingsSearchCriteria();
@@ -76,7 +94,10 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         String findBy = findStatement() + "WHERE ";
 
         PreparedStatement statement = null;
-        if (bookingsSearchCriteria.getCustomerId() != null){
+        if(bookingsSearchCriteria.getBookingId() != null) {
+            statement = connection.prepareStatement(findBy + "b.id = ?");
+            statement.setInt(1,bookingsSearchCriteria.getBookingId());
+        } else if (bookingsSearchCriteria.getCustomerId() != null){
             statement = connection.prepareStatement(findBy +"b.customer_id = ?");
             statement.setInt(1,bookingsSearchCriteria.getCustomerId());
         }

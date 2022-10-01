@@ -2,8 +2,11 @@ package lans.hotels.api.controllers;
 
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
+import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.utils.DateRange;
 import lans.hotels.use_cases.ViewCustomerBookings;
 import lans.hotels.use_cases.ViewHotelGroupBookings;
 import org.json.JSONArray;
@@ -13,9 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.sql.Date;
+import java.util.*;
 
 public class BookingsController extends FrontCommand {
     @Override
@@ -82,7 +84,7 @@ public class BookingsController extends FrontCommand {
                             Integer bookingId = bookingJsonBody.getInt("id");
 
                             if(bookingId != null) {
-                                // fetching booking object from the backend
+                                // fetching booking object from the database
                                 BookingsSearchCriteria criteria = new BookingsSearchCriteria();
                                 criteria.setBookingId(bookingId);
                                 try {
@@ -99,7 +101,7 @@ public class BookingsController extends FrontCommand {
                                             booking.setActive(false);
                                         }
 
-                                        if(bookingJsonBody.has("room_bookings") & bookingJsonBody.getJSONArray("room_bookings").length() > 0) {
+                                        if(bookingJsonBody.has("room_bookings") && bookingJsonBody.getJSONArray("room_bookings").length() > 0) {
                                             JSONArray roomBookingsArray = bookingJsonBody.getJSONArray("room_bookings");
                                             for(int rbIndex=0; rbIndex < roomBookingsArray.length(); rbIndex++) {
                                                 JSONObject rbObject = roomBookingsArray.getJSONObject(rbIndex);
@@ -119,6 +121,62 @@ public class BookingsController extends FrontCommand {
                                             }
                                         }
 
+                                        if(bookingJsonBody.has("start_date") && bookingJsonBody.has("end_date")) {
+                                            java.sql.Date startDate;
+                                            java.sql.Date endDate;
+                                            try {
+                                                String startDateString = bookingJsonBody.getString("start_date");
+                                                String endDateString = bookingJsonBody.getString("end_date");
+                                                startDate = new Date(format.parse(startDateString).getTime());
+                                                endDate = new Date(format.parse(endDateString).getTime());
+                                            } catch (Exception e){
+                                                System.err.println("PUT /api/bookings: " + Arrays.toString(commandPath));
+                                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
+                                                return;
+                                            }
+
+                                            Hotel hotel;
+                                            HotelSearchCriteria hotelSearchCriteria = new HotelSearchCriteria();
+                                            hotelSearchCriteria.setId(booking.getHotelId());
+                                            try {
+                                                ArrayList<Hotel> hotels = dataSource.findBySearchCriteria(Hotel.class, hotelSearchCriteria);
+                                                if(hotels.size() < 1) throw new RuntimeException("No hotels found for the booking...");
+
+                                                hotel = hotels.get(0);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                return;
+                                            }
+
+                                            ArrayList<Booking> existingBookings = hotel.getBookings(startDate, endDate);
+                                            HashMap<Integer, RoomBooking> customerRoomBookings = booking.getRoomBookings();
+                                            boolean isRoomBookingClashing = false;
+                                            for (Booking eBooking: existingBookings) {
+                                                if(eBooking.getId() == booking.getId()) continue;
+
+                                                HashMap<Integer, RoomBooking> existingRoomBookings = eBooking.getRoomBookings();
+                                                for(Object eRoomBookingKey: existingRoomBookings.keySet()) {
+                                                    RoomBooking existingRoomBooking = existingRoomBookings.get(eRoomBookingKey);
+                                                    for(Object cRoomBookingKey: customerRoomBookings.keySet()) {
+                                                        RoomBooking customerRoomBooking = customerRoomBookings.get(cRoomBookingKey);
+                                                        if(existingRoomBooking.getRoomId() == customerRoomBooking.getRoomId()) {
+                                                            isRoomBookingClashing = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            if(isRoomBookingClashing) {
+                                                System.err.println("PUT /api/bookings: " + Arrays.toString(commandPath));
+                                                sendJsonErrorResponse(response,"Room Bookings are clashing",400);
+                                                return;
+                                            } else {
+                                                DateRange dateRange = new DateRange(startDate, endDate);
+                                                booking.setDateRange(dateRange);
+                                            }
+                                        }
+
                                         dataSource.commit();
 
                                     } else {
@@ -128,9 +186,9 @@ public class BookingsController extends FrontCommand {
                                     }
 
                                 } catch (Exception e) {
-                                    System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
-                                    System.err.println("GET /api/bookings: " + e.getMessage());
-                                    System.err.println("GET /api/bookings: " + e.getClass());
+                                    System.err.println("PUT /api/bookings: " + Arrays.toString(commandPath));
+                                    System.err.println("PUT /api/bookings: " + e.getMessage());
+                                    System.err.println("PUT /api/bookings: " + e.getClass());
                                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
                                     e.printStackTrace();
                                     return;

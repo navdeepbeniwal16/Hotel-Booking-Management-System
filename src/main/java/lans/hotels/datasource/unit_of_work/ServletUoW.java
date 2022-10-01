@@ -10,7 +10,6 @@ import lans.hotels.domain.AbstractDomainObject;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -132,7 +131,7 @@ public class ServletUoW implements IUnitOfWork {
             dirtyObjects.forEach(obj -> {
                 try {
                     mappers.getMapper(obj.getClass()).update(obj);
-                } catch (MapperNotFoundException e) {
+                } catch (Exception e) {
                     System.err.println(e);
                 }
             });
