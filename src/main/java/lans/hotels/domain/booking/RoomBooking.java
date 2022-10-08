@@ -1,8 +1,10 @@
 package lans.hotels.domain.booking;
 
 import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.DomainValueObject;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.room.Room;
 
 public class RoomBooking extends DomainValueObject {
     private Integer roomId;
@@ -29,7 +31,6 @@ public class RoomBooking extends DomainValueObject {
         this.isActive = true;
         this.mainGuest = mainGuest;
         this.numOfGuests = numOfGuests;
-        markNew();
     }
 
     public RoomBooking(Integer id,
@@ -37,7 +38,7 @@ public class RoomBooking extends DomainValueObject {
                        Integer roomId,
                        Boolean isActive,
                        String mainGuest,
-                       Integer numOfGuests) {
+                       Integer numOfGuests) throws UoWException {
         super(id, dataSource);
         this.roomId = roomId;
         this.isActive = isActive;
@@ -94,5 +95,13 @@ public class RoomBooking extends DomainValueObject {
                 ", mainGuest='" + mainGuest + '\'' +
                 ", numOfGuests=" + numOfGuests +
                 '}';
+    }
+
+    @Override
+    public int compareTo(AbstractDomainObject other) {
+        if (other.getClass() == Room.class || other.getClass() == Booking.class) {
+            return -1;
+        }
+        return super.compareTo(other);
     }
 }

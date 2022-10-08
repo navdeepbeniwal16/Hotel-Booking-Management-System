@@ -100,7 +100,7 @@ public class HotelgroupsController extends FrontCommand {
 
                         boolean success;
                         try {
-                            success = dataSource.insert(HotelGroup.class, hg);
+                            success = dataSource.insert(HotelGroup.class, hg) != -1;
                             System.out.println("HI");
                         } catch (Exception e) {
                             System.err.println("POST /api/hotelgroups: " + e.getMessage());

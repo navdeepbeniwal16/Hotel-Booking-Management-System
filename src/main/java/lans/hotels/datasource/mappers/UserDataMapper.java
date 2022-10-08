@@ -173,7 +173,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException, UoWException {
+    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws SQLException, UoWException {
         User u = (User) domainObject;
         PreparedStatement statement = connection.prepareStatement("INSERT INTO " +
                 "app_user(name,email,address,role,contact,age) " +
@@ -186,9 +186,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
 
         System.out.println(statement);
         ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next())
-            return true;
-        else return false;
+        return resultSet.next() ? resultSet.getInt("id") : -1;
     }
 
     @Override

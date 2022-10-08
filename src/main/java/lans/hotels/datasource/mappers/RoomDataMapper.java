@@ -99,7 +99,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException {
+    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws SQLException {
         Room r = (Room) domainObject;
         PreparedStatement statement = connection.prepareStatement("INSERT INTO \n" +
                 "room(hotel_id, type, max_occupancy, bed_type, room_price , number, is_active)\n" +
@@ -116,9 +116,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
 
         System.out.println(statement.toString());
         ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next())
-            return true;
-        else return false;
+        return resultSet.next() ? resultSet.getInt("id") : -1;
     }
 
     @Override

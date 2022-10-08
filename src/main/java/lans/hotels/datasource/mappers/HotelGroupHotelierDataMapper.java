@@ -74,7 +74,7 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException, UoWException {
+    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws SQLException, UoWException {
         HotelGroupHotelier hgh = (HotelGroupHotelier) domainObject;
         PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO " +
@@ -88,9 +88,7 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
 
         System.out.println("Add hotelier query is : \n"+statement);
         ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next())
-            return true;
-        else return false;
+        return resultSet.next() ? resultSet.getInt("id") : -1;
     }
 
     @Override

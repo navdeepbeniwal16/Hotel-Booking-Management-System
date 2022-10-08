@@ -5,7 +5,7 @@ import lans.hotels.datasource.exceptions.UoWException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public abstract class AbstractDomainObject implements IGhost {
+public abstract class AbstractDomainObject implements IGhost, Comparable<AbstractDomainObject> {
     protected IDataSource dataSource;
     protected Integer hashCode;
     protected Integer id;
@@ -89,4 +89,12 @@ public abstract class AbstractDomainObject implements IGhost {
     protected void markClean() throws UoWException { dataSource.registerClean(this); }
     protected void markDirty() throws UoWException { dataSource.registerDirty(this); }
     protected void markRemoved() throws UoWException  { dataSource.registerRemoved(this); }
+
+
+    public int compareTo(AbstractDomainObject other) {
+        if (!hasId() && !other.hasId()) return 0;
+        if (hasId() && !other.hasId()) return 1;
+        if (!hasId() && other.hasId()) return -1;
+        return (id - other.id > 0) ? 1 : -1;
+    }
 }

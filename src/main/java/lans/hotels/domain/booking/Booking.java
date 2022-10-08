@@ -25,7 +25,11 @@ public class Booking extends ReferenceObject {
         markNew();
     }
 
-    public Booking(IDataSource dataSource, Integer customerId, Integer hotelId, DateRange dateRange, HashMap<Integer, RoomBooking> roomBookings) throws UoWException {
+    public Booking(IDataSource dataSource,
+                   Integer customerId,
+                   Integer hotelId,
+                   DateRange dateRange,
+                   HashMap<Integer, RoomBooking> roomBookings) throws UoWException {
         super(dataSource);
         this.customer_id = customerId;
         this.hotel_id = hotelId;

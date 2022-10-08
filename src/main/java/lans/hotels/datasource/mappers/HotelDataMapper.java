@@ -27,7 +27,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     protected String findStatement() {
         String statement = "SELECT h.id,hotel_group_id, h.name as hotel_name, " +
                         " email,contact,h.city as hotel_city,pin_code,h.is_active as is_active, " +
-                        " a.id as address_id,rline_1,line_2,a.city as address_city, " +
+                        " a.id as address_id, line_1, line_2, a.city as address_city, " +
                         " postcode,d.id as district_id, d.name as district_name " +
                         " FROM hotel h " +
                         " JOIN (address a " +
@@ -132,7 +132,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws SQLException {
+    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws SQLException {
         Hotel h = (Hotel) domainObject;
         PreparedStatement statement = connection.prepareStatement("WITH insert_address AS ( " +
                 "INSERT INTO address (line_1, line_2, district, city, postcode) " +
@@ -156,9 +156,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
 
         System.out.println(statement.toString());
         ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next())
-                return true;
-            else return false;
+        return resultSet.next() ? resultSet.getInt("id") : -1;
     }
 
     @Override

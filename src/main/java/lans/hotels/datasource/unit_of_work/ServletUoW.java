@@ -10,6 +10,8 @@ import lans.hotels.domain.AbstractDomainObject;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -115,25 +117,27 @@ public class ServletUoW implements IUnitOfWork {
     @Override
     public void commit(Connection connection, IMapperRegistry mappers) throws Exception {
         try {
-            newObjects.forEach(obj -> {
+            ArrayList<AbstractDomainObject> newObjectsList = new ArrayList<>(newObjects);
+            newObjectsList.sort(Comparator.naturalOrder());
+            newObjectsList.forEach(obj -> {
                 try {
                     mappers.getMapper(obj.getClass()).insert(obj);
                 } catch (Exception e) {
-                    System.err.println(e);
+                    e.printStackTrace();
                 }
             });
             dirtyObjects.forEach(obj -> {
                 try {
                     mappers.getMapper(obj.getClass()).update(obj);
                 } catch (Exception e) {
-                    System.err.println(e);
+                    e.printStackTrace();
                 }
             });
             removedObjects.forEach(obj -> {
                 try {
                     mappers.getMapper(obj.getClass()).delete(obj.getId());
                 } catch (MapperNotFoundException e) {
-                    System.err.println(e);
+                    e.printStackTrace();
                 }
                 identityMaps.get(obj.getClass()).remove(obj.getId());
             });

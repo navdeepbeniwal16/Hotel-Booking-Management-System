@@ -5,6 +5,7 @@ import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.booking.Booking;
+import lans.hotels.domain.booking.RoomBooking;
 import lans.hotels.domain.utils.DateRange;
 
 import java.sql.*;
@@ -32,8 +33,38 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) {
-        return null;
+    protected String insertStatement() {
+        return "INSERT INTO " + " booking " +
+                " VALUES " +
+                " (DEFAULT, ?, ?, ?, ?, TRUE) " +
+                " RETURNING *;";
+    }
+
+    @Override
+    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws SQLException {
+        Booking booking = (Booking) domainObject;
+        String sql = "WITH new_booking AS ( " +
+                         " INSERT INTO booking (hotel_id, customer_id, start_date, end_date, is_active) " +
+                         " VALUES (" + booking.getHotelId() + ", " + booking.getCustomerId() +
+                         ", " + "'" + booking.getDateRange().getFrom().toString() + "'" +
+                         ", " + "'" + booking.getDateRange().getTo().toString() + "'" +
+                         ", " + true + ") " +
+                         " RETURNING id " +
+                     " ) INSERT INTO room_booking (booking_id, room_id, is_active, main_guest, no_of_guests) " +
+                     " VALUES ";
+
+        for(RoomBooking roomBooking: booking.getRoomBookings().values()) {
+            sql = sql +
+                    " ( (SELECT id FROM new_booking), " + roomBooking.getRoomId() + ", " + true + ", "
+                    + "'" + roomBooking.getMainGuest() + "'" +
+                    ", " + roomBooking.getNumOfGuests()  + " ), ";
+        }
+        sql = sql.substring(0, sql.length() - 2);
+        sql = sql + " RETURNING * ; ";
+//        System.out.println("---- BOOKING SQL ----\n" + sql + "\n---- END SQL ----");
+        PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet resultSet = statement.executeQuery();
+        return resultSet.next() ? resultSet.getInt("id") : -1;
     }
 
     @Override
@@ -133,10 +164,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         return new ArrayList<>(loadedMap.values());
     }
 
-    @Override
-    protected String insertStatement() {
-        return null;
-    }
+
 
     @Override
     protected Booking doLoad(Integer id, ResultSet resultSet) throws Exception {

@@ -22,8 +22,17 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
 
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Boolean insert(DomainObject domainObject) throws Exception {
-        return null;
+    protected String insertStatement() {
+        return "INSERT INTO " +
+                " room_booking " +
+                " VALUES " +
+                " (DEFAULT, b.id, ?, TRUE, ?, ?) " + // (int), int: booking_id, int: room_id, (bool), string: guestName, int: numGuests
+                " RETURNING *;";
+    }
+
+    @Override
+    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws Exception {
+        return -1;
     }
 
     @Override
@@ -90,11 +99,6 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
 
     @Override
     protected String findStatement() {
-        return null;
-    }
-
-    @Override
-    protected String insertStatement() {
         return null;
     }
 
