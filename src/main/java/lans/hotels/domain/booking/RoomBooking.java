@@ -20,7 +20,24 @@ public class RoomBooking extends DomainValueObject {
         markClean();
     }
 
-    public RoomBooking(Integer id, IDataSource dataSource, Integer roomId, Boolean isActive, String mainGuest, Integer numOfGuests) {
+    public RoomBooking(IDataSource dataSource,
+                       Integer roomId,
+                       String mainGuest,
+                       Integer numOfGuests) throws UoWException {
+        super(dataSource);
+        this.roomId = roomId;
+        this.isActive = true;
+        this.mainGuest = mainGuest;
+        this.numOfGuests = numOfGuests;
+        markNew();
+    }
+
+    public RoomBooking(Integer id,
+                       IDataSource dataSource,
+                       Integer roomId,
+                       Boolean isActive,
+                       String mainGuest,
+                       Integer numOfGuests) {
         super(id, dataSource);
         this.roomId = roomId;
         this.isActive = isActive;

@@ -28,6 +28,7 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected Auth0Adapter auth;
     protected UseCase useCase;
     protected DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+    protected JSONObject requestBody = new JSONObject();
 
     public void init(ServletContext context,
                      HttpServletRequest request,
@@ -44,6 +45,7 @@ public abstract class FrontCommand implements IFrontCommand  {
         if (context == null || request == null || response == null || dataSource == null) {
             throw new CommandException(this.getClass() + " must be initialised by it can process a command.");
         }
+        requestBody = getRequestBody(request);
         concreteProcess();
     }
 
@@ -51,12 +53,10 @@ public abstract class FrontCommand implements IFrontCommand  {
 
     protected JSONObject getRequestBody(HttpServletRequest request) throws IOException {
         BufferedReader requestReader = request.getReader();
-
         String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-//        System.out.println("Request Body Lines + ");
         JSONObject body;
         if (lines.length() > 0) {
-            System.out.println(lines);
+            System.out.println("FrontCommand.getRequestBody():\n" + lines);
             body = new JSONObject(lines);
         } else {
             return null;

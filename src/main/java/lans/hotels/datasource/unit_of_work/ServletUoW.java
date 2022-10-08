@@ -79,12 +79,6 @@ public class ServletUoW implements IUnitOfWork {
         if (removedObjects.contains(obj)) throw new UoWException("attempting to register a 'removed' object as 'new'.");
         if (newObjects.contains(obj)) throw new UoWException("attempting to register a 'new' multiple times.");
 
-        try {
-            identityMaps.get(obj.getClass()).add(obj);
-        } catch (IdentityMapException e) {
-            System.err.println("ERROR UoW.registerNew(): " + e.getMessage());
-            throw new UoWException(e.getMessage());
-        }
         newObjects.add(obj);
     }
 

@@ -18,10 +18,19 @@ public class Booking extends ReferenceObject {
     Boolean is_active;
     String hotel_name;
     String customer_name;
-    HashMap<Integer, RoomBooking> room_bookings = new HashMap<>();
+    HashMap<Integer, RoomBooking> roomBookings = new HashMap<>();
 
     public Booking(IDataSource dataSource) throws UoWException {
         super(dataSource);
+        markNew();
+    }
+
+    public Booking(IDataSource dataSource, Integer customerId, Integer hotelId, DateRange dateRange, HashMap<Integer, RoomBooking> roomBookings) throws UoWException {
+        super(dataSource);
+        this.customer_id = customerId;
+        this.hotel_id = hotelId;
+        this.date_range = dateRange;
+        this.roomBookings = roomBookings;
         markNew();
     }
 
@@ -65,8 +74,12 @@ public class Booking extends ReferenceObject {
        markClean();
    }
 
+//   public void addRoom(RoomBooking roomBooking) {
+//        this.roomBookings.put(roomBooking.getRoomId(), roomBooking);
+//   }
+
     private void initRoomBookings() {
-        this.room_bookings = new HashMap<>();
+        this.roomBookings = new HashMap<>();
     }
 
     public Integer getHotelId() {
@@ -126,10 +139,10 @@ public class Booking extends ReferenceObject {
     // Fetching room-bookings on the go, either locally from the object, or from the backend if not present locally
     public HashMap<Integer, RoomBooking> getRoomBookings() {
         if(isLoaded()) {
-            return room_bookings;
+            return roomBookings;
         } else {
             loadRemainingData();
-            return room_bookings;
+            return roomBookings;
         }
     }
 
@@ -142,7 +155,7 @@ public class Booking extends ReferenceObject {
             if(roomBookingArrayList.size() > 0) {
                 markLoading();
                 for(RoomBooking roomBooking: roomBookingArrayList) {
-                    room_bookings.put(roomBooking.getId(), roomBooking);
+                    roomBookings.put(roomBooking.getId(), roomBooking);
                 }
                 markLoaded();
             }

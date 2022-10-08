@@ -104,6 +104,7 @@ public class Auth0Adapter {
             authenticated = true;
         } catch (Exception e) {
             authenticated = false;
+            e.printStackTrace();
         }
     }
 

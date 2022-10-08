@@ -1,0 +1,70 @@
+package lans.hotels.use_cases;
+
+import lans.hotels.api.exceptions.CommandException;
+import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.booking.Booking;
+import lans.hotels.domain.booking.RoomBooking;
+import lans.hotels.domain.utils.DateRange;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+
+public class CreateBooking extends UseCase {
+    JSONObject bookingJson;
+    Booking booking;
+    public CreateBooking(IDataSource dataSource, JSONObject bookingJson) {
+        super(dataSource);
+        this.bookingJson = bookingJson;
+    }
+
+    @Override
+    public void doExecute() throws Exception {
+        booking = createBookingFromJson(bookingJson);
+    }
+
+    @Override
+    protected void constructResult() {
+
+    }
+
+    private Booking createBookingFromJson(JSONObject bookingJson) throws CommandException {
+        Booking booking;
+        try {
+            Integer customerId = (Integer) bookingJson.get("customer_id");
+            Integer hotelId = (Integer) bookingJson.get("hotel_id");
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            Date startDate = Date.valueOf(LocalDate.parse((String) bookingJson.get("start_date"), formatter));
+            Date endDate = Date.valueOf(LocalDate.parse((String) bookingJson.get("end_date"), formatter));
+            DateRange dateRange = new DateRange(startDate, endDate);
+
+            JSONArray roomsJson = bookingJson.getJSONArray("rooms");
+            HashMap<Integer, RoomBooking> roomBookings = new HashMap<>();
+            for(int i = 0; i < roomsJson.length(); i++) {
+                JSONObject roomJson = roomsJson.getJSONObject(i);
+                RoomBooking roomBooking;
+                try {
+                    roomBooking = new RoomBooking(dataSource,
+                            roomJson.getInt("room_id"),
+                            roomJson.getString("main_guest_name"),
+                            roomJson.getInt("no_of_guests"));
+                } catch (UoWException e) {
+                    throw e;
+                }
+                roomBookings.put(roomBooking.getRoomId(), roomBooking);
+            }
+
+            booking = new Booking(dataSource, hotelId, customerId, dateRange, roomBookings);
+        } catch (Exception e) {
+            System.err.println("Booking JSON:\n" + bookingJson);
+            e.printStackTrace();
+            throw new CommandException("internal server error");
+        }
+        return booking;
+    }
+}

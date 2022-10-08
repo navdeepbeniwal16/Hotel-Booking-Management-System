@@ -1,15 +1,18 @@
 package lans.hotels.api.controllers;
 
 import lans.hotels.api.exceptions.CommandException;
+import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.utils.DateRange;
+import lans.hotels.use_cases.CreateBooking;
 import lans.hotels.use_cases.ViewCustomerBookings;
 import lans.hotels.use_cases.ViewHotelGroupBookings;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,16 +20,30 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class BookingsController extends FrontCommand {
     @Override
-    protected void concreteProcess() throws CommandException, IOException, SQLException {
+    protected void concreteProcess() throws IOException {
         String[] commandPath = request.getPathInfo().split("/");
         int statusCode;
         switch (request.getMethod()) {
             case HttpMethod.GET:
             case HttpMethod.POST:
+                System.out.println(auth);
+                if (requestBody.has("booking") && (auth.isCustomer() || auth.isHotelier())) {
+                    try {
+                        useCase = new CreateBooking(dataSource, requestBody.getJSONObject("booking"));
+                        useCase.execute();
+                        sendJsonResponse(response, useCase.getResult(), HttpServletResponse.SC_OK);
+                        break;
+                    } catch (Exception e) {
+                        sendJsonErrorResponse(response, e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
+                        break;
+                    }
+                }
             {
                 JSONObject requestBody = getRequestBody(request);
 
@@ -239,18 +256,5 @@ public class BookingsController extends FrontCommand {
 
         jsonBookingsObject.put("result", nestedBookingsArray);
         return jsonBookingsObject;
-    }
-
-    public void sendResponse(JSONObject jsonObject) {
-        try {
-            PrintWriter out = response.getWriter();
-            response.setStatus(200);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            out.print(jsonObject);
-            out.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
