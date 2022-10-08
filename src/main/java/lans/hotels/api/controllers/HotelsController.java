@@ -72,7 +72,7 @@ public class HotelsController extends FrontCommand {
                         if(searchQueryBody.has("hotelier_email")) {
                             String hotelier_email = searchQueryBody.getString("hotelier_email");
                             if (!auth.isHotelier()) {
-                                sendUnauthorizedJsonResponse(response);
+                                sendUnauthorizedJsonResponse();
                                 return;
                             }
                             useCase = new ViewHotelGroupHotels(dataSource, hotelier_email);
@@ -109,7 +109,7 @@ public class HotelsController extends FrontCommand {
                             throw new InvalidObjectException("Failed to parse hotel object from request body");
 
                         if (!auth.isHotelier()) {
-                            sendUnauthorizedJsonResponse(response);
+                            sendUnauthorizedJsonResponse();
                             return;
                         }
                         useCase = new CreateHotel(dataSource);

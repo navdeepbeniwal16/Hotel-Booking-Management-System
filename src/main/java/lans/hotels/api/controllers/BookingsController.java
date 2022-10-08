@@ -25,9 +25,7 @@ public class BookingsController extends FrontCommand {
         switch (request.getMethod()) {
             case HttpMethod.GET:
             case HttpMethod.POST:
-                System.out.println(auth);
-                boolean allowedToCreateBookings = auth.isCustomer() || auth.isHotelier();
-                if (requestBody.has("booking") && allowedToCreateBookings) {
+                if (requestBody.has("booking")) {
                     handleCreateNewBooking();
                     break;
                 }
@@ -41,7 +39,7 @@ public class BookingsController extends FrontCommand {
                     if(searchQuery.has("hotelier_email")) {
                         String hotelier_email = searchQuery.getString("hotelier_email");
                         if (!auth.isHotelier()) {
-                            sendUnauthorizedJsonResponse(response);
+                            sendUnauthorizedJsonResponse();
                             return;
                         }
                         useCase = new ViewHotelGroupBookings(dataSource, hotelier_email);
@@ -56,7 +54,7 @@ public class BookingsController extends FrontCommand {
                     if(searchQuery.has("customer_email")) {
                         String customer_email = searchQuery.getString("customer_email");
                         if (!auth.isCustomer()) {
-                            sendUnauthorizedJsonResponse(response);
+                            sendUnauthorizedJsonResponse();
                             return;
                         }
                         useCase = new ViewCustomerBookings(dataSource, customer_email);
@@ -246,6 +244,15 @@ public class BookingsController extends FrontCommand {
     }
 
     private void handleCreateNewBooking() throws IOException {
+        boolean allowedToCreateBookings = auth.isCustomer() || auth.isHotelier();
+        if (allowedToCreateBookings) {
+            executeCreateNewBooking();
+        } else {
+            sendUnauthorizedJsonResponse();
+        }
+    }
+
+    private void executeCreateNewBooking() throws IOException {
         try {
             useCase = new CreateBooking(dataSource, requestBody.getJSONObject("booking"));
             useCase.execute();

@@ -31,7 +31,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                         throw new InvalidObjectException("Failed to parse hotel object from request body");
 
                     if (!auth.isAdmin()) {
-                        sendUnauthorizedJsonResponse(response);
+                        sendUnauthorizedJsonResponse();
                         return;
                     }
                     useCase = new AddHotelierToHotelGroup(dataSource);
@@ -51,7 +51,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                 return;
             case HttpMethod.DELETE: {
                 if (!auth.isAdmin()) {
-                    sendUnauthorizedJsonResponse(response);
+                    sendUnauthorizedJsonResponse();
                     return;
                 }
 

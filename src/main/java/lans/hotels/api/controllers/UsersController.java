@@ -27,7 +27,7 @@ public class UsersController extends FrontCommand {
             switch (request.getMethod()) {
                 case HttpMethod.GET:
                     if (!auth.isAdmin()) {
-                        sendUnauthorizedJsonResponse(response);
+                        sendUnauthorizedJsonResponse();
                         return;
                     }
                     useCase = new GetAllUsers(dataSource);
@@ -66,7 +66,7 @@ public class UsersController extends FrontCommand {
 
                         if (userType.equals("hotelier")) {
                             if (!auth.isAdmin()) {
-                                sendUnauthorizedJsonResponse(response);
+                                sendUnauthorizedJsonResponse();
                                 return;
                             }
                             useCase = new GetAllHoteliers(dataSource);
@@ -89,7 +89,7 @@ public class UsersController extends FrontCommand {
                             throw new InvalidObjectException("Failed to parse hotelier object from request body");
 
                         if (!auth.isAdmin()) {
-                            sendUnauthorizedJsonResponse(response);
+                            sendUnauthorizedJsonResponse();
                             return;
                         }
                         useCase = new OnboardHotelier(dataSource);

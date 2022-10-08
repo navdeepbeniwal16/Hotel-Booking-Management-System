@@ -148,6 +148,6 @@ INSERT INTO room_booking(booking_id,room_id,is_active,main_guest,no_of_guests)
            (1,12,TRUE,'Bertrand Russell',2),
            (1,13,TRUE,'Arman Arethna',2),
            (2,2,TRUE,'Elvis Presley',1),
-           (2,2,TRUE,'John Lennon',2),
+           (2,3,TRUE,'John Lennon',2),
            (3,2,TRUE,'AR Rahman',2)
 ;

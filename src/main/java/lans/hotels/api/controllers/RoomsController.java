@@ -78,7 +78,7 @@ public class RoomsController extends FrontCommand {
                                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
                             sendJsonResponse(response, viewHotelRoomsHotelierUC.getResult(), statusCode);
                         } else {
-                            sendUnauthorizedJsonResponse(response);
+                            sendUnauthorizedJsonResponse();
                         }
                         return;
 
@@ -87,7 +87,7 @@ public class RoomsController extends FrontCommand {
                 }
                 else if (body.has("room")) {
                     if (!auth.isHotelier()) {
-                        sendUnauthorizedJsonResponse(response);
+                        sendUnauthorizedJsonResponse();
                         return;
                     }
                     Room r = getRoomFromJsonObject(body);

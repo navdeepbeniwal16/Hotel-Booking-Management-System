@@ -82,7 +82,7 @@ public abstract class FrontCommand implements IFrontCommand  {
         out.flush();
     }
 
-    protected void sendUnauthorizedJsonResponse(HttpServletResponse response) throws IOException {
+    protected void sendUnauthorizedJsonResponse() throws IOException {
         JSONObject errorObject = new JSONObject().put("message", "unauthorized");
         sendJsonResponse(response, errorObject, HttpServletResponse.SC_UNAUTHORIZED);
     }

@@ -38,7 +38,7 @@ public class HotelgroupsController extends FrontCommand {
 
                 case HttpMethod.GET:
                     if (!auth.isAdmin()) {
-                        sendUnauthorizedJsonResponse(response);
+                        sendUnauthorizedJsonResponse();
                         return;
                     }
                     useCase = new GetAllHotelGroupDetails(dataSource);
@@ -52,7 +52,7 @@ public class HotelgroupsController extends FrontCommand {
                 case HttpMethod.POST: {
                     JSONObject body = getRequestBody(request);
                     if (!auth.isAdmin()) {
-                        sendUnauthorizedJsonResponse(response);
+                        sendUnauthorizedJsonResponse();
                         return;
                     }
 
@@ -60,7 +60,7 @@ public class HotelgroupsController extends FrontCommand {
                         JSONObject searchQueryBody = body.getJSONObject("search");
                         if (searchQueryBody.has("id")) {
                             if (!auth.isAdmin()) {
-                                sendUnauthorizedJsonResponse(response);
+                                sendUnauthorizedJsonResponse();
                                 return;
                             }
                         Integer hotelGroupId = searchQueryBody.getInt("id");
@@ -81,7 +81,7 @@ public class HotelgroupsController extends FrontCommand {
                             throw new InvalidObjectException("Failed to parse hotel group object from request body");
 
                         if (!auth.isAdmin()) {
-                            sendUnauthorizedJsonResponse(response);
+                            sendUnauthorizedJsonResponse();
                             return;
                         }
                         useCase = new CreateHotelGroup(dataSource);
