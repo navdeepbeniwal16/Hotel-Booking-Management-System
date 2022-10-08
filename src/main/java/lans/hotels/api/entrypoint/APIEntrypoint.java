@@ -2,6 +2,7 @@ package lans.hotels.api.entrypoint;
 
 import lans.hotels.api.auth.AuthorizationFactory;
 import lans.hotels.api.controllers.UnknownController;
+import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
@@ -11,6 +12,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 
+import java.sql.SQLException;
 import java.util.*;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
@@ -18,75 +20,42 @@ public class APIEntrypoint extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        try {
-            DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
-            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            IFrontCommand command = getCommandWithAuth(request);
-
-            // Dynamically instantiate the appropriate controller
-            command.init(getServletContext(), request, response, dataSourceLayer);
-            // Execute the controller
-            command.process();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("APIFrontController.doGet(): " + e.getMessage());
-            e.printStackTrace();
-            throw new ServletException("doGet():" + e);
-        }
+        handleRequest(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        handleRequest(request, response);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        handleRequest(request, response);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        handleRequest(request, response);
+    }
+
+    private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            IFrontCommand command = getCommandWithAuth(request);
-
-            // Dynamically instantiate the appropriate controller
-            command.init(getServletContext(), request, response, dataSourceLayer);
-            // Execute the controller
-            command.process();
+            handleCommand(database, dataSourceLayer, request, response);
         } catch (Exception e) {
-            System.out.println("APIFrontController.doPost(): " + e.getMessage());
+            System.out.println("APIFrontController.handleRequest(): " + e.getMessage());
             e.printStackTrace();
             throw new ServletException("doPost():" + e);
         }
     }
 
-    @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
-            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            IFrontCommand command = getCommandWithAuth(request);
-
-            // Dynamically instantiate the appropriate controller
-            command.init(getServletContext(), request, response, dataSourceLayer);
-            // Execute the controller
-            command.process();
-        } catch (Exception e) {
-            System.out.println("APIFrontController.doPut(): " + e.getMessage());
-            e.printStackTrace();
-            throw new ServletException("doPut():" + e);
-        }
-    }
-
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
-            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            IFrontCommand command = getCommandWithAuth(request);
-
-            // Dynamically instantiate the appropriate controller
-            command.init(getServletContext(), request, response, dataSourceLayer);
-            // Execute the controller
-            command.process();
-        } catch (Exception e) {
-            System.out.println("APIFrontController.doDelete(): " + e.getMessage());
-            e.printStackTrace();
-            throw new ServletException("doDelete():" + e);
-        }
+    private void handleCommand(DBConnection database, IDataSource dataSourceLayer, HttpServletRequest request, HttpServletResponse response) throws ServletException, SQLException, IOException, CommandException {
+        // Dynamically instantiate the appropriate controller
+        IFrontCommand command = getCommandWithAuth(request);
+        command.init(getServletContext(), request, response, dataSourceLayer);
+        // Execute the controller
+        command.process();
     }
 
     private IFrontCommand getCommandWithAuth(HttpServletRequest request) throws ServletException {
