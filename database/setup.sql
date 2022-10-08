@@ -139,7 +139,7 @@ CREATE TABLE ROOM_BOOKING(
     FOREIGN KEY (room_id) REFERENCES ROOM(id)
 );
 
-CREATE OR REPLACE FUNCTION room_availability(room_id INTEGER, booking_id INTEGER)
+CREATE OR REPLACE FUNCTION check_availability(room_id INTEGER, booking_id INTEGER)
 RETURNS BOOLEAN AS
 $$
 BEGIN
@@ -164,12 +164,31 @@ END
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION valid_room_booking(room_id INTEGER, booking_id INTEGER)
+RETURNS BOOLEAN AS
+$$
+BEGIN
+    LOCK room_booking IN SHARE MODE;
+    LOCK booking IN SHARE MODE;
+    LOCK hotel IN SHARE MODE;
+    RETURN(
+        SELECT
+            CASE WHEN b.hotel_id = h.id THEN TRUE ELSE FALSE END
+        FROM room AS r
+        LEFT JOIN hotel AS h
+            ON h.id = r.hotel_id
+        LEFT JOIN booking AS b
+            ON b.id = $2
+        WHERE r.id = $1
+    );
+END
+$$
+LANGUAGE plpgsql;
+
 ALTER TABLE room_booking
-ADD CONSTRAINT check_availability
-CHECK (room_availability(room_id, booking_id));
--- ALTER TABLE room_booking JOIN booking ON room_booking.booking_id = booking.id
---   ADD CONSTRAINT no_overlapping_dates
---     EXCLUDE USING gist
---     ( room_id WITH =,
---       daterange(start_date, end_date, '[]') WITH &&
---     );
+ADD CONSTRAINT room_available
+CHECK (check_availability(room_id, booking_id));
+
+ALTER TABLE room_booking
+ADD CONSTRAINT room_valid
+CHECK (valid_room_booking(room_id, booking_id));

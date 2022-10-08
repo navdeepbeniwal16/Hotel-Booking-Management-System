@@ -137,7 +137,8 @@ INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
     VALUES
            (13,DATE '2022-09-11',DATE '2022-09-15',TRUE,14),
            (2,DATE '2022-10-17',DATE '2022-10-19',TRUE,1),
-           (2,DATE '2022-08-12',DATE '2022-08-16',TRUE,1)
+           (2,DATE '2022-08-12',DATE '2022-08-16',TRUE,1),
+           (3,DATE '2022-08-12',DATE '2022-08-16',TRUE,5)
 --            (3,DATE '2022-06-05',DATE '2022-06-10',TRUE,1)
 
 ;
@@ -150,4 +151,9 @@ INSERT INTO room_booking(booking_id,room_id,is_active,main_guest,no_of_guests)
            (2,2,TRUE,'Elvis Presley',1),
            (2,3,TRUE,'John Lennon',2),
            (3,2,TRUE,'AR Rahman',2)
+;
+
+INSERT INTO room_booking(booking_id,room_id,is_active,main_guest,no_of_guests)
+    VALUES
+           (4,7,TRUE,'Bad Goy',2)
 ;
