@@ -138,3 +138,10 @@ CREATE TABLE ROOM_BOOKING(
     FOREIGN KEY (booking_id) REFERENCES BOOKING(id),
     FOREIGN KEY (room_id) REFERENCES ROOM(id)
 );
+
+-- ALTER TABLE room_booking JOIN booking ON room_booking.booking_id = booking.id
+--   ADD CONSTRAINT no_overlapping_dates
+--     EXCLUDE USING gist
+--     ( room_id WITH =,
+--       daterange(start_date, end_date, '[]') WITH &&
+--     );

@@ -54,12 +54,10 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected JSONObject getRequestBody(HttpServletRequest request) throws IOException {
         BufferedReader requestReader = request.getReader();
         String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        JSONObject body;
+        JSONObject body = new JSONObject();
         if (lines.length() > 0) {
-            System.out.println("FrontCommand.getRequestBody():\n" + lines);
+//            System.out.println("FrontCommand.getRequestBody():\n" + lines);
             body = new JSONObject(lines);
-        } else {
-            return null;
         }
         return body;
     }

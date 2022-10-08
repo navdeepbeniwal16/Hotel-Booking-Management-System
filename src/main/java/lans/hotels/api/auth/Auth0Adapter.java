@@ -60,7 +60,7 @@ public class Auth0Adapter {
 
     private Auth0Adapter(boolean authenticated, String email, ArrayList<String> roles) {
         this.authenticated = authenticated;
-        this.email = email;
+        if (email != null) this.email = email;
         this.roles = roles;
     }
 
@@ -97,11 +97,16 @@ public class Auth0Adapter {
     private void processRequestAuth() {
         try {
             String headerString = request.getHeader("Authorization");
-            validateHeading(headerString);
-            String tokenString = headerString.split(" ")[1];
-            verifyTokenString(tokenString);
-            processPayload();
-            authenticated = true;
+            if (headerString == null) {
+                authenticated = false;
+                return;
+            }
+            if (validateHeading(headerString)) {
+                String tokenString = headerString.split(" ")[1];
+                verifyTokenString(tokenString);
+                processPayload();
+                authenticated = true;
+            }
         } catch (Exception e) {
             authenticated = false;
             e.printStackTrace();
@@ -132,15 +137,17 @@ public class Auth0Adapter {
         verifier = verification.build();
     }
 
-    private void validateHeading(String headerString) throws Exception {
+    private boolean validateHeading(String headerString) throws Exception {
         if (headerString==null || headerString.equals("")) {
             authenticated = false;
-            throw new Exception("'Authorization' not on request");
+//            throw new Exception("'Authorization' not on request");
+            return true;
         }
         String authorizationType = headerString.split(" ")[0];
         if (!authorizationType.equals("Bearer")) {
             authenticated = false;
-            throw new Exception("Invalid 'Authorization' type - expected 'Bearer', receiver " + authorizationType);
+            return false;
         }
+        return true;
     }
 }
