@@ -83,7 +83,7 @@ public class ViewHotelRooms extends UseCase {
                 roomObject.put("number", room.getRoomNumber());
                 roomObject.put("type", room.getType());
                 roomObject.put("bed_type", room.getBedType());
-                roomObject.put("max_occupancy", room.getMaxOccupancy());
+                roomObject.put("occupancy", room.getMaxOccupancy());
                 roomObject.put("price", room.getRoomPrice());
                 roomObject.put("is_active", room.getIsActive());
                 jsonArray.put(roomObject);
