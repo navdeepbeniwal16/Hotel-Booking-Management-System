@@ -30,7 +30,6 @@ public class BookingsController extends FrontCommand {
                     break;
                 }
             {
-                JSONObject requestBody = getRequestBody(request);
 
                 if(requestBody.has("search"))
                 {
@@ -73,8 +72,6 @@ public class BookingsController extends FrontCommand {
 
                 // PUT: api/bookings
                 if(commandPath.length == 2) {
-                    JSONObject requestBody = getRequestBody(request);
-
                     if(requestBody.has("booking")) {
                         JSONObject bookingJsonBody = requestBody.getJSONObject("booking");
 
@@ -129,8 +126,8 @@ public class BookingsController extends FrontCommand {
                                             try {
                                                 String startDateString = bookingJsonBody.getString("start_date");
                                                 String endDateString = bookingJsonBody.getString("end_date");
-                                                startDate = new Date(format.parse(startDateString).getTime());
-                                                endDate = new Date(format.parse(endDateString).getTime());
+                                                startDate = new Date(dateFormat.parse(startDateString).getTime());
+                                                endDate = new Date(dateFormat.parse(endDateString).getTime());
                                             } catch (Exception e){
                                                 System.err.println("PUT /api/bookings: " + Arrays.toString(commandPath));
                                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
@@ -171,7 +168,7 @@ public class BookingsController extends FrontCommand {
 
                                             if(isRoomBookingClashing) {
                                                 System.err.println("PUT /api/bookings: " + Arrays.toString(commandPath));
-                                                sendJsonErrorResponse(response,"Room Bookings are clashing",400);
+                                                sendJsonErrorResponse("Room Bookings are clashing",400);
                                                 return;
                                             } else {
                                                 DateRange dateRange = new DateRange(startDate, endDate);
@@ -258,7 +255,7 @@ public class BookingsController extends FrontCommand {
             useCase.execute();
             sendJsonResponse(response, useCase.getResult(), HttpServletResponse.SC_OK);
         } catch (Exception e) {
-            sendJsonErrorResponse(response, e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
+            sendJsonErrorResponse(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 }

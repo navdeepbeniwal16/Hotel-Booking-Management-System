@@ -2,6 +2,7 @@ import Hotel from '../types/HotelType';
 import Hotelier from '../types/HotelierType';
 import UserDataType from '../types/UserDataType';
 import HotelGroup from '../types/HotelGroup';
+import Room from '../types/RoomType';
 
 type Headers = {
   'Content-Type': string;
@@ -38,6 +39,15 @@ class LANS_API {
     const data = await res.json();
     const users: Array<UserDataType> = data.result.users;
     return users;
+  }
+
+  // Rooms
+  public async getAllRooms(): Promise<Room[]> {
+    const res = await fetch('/api/rooms');
+    const data = await res.json();
+    const rooms: Array<Room> = data.result;
+    console.log('getAllRooms():\n', rooms);
+    return rooms;
   }
 
   // Hoteliers

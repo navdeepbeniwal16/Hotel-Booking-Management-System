@@ -2,7 +2,6 @@ import React, { ReactNode, useEffect } from 'react';
 
 import AppContext from '../context/AppContext';
 import { useContext, useState } from 'react';
-import endpoints from '../api/endpoints';
 import { Room, defaultRoom } from '../types/RoomType';
 import { map } from 'lodash';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -13,12 +12,12 @@ import Button from 'react-bootstrap/Button';
 
 const Hotel = () => {
   const { loginWithRedirect, isAuthenticated } = useAuth0();
-  const hotelState = useContext(AppContext.GlobalContext).hotel;
+  const { hotel: hotelState, backend } = useContext(AppContext.GlobalContext);
   const [rooms, setRooms] = useState([defaultRoom]);
 
   useEffect(() => {
     const fetchRooms = async () => {
-      const fetchedRooms: Room[] = await endpoints.getAllRooms();
+      const fetchedRooms: Room[] = await backend.getAllRooms();
       setRooms(fetchedRooms);
     };
     fetchRooms().catch(console.error);

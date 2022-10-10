@@ -10,6 +10,7 @@ import { Container, Nav } from 'react-bootstrap';
 import AppContext from '../../context/AppContext';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { toString } from '../../types/AddressType';
 interface HotelListProps {
   hotels: Array<Hotel>;
 }
@@ -33,7 +34,7 @@ const HotelsList = ({ hotels }: HotelListProps) => {
                   <Card.Body>
                     <Card.Title>{hotel.name}</Card.Title>
                     <Card.Subtitle className='mb-2 text-muted'>
-                      {hotel.address}
+                      {toString(hotel.address)}
                     </Card.Subtitle>
                   </Card.Body>
                 </Card>

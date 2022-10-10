@@ -109,7 +109,7 @@ public class Auth0Adapter {
             }
         } catch (Exception e) {
             authenticated = false;
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 

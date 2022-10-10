@@ -50,14 +50,13 @@ public class HotelgroupsController extends FrontCommand {
                     return;
 
                 case HttpMethod.POST: {
-                    JSONObject body = getRequestBody(request);
                     if (!auth.isAdmin()) {
                         sendUnauthorizedJsonResponse();
                         return;
                     }
 
-                    if (body.has("search")) {
-                        JSONObject searchQueryBody = body.getJSONObject("search");
+                    if (requestBody.has("search")) {
+                        JSONObject searchQueryBody = requestBody.getJSONObject("search");
                         if (searchQueryBody.has("id")) {
                             if (!auth.isAdmin()) {
                                 sendUnauthorizedJsonResponse();
@@ -74,8 +73,8 @@ public class HotelgroupsController extends FrontCommand {
                         return;
                         }
                     }
-                    else if (body.has("hotel_group")) {
-                        HotelGroup hg = getHotelGroupFromJsonObject(body);
+                    else if (requestBody.has("hotel_group")) {
+                        HotelGroup hg = getHotelGroupFromJsonObject(requestBody);
 
                         if (hg == null)
                             throw new InvalidObjectException("Failed to parse hotel group object from request body");
@@ -92,8 +91,8 @@ public class HotelgroupsController extends FrontCommand {
                         sendJsonResponse(response, useCase.getResult(), statusCode);
                         return;
                     }
-                    else if (body.has("hotel_group")) {
-                        HotelGroup hg = getHotelGroupFromJsonObject(body);
+                    else if (requestBody.has("hotel_group")) {
+                        HotelGroup hg = getHotelGroupFromJsonObject(requestBody);
 
                         if (hg == null)
                             throw new InvalidObjectException("Failed to parse hotel group object from request body");
@@ -146,19 +145,6 @@ public class HotelgroupsController extends FrontCommand {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
             }
         }
-    }
-
-    public JSONObject getRequestBody(HttpServletRequest request) throws IOException {
-        BufferedReader requestReader = request.getReader();
-
-        String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        JSONObject body;
-        if (lines.length() > 0) {
-            body = new JSONObject(lines);
-        } else {
-            return null;
-        }
-        return body;
     }
 
     public void returnHotelGroupJSON(ArrayList<HotelGroup> hotel_groups) throws IOException {

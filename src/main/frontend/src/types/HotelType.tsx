@@ -7,6 +7,8 @@ type Hotel = {
   phone: string;
   email: string;
   address: Address;
+  is_active?: boolean;
+  pincode?: number;
 };
 
 export type HotelState = {

@@ -1,5 +1,5 @@
-import React, { useContext, Dispatch, SetStateAction } from 'react';
-import { map, filter } from 'lodash';
+import React, { useContext } from 'react';
+import { map } from 'lodash';
 import AppContext from '../../context/AppContext';
 import Table from 'react-bootstrap/Table';
 

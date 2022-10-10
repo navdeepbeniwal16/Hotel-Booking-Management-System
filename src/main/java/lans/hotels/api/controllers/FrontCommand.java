@@ -27,8 +27,9 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected HttpServletResponse response;
     protected Auth0Adapter auth;
     protected UseCase useCase;
-    protected DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+    protected DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
     protected JSONObject requestBody = new JSONObject();
+    protected int statusCode;
 
     public void init(ServletContext context,
                      HttpServletRequest request,
@@ -45,21 +46,20 @@ public abstract class FrontCommand implements IFrontCommand  {
         if (context == null || request == null || response == null || dataSource == null) {
             throw new CommandException(this.getClass() + " must be initialised by it can process a command.");
         }
-        requestBody = getRequestBody(request);
+        parseRequestBody();
         concreteProcess();
     }
 
     abstract protected void concreteProcess() throws CommandException, IOException, SQLException;
 
-    protected JSONObject getRequestBody(HttpServletRequest request) throws IOException {
+    protected void parseRequestBody() throws IOException {
         BufferedReader requestReader = request.getReader();
         String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
         JSONObject body = new JSONObject();
         if (lines.length() > 0) {
-//            System.out.println("FrontCommand.getRequestBody():\n" + lines);
             body = new JSONObject(lines);
         }
-        return body;
+        requestBody = body;
     }
 
     protected void sendJsonResponse(HttpServletResponse response, JSONObject responseBody, int statusCode) throws IOException {
@@ -71,7 +71,7 @@ public abstract class FrontCommand implements IFrontCommand  {
         out.flush();
     }
 
-    protected void sendJsonErrorResponse(HttpServletResponse response, String errorMessage, int statusCode) throws IOException {
+    protected void sendJsonErrorResponse(String errorMessage, int statusCode) throws IOException {
         response.setStatus(statusCode);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

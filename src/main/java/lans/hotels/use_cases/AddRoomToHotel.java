@@ -11,6 +11,7 @@ public class AddRoomToHotel extends UseCase {
 
     @Override
     public void doExecute() throws Exception {
+        // TODO: not implemented
         succeed();
     }
 

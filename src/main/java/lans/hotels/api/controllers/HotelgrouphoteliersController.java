@@ -22,10 +22,8 @@ public class HotelgrouphoteliersController extends FrontCommand {
         switch(request.getMethod()) {
             case HttpMethod.GET:
             case HttpMethod.POST: {
-                JSONObject body = getRequestBody(request);
-
-                if (body.has("hotel_group_hotelier")) {
-                    HotelGroupHotelier hgh = getHotelGroupHotelierFromJsonObject(body);
+                if (requestBody.has("hotel_group_hotelier")) {
+                    HotelGroupHotelier hgh = getHotelGroupHotelierFromJsonObject(requestBody);
 
                     if (hgh == null)
                         throw new InvalidObjectException("Failed to parse hotel object from request body");
@@ -55,14 +53,12 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     return;
                 }
 
-                JSONObject body = getRequestBody(request);
-
-                if (body.has("hotel_group_hotelier")) {
+                if (requestBody.has("hotel_group_hotelier")) {
                     HotelGroupHotelier hgh = null;
                     ArrayList<HotelGroupHotelier> hotel_group_hoteliers = null;
                     HotelGroupHotelierSearchCriteria hgh_criteria = new HotelGroupHotelierSearchCriteria();
 
-                    JSONObject nestedJsonObject = body.getJSONObject("hotel_group_hotelier");
+                    JSONObject nestedJsonObject = requestBody.getJSONObject("hotel_group_hotelier");
 
                     if (nestedJsonObject.has("hotelier_id"))
                         hgh_criteria.setHotelierID(nestedJsonObject.getInt("hotelier_id"));

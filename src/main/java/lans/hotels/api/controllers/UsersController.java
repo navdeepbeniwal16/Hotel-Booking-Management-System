@@ -39,10 +39,9 @@ public class UsersController extends FrontCommand {
                     return;
                 case HttpMethod.POST:
 
-                    JSONObject body = getRequestBody(request);
-                    if (body.has("search")) {
+                    if (requestBody.has("search")) {
                         UserSearchCriteria criteria = new UserSearchCriteria();
-                        JSONObject searchQueryBody = body.getJSONObject("search");
+                        JSONObject searchQueryBody = requestBody.getJSONObject("search");
 
                         if (searchQueryBody.has("id")) {
                             Integer userID = searchQueryBody.getInt("id");
@@ -82,8 +81,8 @@ public class UsersController extends FrontCommand {
                         return;
 
                     }
-                    else if (body.has("hotelier")) {
-                        User user = getUserFromJSONObject(body);
+                    else if (requestBody.has("hotelier")) {
+                        User user = getUserFromJSONObject(requestBody);
 
                         if (user == null)
                             throw new InvalidObjectException("Failed to parse hotelier object from request body");
@@ -101,8 +100,8 @@ public class UsersController extends FrontCommand {
                         return;
 
                     }
-                    else if (body.has("customer")) {
-                        User user = getUserFromJSONObject(body);
+                    else if (requestBody.has("customer")) {
+                        User user = getUserFromJSONObject(requestBody);
 
                         if (user == null)
                             throw new InvalidObjectException("Failed to parse customer object from request body");

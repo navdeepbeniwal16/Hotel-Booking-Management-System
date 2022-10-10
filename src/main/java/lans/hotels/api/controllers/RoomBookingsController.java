@@ -19,8 +19,6 @@ public class RoomBookingsController extends FrontCommand {
             case HttpMethod.GET:
             case HttpMethod.POST:
                 if(commandPath.length == 2) {
-                    JSONObject requestBody = getRequestBody(request);
-
                     if(requestBody.has("search")) {
                         JSONObject searchQuery = requestBody.getJSONObject("search");
 
@@ -30,7 +28,7 @@ public class RoomBookingsController extends FrontCommand {
                                 bookingId = searchQuery.getInt("booking_id");
                             } catch (JSONException e){
                                 e.printStackTrace();
-                                sendJsonErrorResponse(response, "booking_id needs to be integer type", HttpServletResponse.SC_BAD_REQUEST);
+                                sendJsonErrorResponse("booking_id needs to be integer type", HttpServletResponse.SC_BAD_REQUEST);
                                 return;
                             }
 

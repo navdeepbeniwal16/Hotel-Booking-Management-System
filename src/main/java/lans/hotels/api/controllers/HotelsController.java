@@ -45,13 +45,10 @@ public class HotelsController extends FrontCommand {
                     return;
 
                 case HttpMethod.POST: {
-
-                    JSONObject body = getRequestBody(request);
-
-                    if (body.has("search")) {
+                    if (requestBody.has("search")) {
                         HotelSearchCriteria criteria = new HotelSearchCriteria();
 
-                        JSONObject searchQueryBody = body.getJSONObject("search");
+                        JSONObject searchQueryBody = requestBody.getJSONObject("search");
 
                         if (searchQueryBody.has("id")) {
                             Integer hotel_id = searchQueryBody.getInt("id");
@@ -102,8 +99,8 @@ public class HotelsController extends FrontCommand {
 
                         returnHotelJSON(hotels);
                         return;
-                    } else if (body.has("hotel")) {
-                        Hotel h = getHotelFromJsonObject(body);
+                    } else if (requestBody.has("hotel")) {
+                        Hotel h = getHotelFromJsonObject(requestBody);
 
                         if (h == null)
                             throw new InvalidObjectException("Failed to parse hotel object from request body");
@@ -128,7 +125,6 @@ public class HotelsController extends FrontCommand {
                 }
                 case HttpMethod.PUT:
                 {
-                    JSONObject requestBody = getRequestBody(request);
                     if(requestBody.has("hotel")) {
                         JSONObject JSONBody = requestBody.getJSONObject("hotel");
                         if (!JSONBody.has("id")) {
@@ -197,19 +193,6 @@ public class HotelsController extends FrontCommand {
         out.flush();
         return;
 
-    }
-
-    public JSONObject getRequestBody(HttpServletRequest request) throws IOException {
-        BufferedReader requestReader = request.getReader();
-
-        String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        JSONObject body;
-        if (lines.length() > 0) {
-            body = new JSONObject(lines);
-        } else {
-            return null;
-        }
-        return body;
     }
 
     public Hotel getHotelFromJsonObject(JSONObject jsonObject) {
