@@ -41,7 +41,7 @@ public class RoomsController extends FrontCommand {
         }
     }
 
-    private void handlePost() throws IOException, ParseException {
+    private void handlePost() throws Exception {
         if (requestBody.has("search")) {
             JSONObject searchQueryBody = requestBody.getJSONObject("search");
             handleSearchQuery(searchQueryBody);
@@ -113,7 +113,7 @@ public class RoomsController extends FrontCommand {
     }
 
 
-    private void handleSearchQuery(JSONObject searchParams) throws IOException, ParseException, JSONException {
+    private void handleSearchQuery(JSONObject searchParams) throws Exception {
         Integer hotelId = parseHotelId(searchParams);
         Utils.RoomResultsInclude include = parseInclude(searchParams);
         Date startDate = parseDate(searchParams, "start_date");
@@ -140,8 +140,20 @@ public class RoomsController extends FrontCommand {
                 Utils.RoomResultsInclude.UNAVAILABLE;
     }
 
-    private Date parseDate(JSONObject searchQueryBody, String selectState) throws ParseException {
-        String dateString = searchQueryBody.getString(selectState);
+    private Date parseDate(JSONObject searchQueryBody, String selectDate) throws Exception {
+        String dateString = null;
+        if (selectDate.equals("start_date")) {
+            dateString = "01/01/1900";
+        } else if (selectDate.equals("end_date")) {
+            dateString = "31/12/2100";
+        } else {
+            throw new Exception("invalid date selection: " + selectDate);
+        }
+
+        if (searchQueryBody.has(selectDate)) {
+            dateString = searchQueryBody.getString(selectDate);
+        }
+
         return dateFormat.parse(dateString);
     }
 }

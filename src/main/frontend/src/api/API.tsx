@@ -42,10 +42,18 @@ class LANS_API {
   }
 
   // Rooms
-  public async getAllRooms(): Promise<Room[]> {
-    const res = await fetch('/api/rooms');
+  public async getAllRooms(hotel: Hotel): Promise<Room[]> {
+    const res = await fetch('/api/rooms', {
+      headers: this.headers,
+      method: 'POST',
+      body: JSON.stringify({
+        search: {
+          hotel_id: hotel.id,
+        },
+      }),
+    });
     const data = await res.json();
-    const rooms: Array<Room> = data.result;
+    const rooms: Array<Room> = data.result.rooms;
     console.log('getAllRooms():\n', rooms);
     return rooms;
   }

@@ -1,7 +1,7 @@
 import React, { Dispatch } from 'react';
 
 export type Room = {
-  room_id: number;
+  id: number;
   hotel_id: number;
   type: string;
   occupancy: number;
@@ -15,7 +15,7 @@ export type RoomState = {
 };
 
 export const defaultRoom: Room = {
-  room_id: -1,
+  id: -1,
   hotel_id: -1,
   type: 'default_type',
   occupancy: -1,

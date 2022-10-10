@@ -2,19 +2,6 @@ import Hotel from '../types/HotelType';
 import Room from '../types/RoomType';
 import Hotelier from '../types/HotelierType';
 import HotelGroupHotelier from '../types/HotelGroupHotelier';
-import UserDataType from '../types/UserDataType';
-
-// const getAllUsers = async (accessToken: string): Promise<UserDataType[]> => {
-//   const res = await fetch('/api/users', {
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: `Bearer ${accessToken}`,
-//     },
-//   });
-//   const data = await res.json();
-//   const users: Array<UserDataType> = data.result.users;
-//   return users;
-// };
 
 const removeHotelierFromHotelGroup = async (
   accessToken: string,
@@ -104,19 +91,6 @@ const searchHotels = async (
   const hotels: Array<Hotel> = data.result;
   return hotels;
 };
-
-// const getAllHotels = async (headers: HeadersInit = {}): Promise<Hotel[]> => {
-//   const res = await fetch('/api/hotels', {
-//     headers,
-//   });
-//   const data = await res.json();
-//   const hotels: Array<Hotel> = data.result;
-//   return hotels;
-// };
-
-// const getAllRooms = async (): Promise<Room[]> => {
-
-// };
 
 const endpoints = {
   searchHotels,
