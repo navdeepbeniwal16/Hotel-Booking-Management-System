@@ -24,6 +24,7 @@ DROP TABLE IF EXISTS hotel_amenity CASCADE;
 DROP TABLE IF EXISTS amenity CASCADE;
 DROP TABLE IF EXISTS room_feature CASCADE;
 DROP TABLE IF EXISTS roles CASCADE;
+DROP TABLE IF EXISTS roll CASCADE;
 
 
 CREATE TABLE ROLES(
@@ -46,94 +47,107 @@ CREATE TABLE DISTRICT(
     PRIMARY KEY (id)
 );
 
-CREATE TABLE ADDRESS(
-                        id INT GENERATED ALWAYS AS IDENTITY,
-                        line_1 VARCHAR(50) NOT NULL,
-                        line_2 VARCHAR(50),
-                        district INT NOT NULL,
-                        city VARCHAR(40) NOT NULL,
-                        postcode INT NOT NULL,
-                        FOREIGN KEY (district) REFERENCES DISTRICT(id),
-                        PRIMARY KEY (id)
+CREATE TABLE ADDRESS (
+    id INT GENERATED ALWAYS AS IDENTITY,
+    line_1 VARCHAR(50) NOT NULL,
+    line_2 VARCHAR(50),
+    district INT NOT NULL,
+    city VARCHAR(40) NOT NULL,
+    postcode INT NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    version INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (district) REFERENCES DISTRICT(id),
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE APP_USER(
-                         id INT GENERATED ALWAYS AS IDENTITY,
-                         name VARCHAR(50),
-                         email VARCHAR(50) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
-                         address INT,
-                         role INT NOT NULL,
-                         contact VARCHAR(13),
-                         age INT,
-                         PRIMARY KEY (id)
+CREATE TABLE APP_USER (
+    id INT GENERATED ALWAYS AS IDENTITY,
+    name VARCHAR(50),
+    email VARCHAR(50) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    address INT,
+    role INT NOT NULL,
+    contact VARCHAR(13),
+    age INT,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    version INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (id),
+    FOREIGN KEY (address) REFERENCES address
 );
 
-CREATE TABLE HOTEL_GROUP(
-                            id INT GENERATED ALWAYS AS IDENTITY,
-                            name VARCHAR(50) NOT NULL UNIQUE,
-                            address INT NOT NULL,
-                            phone VARCHAR(13) NULL,
-                            FOREIGN KEY (address) REFERENCES ADDRESS(id),
-                            PRIMARY KEY (id)
+CREATE TABLE HOTEL_GROUP (
+    id INT GENERATED ALWAYS AS IDENTITY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    address INT NOT NULL,
+    phone VARCHAR(13) NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    version INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (address) REFERENCES ADDRESS(id),
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE HOTEL_GROUP_HOTELIER(
-                                     id INT GENERATED ALWAYS AS IDENTITY,
-                                     hotelier_id INT NOT NULL UNIQUE ,
-                                     hotel_group_id INT NOT NULL,
-                                     PRIMARY KEY (id),
-                                     FOREIGN KEY (hotelier_id) REFERENCES APP_USER(id),
-                                     FOREIGN KEY (hotel_group_id) REFERENCES HOTEL_GROUP(id)
+CREATE TABLE HOTEL_GROUP_HOTELIER (
+    id INT GENERATED ALWAYS AS IDENTITY,
+    hotelier_id INT NOT NULL UNIQUE ,
+    hotel_group_id INT NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    version INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (id),
+    FOREIGN KEY (hotelier_id) REFERENCES APP_USER(id),
+    FOREIGN KEY (hotel_group_id) REFERENCES HOTEL_GROUP(id)
 );
 
-CREATE TABLE HOTEL(
-                      id INT GENERATED ALWAYS AS IDENTITY,
-                      hotel_group_id INT NOT NULL,
-                      name VARCHAR(50) NOT NULL UNIQUE,
-                      email VARCHAR(50) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
-                      address INT NOT NULL,
-                      contact VARCHAR(13) NULL,
-                      city VARCHAR(50) NOT NULL,
-                      pin_code INT NOT NULL,
-                      is_active BOOLEAN NOT NULL,
-                      PRIMARY KEY (id),
-                      FOREIGN KEY (address) REFERENCES ADDRESS(id),
-                      FOREIGN KEY (hotel_group_id) REFERENCES HOTEL_GROUP(id)
+CREATE TABLE HOTEL (
+    id INT GENERATED ALWAYS AS IDENTITY,
+    hotel_group_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(50) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    address INT NOT NULL,
+    contact VARCHAR(13) NULL,
+    city VARCHAR(50) NOT NULL,
+    pin_code INT NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    version INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (id),
+    FOREIGN KEY (address) REFERENCES ADDRESS(id),
+    FOREIGN KEY (hotel_group_id) REFERENCES HOTEL_GROUP(id)
 );
 
-CREATE TABLE ROOM(
-                     id INT GENERATED ALWAYS AS IDENTITY,
-                     hotel_id INT NOT NULL,
-                     type VARCHAR(50),
-                     max_occupancy INT NOT NULL,
-                     bed_type VARCHAR(50) NOT NULL,
-                     room_price INTEGER NOT NULL,
-                     number INT NOT NULL UNIQUE,
-                     is_active BOOLEAN NOT NULL,
-                     PRIMARY KEY (id),
-                     FOREIGN KEY (hotel_id) REFERENCES HOTEL(id)
+CREATE TABLE ROOM (
+    id INT GENERATED ALWAYS AS IDENTITY,
+    hotel_id INT NOT NULL,
+    type VARCHAR(50),
+    max_occupancy INT NOT NULL,
+    bed_type VARCHAR(50) NOT NULL,
+    room_price INTEGER NOT NULL,
+    number INT NOT NULL UNIQUE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    version INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (id),
+    FOREIGN KEY (hotel_id) REFERENCES HOTEL(id)
 );
 
 
-CREATE TABLE BOOKING( 
+CREATE TABLE BOOKING (
     id INT GENERATED ALWAYS AS IDENTITY,
     hotel_id INT NOT NULL,
     customer_id INT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    is_active BOOLEAN NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    version INT NOT NULL DEFAULT 1,
     PRIMARY KEY (id),
     FOREIGN KEY (customer_id) REFERENCES APP_USER(id),
     FOREIGN KEY (hotel_id) REFERENCES HOTEL(id)
 );
 
-CREATE TABLE ROOM_BOOKING( 
+CREATE TABLE ROOM_BOOKING (
     id INT GENERATED ALWAYS AS IDENTITY,
     booking_id INT NOT NULL,
     room_id INT NOT NULL,
-    is_active BOOLEAN NOT NULL,
     main_guest VARCHAR(50) NOT NULL,
     no_of_guests INT NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    version INT NOT NULL DEFAULT 1,
     PRIMARY KEY (id),
     FOREIGN KEY (booking_id) REFERENCES BOOKING(id),
     FOREIGN KEY (room_id) REFERENCES ROOM(id)
