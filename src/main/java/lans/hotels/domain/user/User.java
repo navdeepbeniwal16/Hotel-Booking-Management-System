@@ -97,11 +97,6 @@ public class User extends ReferenceObject {
         markLoaded();
     }
 
-    public int getID()
-    {
-        return this.id;
-    }
-
     public String getName()
     {
         return this.name;

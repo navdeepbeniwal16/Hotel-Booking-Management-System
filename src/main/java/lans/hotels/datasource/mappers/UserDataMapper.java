@@ -165,9 +165,23 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     }
 
     @Override
-    public User update(AbstractDomainObject domainObject) {
-
-        return null;
+    public User update(AbstractDomainObject domainObject) throws Exception {
+        User user = (User) domainObject;
+        String updatedName = " SET name='" + user.getName() + "'";
+        String updatedEmail = ", email='" + user.getEmail() + "'";
+        String updatedRole = ", role=" + user.getRole().getId();
+        Integer id = user.getId() != null ?  user.getId() : -1;
+        String updateStatement = "UPDATE app_user " +
+                updatedName +
+                updatedEmail +
+                updatedRole +
+                " WHERE id=" + id +
+                " RETURNING *";
+//        System.out.println("----- Find by one -----\n" + updateStatement +"\n----------");
+        PreparedStatement statement = connection.prepareStatement(updateStatement);
+        ResultSet resultSet = statement.executeQuery();
+        assert resultSet.getFetchSize() != 0;
+        return user;
     }
 
     @Override

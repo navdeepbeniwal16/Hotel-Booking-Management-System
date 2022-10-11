@@ -50,7 +50,11 @@ public class Responder {
     }
 
     public Void internalServerError() {
-        error("Something went wrong!", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        return internalServerError("Something went wrong!");
+    }
+
+    public Void internalServerError(String message) {
+        error(message, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return null;
     }
 }

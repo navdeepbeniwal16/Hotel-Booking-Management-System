@@ -37,6 +37,7 @@ public abstract class UseCase {
             dataSourceException.printStackTrace();
             fail();
             setResponseErrorMessage("data source error");
+            dataSourceException.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
             fail();
@@ -66,5 +67,6 @@ public abstract class UseCase {
 
     protected void setResponseErrorMessage(String message) {
         result.put("error", message);
+        fail();
     }
 }

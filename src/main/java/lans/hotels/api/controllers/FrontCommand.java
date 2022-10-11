@@ -59,6 +59,7 @@ public abstract class FrontCommand implements IFrontCommand  {
             concreteProcess();
         } catch (Exception e) {
             responder.internalServerError();
+            e.printStackTrace();
         }
 
     }
@@ -87,10 +88,9 @@ public abstract class FrontCommand implements IFrontCommand  {
         try {
             if (role.equals(Role.Name.Admin)) return auth.asAdmin(handler, responder::unauthorized);
             if (role.equals(Role.Name.Hotelier)) return auth.asHotelier(handler, responder::unauthorized);
-            if (role.equals(Role.Name.Customer)) return auth.asCustomer(handler, responder::unauthorized);
-            responder.internalServerError();
+            return auth.asCustomer(handler, responder::unauthorized);
         } catch (Exception e) {
-            responder.internalServerError();
+            responder.internalServerError(e.getMessage());
         }
         return null;
     }
@@ -104,6 +104,6 @@ public abstract class FrontCommand implements IFrontCommand  {
         return delegateToAuth(Role.Name.Hotelier, handler);
     }
     protected <T> T asCustomer(Callable<T> handler) {
-        return delegateToAuth(Role.Name.Admin, handler);
+        return delegateToAuth(Role.Name.Customer, handler);
     }
 }

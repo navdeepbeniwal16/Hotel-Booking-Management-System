@@ -51,8 +51,13 @@ public abstract class AbstractPostgresDataMapper<DomainObject extends AbstractDo
         }
     }
 
+    protected String findOneByIdStatement() {
+        return findStatement() + " WHERE " + idPrefix + "id = ?";
+    }
+
     private DomainObject getFromDb(Integer id) throws Exception {
-        try (PreparedStatement findStatement = connection.prepareStatement(findStatement())){
+        System.out.println("----- Find by one -----\n" + findOneByIdStatement() +"\n----------");
+        try (PreparedStatement findStatement = connection.prepareStatement(findOneByIdStatement())){
             findStatement.setInt(1, id);
             ResultSet resultSet = findStatement.executeQuery();
             return load(resultSet);

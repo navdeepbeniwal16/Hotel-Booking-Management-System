@@ -24,10 +24,10 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
     @Override
     protected String insertStatement() {
         return "INSERT INTO " +
-                " room_booking " +
+                " room_booking rb " +
                 " VALUES " +
                 " (DEFAULT, b.id, ?, TRUE, ?, ?) " + // (int), int: booking_id, int: room_id, (bool), string: guestName, int: numGuests
-                " RETURNING *;";
+                " RETURNING * ";
     }
 
     @Override

@@ -58,7 +58,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     @Override
     public ArrayList<Room> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         RoomSearchCriteria r_criteria = (RoomSearchCriteria) criteria;
-        String findBy = findStatement() + "WHERE ";
+        String findBy = findStatement() + " WHERE ";
 
         PreparedStatement statement = null;
         if (r_criteria.getHotelId() != null){

@@ -123,21 +123,21 @@ public class ServletUoW implements IUnitOfWork {
                 try {
                     mappers.getMapper(obj.getClass()).insert(obj);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             });
             dirtyObjects.forEach(obj -> {
                 try {
                     mappers.getMapper(obj.getClass()).update(obj);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             });
             removedObjects.forEach(obj -> {
                 try {
                     mappers.getMapper(obj.getClass()).delete(obj.getId());
-                } catch (MapperNotFoundException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
                 identityMaps.get(obj.getClass()).remove(obj.getId());
             });
@@ -147,7 +147,7 @@ public class ServletUoW implements IUnitOfWork {
         } catch (Exception e) {
             connection.rollback();
             System.err.println("UoW Error: failed to commit");
-            e.printStackTrace();
+            throw e;
         } finally {
             for(IIdentityMap<?> identityMap: identityMaps.getAll()) {
                 identityMap.clear();

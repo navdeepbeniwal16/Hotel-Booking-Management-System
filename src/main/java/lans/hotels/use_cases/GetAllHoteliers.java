@@ -59,7 +59,7 @@ public class GetAllHoteliers extends UseCase {
             hotleiers.forEach(hotelier -> {
                 JSONObject userJson;
                 userJson = new JSONObject();
-                userJson.put("id", hotelier.getID());
+                userJson.put("id", hotelier.getId());
                 userJson.put("name", hotelier.getName());
                 userJson.put("email", hotelier.getEmail());
                 userJson.put("role", hotelier.getRole().getName());

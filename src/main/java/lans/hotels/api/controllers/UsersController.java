@@ -117,19 +117,14 @@ public class UsersController extends FrontCommand {
             useCase = new GetAllUsers(dataSource);
         }
 
-        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError());
+        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError("use case error"));
         return null;
     }
 
     private Void handlePostHotelier() throws Exception {
-        User user = getUserFromJSONObject(requestBody);
-
-        if (user == null)
-            throw new InvalidObjectException("Failed to parse hotelier object from request body");
-
-
-        useCase = new OnboardHotelier(dataSource);
-        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError());
+        JSONObject hotelierData = (JSONObject) requestBody.get("hotelier");
+        useCase = new OnboardHotelier(dataSource, (Integer) hotelierData.get("id"));
+        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError("use case error"));
         return null;
     }
 
@@ -140,7 +135,7 @@ public class UsersController extends FrontCommand {
             throw new InvalidObjectException("Failed to parse customer object from request body");
 
         useCase = new CreateCustomer(dataSource);
-        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError());
+        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError("use case error"));
         return null;
     }
 }

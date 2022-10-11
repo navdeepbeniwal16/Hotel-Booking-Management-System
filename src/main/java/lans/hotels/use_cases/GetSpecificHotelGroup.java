@@ -109,7 +109,7 @@ public class GetSpecificHotelGroup extends UseCase {
                     JSONArray hoteliers_array = new JSONArray();
                     hoteliers.forEach(hotelier -> {
                         JSONObject hotelier_entery = new JSONObject();
-                        hotelier_entery.put("id", hotelier.getID());
+                        hotelier_entery.put("id", hotelier.getId());
                         hotelier_entery.put("name", hotelier.getName());
                         hotelier_entery.put("email", hotelier.getEmail());
                         hotelier_entery.put("role", hotelier.getRole().getName());

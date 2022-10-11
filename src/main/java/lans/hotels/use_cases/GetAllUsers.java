@@ -52,7 +52,7 @@ public class GetAllUsers extends UseCase {
             users.forEach(user -> {
                 JSONObject userJson;
                 userJson = new JSONObject();
-                userJson.put("id", user.getID());
+                userJson.put("id", user.getId());
                 userJson.put("role", user.getRole().getName());
                 userJson.put("name", user.getName());
                 userJson.put("email", user.getEmail());
