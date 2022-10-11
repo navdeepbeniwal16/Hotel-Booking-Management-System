@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
@@ -84,11 +87,9 @@ public abstract class FrontCommand implements IFrontCommand  {
     }
 
 
-    protected <T> T delegateToAuth(Role.Name role, Callable<T> handler) {
+    protected <T> T delegateToAuth(List<Role> roles, Callable<T> handler) {
         try {
-            if (role.equals(Role.Name.Admin)) return auth.asAdmin(handler, responder::unauthorized);
-            if (role.equals(Role.Name.Hotelier)) return auth.asHotelier(handler, responder::unauthorized);
-            return auth.asCustomer(handler, responder::unauthorized);
+            return auth.inRoles(roles, handler, responder::unauthorized);
         } catch (Exception e) {
             responder.internalServerError(e.getMessage());
         }
@@ -97,13 +98,21 @@ public abstract class FrontCommand implements IFrontCommand  {
 
 
     protected <T> T asAdmin(Callable<T> handler) {
-        return delegateToAuth(Role.Name.Admin, handler);
+        return delegateToAuth(List.of(Role.admin()), handler);
     }
 
     protected <T> T asHotelier(Callable<T> handler) {
-        return delegateToAuth(Role.Name.Hotelier, handler);
+        return delegateToAuth(List.of(Role.hotelier()), handler);
     }
     protected <T> T asCustomer(Callable<T> handler) {
-        return delegateToAuth(Role.Name.Customer, handler);
+        return delegateToAuth(List.of(Role.customer()), handler);
+    }
+
+    protected <T> T asCustomerOrHotelier(Callable<T> handler) {
+        return delegateToAuth(List.of(Role.customer(), Role.hotelier()), handler);
+    }
+
+    protected <T> T asHotelierOrAdmin(Callable<T> handler) {
+        return delegateToAuth(List.of(Role.admin(), Role.hotelier()), handler);
     }
 }

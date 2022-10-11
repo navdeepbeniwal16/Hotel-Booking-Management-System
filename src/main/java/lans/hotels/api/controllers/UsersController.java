@@ -16,6 +16,8 @@ public class UsersController extends FrontCommand {
         switch (method) {
             case HttpMethod.GET:
                 asAdmin(this::handleGet);
+                // EXAMPLE: using lambda function instead of method reference
+//                asAdmin(() -> handleGet());
                 return;
             case HttpMethod.POST:
                 if (requestBody.has("search")) {

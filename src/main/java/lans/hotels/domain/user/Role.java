@@ -1,5 +1,7 @@
 package lans.hotels.domain.user;
 
+import java.util.Objects;
+
 public class Role {
     public enum Name {
         Admin,
@@ -45,6 +47,14 @@ public class Role {
 
     public Integer getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other.getClass() == Role.class) {
+            return ((Role) other).getId().equals( getId());
+        }
+        return false;
     }
 
 }
