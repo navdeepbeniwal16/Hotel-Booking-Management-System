@@ -1,7 +1,7 @@
 package lans.hotels.use_cases;
 
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.user_types.User;
+import lans.hotels.domain.user.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

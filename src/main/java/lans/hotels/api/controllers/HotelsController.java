@@ -4,7 +4,7 @@ import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.user_types.User;
+import lans.hotels.domain.user.User;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
 import lans.hotels.use_cases.*;
@@ -12,15 +12,12 @@ import lans.hotels.use_cases.CreateHotel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class HotelsController extends FrontCommand {
     @Override

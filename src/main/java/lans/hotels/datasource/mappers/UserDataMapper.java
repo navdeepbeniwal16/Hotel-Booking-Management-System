@@ -5,9 +5,8 @@ import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
-import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.user_types.Role;
-import lans.hotels.domain.user_types.User;
+import lans.hotels.domain.user.Role;
+import lans.hotels.domain.user.User;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
 
@@ -75,8 +74,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
             System.out.println("ID passed to HotelDataMapper : " + userSearchCriteria.getId());
         }
         else if (userSearchCriteria.getEmail() != null){
-            findByStatement += "WHERE u.email = '" + userSearchCriteria.getEmail() + "' " +
-                    "AND r.id = 2 ";
+            findByStatement += "WHERE u.email = '" + userSearchCriteria.getEmail() + "' ";
             System.out.println(findByStatement);
             System.out.println("Email passed to HotelDataMapper : " + userSearchCriteria.getEmail());
         }

@@ -4,7 +4,7 @@ import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
-import lans.hotels.domain.user_types.User;
+import lans.hotels.domain.user.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

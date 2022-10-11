@@ -10,7 +10,7 @@ import lans.hotels.domain.hotel_group.HotelGroupHotelier;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
-import lans.hotels.domain.user_types.User;
+import lans.hotels.domain.user.User;
 
 import java.sql.Connection;
 import java.util.HashMap;

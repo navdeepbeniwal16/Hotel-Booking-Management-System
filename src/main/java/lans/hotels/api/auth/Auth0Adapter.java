@@ -8,6 +8,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import lans.hotels.datasource.search_criteria.UserSearchCriteria;
+import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.user.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,6 +34,7 @@ public class Auth0Adapter {
 
     HttpServletRequest request;
     RSAPublicKey publicKey;
+    IDataSource dataSource;
     Jwk jwk;
     DecodedJWT jwt;
     Algorithm algorithm;
@@ -39,34 +43,44 @@ public class Auth0Adapter {
     JSONObject payload;
     String email;
     ArrayList<String> roles;
+    User user;
+    String rawAuth;
+    String rawToken;
     private final static Base64.Decoder decoder = Base64.getUrlDecoder();
 
     protected Auth0Adapter(JwkProvider jwkProvider,
                            String issuer,
                            ArrayList<String> audiences,
                            String namespace,
-                           HttpServletRequest request) {
+                           HttpServletRequest request,
+                           IDataSource dataSource) {
         this.jwkProvider = jwkProvider;
         this.issuer = issuer;
         this.audiences = audiences;
         this.namespace = namespace;
         this.request = request;
         this.authenticated = false;
+        this.dataSource = dataSource;
+        this.user = null;
         email = "";
         roles = new ArrayList<>();
+        rawAuth = "";
+        rawToken = "";
         processRequestAuth();
         request.getSession().setAttribute(AUTHORIZATION, this);
+        System.out.println(this);
     }
 
-    private Auth0Adapter(boolean authenticated, String email, ArrayList<String> roles) {
-        this.authenticated = authenticated;
-        if (email != null) this.email = email;
-        this.roles = roles;
+    private Auth0Adapter() {
+        this.authenticated = false;
+        email = "";
+        this.roles = new ArrayList<>();
     }
 
     public String toString() {
         return "auth0(authenticated=" + authenticated +
                 " | email=" + email +
+                " | role claims=" + roles.toString() +
                 " | admin=" + isAdmin() +
                 " | hotelier=" + isHotelier() +
                 " | customer=" + isCustomer() + ")";
@@ -74,7 +88,7 @@ public class Auth0Adapter {
 
     public static Auth0Adapter getAuthorization(HttpServletRequest request) {
         Auth0Adapter auth = (Auth0Adapter) request.getSession().getAttribute(Auth0Adapter.AUTHORIZATION);
-        if (auth == null) auth = new Auth0Adapter(false, "", new ArrayList<>());
+        if (auth == null) auth = new Auth0Adapter();
         return auth;
     }
 
@@ -87,43 +101,72 @@ public class Auth0Adapter {
     }
 
     public boolean isHotelier() {
+        // TODO: refactor to user role from user
         return authenticated && roles.contains(Roles.Hotelier.toString());
     }
 
     public boolean isAdmin() {
-        return authenticated && roles.contains(Roles.Admin.toString());
+        // TODO: refactor to user role from user
+        return authenticated && user.getRole().isAdmin();
     }
 
     private void processRequestAuth() {
+        rawAuth = request.getHeader("Authorization");
         try {
-            String headerString = request.getHeader("Authorization");
-            if (headerString == null) {
-                authenticated = false;
-                return;
-            }
-            if (validateHeading(headerString)) {
-                String tokenString = headerString.split(" ")[1];
-                verifyTokenString(tokenString);
-                processPayload();
-                authenticated = true;
-            }
+            authenticateWithHeading();
         } catch (Exception e) {
-            authenticated = false;
-//            e.printStackTrace();
+            // Override any method that may have set auth to true
+            resetAuth();
         }
     }
 
-    private void processPayload() throws IllegalArgumentException{
-        String decodedPayload = new String(decoder.decode(jwt.getPayload()));
-        payload = new JSONObject(decodedPayload);
-        email = (String) payload.get(namespace + "email");
-        JSONArray rolesArray = (JSONArray) payload.get(namespace + "roles");
-        for(Object role: rolesArray) roles.add((String) role);
+    private void authenticateWithHeading() throws Exception {
+        if (validHeading()) {
+            setJwt();
+            processPayload();
+        }
     }
 
-    private void verifyTokenString(String tokenString) throws JwkException {
-        createVerifier(tokenString);
-        jwt = verifier.verify(tokenString);
+    private void processPayload() throws Exception {
+        String decodedPayload = new String(decoder.decode(jwt.getPayload()));
+        payload = new JSONObject(decodedPayload);
+        setEmail();
+        setRoles();
+        setUser();
+    }
+
+    private void setEmail() {
+        email = (String) payload.get(namespace + "email");
+    }
+
+    private void setRoles() {
+        JSONArray rolesArray = (JSONArray) payload.get(namespace + "roles");
+        for(Object role: rolesArray) roles.add((String) role); // Refactor: hook up role assignment to backend.
+    }
+
+    private void setUser() throws Exception {
+        if (authenticated) {
+            UserSearchCriteria emailCriteria = new UserSearchCriteria();
+            emailCriteria.setEmail(email);
+            ArrayList<User> users = dataSource.findBySearchCriteria(User.class, emailCriteria);
+            if (users.isEmpty()) {
+                System.out.println("Creating new user:\n" +
+                        "\temail: " + email +
+                        "\troles: " + roles.toString());
+
+                user = roles.contains(Roles.Admin.toString()) ? User.newAdmin(dataSource, email) : User.newCustomer(dataSource, email);
+            } else {
+                user = users.get(0);
+            }
+            System.out.println("User:\t" + user.getEmail());
+        }
+    }
+
+    private void setJwt() throws JwkException {
+        rawToken = rawAuth.split(" ")[1];
+        createVerifier(rawToken);
+        jwt = verifier.verify(rawToken);
+        authenticated = true;
     }
 
     private void createVerifier(String tokenString) throws JwkException {
@@ -137,17 +180,26 @@ public class Auth0Adapter {
         verifier = verification.build();
     }
 
-    private boolean validateHeading(String headerString) throws Exception {
-        if (headerString==null || headerString.equals("")) {
+    private boolean validHeading() throws Exception {
+        if (rawAuth==null || rawAuth.equals("")) {
             authenticated = false;
 //            throw new Exception("'Authorization' not on request");
             return true;
         }
-        String authorizationType = headerString.split(" ")[0];
+        String authorizationType = rawAuth.split(" ")[0];
         if (!authorizationType.equals("Bearer")) {
             authenticated = false;
             return false;
         }
         return true;
+    }
+
+    private void resetAuth() {
+        authenticated = false;
+        user = null;
+        email = "";
+        roles = new ArrayList<>();
+        rawAuth = "";
+        rawToken = "";
     }
 }

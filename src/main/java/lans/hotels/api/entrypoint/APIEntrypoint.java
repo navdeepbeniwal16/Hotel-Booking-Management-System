@@ -1,5 +1,6 @@
 package lans.hotels.api.entrypoint;
 
+import lans.hotels.api.auth.Auth0Adapter;
 import lans.hotels.api.auth.AuthorizationFactory;
 import lans.hotels.api.controllers.UnknownController;
 import lans.hotels.api.exceptions.CommandException;
@@ -42,7 +43,7 @@ public class APIEntrypoint extends HttpServlet {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            handleCommand(database, dataSourceLayer, request, response);
+            handleCommand(dataSourceLayer, request, response);
         } catch (Exception e) {
             System.out.println("APIFrontController.handleRequest(): " + e.getMessage());
             e.printStackTrace();
@@ -50,19 +51,18 @@ public class APIEntrypoint extends HttpServlet {
         }
     }
 
-    private void handleCommand(DBConnection database, IDataSource dataSourceLayer, HttpServletRequest request, HttpServletResponse response) throws ServletException, SQLException, IOException, CommandException {
+    private void handleCommand(IDataSource dataSource, HttpServletRequest request, HttpServletResponse response) throws ServletException, SQLException, IOException, CommandException {
         // Dynamically instantiate the appropriate controller
-        IFrontCommand command = getCommandWithAuth(request);
-        command.init(getServletContext(), request, response, dataSourceLayer);
+        IFrontCommand command = getCommandWithAuth(request, dataSource);
+        command.init(getServletContext(), request, response, dataSource);
         // Execute the controller
         command.process();
     }
 
-    private IFrontCommand getCommandWithAuth(HttpServletRequest request) throws ServletException {
+    private IFrontCommand getCommandWithAuth(HttpServletRequest request, IDataSource dataSource) throws ServletException {
         try {
             AuthorizationFactory authFactory = (AuthorizationFactory) getServletContext().getAttribute("AuthFactory");
-
-            authFactory.injectAuthorization(request);
+            authFactory.injectAuthorization(request, dataSource);
             String[] commandPath = request.getPathInfo().split("/");
             return (IFrontCommand) getCommandClass(commandPath).getDeclaredConstructor().newInstance();
         } catch (Exception e) {

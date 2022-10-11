@@ -1,6 +1,7 @@
 package lans.hotels.api.auth;
 
 import com.auth0.jwk.JwkProvider;
+import lans.hotels.domain.IDataSource;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class AuthorizationFactory {
         this.namespace = namespace;
     }
 
-    public Auth0Adapter injectAuthorization(HttpServletRequest request) {
-        return new Auth0Adapter(jwkProvider, issuer, audiences, namespace, request);
+    public Auth0Adapter injectAuthorization(HttpServletRequest request, IDataSource dataSource) {
+        return new Auth0Adapter(jwkProvider, issuer, audiences, namespace, request, dataSource);
     }
 }

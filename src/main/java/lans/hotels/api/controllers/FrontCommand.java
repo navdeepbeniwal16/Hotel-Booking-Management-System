@@ -25,11 +25,14 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected ServletContext context;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
+    protected String method;
     protected Auth0Adapter auth;
     protected UseCase useCase;
     protected DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
     protected JSONObject requestBody = new JSONObject();
     protected int statusCode;
+
+    protected String[] commandPath;
 
     public void init(ServletContext context,
                      HttpServletRequest request,
@@ -37,11 +40,14 @@ public abstract class FrontCommand implements IFrontCommand  {
                      IDataSource dataSource) {
         this.context = context;
         this.request = request;
+        this.method = request.getMethod();
         this.response = response;
         this.dataSource = dataSource;
         this.auth = Auth0Adapter.getAuthorization(request);
+        this.commandPath = request.getPathInfo().split("/");
     }
 
+    abstract protected void concreteProcess() throws CommandException, IOException, SQLException;
     public void process() throws ServletException, IOException, CommandException, SQLException {
         if (context == null || request == null || response == null || dataSource == null) {
             throw new CommandException(this.getClass() + " must be initialised by it can process a command.");
@@ -49,8 +55,6 @@ public abstract class FrontCommand implements IFrontCommand  {
         parseRequestBody();
         concreteProcess();
     }
-
-    abstract protected void concreteProcess() throws CommandException, IOException, SQLException;
 
     protected void parseRequestBody() throws IOException {
         BufferedReader requestReader = request.getReader();
@@ -85,5 +89,14 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected void sendUnauthorizedJsonResponse() throws IOException {
         JSONObject errorObject = new JSONObject().put("message", "unauthorized");
         sendJsonResponse(response, errorObject, HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    protected void checkCommandPath(Integer exactLength) {
+        assert commandPath.length == exactLength;
+    }
+
+    protected void checkCommandPath(Integer minLength, Integer maxLength) {
+        assert commandPath.length >= minLength;
+        assert commandPath.length <= maxLength;
     }
 }

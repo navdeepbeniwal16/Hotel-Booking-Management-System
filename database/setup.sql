@@ -65,7 +65,7 @@ CREATE TABLE APP_USER (
     name VARCHAR(50),
     email VARCHAR(50) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
     address INT,
-    role INT NOT NULL,
+    role INT NOT NULL DEFAULT 1,
     contact VARCHAR(13),
     age INT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,

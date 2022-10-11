@@ -1,6 +1,6 @@
 package lans.hotels.datasource.search_criteria;
 
-import lans.hotels.domain.user_types.Role;
+import lans.hotels.domain.user.Role;
 
 public class UserSearchCriteria extends AbstractSearchCriteria {
     private Integer userId;
