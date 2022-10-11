@@ -55,6 +55,7 @@ public class GetAllHotels extends UseCase {
                     hotel_entry.put("phone", hotel.getContact());
                     hotel_entry.put("pincode", hotel.getPinCode());
                     hotel_entry.put("is_active", hotel.getIsActive());
+                    hotel_entry.put("version",hotel.getVersion());
 
                     JSONObject addressJson = new JSONObject();
                     Address address = hotel.getAddress();

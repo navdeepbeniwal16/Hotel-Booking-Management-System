@@ -5,6 +5,7 @@ public class HotelSearchCriteria extends AbstractSearchCriteria {
     Integer id;
     String city;
     Integer hotel_group_id;
+    Boolean is_active;
 
     public HotelSearchCriteria() {
     }
@@ -28,4 +29,9 @@ public class HotelSearchCriteria extends AbstractSearchCriteria {
     public void setHotelGroupId(Integer hotelGroupId) {
         this.hotel_group_id = hotelGroupId;
     }
+
+    public Boolean getIsActive() { return this.is_active; }
+
+    public void setIsActive(Boolean is_active) { this.is_active = is_active; }
+
 }

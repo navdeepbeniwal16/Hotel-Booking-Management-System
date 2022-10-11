@@ -132,10 +132,10 @@ public class HotelsController extends FrontCommand {
 
                         else {
                             Integer hotel_id = JSONBody.getInt("id");
-//                            if (!auth.isAdmin()) {
-//                                sendUnauthorizedJsonResponse(response);
-//                                return;
-//                            }
+                            if (!auth.isAdmin()) {
+                                sendUnauthorizedJsonResponse();
+                                return;
+                            }
 
                             if(JSONBody.has("is_active")) {
                                 Boolean is_active = JSONBody.getBoolean("is_active");

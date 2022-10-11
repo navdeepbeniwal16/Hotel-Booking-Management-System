@@ -26,7 +26,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     @Override
     protected String findStatement() {
         String statement = "SELECT h.id,hotel_group_id, h.name as hotel_name, " +
-                        " email,contact,h.city as hotel_city,pin_code,h.is_active as is_active, " +
+                        " email,contact,h.city as hotel_city,pin_code,h.is_active as is_active, h.version as hotel_version, " +
                         " a.id as address_id, line_1, line_2, a.city as address_city, " +
                         " postcode,d.id as district_id, d.name as district_name " +
                         " FROM hotel h " +
@@ -72,10 +72,12 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
             statement.setInt(1,hotelSearchCriteria.getHotelGroupId());
         }
         else if (hotelSearchCriteria.getCity() != null){
-            statement = connection.prepareStatement(findBy + "h.city = ?");
+            statement = connection.prepareStatement(findBy + "h.city = ? AND h.is_active = ? ");
             statement.setString(1,hotelSearchCriteria.getCity());
+            statement.setBoolean(2,hotelSearchCriteria.getIsActive());
         }
 
+        System.out.println("Find by statement : \n"+statement.toString());
         ResultSet resultSet = statement.executeQuery();
         Hotel currentHotel = load(resultSet);
         while (currentHotel != null) {
@@ -100,7 +102,7 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
                     rs.getInt("hotel_group_id"),rs.getString("hotel_name"),
                     rs.getString("email"),address,rs.getString("contact"),
                     rs.getString("hotel_city"),rs.getInt("pin_code"),
-                    rs.getBoolean("is_active"));
+                    rs.getBoolean("is_active"),rs.getInt("hotel_version"));
         } catch (UoWException e) {
             e.printStackTrace();
         }
@@ -108,27 +110,37 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
     }
 
     @Override
-    public Hotel update(AbstractDomainObject domainObject) {
+    public Hotel update(AbstractDomainObject domainObject) throws Exception {
         Hotel hotel = (Hotel) domainObject;
-        String updateStatement = "UPDATE hotel SET is_active = " + hotel.getIsActive()  +  " WHERE id = " + hotel.getId() + ";";
+        PreparedStatement updateStatement = connection.prepareStatement(
+                "UPDATE hotel SET is_active = ?, version = ? WHERE id = ? and version = ?");
 
-        System.out.println(updateStatement);
+        int version = hotel.getVersion();
+        int new_version = version + 1;
 
-        try (PreparedStatement statement = connection.prepareStatement(updateStatement)) {
-            statement.executeUpdate();
+        updateStatement.setBoolean(1,hotel.getIsActive());
+        updateStatement.setInt(2,new_version);
+        updateStatement.setInt(3,hotel.getId());
+        updateStatement.setInt(4,version);
+        System.out.println(updateStatement.toString());
 
-            HotelSearchCriteria criteria = new HotelSearchCriteria();
-            criteria.setId(hotel.getId());
+        int row_count = updateStatement.executeUpdate();
 
-            ArrayList<Hotel> hotels = findBySearchCriteria(criteria);
-            if(hotels.size() > 0) return hotels.get(0);
-            else return null;
-        } catch (Exception e) {
-            System.out.println("Exception occurred at BookingDataMapper:update() execution");
-            e.printStackTrace();
-        }
+        if(row_count==0)
+            System.out.println("Concurrency issue");
+        else
+            System.out.println("Hotel updated successfully");
 
-        return null;
+        HotelSearchCriteria criteria = new HotelSearchCriteria();
+        criteria.setId(hotel.getId());
+
+        ArrayList<Hotel> hotels = findBySearchCriteria(criteria);
+        if(hotels.size() > 0)
+            return hotels.get(0);
+
+        else
+            return null;
+
     }
 
     @Override

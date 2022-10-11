@@ -25,6 +25,7 @@ public class Hotel extends ReferenceObject {
     String city;
     int pin_code;
     boolean is_active;
+    int version;
     ArrayList<Room> rooms;
 
     public Hotel(Integer id, IDataSource dataSource, Integer hotel_group_id) throws UoWException {
@@ -36,8 +37,13 @@ public class Hotel extends ReferenceObject {
 
     public Hotel(IDataSource dataSource,
                  Integer hotel_group_id,
-                 String name, String email, Address address,
-                 String contact, String city, Integer pin_code, boolean is_active) throws UoWException {
+                 String name,
+                 String email,
+                 Address address,
+                 String contact,
+                 String city,
+                 Integer pin_code,
+                 boolean is_active) throws UoWException {
         super(dataSource);
         this.hotel_group_id = hotel_group_id;
         this.name = name;
@@ -51,9 +57,17 @@ public class Hotel extends ReferenceObject {
         markLoaded();
     }
 
-    public Hotel(Integer id, IDataSource dataSource,
-                 Integer hotel_group_id, String name, String email, Address address,
-                 String contact, String city, Integer pin_code, boolean is_active) throws UoWException {
+    public Hotel(Integer id,
+                 IDataSource dataSource,
+                 Integer hotel_group_id,
+                 String name,
+                 String email,
+                 Address address,
+                 String contact,
+                 String city,
+                 Integer pin_code,
+                 boolean is_active,
+                 int version) throws UoWException {
         super(id, dataSource);
         this.hotel_group_id = hotel_group_id;
         this.name = name;
@@ -63,6 +77,7 @@ public class Hotel extends ReferenceObject {
         this.city = city;
         this.pin_code = pin_code;
         this.is_active = is_active;
+        this.version = version;
         markClean();
         markLoaded();
     }
@@ -103,6 +118,10 @@ public class Hotel extends ReferenceObject {
         return this.is_active;
     }
 
+    public int getVersion() {
+        return this.version;
+    }
+
     public void setName(String name) throws UoWException {
         this.name = name;
         markDirty();
@@ -135,6 +154,11 @@ public class Hotel extends ReferenceObject {
 
     public void setIs_Active(Boolean is_active) throws UoWException {
         this.is_active = is_active;
+        markDirty();
+    }
+
+    public void setVersion(Integer version) throws UoWException {
+        this.version = version;
         markDirty();
     }
 
