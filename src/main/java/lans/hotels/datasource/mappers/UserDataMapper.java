@@ -32,7 +32,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
                 "LEFT JOIN roles r on u.role = r.id \n" +
                 "LEFT JOIN ( address a LEFT JOIN district d ON a.district = d.id ) ON u.address = a.id \n" +
                 "LEFT JOIN ( hotel_group_hotelier hgh JOIN hotel_group hg ON hg.id = hgh.hotel_group_id ) ON hgh.hotelier_id = u.id \n";
-        System.out.println("UserDataMapper.findStatement(): " + statement);
+//        System.out.println("UserDataMapper.findStatement(): " + statement);
         return statement;
     }
 
@@ -70,23 +70,23 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
 
         if (userSearchCriteria.getId() != null){
             findByStatement += "WHERE u.id = '" + userSearchCriteria.getId() + "'";
-            System.out.println(findByStatement);
-            System.out.println("ID passed to HotelDataMapper : " + userSearchCriteria.getId());
+//            System.out.println(findByStatement);
+//            System.out.println("ID passed to HotelDataMapper : " + userSearchCriteria.getId());
         }
         else if (userSearchCriteria.getEmail() != null){
             findByStatement += "WHERE u.email = '" + userSearchCriteria.getEmail() + "' ";
-            System.out.println(findByStatement);
-            System.out.println("Email passed to HotelDataMapper : " + userSearchCriteria.getEmail());
+//            System.out.println(findByStatement);
+//            System.out.println("Email passed to HotelDataMapper : " + userSearchCriteria.getEmail());
         }
         else if (userSearchCriteria.getRole() != null){
             findByStatement += "WHERE u.role = '" + userSearchCriteria.getRole().getId() + "'";
-            System.out.println(findByStatement);
-            System.out.println("Role passed to HotelDataMapper : " + userSearchCriteria.getRole());
+//            System.out.println(findByStatement);
+//            System.out.println("Role passed to HotelDataMapper : " + userSearchCriteria.getRole());
         }
         else if (userSearchCriteria.getHotelierHotelGroupID() != null){
             findByStatement += "WHERE hg.id = '" + userSearchCriteria.getHotelierHotelGroupID() + "'";
-            System.out.println(findByStatement);
-            System.out.println("Role passed to HotelDataMapper : " + userSearchCriteria.getRole());
+//            System.out.println(findByStatement);
+//            System.out.println("HotelierGroupId passed to HotelDataMapper : " + userSearchCriteria.getHotelierHotelGroupID());
         }
 
         try (PreparedStatement statement = connection.prepareStatement(findByStatement)) {
@@ -196,7 +196,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
         statement.setString(1,u.getEmail());
         statement.setInt(2,u.getRole().getId());
 
-        System.out.println(statement);
+//        System.out.println(statement);
         ResultSet resultSet = statement.executeQuery();
         return resultSet.next() ? resultSet.getInt("id") : -1;
     }

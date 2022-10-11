@@ -8,7 +8,7 @@ public class Role {
     }
 
     Integer id;
-    String name;
+    String name = "none";
 
     public static Role admin() {
         return new Role(1);
@@ -27,16 +27,12 @@ public class Role {
         name = Name.Customer.toString();
     }
 
-    public Role(Integer id) {
-        assert id == 1 || id == 2 || id == 3;
-        this.id = id;
-        if (id==1) {
-            name = Name.Admin.toString();
-        }
-        if (id==2) {
-            name = Name.Hotelier.toString();
-        }
-        name = Name.Customer.toString();
+    public Role(Integer rid) {
+        assert rid == 1 || rid == 2 || rid == 3;
+        id = rid;
+        if (id==1) name = Name.Admin.toString();
+        if (id==2) name = Name.Hotelier.toString();
+        if (id==3) name = Name.Customer.toString();
     }
 
     public boolean isAdmin() { return id == 1; }

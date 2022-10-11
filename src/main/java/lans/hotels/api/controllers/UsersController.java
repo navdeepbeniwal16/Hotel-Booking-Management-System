@@ -11,11 +11,11 @@ import java.io.InvalidObjectException;
 
 public class UsersController extends FrontCommand {
     @Override
-    protected void concreteProcess() throws Exception {
+    protected void concreteProcess() {
         checkCommandPath(2);
         switch (method) {
             case HttpMethod.GET:
-                handleGet();
+                asAdmin(this::handleGet);
                 return;
             case HttpMethod.POST:
                 if (requestBody.has("search")) {

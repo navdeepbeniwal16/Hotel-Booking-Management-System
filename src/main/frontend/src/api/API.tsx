@@ -9,6 +9,22 @@ type Headers = {
   Authorization: string;
 };
 
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
+type HttpMethods = {
+  GET: HttpMethod;
+  POST: HttpMethod;
+  PUT: HttpMethod;
+  DELETE: HttpMethod;
+};
+
+const methods: HttpMethods = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  DELETE: 'DELETE',
+};
+
 class LANS_API {
   private readonly accessToken: string;
   private readonly headers: Headers;
@@ -41,11 +57,26 @@ class LANS_API {
     return users;
   }
 
+  public async makeHotelier(user: UserDataType): Promise<boolean> {
+    const res = await fetch(this.usersEndpoint, {
+      method: methods.POST,
+      headers: this.headers,
+      body: JSON.stringify({
+        hotelier: {
+          id: user.id,
+        },
+      }),
+    });
+    const data = await res.json();
+    const success: boolean = data.success ? data.success : false;
+    return success;
+  }
+
   // Rooms
   public async getAllRooms(hotel: Hotel): Promise<Room[]> {
     const res = await fetch('/api/rooms', {
       headers: this.headers,
-      method: 'POST',
+      method: methods.POST,
       body: JSON.stringify({
         search: {
           hotel_id: hotel.id,
@@ -61,7 +92,7 @@ class LANS_API {
   // Hoteliers
   public async getHoteliers(): Promise<Hotelier[]> {
     const res = await fetch(this.usersEndpoint, {
-      method: 'POST',
+      method: methods.POST,
       headers: this.headers,
       body: JSON.stringify({
         search: { type: 'hotelier' },
@@ -77,7 +108,7 @@ class LANS_API {
     hotelier_id: number
   ): Promise<boolean> {
     const res = await fetch(this.hghEndpoint, {
-      method: 'DELETE',
+      method: methods.DELETE,
       headers: this.headers,
       body: JSON.stringify({
         hotel_group_hotelier: { hotelier_id: hotelier_id },
