@@ -1,5 +1,6 @@
 package lans.hotels.api.entrypoint;
 
+import lans.hotels.api.Responder;
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.domain.IDataSource;
 
@@ -15,5 +16,6 @@ public interface IFrontCommand {
     void init(ServletContext context,
               HttpServletRequest request,
               HttpServletResponse response,
-              IDataSource dataSource);
+              IDataSource dataSource,
+              Responder responder);
 }

@@ -1,9 +1,11 @@
 package lans.hotels.api.controllers;
 
+import lans.hotels.api.Responder;
 import lans.hotels.api.entrypoint.IFrontCommand;
 import lans.hotels.api.auth.Auth0Adapter;
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.user.Role;
 import lans.hotels.use_cases.UseCase;
 import org.json.JSONObject;
 
@@ -34,16 +36,19 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected int statusCode;
 
     protected String[] commandPath;
+    protected Responder responder;
 
     public void init(ServletContext context,
                      HttpServletRequest request,
                      HttpServletResponse response,
-                     IDataSource dataSource) {
+                     IDataSource dataSource,
+                     Responder responder) {
         this.context = context;
         this.request = request;
         this.method = request.getMethod();
         this.response = response;
         this.dataSource = dataSource;
+        this.responder = responder;
         this.auth = Auth0Adapter.getAuthorization(request);
         this.commandPath = request.getPathInfo().split("/");
     }
@@ -67,12 +72,6 @@ public abstract class FrontCommand implements IFrontCommand  {
         requestBody = body;
     }
 
-    protected void sendJsonErrorResponse(String errorMessage, int statusCode) {
-        JSONObject errorBody = new JSONObject();
-        errorBody.put("errorMessage", errorMessage);
-        sendJsonResponse(response, errorBody, statusCode);
-    }
-
     protected void sendJsonResponse(HttpServletResponse response, JSONObject responseBody, int statusCode) {
         try {
             response.setStatus(statusCode);
@@ -88,14 +87,6 @@ public abstract class FrontCommand implements IFrontCommand  {
         }
     }
 
-    protected void unauthorized() throws IOException {
-        sendJsonErrorResponse("Unauthorized", HttpServletResponse.SC_UNAUTHORIZED);
-    }
-
-    protected void internalServerError() {
-        sendJsonErrorResponse("Something went wrong!", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
-
     protected void checkCommandPath(Integer exactLength) {
         assert commandPath.length == exactLength;
     }
@@ -105,28 +96,28 @@ public abstract class FrontCommand implements IFrontCommand  {
         assert commandPath.length <= maxLength;
     }
 
-    private <T> T asUser(Callable<Boolean> guard, Callable<T> handler) {
+
+    protected <T> T delegateToAuth(Role.Name role, Callable<T> handler) {
         try {
-            if (guard.call()) {
-                return handler.call();
-            } else {
-                unauthorized();
-                return null;
-            }
+            if (role.equals(Role.Name.Admin)) return auth.asAdmin(handler, responder::unauthorized);
+            if (role.equals(Role.Name.Hotelier)) return auth.asAdmin(handler, responder::unauthorized);
+            if (role.equals(Role.Name.Customer)) return auth.asAdmin(handler, responder::unauthorized);
+            responder.internalServerError();
         } catch (Exception e) {
-            internalServerError();
-            return null;
+            responder.internalServerError();
         }
+        return null;
     }
+
 
     protected <T> T asAdmin(Callable<T> handler) {
-        return asUser(auth::isAdmin, handler);
+        return delegateToAuth(Role.Name.Admin, handler);
     }
 
-    protected <T> T asCustomer(Callable<T> handler) {
-        return asUser(auth::isCustomer, handler);
-    }
     protected <T> T asHotelier(Callable<T> handler) {
-        return asUser(auth::isCustomer, handler);
+        return delegateToAuth(Role.Name.Hotelier, handler);
+    }
+    protected <T> T asCustomer(Callable<T> handler) {
+        return delegateToAuth(Role.Name.Admin, handler);
     }
 }

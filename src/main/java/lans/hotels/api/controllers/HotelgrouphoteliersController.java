@@ -29,7 +29,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                         throw new InvalidObjectException("Failed to parse hotel object from request body");
 
                     if (!auth.isAdmin()) {
-                        unauthorized();
+                        responder.unauthorized();
                         return;
                     }
                     useCase = new AddHotelierToHotelGroup(dataSource);
@@ -37,7 +37,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    sendJsonResponse(response, useCase.getResult(), statusCode);
+                    responder.respond(response, useCase.getResult(), statusCode);
                     return;
                 } else {
                     System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
@@ -49,7 +49,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                 return;
             case HttpMethod.DELETE: {
                 if (!auth.isAdmin()) {
-                    unauthorized();
+                    responder.unauthorized();
                     return;
                 }
 
@@ -84,7 +84,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    sendJsonResponse(response, useCase.getResult(), statusCode);
+                    responder.respond(response, useCase.getResult(), statusCode);
                     return;
                 } else {
                     System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));

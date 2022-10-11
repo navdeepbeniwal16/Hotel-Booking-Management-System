@@ -1,5 +1,6 @@
 package lans.hotels.api.entrypoint;
 
+import lans.hotels.api.Responder;
 import lans.hotels.api.auth.Auth0Adapter;
 import lans.hotels.api.auth.AuthorizationFactory;
 import lans.hotels.api.controllers.UnknownController;
@@ -43,7 +44,8 @@ public class APIEntrypoint extends HttpServlet {
         try {
             DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
             IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
-            handleCommand(dataSourceLayer, request, response);
+            Responder responder = new Responder(response);
+            handleCommand(dataSourceLayer, request, response, responder);
         } catch (Exception e) {
             System.out.println("APIFrontController.handleRequest(): " + e.getMessage());
             e.printStackTrace();
@@ -51,10 +53,10 @@ public class APIEntrypoint extends HttpServlet {
         }
     }
 
-    private void handleCommand(IDataSource dataSource, HttpServletRequest request, HttpServletResponse response) throws ServletException, SQLException, IOException, CommandException {
+    private void handleCommand(IDataSource dataSource, HttpServletRequest request, HttpServletResponse response, Responder responder) throws ServletException, SQLException, IOException, CommandException {
         // Dynamically instantiate the appropriate controller
         IFrontCommand command = getCommandWithAuth(request, dataSource);
-        command.init(getServletContext(), request, response, dataSource);
+        command.init(getServletContext(), request, response, dataSource, responder);
         // Execute the controller
         command.process();
     }

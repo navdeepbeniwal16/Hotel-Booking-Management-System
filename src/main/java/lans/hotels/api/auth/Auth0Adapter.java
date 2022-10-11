@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.concurrent.Callable;
 
 public class Auth0Adapter {
     public static final String AUTHORIZATION = "Authorization";
@@ -201,5 +202,27 @@ public class Auth0Adapter {
         roles = new ArrayList<>();
         rawAuth = "";
         rawToken = "";
+    }
+
+    public <T, U> T asAdmin(Callable<T> handler, Callable<U> onUnauthorized) throws Exception {
+        return asUser(this::isAdmin, handler, onUnauthorized);
+    }
+
+    public <T, U> T asCustomer(Callable<T> handler, Callable<U> onUnauthorized) throws Exception {
+        return asUser(this::isCustomer, handler, onUnauthorized);
+    }
+
+    public <T, U> T asHotelier(Callable<T> handler, Callable<U> onUnauthorized) throws Exception {
+        return asUser(this::isCustomer, handler, onUnauthorized);
+    }
+    private <T, U> T asUser(Callable<Boolean> guard,
+                         Callable<T> action,
+                         Callable<U> onUnauthorized) throws Exception {
+        if (guard.call()) {
+            return action.call();
+        } else {
+            onUnauthorized.call();
+            return null;
+        }
     }
 }

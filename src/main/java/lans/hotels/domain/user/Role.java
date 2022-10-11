@@ -1,7 +1,7 @@
 package lans.hotels.domain.user;
 
 public class Role {
-    private enum RoleNames {
+    public enum Name {
         Admin,
         Hotelier,
         Customer
@@ -24,19 +24,19 @@ public class Role {
 
     public Role() {
         this.id = 3;
-        name = RoleNames.Customer.toString();
+        name = Name.Customer.toString();
     }
 
     public Role(Integer id) {
         assert id == 1 || id == 2 || id == 3;
         this.id = id;
         if (id==1) {
-            name = RoleNames.Admin.toString();
+            name = Name.Admin.toString();
         }
         if (id==2) {
-            name = RoleNames.Hotelier.toString();
+            name = Name.Hotelier.toString();
         }
-        name = RoleNames.Customer.toString();
+        name = Name.Customer.toString();
     }
 
     public boolean isAdmin() { return id == 1; }

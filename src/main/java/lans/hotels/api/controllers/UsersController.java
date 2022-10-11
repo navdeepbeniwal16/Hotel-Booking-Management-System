@@ -8,43 +8,29 @@ import lans.hotels.use_cases.GetAllUsers;
 import lans.hotels.use_cases.OnboardHotelier;
 import org.json.JSONObject;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.InvalidObjectException;
-import java.util.concurrent.Callable;
 
 public class UsersController extends FrontCommand {
     @Override
-    protected void concreteProcess() throws IOException {
-        try {
-            checkCommandPath(2);
-            switch (method) {
-                case HttpMethod.GET:
-                    handleGet();
+    protected void concreteProcess() {
+        checkCommandPath(2);
+        switch (method) {
+            case HttpMethod.GET:
+                handleGet();
+                return;
+            case HttpMethod.POST:
+                if (requestBody.has("search")) {
+                    asAdmin(this::handleSearch);
                     return;
-                case HttpMethod.POST:
-                    if (requestBody.has("search")) {
-                        asAdmin(this::handleSearch);
-                        return;
-                    } else if (requestBody.has("hotelier")) {
-                        asAdmin(this::handlePostHotelier);
-                        return;
-                    } else if (requestBody.has("customer")) {
-                        handlePostCustomer();
-                        return;
-                    }
-                case HttpMethod.PUT:
-                    sendJsonErrorResponse("POST /users not implemented", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                } else if (requestBody.has("hotelier")) {
+                    asAdmin(this::handlePostHotelier);
                     return;
-                case HttpMethod.DELETE:
-                    sendJsonErrorResponse("DELETE /users not implemented", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                } else if (requestBody.has("customer")) {
+                    asAdmin(this::handlePostCustomer);
                     return;
-                default:
-                    sendJsonErrorResponse("/users request: " + request.getMethod() + "\n" + requestBody.toString(),
-                            HttpServletResponse.SC_BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            sendJsonErrorResponse("POST /users:\n" + requestBody.toString(),
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
+            default:
+                responder.unimplemented(request.getMethod() + " /users");
         }
     }
     public User getUserFromJSONObject(JSONObject body) {
@@ -100,7 +86,7 @@ public class UsersController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        sendJsonResponse(response, useCase.getResult(), statusCode);
+        responder.respond(response, useCase.getResult(), statusCode);
         return null;
     }
 
@@ -138,7 +124,7 @@ public class UsersController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        sendJsonResponse(response, useCase.getResult(), statusCode);
+        responder.respond(response, useCase.getResult(), statusCode);
         return null;
     }
 
@@ -154,11 +140,11 @@ public class UsersController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        sendJsonResponse(response, useCase.getResult(), statusCode);
+        responder.respond(response, useCase.getResult(), statusCode);
         return null;
     }
 
-    private void handlePostCustomer() throws Exception {
+    private Void handlePostCustomer() throws Exception {
         User user = getUserFromJSONObject(requestBody);
 
         if (user == null)
@@ -169,7 +155,8 @@ public class UsersController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        sendJsonResponse(response, useCase.getResult(), statusCode);
+        responder.respond(response, useCase.getResult(), statusCode);
+        return null;
     }
 }
 

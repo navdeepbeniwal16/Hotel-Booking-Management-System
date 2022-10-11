@@ -20,23 +20,23 @@ public class RoomsController extends FrontCommand {
         System.out.println("RoomsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
         switch(request.getMethod()) {
             case HttpMethod.GET: // TODO: Use ViewHotelRoomsHotelier use case
-                sendJsonErrorResponse("GET /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                responder.error("GET /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
                 return;
             case HttpMethod.POST:
                 try {
                     handlePost();
                 } catch (Exception e) {
-                    sendJsonErrorResponse(e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    responder.error(e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
                 return;
             case HttpMethod.PUT:
-                sendJsonErrorResponse("PUT /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                responder.error("PUT /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
                 return;
             case HttpMethod.DELETE:
-                sendJsonErrorResponse("DELETE /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                responder.error("DELETE /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
                 return;
             default:
-                sendJsonErrorResponse("invalid request", HttpServletResponse.SC_BAD_REQUEST);
+                responder.error("invalid request", HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
@@ -47,7 +47,7 @@ public class RoomsController extends FrontCommand {
         } else if (requestBody.has("room")) {
             handleRoomQuery(requestBody);
         } else {
-            sendJsonErrorResponse("POST /rooms does must include 'room' or 'search'", HttpServletResponse.SC_BAD_REQUEST);
+            responder.error("POST /rooms does must include 'room' or 'search'", HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
@@ -99,7 +99,7 @@ public class RoomsController extends FrontCommand {
 
     private void handleRoomQuery(JSONObject body) throws IOException {
         if (!auth.isHotelier()) {
-            unauthorized();
+            responder.unauthorized();
             return;
         }
         Room r = getRoomFromJsonObject(body);
@@ -108,7 +108,7 @@ public class RoomsController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        sendJsonResponse(response, useCase.getResult(), statusCode);
+        responder.respond(response, useCase.getResult(), statusCode);
     }
 
 
@@ -125,7 +125,7 @@ public class RoomsController extends FrontCommand {
         statusCode = viewHotelRooms.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        sendJsonResponse(response, viewHotelRooms.getResult(), statusCode);
+        responder.respond(response, viewHotelRooms.getResult(), statusCode);
     }
 
     private Integer parseHotelId(JSONObject searchQueryBody) throws JSONException {

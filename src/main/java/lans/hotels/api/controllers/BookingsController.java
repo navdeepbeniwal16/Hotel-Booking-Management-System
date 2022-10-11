@@ -38,7 +38,7 @@ public class BookingsController extends FrontCommand {
                     if(searchQuery.has("hotelier_email")) {
                         String hotelier_email = searchQuery.getString("hotelier_email");
                         if (!auth.isHotelier()) {
-                            unauthorized();
+                            responder.unauthorized();
                             return;
                         }
                         useCase = new ViewHotelGroupBookings(dataSource, hotelier_email);
@@ -46,14 +46,14 @@ public class BookingsController extends FrontCommand {
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :
                                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        sendJsonResponse(response, useCase.getResult(), statusCode);
+                        responder.respond(response, useCase.getResult(), statusCode);
                         return;
                     }
 
                     if(searchQuery.has("customer_email")) {
                         String customer_email = searchQuery.getString("customer_email");
                         if (!auth.isCustomer()) {
-                            unauthorized();
+                            responder.unauthorized();
                             return;
                         }
                         useCase = new ViewCustomerBookings(dataSource, customer_email);
@@ -61,7 +61,7 @@ public class BookingsController extends FrontCommand {
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :
                                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        sendJsonResponse(response, useCase.getResult(), statusCode);
+                        responder.respond(response, useCase.getResult(), statusCode);
                         return;
                     }
                 }
@@ -168,7 +168,7 @@ public class BookingsController extends FrontCommand {
 
                                             if(isRoomBookingClashing) {
                                                 System.err.println("PUT /api/bookings: " + Arrays.toString(commandPath));
-                                                sendJsonErrorResponse("Room Bookings are clashing",400);
+                                                responder.error("Room Bookings are clashing",400);
                                                 return;
                                             } else {
                                                 DateRange dateRange = new DateRange(startDate, endDate);
@@ -245,7 +245,7 @@ public class BookingsController extends FrontCommand {
         if (allowedToCreateBookings) {
             executeCreateNewBooking();
         } else {
-            unauthorized();
+            responder.unauthorized();
         }
     }
 
@@ -255,7 +255,7 @@ public class BookingsController extends FrontCommand {
             useCase.execute();
             sendJsonResponse(response, useCase.getResult(), HttpServletResponse.SC_OK);
         } catch (Exception e) {
-            sendJsonErrorResponse(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
+            responder.error(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 }

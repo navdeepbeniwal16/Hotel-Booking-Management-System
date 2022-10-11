@@ -35,7 +35,7 @@ public class HotelgroupsController extends FrontCommand {
 
                 case HttpMethod.GET:
                     if (!auth.isAdmin()) {
-                        unauthorized();
+                        responder.unauthorized();
                         return;
                     }
                     useCase = new GetAllHotelGroupDetails(dataSource);
@@ -43,12 +43,12 @@ public class HotelgroupsController extends FrontCommand {
                     statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    sendJsonResponse(response, useCase.getResult(), statusCode);
+                    responder.respond(response, useCase.getResult(), statusCode);
                     return;
 
                 case HttpMethod.POST: {
                     if (!auth.isAdmin()) {
-                        unauthorized();
+                        responder.unauthorized();
                         return;
                     }
 
@@ -56,7 +56,7 @@ public class HotelgroupsController extends FrontCommand {
                         JSONObject searchQueryBody = requestBody.getJSONObject("search");
                         if (searchQueryBody.has("id")) {
                             if (!auth.isAdmin()) {
-                                unauthorized();
+                                responder.unauthorized();
                                 return;
                             }
                         Integer hotelGroupId = searchQueryBody.getInt("id");
@@ -66,7 +66,7 @@ public class HotelgroupsController extends FrontCommand {
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :
                                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        sendJsonResponse(response, useCase.getResult(), statusCode);
+                            responder.respond(response, useCase.getResult(), statusCode);
                         return;
                         }
                     }
@@ -77,7 +77,7 @@ public class HotelgroupsController extends FrontCommand {
                             throw new InvalidObjectException("Failed to parse hotel group object from request body");
 
                         if (!auth.isAdmin()) {
-                            unauthorized();
+                            responder.unauthorized();
                             return;
                         }
                         useCase = new CreateHotelGroup(dataSource);
@@ -85,7 +85,7 @@ public class HotelgroupsController extends FrontCommand {
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :
                                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        sendJsonResponse(response, useCase.getResult(), statusCode);
+                        responder.respond(response, useCase.getResult(), statusCode);
                         return;
                     }
                     else if (requestBody.has("hotel_group")) {
