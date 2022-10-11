@@ -124,6 +124,7 @@ public class User extends ReferenceObject {
         markDirty();
     }
 
+    public boolean hasRole() { return this.role != null; }
     public Role getRole() { return this.role; }
 
 

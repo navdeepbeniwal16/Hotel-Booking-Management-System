@@ -10,14 +10,17 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.user.Role;
 import lans.hotels.domain.user.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Array;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 public class Auth0Adapter {
@@ -205,17 +208,29 @@ public class Auth0Adapter {
     }
 
     public <T, U> T asAdmin(Callable<T> handler, Callable<U> onUnauthorized) throws Exception {
-        return asUser(this::isAdmin, handler, onUnauthorized);
+        return withGuard(this::isAdmin, handler, onUnauthorized);
     }
 
     public <T, U> T asCustomer(Callable<T> handler, Callable<U> onUnauthorized) throws Exception {
-        return asUser(this::isCustomer, handler, onUnauthorized);
+        return withGuard(this::isCustomer, handler, onUnauthorized);
     }
 
     public <T, U> T asHotelier(Callable<T> handler, Callable<U> onUnauthorized) throws Exception {
-        return asUser(this::isCustomer, handler, onUnauthorized);
+        return withGuard(this::isCustomer, handler, onUnauthorized);
     }
-    private <T, U> T asUser(Callable<Boolean> guard,
+
+    private Boolean inRolesGuard(List<Role> roles) {
+        return authenticated &&
+                user.hasRole() &&
+                user.hasId() &&
+                roles.contains(user.getRole());
+    }
+
+    public <T, U> T inRoles(List<Role> roles, Callable<T> handler, Callable<U> onUnauthorized) throws Exception {
+        return withGuard(() -> inRolesGuard(roles), handler, onUnauthorized);
+    }
+
+    private <T, U> T withGuard(Callable<Boolean> guard,
                          Callable<T> action,
                          Callable<U> onUnauthorized) throws Exception {
         if (guard.call()) {
@@ -224,5 +239,11 @@ public class Auth0Adapter {
             onUnauthorized.call();
             return null;
         }
+    }
+
+    public Integer getId() {
+        if (authenticated && user != null && user.getId() != null)
+            return user.getId();
+        return -1;
     }
 }
