@@ -87,7 +87,7 @@ public abstract class FrontCommand implements IFrontCommand  {
     }
 
 
-    protected <T> T delegateToAuth(List<Role> roles, Callable<T> handler) {
+    private <T> T delegateToAuth(List<Role> roles, Callable<T> handler) {
         try {
             return auth.inRoles(roles, handler, responder::unauthorized);
         } catch (Exception e) {
