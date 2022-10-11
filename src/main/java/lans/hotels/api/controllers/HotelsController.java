@@ -133,7 +133,7 @@ public class HotelsController extends FrontCommand {
                         else {
                             Integer hotel_id = JSONBody.getInt("id");
                             if (!auth.isAdmin()) {
-                                sendUnauthorizedJsonResponse();
+                                responder.unauthorized();
                                 return;
                             }
 
