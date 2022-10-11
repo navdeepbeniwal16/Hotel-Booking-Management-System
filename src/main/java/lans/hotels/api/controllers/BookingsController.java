@@ -38,7 +38,7 @@ public class BookingsController extends FrontCommand {
                     if(searchQuery.has("hotelier_email")) {
                         String hotelier_email = searchQuery.getString("hotelier_email");
                         if (!auth.isHotelier()) {
-                            sendUnauthorizedJsonResponse();
+                            unauthorized();
                             return;
                         }
                         useCase = new ViewHotelGroupBookings(dataSource, hotelier_email);
@@ -53,7 +53,7 @@ public class BookingsController extends FrontCommand {
                     if(searchQuery.has("customer_email")) {
                         String customer_email = searchQuery.getString("customer_email");
                         if (!auth.isCustomer()) {
-                            sendUnauthorizedJsonResponse();
+                            unauthorized();
                             return;
                         }
                         useCase = new ViewCustomerBookings(dataSource, customer_email);
@@ -245,7 +245,7 @@ public class BookingsController extends FrontCommand {
         if (allowedToCreateBookings) {
             executeCreateNewBooking();
         } else {
-            sendUnauthorizedJsonResponse();
+            unauthorized();
         }
     }
 

@@ -47,7 +47,7 @@ public class APIEntrypoint extends HttpServlet {
         } catch (Exception e) {
             System.out.println("APIFrontController.handleRequest(): " + e.getMessage());
             e.printStackTrace();
-            throw new ServletException("doPost():" + e);
+            throw new ServletException("APIEntrypoint.handleRequest():\n" + "Method:\t" + request.getMethod() + "\nError message:\t" + e);
         }
     }
 

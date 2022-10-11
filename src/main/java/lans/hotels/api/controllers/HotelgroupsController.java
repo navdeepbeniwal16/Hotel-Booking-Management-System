@@ -11,15 +11,12 @@ import lans.hotels.use_cases.GetSpecificHotelGroup;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class HotelgroupsController extends FrontCommand {
     @Override
@@ -38,7 +35,7 @@ public class HotelgroupsController extends FrontCommand {
 
                 case HttpMethod.GET:
                     if (!auth.isAdmin()) {
-                        sendUnauthorizedJsonResponse();
+                        unauthorized();
                         return;
                     }
                     useCase = new GetAllHotelGroupDetails(dataSource);
@@ -51,7 +48,7 @@ public class HotelgroupsController extends FrontCommand {
 
                 case HttpMethod.POST: {
                     if (!auth.isAdmin()) {
-                        sendUnauthorizedJsonResponse();
+                        unauthorized();
                         return;
                     }
 
@@ -59,7 +56,7 @@ public class HotelgroupsController extends FrontCommand {
                         JSONObject searchQueryBody = requestBody.getJSONObject("search");
                         if (searchQueryBody.has("id")) {
                             if (!auth.isAdmin()) {
-                                sendUnauthorizedJsonResponse();
+                                unauthorized();
                                 return;
                             }
                         Integer hotelGroupId = searchQueryBody.getInt("id");
@@ -80,7 +77,7 @@ public class HotelgroupsController extends FrontCommand {
                             throw new InvalidObjectException("Failed to parse hotel group object from request body");
 
                         if (!auth.isAdmin()) {
-                            sendUnauthorizedJsonResponse();
+                            unauthorized();
                             return;
                         }
                         useCase = new CreateHotelGroup(dataSource);

@@ -11,7 +11,6 @@ import org.json.JSONObject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InvalidObjectException;
-import java.text.ParseException;
 import java.util.Date;
 
 public class RoomsController extends FrontCommand {
@@ -100,7 +99,7 @@ public class RoomsController extends FrontCommand {
 
     private void handleRoomQuery(JSONObject body) throws IOException {
         if (!auth.isHotelier()) {
-            sendUnauthorizedJsonResponse();
+            unauthorized();
             return;
         }
         Room r = getRoomFromJsonObject(body);

@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 public abstract class FrontCommand implements IFrontCommand  {
@@ -66,29 +67,33 @@ public abstract class FrontCommand implements IFrontCommand  {
         requestBody = body;
     }
 
-    protected void sendJsonResponse(HttpServletResponse response, JSONObject responseBody, int statusCode) throws IOException {
-        response.setStatus(statusCode);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        out.println(responseBody);
-        out.flush();
-    }
-
-    protected void sendJsonErrorResponse(String errorMessage, int statusCode) throws IOException {
-        response.setStatus(statusCode);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
+    protected void sendJsonErrorResponse(String errorMessage, int statusCode) {
         JSONObject errorBody = new JSONObject();
         errorBody.put("errorMessage", errorMessage);
-        out.println(errorBody);
-        out.flush();
+        sendJsonResponse(response, errorBody, statusCode);
     }
 
-    protected void sendUnauthorizedJsonResponse() throws IOException {
-        JSONObject errorObject = new JSONObject().put("message", "unauthorized");
-        sendJsonResponse(response, errorObject, HttpServletResponse.SC_UNAUTHORIZED);
+    protected void sendJsonResponse(HttpServletResponse response, JSONObject responseBody, int statusCode) {
+        try {
+            response.setStatus(statusCode);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter out = response.getWriter();
+            out.println(responseBody);
+            out.flush();
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+        }
+    }
+
+    protected void unauthorized() throws IOException {
+        sendJsonErrorResponse("Unauthorized", HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    protected void internalServerError() {
+        sendJsonErrorResponse("Something went wrong!", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
     protected void checkCommandPath(Integer exactLength) {
@@ -98,5 +103,30 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected void checkCommandPath(Integer minLength, Integer maxLength) {
         assert commandPath.length >= minLength;
         assert commandPath.length <= maxLength;
+    }
+
+    private <T> T asUser(Callable<Boolean> guard, Callable<T> handler) {
+        try {
+            if (guard.call()) {
+                return handler.call();
+            } else {
+                unauthorized();
+                return null;
+            }
+        } catch (Exception e) {
+            internalServerError();
+            return null;
+        }
+    }
+
+    protected <T> T asAdmin(Callable<T> handler) {
+        return asUser(auth::isAdmin, handler);
+    }
+
+    protected <T> T asCustomer(Callable<T> handler) {
+        return asUser(auth::isCustomer, handler);
+    }
+    protected <T> T asHotelier(Callable<T> handler) {
+        return asUser(auth::isCustomer, handler);
     }
 }

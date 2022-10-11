@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.util.concurrent.Callable;
 
 public class UsersController extends FrontCommand {
     @Override
@@ -22,10 +23,10 @@ public class UsersController extends FrontCommand {
                     return;
                 case HttpMethod.POST:
                     if (requestBody.has("search")) {
-                        handleSearch();
+                        asAdmin(this::handleSearch);
                         return;
                     } else if (requestBody.has("hotelier")) {
-                        handlePostHotelier();
+                        asAdmin(this::handlePostHotelier);
                         return;
                     } else if (requestBody.has("customer")) {
                         handlePostCustomer();
@@ -93,20 +94,17 @@ public class UsersController extends FrontCommand {
         return user;
     }
 
-    private void handleGet() throws Exception {
-        if (!auth.isAdmin()) {
-            sendUnauthorizedJsonResponse();
-            return;
-        }
+    private Void handleGet() {
         useCase = new GetAllUsers(dataSource);
         useCase.execute();
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         sendJsonResponse(response, useCase.getResult(), statusCode);
+        return null;
     }
 
-    private void handleSearch() throws Exception {
+    private Void handleSearch() {
         UserSearchCriteria criteria = new UserSearchCriteria();
         JSONObject searchQueryBody = requestBody.getJSONObject("search");
 
@@ -131,10 +129,6 @@ public class UsersController extends FrontCommand {
         }
 
         if (userType.equals("hotelier")) {
-            if (!auth.isAdmin()) {
-                sendUnauthorizedJsonResponse();
-                return;
-            }
             useCase = new GetAllHoteliers(dataSource);
         } else {
             useCase = new GetAllUsers(dataSource);
@@ -145,24 +139,23 @@ public class UsersController extends FrontCommand {
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         sendJsonResponse(response, useCase.getResult(), statusCode);
+        return null;
     }
 
-    private void handlePostHotelier() throws Exception {
+    private Void handlePostHotelier() throws Exception {
         User user = getUserFromJSONObject(requestBody);
 
         if (user == null)
             throw new InvalidObjectException("Failed to parse hotelier object from request body");
 
-        if (!auth.isAdmin()) {
-            sendUnauthorizedJsonResponse();
-            return;
-        }
+
         useCase = new OnboardHotelier(dataSource);
         useCase.execute();
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         sendJsonResponse(response, useCase.getResult(), statusCode);
+        return null;
     }
 
     private void handlePostCustomer() throws Exception {
