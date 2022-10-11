@@ -72,21 +72,6 @@ public abstract class FrontCommand implements IFrontCommand  {
         requestBody = body;
     }
 
-    protected void sendJsonResponse(HttpServletResponse response, JSONObject responseBody, int statusCode) {
-        try {
-            response.setStatus(statusCode);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            PrintWriter out = response.getWriter();
-            out.println(responseBody);
-            out.flush();
-        } catch (IOException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-        }
-    }
-
     protected void checkCommandPath(Integer exactLength) {
         assert commandPath.length == exactLength;
     }

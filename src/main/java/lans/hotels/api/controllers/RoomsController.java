@@ -108,7 +108,7 @@ public class RoomsController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(response, useCase.getResult(), statusCode);
+        responder.respond(useCase.getResult(), statusCode);
     }
 
 
@@ -125,7 +125,7 @@ public class RoomsController extends FrontCommand {
         statusCode = viewHotelRooms.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(response, viewHotelRooms.getResult(), statusCode);
+        responder.respond(viewHotelRooms.getResult(), statusCode);
     }
 
     private Integer parseHotelId(JSONObject searchQueryBody) throws JSONException {

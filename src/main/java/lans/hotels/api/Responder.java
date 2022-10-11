@@ -15,10 +15,10 @@ public class Responder {
     public void error(String errorMessage, int statusCode) {
         JSONObject errorBody = new JSONObject();
         errorBody.put("errorMessage", errorMessage);
-        respond(response, errorBody, statusCode);
+        respond(errorBody, statusCode);
     }
 
-    public void respond(HttpServletResponse response, JSONObject responseBody, int statusCode) {
+    public void respond(JSONObject responseBody, int statusCode) {
         try {
             response.setStatus(statusCode);
             response.setContentType("application/json");

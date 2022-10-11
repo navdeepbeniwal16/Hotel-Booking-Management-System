@@ -86,7 +86,7 @@ public class UsersController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(response, useCase.getResult(), statusCode);
+        responder.respond(useCase.getResult(), statusCode);
         return null;
     }
 
@@ -124,7 +124,7 @@ public class UsersController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(response, useCase.getResult(), statusCode);
+        responder.respond(useCase.getResult(), statusCode);
         return null;
     }
 
@@ -140,7 +140,7 @@ public class UsersController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(response, useCase.getResult(), statusCode);
+        responder.respond(useCase.getResult(), statusCode);
         return null;
     }
 
@@ -155,7 +155,7 @@ public class UsersController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(response, useCase.getResult(), statusCode);
+        responder.respond(useCase.getResult(), statusCode);
         return null;
     }
 }

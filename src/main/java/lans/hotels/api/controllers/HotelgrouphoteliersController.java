@@ -37,7 +37,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    responder.respond(response, useCase.getResult(), statusCode);
+                    responder.respond(useCase.getResult(), statusCode);
                     return;
                 } else {
                     System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
@@ -84,7 +84,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    responder.respond(response, useCase.getResult(), statusCode);
+                    responder.respond(useCase.getResult(), statusCode);
                     return;
                 } else {
                     System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));

@@ -46,7 +46,7 @@ public class BookingsController extends FrontCommand {
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :
                                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        responder.respond(response, useCase.getResult(), statusCode);
+                        responder.respond(useCase.getResult(), statusCode);
                         return;
                     }
 
@@ -61,7 +61,7 @@ public class BookingsController extends FrontCommand {
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :
                                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        responder.respond(response, useCase.getResult(), statusCode);
+                        responder.respond(useCase.getResult(), statusCode);
                         return;
                     }
                 }
@@ -253,7 +253,7 @@ public class BookingsController extends FrontCommand {
         try {
             useCase = new CreateBooking(dataSource, requestBody.getJSONObject("booking"));
             useCase.execute();
-            sendJsonResponse(response, useCase.getResult(), HttpServletResponse.SC_OK);
+            responder.respond(useCase.getResult(), HttpServletResponse.SC_OK);
         } catch (Exception e) {
             responder.error(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
         }
