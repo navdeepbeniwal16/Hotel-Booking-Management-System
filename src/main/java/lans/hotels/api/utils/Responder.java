@@ -1,4 +1,4 @@
-package lans.hotels.api;
+package lans.hotels.api.utils;
 
 import org.json.JSONObject;
 

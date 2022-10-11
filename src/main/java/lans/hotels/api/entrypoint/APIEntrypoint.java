@@ -1,7 +1,6 @@
 package lans.hotels.api.entrypoint;
 
-import lans.hotels.api.Responder;
-import lans.hotels.api.auth.Auth0Adapter;
+import lans.hotels.api.utils.Responder;
 import lans.hotels.api.auth.AuthorizationFactory;
 import lans.hotels.api.controllers.UnknownController;
 import lans.hotels.api.exceptions.CommandException;

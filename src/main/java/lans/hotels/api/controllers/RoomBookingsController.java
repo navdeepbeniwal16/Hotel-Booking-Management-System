@@ -12,9 +12,8 @@ import java.sql.SQLException;
 
 public class RoomBookingsController extends FrontCommand {
     @Override
-    protected void concreteProcess() throws CommandException, IOException, SQLException {
+    protected void concreteProcess() throws Exception {
         String[] commandPath = request.getPathInfo().split("/");
-        int statusCode;
         switch (request.getMethod()) {
             case HttpMethod.GET:
             case HttpMethod.POST:
@@ -34,11 +33,16 @@ public class RoomBookingsController extends FrontCommand {
 
                             ViewRoomBookingsForBooking useCase = new ViewRoomBookingsForBooking(dataSource);
                             useCase.setBookingId(bookingId);
-                            useCase.execute();
-                            statusCode = useCase.succeeded() ?
-                                    HttpServletResponse.SC_OK :
-                                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                            responder.respond(useCase.getResult(), statusCode);
+                            // @arman
+                            useCase.execute(
+                                    () -> responder.respondOK(useCase.getResult()),
+                                    () -> responder.internalServerError());
+                            // OLD CODE example
+//                            useCase.execute();
+//                            statusCode = useCase.succeeded() ?
+//                                    HttpServletResponse.SC_OK :
+//                                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+//                            responder.respond(useCase.getResult(), statusCode);
                             return;
                         }
                     }

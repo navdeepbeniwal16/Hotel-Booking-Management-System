@@ -81,7 +81,9 @@ public class UsersController extends FrontCommand {
 
     private Void handleGet() throws Exception {
         useCase = new GetAllUsers(dataSource);
-        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError());
+        useCase.execute(
+                () -> responder.respondOK(useCase.getResult()),
+                () -> responder.internalServerError());
         return null;
     }
 

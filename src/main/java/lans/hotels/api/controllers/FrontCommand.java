@@ -1,6 +1,6 @@
 package lans.hotels.api.controllers;
 
-import lans.hotels.api.Responder;
+import lans.hotels.api.utils.Responder;
 import lans.hotels.api.entrypoint.IFrontCommand;
 import lans.hotels.api.auth.Auth0Adapter;
 import lans.hotels.api.exceptions.CommandException;
