@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,13 +52,15 @@ public abstract class FrontCommand implements IFrontCommand  {
         this.commandPath = request.getPathInfo().split("/");
     }
 
-    abstract protected void concreteProcess() throws CommandException, IOException, SQLException;
+    abstract protected void concreteProcess() throws Exception;
     public void process() throws ServletException, IOException, CommandException, SQLException {
-        if (context == null || request == null || response == null || dataSource == null) {
-            throw new CommandException(this.getClass() + " must be initialised by it can process a command.");
+        try {
+            parseRequestBody();
+            concreteProcess();
+        } catch (Exception e) {
+            responder.internalServerError();
         }
-        parseRequestBody();
-        concreteProcess();
+
     }
 
     protected void parseRequestBody() throws IOException {

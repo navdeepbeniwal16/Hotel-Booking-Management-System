@@ -4,6 +4,8 @@ import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.domain.IDataSource;
 import org.json.JSONObject;
 
+import java.util.concurrent.Callable;
+
 public abstract class UseCase {
     IDataSource dataSource;
     protected boolean succeeded;
@@ -18,6 +20,15 @@ public abstract class UseCase {
     }
 
     public abstract void doExecute() throws Exception;
+
+    public Void execute(Callable<Void> onSuccess, Callable<Void> onFailure) throws Exception {
+        execute();
+        if (succeeded) {
+            return onSuccess.call();
+        } else {
+            return onFailure.call();
+        }
+    }
     public void execute() {
         try {
             doExecute();

@@ -7,12 +7,11 @@ import lans.hotels.use_cases.GetAllHoteliers;
 import lans.hotels.use_cases.GetAllUsers;
 import lans.hotels.use_cases.OnboardHotelier;
 import org.json.JSONObject;
-import javax.servlet.http.HttpServletResponse;
 import java.io.InvalidObjectException;
 
 public class UsersController extends FrontCommand {
     @Override
-    protected void concreteProcess() {
+    protected void concreteProcess() throws Exception {
         checkCommandPath(2);
         switch (method) {
             case HttpMethod.GET:
@@ -80,17 +79,13 @@ public class UsersController extends FrontCommand {
         return user;
     }
 
-    private Void handleGet() {
+    private Void handleGet() throws Exception {
         useCase = new GetAllUsers(dataSource);
-        useCase.execute();
-        statusCode = useCase.succeeded() ?
-                HttpServletResponse.SC_OK :
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(useCase.getResult(), statusCode);
+        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError());
         return null;
     }
 
-    private Void handleSearch() {
+    private Void handleSearch() throws Exception {
         UserSearchCriteria criteria = new UserSearchCriteria();
         JSONObject searchQueryBody = requestBody.getJSONObject("search");
 
@@ -120,11 +115,7 @@ public class UsersController extends FrontCommand {
             useCase = new GetAllUsers(dataSource);
         }
 
-        useCase.execute();
-        statusCode = useCase.succeeded() ?
-                HttpServletResponse.SC_OK :
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(useCase.getResult(), statusCode);
+        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError());
         return null;
     }
 
@@ -136,11 +127,7 @@ public class UsersController extends FrontCommand {
 
 
         useCase = new OnboardHotelier(dataSource);
-        useCase.execute();
-        statusCode = useCase.succeeded() ?
-                HttpServletResponse.SC_OK :
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(useCase.getResult(), statusCode);
+        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError());
         return null;
     }
 
@@ -151,11 +138,7 @@ public class UsersController extends FrontCommand {
             throw new InvalidObjectException("Failed to parse customer object from request body");
 
         useCase = new CreateCustomer(dataSource);
-        useCase.execute();
-        statusCode = useCase.succeeded() ?
-                HttpServletResponse.SC_OK :
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(useCase.getResult(), statusCode);
+        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError());
         return null;
     }
 }

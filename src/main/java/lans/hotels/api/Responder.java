@@ -12,13 +12,18 @@ public class Responder {
         this.response = response;
     }
 
-    public void error(String errorMessage, int statusCode) {
+    public Void error(String errorMessage, int statusCode) {
         JSONObject errorBody = new JSONObject();
         errorBody.put("errorMessage", errorMessage);
         respond(errorBody, statusCode);
+        return null;
     }
 
-    public void respond(JSONObject responseBody, int statusCode) {
+    public Void respondOK(JSONObject responseBody) {
+        return respond(responseBody, HttpServletResponse.SC_OK);
+    }
+
+    public Void respond(JSONObject responseBody, int statusCode) {
         try {
             response.setStatus(statusCode);
             response.setContentType("application/json");
@@ -31,10 +36,12 @@ public class Responder {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
         }
+        return null;
     }
 
-    public void unimplemented(String message) {
+    public Void unimplemented(String message) {
         error(message, HttpServletResponse.SC_NOT_IMPLEMENTED);
+        return null;
     }
 
     public Void unauthorized() {
