@@ -1,14 +1,52 @@
-import React from 'react';
+import React, { useContext, ReactNode, useState } from 'react';
 import { map } from 'lodash';
-import { Table } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 
 import UserDataType from '../../types/UserDataType';
+import AppContext from '../../context/AppContext';
+import { Roles } from '../../types/RoleTypes';
 
 interface UserTableProps {
   users: UserDataType[];
+  makeHotelier: (id: number) => void;
 }
 
-const UsersTable = ({ users }: UserTableProps) => {
+const UsersTable = ({ users, makeHotelier }: UserTableProps) => {
+  const { backend } = useContext(AppContext.GlobalContext);
+  const defaultLoading: number[] = [];
+  const [loading, setLoading] = useState<number[]>(defaultLoading);
+
+  const renderButton = (user: UserDataType) => {
+    return (
+      <Button
+        disabled={loading.includes(user.id)}
+        onClick={
+          loading.includes(user.id)
+            ? () => {
+                console.log('button disabled');
+              }
+            : () => {
+                backend.makeHotelier(user).then((success: boolean) => {
+                  if (success) makeHotelier(user.id);
+                  setLoading(loading.filter((id: number) => id != user.id));
+                });
+                setLoading([...loading, user.id]);
+              }
+        }
+        variant='warning'
+      >
+        {loading.includes(user.id) ? 'Loading…' : 'Make hotelier'}
+      </Button>
+    );
+  };
+
+  const renderRole = (user: UserDataType): ReactNode => {
+    return (
+      <div>
+        {`${user.role}`} {user.role == Roles.CUSTOMER && renderButton(user)}
+      </div>
+    );
+  };
   return (
     <Table>
       <thead>
@@ -25,7 +63,7 @@ const UsersTable = ({ users }: UserTableProps) => {
             <td>{`${user.id}`}</td>
             <td>{`${user.name}`}</td>
             <td>{`${user.email}`}</td>
-            <td>{`${user.role}`}</td>
+            <td>{renderRole(user)}</td>
           </tr>
         ))}
       </tbody>

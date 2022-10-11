@@ -101,6 +101,20 @@ const Admin = () => {
     setHoteliers(updatedHoteliers);
   };
 
+  const handleMakeHotelier = (user_id: number): void => {
+    setUsers(
+      map(users, (user: UserDataType) => {
+        if (user.id == user_id) {
+          return {
+            ...user,
+            role: Roles.HOTELIER,
+          };
+        }
+        return user;
+      })
+    );
+  };
+
   return (
     <Container>
       <Row>
@@ -132,7 +146,7 @@ const Admin = () => {
           <Tab eventKey={tabKeys.users} title={tabKeys.users}>
             <Row>
               <Col>
-                <UsersTable users={users} />
+                <UsersTable users={users} makeHotelier={handleMakeHotelier} />
               </Col>
             </Row>
           </Tab>
