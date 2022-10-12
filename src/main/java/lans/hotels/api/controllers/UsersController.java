@@ -27,7 +27,7 @@ public class UsersController extends FrontCommand {
                     asAdmin(this::handlePostHotelier);
                     return;
                 } else if (requestBody.has("customer")) {
-                    asAdmin(this::handlePostCustomer);
+                    asCustomer(this::handlePostCustomer);
                     return;
                 }
             default:
@@ -60,10 +60,7 @@ public class UsersController extends FrontCommand {
         }
 
         if(body.has("customer")) {
-            JSONObject nestedJsonObject = body.getJSONObject("customer");
-
-            if(nestedJsonObject.has("email"))
-                email = nestedJsonObject.getString("email");
+            email = auth.getEmail();
 
             Role role = null;
             try {

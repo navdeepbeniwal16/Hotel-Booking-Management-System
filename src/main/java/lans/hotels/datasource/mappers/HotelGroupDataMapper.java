@@ -98,29 +98,33 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws SQLException, UoWException {
+    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws Exception {
         HotelGroup hg = (HotelGroup) domainObject;
-        String createStatement = "WITH insert_address AS ( " +
-                "INSERT INTO address (line_1,line_2,district,city,postcode) " +
-                "VALUES ( " + "'" + hg.getAddress().getLine1() +"'," +
-                "'" + hg.getAddress().getLine2() + "'," + "( SELECT id from district WHERE name = '" +
-                hg.getAddress().getDistrict().toString()+"')," + "'" + hg.getAddress().getCity() + "" +"'," +
-                hg.getAddress().getPostCode() +")" +
-                " RETURNING id )" +
-                "INSERT INTO hotel_group (name, address,phone) VALUES ('" +hg.getName() +
-                "',(SELECT id FROM insert_address),'" + hg.getPhone() +"') returning * ";
+        PreparedStatement statement = connection.prepareStatement(
+                "WITH insert_address AS ( " +
+                        "INSERT INTO address (line_1,line_2,district,city,postcode) " +
+                        "VALUES ( ?, ?, ( SELECT id from district WHERE name = ? ), ?, ?)" +
+                        " RETURNING id )" +
+                        "INSERT INTO hotel_group (name, address,phone) VALUES ( ? ," +
+                        " (SELECT id FROM insert_address), ?) returning * ");
 
+        statement.setString(1,hg.getAddress().getLine1());
+        statement.setString(2,hg.getAddress().getLine2());
+        statement.setString(3,hg.getAddress().getDistrict().toString());
+        statement.setString(4,hg.getAddress().getCity());
+        statement.setInt(5,hg.getAddress().getPostCode());
+        statement.setString(6,hg.getName());
+        statement.setString(7,hg.getPhone());
 
-        try (PreparedStatement statement = connection.prepareStatement(createStatement)) {
-            ResultSet resultSet = statement.executeQuery();
+        System.out.println(statement.toString());
+        ResultSet resultSet = statement.executeQuery();
 
-            return resultSet.next() ? resultSet.getInt("id") : -1;
-
-        }
-        catch (SQLException e)
+        if(resultSet.next())
         {
-            return -1;
+            return resultSet.getInt("id");
         }
+        else
+            throw new Exception("Insert failed");
     }
 
     @Override

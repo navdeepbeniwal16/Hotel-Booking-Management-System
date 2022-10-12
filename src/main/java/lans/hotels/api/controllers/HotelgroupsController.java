@@ -21,151 +21,68 @@ import java.util.*;
 public class HotelgroupsController extends FrontCommand {
     @Override
     protected void concreteProcess() throws IOException, SQLException {
-        ArrayList<HotelGroup> hotel_groups;
-        String[] commandPath = request.getPathInfo().split("/");
-
-        if(commandPath.length!=2) {
-            System.err.println("HotelGroup controller: " + Arrays.toString(commandPath));
-            System.err.println("HotelGroup controller: commandPath.length = " + commandPath.length);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
-        }
-        else {
-            int statusCode;
-            switch (request.getMethod()) {
-
-                case HttpMethod.GET:
-                    if (!auth.isAdmin()) {
-                        responder.unauthorized();
-                        return;
-                    }
-                    useCase = new GetAllHotelGroupDetails(dataSource);
-                    useCase.execute();
-                    statusCode = useCase.succeeded() ?
-                            HttpServletResponse.SC_OK :
-                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    responder.respond(useCase.getResult(), statusCode);
-                    return;
-
-                case HttpMethod.POST: {
-                    if (!auth.isAdmin()) {
-                        responder.unauthorized();
-                        return;
-                    }
-
-                    if (requestBody.has("search")) {
-                        JSONObject searchQueryBody = requestBody.getJSONObject("search");
-                        if (searchQueryBody.has("id")) {
-                            if (!auth.isAdmin()) {
-                                responder.unauthorized();
-                                return;
-                            }
-                        Integer hotelGroupId = searchQueryBody.getInt("id");
-
-                        useCase = new GetSpecificHotelGroup(dataSource, hotelGroupId);
-                        useCase.execute();
-                        statusCode = useCase.succeeded() ?
-                                HttpServletResponse.SC_OK :
-                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                            responder.respond(useCase.getResult(), statusCode);
-                        return;
-                        }
-                    }
-                    else if (requestBody.has("hotel_group")) {
-                        HotelGroup hg = getHotelGroupFromJsonObject(requestBody);
-
-                        if (hg == null)
-                            throw new InvalidObjectException("Failed to parse hotel group object from request body");
-
-                        if (!auth.isAdmin()) {
-                            responder.unauthorized();
-                            return;
-                        }
-                        useCase = new CreateHotelGroup(dataSource);
-                        useCase.execute();
-                        statusCode = useCase.succeeded() ?
-                                HttpServletResponse.SC_OK :
-                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        responder.respond(useCase.getResult(), statusCode);
-                        return;
-                    }
-                    else if (requestBody.has("hotel_group")) {
-                        HotelGroup hg = getHotelGroupFromJsonObject(requestBody);
-
-                        if (hg == null)
-                            throw new InvalidObjectException("Failed to parse hotel group object from request body");
-
-                        boolean success;
-                        try {
-                            success = dataSource.insert(HotelGroup.class, hg) != -1;
-                            System.out.println("HI");
-                        } catch (Exception e) {
-                            System.err.println("POST /api/hotelgroups: " + e.getMessage());
-                            System.err.println("POST /api/hotelgroups: " + e.getClass());
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                            return;
-                        }
-                        try {
-                            dataSource.commit();
-                        } catch (DataSourceLayerException e) {
-                            e.printStackTrace();
-                        }
-                        PrintWriter out = response.getWriter();
-                        response.setStatus(200);
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("UTF-8");
-
-                        JSONObject aHG;
-                        aHG = new JSONObject();
-                        if (success)
-                            aHG.put("created", success);
-                        else
-                            aHG.put("created", success);
-
-                        JSONObject hgJSON = new JSONObject();
-                        hgJSON.put("result", aHG);
-                        out.print(hgJSON);
-                        out.flush();
-                        return;
-                    }
-                    else
-                    {
-                        System.err.println("POST /api/hotelgroups: " + Arrays.toString(commandPath));
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                        return;
-                    }
-
-
-                }
-                case HttpMethod.PUT:
-                case HttpMethod.DELETE:
-                default:
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
-            }
+        System.out.println("HotelGroupsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
+        switch (request.getMethod()) {
+            case HttpMethod.GET:
+                asAdmin(this::handleGet);
+                return;
+            case HttpMethod.POST:
+                asAdmin(this::handlePost);
+                return;
+            case HttpMethod.PUT:
+            case HttpMethod.DELETE:
+            default:
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
         }
     }
 
-    public void returnHotelGroupJSON(ArrayList<HotelGroup> hotel_groups) throws IOException {
-        JSONArray hgArray = new JSONArray();
-        PrintWriter out = response.getWriter();
-        response.setStatus(200);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+    public Void handleGet() throws Exception {
+        useCase = new GetAllHotelGroupDetails(dataSource);
+        useCase.execute();
+        statusCode = useCase.succeeded() ?
+                HttpServletResponse.SC_OK :
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        responder.respond(useCase.getResult(), statusCode);
+        return null;
+    }
 
-        JSONObject aHotel;
-        for (HotelGroup hotelGroup : hotel_groups) {
-            aHotel = new JSONObject();
-            aHotel.put("hotel_group_id", hotelGroup.getId());
-            aHotel.put("name", hotelGroup.getName());
-            aHotel.put("address", hotelGroup.getAddress().toString());
-            aHotel.put("district", hotelGroup.getPhone());
-            hgArray.put(aHotel);
+    public Void handlePost() throws Exception {
+        if (requestBody.has("search"))
+            handleSearchQuery();
+        else if (requestBody.has("hotel_group"))
+            handleHotelGroupQuery();
+        else {
+            responder.error("POST /hotel_groups must include 'search' or 'hotel_group'", HttpServletResponse.SC_BAD_REQUEST);
         }
+        return null;
+    }
 
-        JSONObject hotelJson = new JSONObject();
-        hotelJson.put("result", hgArray);
-        out.print(hotelJson);
-        out.flush();
-        return;
+    private void handleSearchQuery() {
+        JSONObject searchQueryBody = requestBody.getJSONObject("search");
+        if (searchQueryBody.has("id")) {
+            Integer hotelGroupId = searchQueryBody.getInt("id");
+
+            useCase = new GetSpecificHotelGroup(dataSource, hotelGroupId);
+            useCase.execute();
+            statusCode = useCase.succeeded() ?
+                    HttpServletResponse.SC_OK :
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            responder.respond(useCase.getResult(), statusCode);
+        }
+    }
+
+    private void handleHotelGroupQuery() throws Exception {
+        HotelGroup hg = getHotelGroupFromJsonObject(requestBody);
+
+        if (hg == null)
+            throw new InvalidObjectException("Failed to parse hotel group object from request body");
+
+        useCase = new CreateHotelGroup(dataSource);
+        useCase.execute();
+        statusCode = useCase.succeeded() ?
+                HttpServletResponse.SC_OK :
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        responder.respond(useCase.getResult(), statusCode);
     }
 
     public HotelGroup getHotelGroupFromJsonObject(JSONObject jsonObject) {
