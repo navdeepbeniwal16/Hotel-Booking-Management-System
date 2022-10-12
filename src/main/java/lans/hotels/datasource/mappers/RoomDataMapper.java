@@ -65,7 +65,12 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
             statement = connection.prepareStatement(findBy + "hotel_id = ?");
             statement.setInt(1,r_criteria.getHotelId());
         }
+        else if (r_criteria.getRoomNumber() != null){
+            statement = connection.prepareStatement(findBy + "number = ?");
+            statement.setInt(1,r_criteria.getRoomNumber());
+        }
 
+        System.out.println("FIND BY Statement \n"+statement.toString());
         ResultSet resultSet = statement.executeQuery();
         Room currentRoom = load(resultSet);
         while (currentRoom != null) {
@@ -99,12 +104,16 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws SQLException {
+    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws Exception {
         Room r = (Room) domainObject;
-        PreparedStatement statement = connection.prepareStatement("INSERT INTO \n" +
-                "room(hotel_id, type, max_occupancy, bed_type, room_price , number, is_active)\n" +
-                "VALUES \n" +
-                "(?, ?, ?, ?, ?, ? , ?) returning * ");
+        PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO " +
+                "    room(hotel_id, type, max_occupancy, bed_type, room_price , number, is_active) " +
+                "SELECT ?, ?, ?, ?, ?, ?, ? " +
+                " WHERE EXISTS ( " +
+                " SELECT * from hotel WHERE id= ? AND is_active = TRUE " +
+                "      ) " +
+                "returning * ");
 
         statement.setInt(1,r.getHotelID());
         statement.setString(2,r.getType());
@@ -113,10 +122,22 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
         statement.setInt(5,r.getRoomPrice());
         statement.setInt(6,r.getRoomNumber());
         statement.setBoolean(7,r.getIsActive());
+        statement.setInt(8,r.getHotelID());
 
         System.out.println(statement.toString());
         ResultSet resultSet = statement.executeQuery();
-        return resultSet.next() ? resultSet.getInt("id") : -1;
+
+        if(resultSet.next())
+        {
+            return resultSet.getInt("id");
+        }
+        else
+            throw new Exception("Insert failed");
+//        if(resultSet.getFetchSize() == 0)
+//        {
+//            throw new Exception("Insert failed");
+//        }
+        //return resultSet.next() ? resultSet.getInt("id") : -1;
     }
 
     @Override

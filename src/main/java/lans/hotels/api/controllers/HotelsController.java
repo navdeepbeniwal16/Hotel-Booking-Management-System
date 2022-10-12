@@ -22,181 +22,157 @@ import java.util.*;
 public class HotelsController extends FrontCommand {
     @Override
     protected void concreteProcess() throws IOException, SQLException {
-        String[] commandPath = request.getPathInfo().split("/");
-        int statusCode;
+        System.out.println("HotelsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
+        switch (request.getMethod()) {
+            case HttpMethod.GET:
+                asAdmin(this::handleGet);
+                return;
+            case HttpMethod.POST:
+                asCustomerOrHotelier(this::handlePost);
+                return;
+            case HttpMethod.PUT:
+                asAdmin(this::handlePut);
+                return;
+            case HttpMethod.DELETE:
+            default:
+                responder.error("invalid request", HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
 
-        if (commandPath.length != 2) {
-            System.err.println("Hotels controller: " + Arrays.toString(commandPath));
-            System.err.println("Hotels controller: commandPath.length = " + commandPath.length);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, request.getRequestURI());
-        } else {
-            ArrayList<Hotel> hotels;
-            switch (request.getMethod()) {
-                case HttpMethod.GET:
-                    useCase = new GetAllHotels(dataSource);
+    public Void handleGet() throws Exception {
+
+        useCase = new GetAllHotels(dataSource);
+        useCase.execute();
+        statusCode = useCase.succeeded() ?
+                HttpServletResponse.SC_OK :
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        responder.respond(useCase.getResult(), statusCode);
+        return null;
+    }
+
+    public Void handlePut() throws Exception {
+        if(requestBody.has("hotel")) {
+            JSONObject JSONBody = requestBody.getJSONObject("hotel");
+            if (JSONBody.has("id")) {
+                Integer hotel_id = JSONBody.getInt("id");
+                if(JSONBody.has("is_active")) {
+                    Boolean is_active = JSONBody.getBoolean("is_active");
+                    useCase = new ChangeHotelStatus(dataSource, hotel_id,is_active);
                     useCase.execute();
                     statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
                     responder.respond(useCase.getResult(), statusCode);
-                    return;
-
-                case HttpMethod.POST: {
-                    if (requestBody.has("search")) {
-                        HotelSearchCriteria criteria = new HotelSearchCriteria();
-
-                        JSONObject searchQueryBody = requestBody.getJSONObject("search");
-
-                        if (searchQueryBody.has("id")) {
-                            Integer hotel_id = searchQueryBody.getInt("id");
-                            if (hotel_id != null) criteria.setId(hotel_id);
-                        }
-                        if (searchQueryBody.has("city")) {
-                            String city = searchQueryBody.getString("city");
-                            if (city != null){
-                                useCase = new SearchHotelsByLocation(dataSource,city);
-                                useCase.execute();
-                                statusCode = useCase.succeeded() ?
-                                        HttpServletResponse.SC_OK :
-                                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                                responder.respond(useCase.getResult(), statusCode);
-                                return;
-                            }
-                        }
-                        if(searchQueryBody.has("hotelier_email")) {
-                            String hotelier_email = searchQueryBody.getString("hotelier_email");
-                            if (!auth.isHotelier()) {
-                                responder.unauthorized();
-                                return;
-                            }
-                            useCase = new ViewHotelGroupHotels(dataSource, hotelier_email);
-                            useCase.execute();
-                            statusCode = useCase.succeeded() ?
-                                    HttpServletResponse.SC_OK :
-                                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                            responder.respond(useCase.getResult(), statusCode);
-                            return;
-                        }
-
-                        if (searchQueryBody.has("hotel_group_id")) {
-                            Integer hotel_group_id = searchQueryBody.getInt("hotel_group_id");
-                            if (hotel_group_id != null) criteria.setHotelGroupId(hotel_group_id);
-                        }
-
-                        try {
-                            hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
-                        } catch (Exception e) {
-                            System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
-                            System.err.println("GET /api/hotels: " + e.getMessage());
-                            System.err.println("GET /api/hotels: " + e.getClass());
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                            return;
-                        }
-
-
-                        returnHotelJSON(hotels);
-                        return;
-                    } else if (requestBody.has("hotel")) {
-                        Hotel h = getHotelFromJsonObject(requestBody);
-
-                        if (h == null)
-                            throw new InvalidObjectException("Failed to parse hotel object from request body");
-
-                        if (!auth.isHotelier()) {
-                            responder.unauthorized();
-                            return;
-                        }
-                        useCase = new CreateHotel(dataSource);
-                        useCase.execute();
-                        statusCode = useCase.succeeded() ?
-                                HttpServletResponse.SC_OK :
-                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        responder.respond(useCase.getResult(), statusCode);
-                        return;
-
-                    } else {
-                        System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                        return;
-                    }
-                }
-                case HttpMethod.PUT:
-                {
-                    if(requestBody.has("hotel")) {
-                        JSONObject JSONBody = requestBody.getJSONObject("hotel");
-                        if (!JSONBody.has("id")) {
-                            System.err.println("GET /api/hotels: " + Arrays.toString(commandPath));
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                            return;
-                        }
-
-                        else {
-                            Integer hotel_id = JSONBody.getInt("id");
-                            if (!auth.isAdmin()) {
-                                responder.unauthorized();
-                                return;
-                            }
-
-                            if(JSONBody.has("is_active")) {
-                                Boolean is_active = JSONBody.getBoolean("is_active");
-                                useCase = new ChangeHotelStatus(dataSource, hotel_id,is_active);
-                                useCase.execute();
-                                statusCode = useCase.succeeded() ?
-                                        HttpServletResponse.SC_OK :
-                                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                                responder.respond(useCase.getResult(), statusCode);
-                                return;
-                            }
-
-                        }
-                    }
-
-                }
-                case HttpMethod.DELETE:
-                default:
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
             }
-
+            else
+                    responder.error("PUT /hotels does must include 'id' ", HttpServletResponse.SC_BAD_REQUEST);
+            }
         }
-
+        else
+            responder.error("PUT /hotels does must include 'hotel' ", HttpServletResponse.SC_BAD_REQUEST);
+        return null;
     }
 
-    public void returnHotelJSON(ArrayList<Hotel> hotels) throws IOException {
-        JSONArray hotelArray = new JSONArray();
-        PrintWriter out = response.getWriter();
-        response.setStatus(200);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+    public Void handlePost() throws Exception {
+        if (requestBody.has("search")) {
+            JSONObject searchQueryBody = requestBody.getJSONObject("search");
+            handleSearchQuery(searchQueryBody);
+        }
+        else if (requestBody.has("hotel")) {
+            handleHotelQuery(requestBody);
+        } else {
+            System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+            return null;
+        }
+        return null;
+    }
 
-        JSONObject aHotel;
-        for (Hotel hotel: hotels) {
-            aHotel = new JSONObject();
-            aHotel.put("hotel_group_id", hotel.getHotelGroupID());
-            aHotel.put("hotel_id", hotel.getID());
-            aHotel.put("name", hotel.getName());
-            aHotel.put("email", hotel.getEmail());
-            aHotel.put("address", hotel.getAddress().toString());
-            aHotel.put("contact", hotel.getContact());
-            aHotel.put("city", hotel.getCity());
-            aHotel.put("pin_code", hotel.getPinCode());
-            aHotel.put("district", hotel.getAddress().getDistrict().toString());
-            aHotel.put("is_active", hotel.getIsActive());
-            hotelArray.put(aHotel);
+    public void handleSearchQuery(JSONObject searchQueryBody) throws Exception {
+        if (searchQueryBody.has("city")) {
+            String city = searchQueryBody.getString("city");
+            if (city != null){
+                useCase = new SearchHotelsByLocation(dataSource,city);
+                useCase.execute();
+                statusCode = useCase.succeeded() ?
+                        HttpServletResponse.SC_OK :
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                responder.respond(useCase.getResult(), statusCode);
+                return;
+            }
+        }
+        else if(searchQueryBody.has("hotel_group_id")) {
+
+            if(auth.isHotelier())
+                if(!checkHotelGroupHotelierValid(searchQueryBody.getInt("hotel_group_id")))
+                    return;
+
+            useCase = new ViewHotelGroupHotels(dataSource,searchQueryBody.getInt("hotel_group_id"));
+            useCase.execute();
+            statusCode = useCase.succeeded() ?
+                    HttpServletResponse.SC_OK :
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            responder.respond(useCase.getResult(), statusCode);
+            return;
+        }
+        return;
+    }
+
+    private void handleHotelQuery(JSONObject body) throws IOException{
+        Hotel h = getHotelFromJsonObject(body);
+
+        if (h == null)
+            throw new InvalidObjectException("Failed to parse hotel object from request body");
+
+        if(auth.isHotelier())
+            if(!checkHotelGroupHotelierValid(h.getHotelGroupID()))
+                return;
+
+        useCase = new CreateHotel(dataSource);
+        useCase.execute();
+        statusCode = useCase.succeeded() ?
+                HttpServletResponse.SC_OK :
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        responder.respond(useCase.getResult(), statusCode);
+    }
+
+    private boolean checkHotelGroupHotelierValid(Integer hg_id){
+        Integer hotelier_hg_id = hotelierHotelGroupID();
+
+        if(hotelier_hg_id != hg_id){
+            responder.unauthorized();
+            return false;
+        }
+        else return true;
+    }
+
+    public Integer hotelierHotelGroupID()
+    {
+        Integer hotelier_hg_id = -1;
+        String hotelier_email = auth.getEmail();
+
+        ArrayList<User> hoteliers = null;
+
+        UserSearchCriteria u_criteria = new UserSearchCriteria();
+        u_criteria.setEmail(hotelier_email);
+
+        try {
+            hoteliers = dataSource.findBySearchCriteria(User.class, u_criteria);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        JSONObject hotelJson = new JSONObject();
-        hotelJson.put("result", hotelArray);
-        out.print(hotelJson);
-        out.flush();
-        return;
-
+        if(hoteliers.size() > 0) {
+            User hgh = hoteliers.get(0);
+            hotelier_hg_id = hgh.getHotelierHotelGroupID();
+        }
+        return  hotelier_hg_id;
     }
 
     public Hotel getHotelFromJsonObject(JSONObject jsonObject) {
 
         Hotel h = null;
-        int id;
-        int hotel_group_id = 0;
+        int hotel_group_id = hotelierHotelGroupID();
         String h_name = "";
         String email ="";
         String l1 = "";

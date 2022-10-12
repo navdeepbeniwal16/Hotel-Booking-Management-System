@@ -1,7 +1,11 @@
 package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
+import lans.hotels.datasource.search_criteria.UserSearchCriteria;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
+import lans.hotels.domain.user.User;
 import lans.hotels.use_cases.AddRoomToHotel;
 import lans.hotels.use_cases.Utils;
 import lans.hotels.use_cases.ViewHotelRooms;
@@ -11,6 +15,7 @@ import org.json.JSONObject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class RoomsController extends FrontCommand {
@@ -19,15 +24,11 @@ public class RoomsController extends FrontCommand {
     protected void concreteProcess() throws IOException {
         System.out.println("RoomsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
         switch(request.getMethod()) {
-            case HttpMethod.GET: // TODO: Use ViewHotelRoomsHotelier use case
+            case HttpMethod.GET:
                 responder.error("GET /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
                 return;
             case HttpMethod.POST:
-                try {
-                    handlePost();
-                } catch (Exception e) {
-                    responder.error(e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                }
+                asCustomerOrHotelier(this::handlePost);
                 return;
             case HttpMethod.PUT:
                 responder.error("PUT /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
@@ -40,7 +41,7 @@ public class RoomsController extends FrontCommand {
         }
     }
 
-    private void handlePost() throws Exception {
+    private Void handlePost() throws Exception {
         if (requestBody.has("search")) {
             JSONObject searchQueryBody = requestBody.getJSONObject("search");
             handleSearchQuery(searchQueryBody);
@@ -49,6 +50,7 @@ public class RoomsController extends FrontCommand {
         } else {
             responder.error("POST /rooms does must include 'room' or 'search'", HttpServletResponse.SC_BAD_REQUEST);
         }
+        return null;
     }
 
     private Room getRoomFromJsonObject(JSONObject jsonObject) throws InvalidObjectException {
@@ -61,7 +63,6 @@ public class RoomsController extends FrontCommand {
         Integer room_price = null;
         Integer number = null;
         Boolean is_active = true;
-
 
         if(jsonObject.has("room")) {
             JSONObject nestedJsonObject = jsonObject.getJSONObject("room");
@@ -98,22 +99,68 @@ public class RoomsController extends FrontCommand {
     }
 
     private void handleRoomQuery(JSONObject body) throws IOException {
-        if (!auth.isHotelier()) {
-            responder.unauthorized();
-            return;
-        }
         Room r = getRoomFromJsonObject(body);
-        useCase = new AddRoomToHotel(dataSource); // TODO
-        useCase.execute();
-        statusCode = useCase.succeeded() ?
-                HttpServletResponse.SC_OK :
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(useCase.getResult(), statusCode);
+        if(checkHotelGroupHotelierValid(r.getHotelID()))
+        {
+            useCase = new AddRoomToHotel(dataSource);
+            useCase.execute();
+            statusCode = useCase.succeeded() ?
+                    HttpServletResponse.SC_OK :
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            responder.respond(useCase.getResult(), statusCode);
+        }
     }
 
+    private boolean checkHotelGroupHotelierValid(Integer h_id){
+        Integer hotelier_hg_id = -1;
+        Integer hotel_hg_id =-2;
+        String hotelier_email = auth.getEmail();
+
+        ArrayList<User> hoteliers = null;
+
+        UserSearchCriteria u_criteria = new UserSearchCriteria();
+        u_criteria.setEmail(hotelier_email);
+
+        try {
+            hoteliers = dataSource.findBySearchCriteria(User.class, u_criteria);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(hoteliers.size() > 0) {
+            User hgh = hoteliers.get(0);
+            hotelier_hg_id = hgh.getHotelierHotelGroupID();
+        }
+        ArrayList<Hotel> hotels = null;
+
+        HotelSearchCriteria h_criteria = new HotelSearchCriteria();
+        h_criteria.setId(h_id);
+
+        try {
+            hotels = dataSource.findBySearchCriteria(Hotel.class, h_criteria);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(hotels.size() > 0) {
+            Hotel h = hotels.get(0);
+            hotel_hg_id = h.getHotelGroupID();
+        }
+        if(hotelier_hg_id != hotel_hg_id){
+            responder.unauthorized();
+            return false;
+        }
+        else return true;
+    }
 
     private void handleSearchQuery(JSONObject searchParams) throws Exception {
+
         Integer hotelId = parseHotelId(searchParams);
+
+        if(auth.isHotelier())
+            if(!checkHotelGroupHotelierValid(hotelId))
+                return;
+
         Utils.RoomResultsInclude include = parseInclude(searchParams);
         Date startDate = parseDate(searchParams, "start_date");
         Date endDate =  parseDate(searchParams, "end_date");

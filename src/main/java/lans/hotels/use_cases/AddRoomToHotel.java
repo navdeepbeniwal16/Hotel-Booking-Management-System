@@ -1,7 +1,12 @@
 package lans.hotels.use_cases;
+import lans.hotels.datasource.search_criteria.RoomSearchCriteria;
 import lans.hotels.domain.IDataSource;
+import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.room.Room;
 import lans.hotels.use_cases.UseCase;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class AddRoomToHotel extends UseCase {
 
@@ -11,7 +16,6 @@ public class AddRoomToHotel extends UseCase {
 
     @Override
     public void doExecute() throws Exception {
-        // TODO: not implemented
         succeed();
     }
 
