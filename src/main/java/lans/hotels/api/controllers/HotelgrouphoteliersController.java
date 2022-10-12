@@ -16,83 +16,79 @@ import java.util.*;
 public class HotelgrouphoteliersController extends FrontCommand {
     @Override
     protected void concreteProcess() throws IOException, SQLException {
-        String[] commandPath = request.getPathInfo().split("/");
-        int statusCode;
+        System.out.println("HotelGroupHoteliers.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
 
         switch(request.getMethod()) {
             case HttpMethod.GET:
-            case HttpMethod.POST: {
-                if (requestBody.has("hotel_group_hotelier")) {
-                    HotelGroupHotelier hgh = getHotelGroupHotelierFromJsonObject(requestBody);
-
-                    if (hgh == null)
-                        throw new InvalidObjectException("Failed to parse hotel object from request body");
-
-                    if (!auth.isAdmin()) {
-                        responder.unauthorized();
-                        return;
-                    }
-                    useCase = new AddHotelierToHotelGroup(dataSource);
-                    useCase.execute();
-                    statusCode = useCase.succeeded() ?
-                            HttpServletResponse.SC_OK :
-                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    responder.respond(useCase.getResult(), statusCode);
-                    return;
-                } else {
-                    System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                    return;
-                }
-            }
+            case HttpMethod.POST:
+                asAdmin(this::handlePost);
+                return;
             case HttpMethod.PUT:
                 return;
-            case HttpMethod.DELETE: {
-                if (!auth.isAdmin()) {
-                    responder.unauthorized();
-                    return;
-                }
-
-                if (requestBody.has("hotel_group_hotelier")) {
-                    HotelGroupHotelier hgh = null;
-                    ArrayList<HotelGroupHotelier> hotel_group_hoteliers = null;
-                    HotelGroupHotelierSearchCriteria hgh_criteria = new HotelGroupHotelierSearchCriteria();
-
-                    JSONObject nestedJsonObject = requestBody.getJSONObject("hotel_group_hotelier");
-
-                    if (nestedJsonObject.has("hotelier_id"))
-                        hgh_criteria.setHotelierID(nestedJsonObject.getInt("hotelier_id"));
-
-
-                    try {
-                        hotel_group_hoteliers = dataSource.findBySearchCriteria(HotelGroupHotelier.class,hgh_criteria);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    System.out.println("Results found  = "+hotel_group_hoteliers.size());
-
-                    hgh = hotel_group_hoteliers.get(0);
-                    try {
-                        hgh.remove();
-                    } catch (UoWException e) {
-                        e.printStackTrace();
-                    }
-
-                    useCase = new RemoveHotelierFromHotelGroup(dataSource);
-                    useCase.execute();
-                    statusCode = useCase.succeeded() ?
-                            HttpServletResponse.SC_OK :
-                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    responder.respond(useCase.getResult(), statusCode);
-                    return;
-                } else {
-                    System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-                    return;
-                }
-            }
+            case HttpMethod.DELETE:
+                asAdmin(this::handleDelete);
+                return;
         }
+    }
+
+    public Void handlePost() throws Exception {
+        if (requestBody.has("hotel_group_hotelier")) {
+            HotelGroupHotelier hgh = getHotelGroupHotelierFromJsonObject(requestBody);
+
+            if (hgh == null)
+                throw new InvalidObjectException("Failed to parse hotel object from request body");
+
+            useCase = new AddHotelierToHotelGroup(dataSource);
+            useCase.execute();
+            statusCode = useCase.succeeded() ?
+                    HttpServletResponse.SC_OK :
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            responder.respond(useCase.getResult(), statusCode);
+        } else {
+            responder.error("POST /hotel_group_hoteliers must include 'hotel_group_hotelier'", HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return null;
+    }
+
+    public Void handleDelete() throws Exception {
+        if (requestBody.has("hotel_group_hotelier")) {
+            HotelGroupHotelier hgh = null;
+            ArrayList<HotelGroupHotelier> hotel_group_hoteliers = null;
+            HotelGroupHotelierSearchCriteria hgh_criteria = new HotelGroupHotelierSearchCriteria();
+
+            JSONObject nestedJsonObject = requestBody.getJSONObject("hotel_group_hotelier");
+
+            if (nestedJsonObject.has("hotelier_id"))
+                hgh_criteria.setHotelierID(nestedJsonObject.getInt("hotelier_id"));
+
+            try {
+                hotel_group_hoteliers = dataSource.findBySearchCriteria(HotelGroupHotelier.class,hgh_criteria);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if(hotel_group_hoteliers.size()==0)
+            {
+                throw new Exception("Delete failed (no hotel group hotelier with id found)");
+            }
+
+           hgh = hotel_group_hoteliers.get(0);
+            try {
+                hgh.remove();
+            } catch (UoWException e) {
+                e.printStackTrace();
+            }
+
+            useCase = new RemoveHotelierFromHotelGroup(dataSource);
+            useCase.execute();
+            statusCode = useCase.succeeded() ?
+                    HttpServletResponse.SC_OK :
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            responder.respond(useCase.getResult(), statusCode);
+        } else {
+            responder.error("DELETE/hotel_group_hoteliers must include 'hotel_group_hotelier'", HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return null;
     }
 
     public HotelGroupHotelier getHotelGroupHotelierFromJsonObject(JSONObject jsonObject) {

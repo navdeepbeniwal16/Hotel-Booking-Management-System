@@ -74,7 +74,7 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
     }
 
     @Override
-    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws SQLException, UoWException {
+    public <DomainObject extends AbstractDomainObject> Integer insert(DomainObject domainObject) throws Exception {
         HotelGroupHotelier hgh = (HotelGroupHotelier) domainObject;
         PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO " +
@@ -86,23 +86,37 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
         statement.setInt(1,hgh.getHotelierID());
         statement.setInt(2,hgh.getHotelGroupID());
 
-        System.out.println("Add hotelier query is : \n"+statement);
         ResultSet resultSet = statement.executeQuery();
-        return resultSet.next() ? resultSet.getInt("id") : -1;
+
+        if(resultSet.next())
+        {
+            return resultSet.getInt("id");
+        }
+        else
+            throw new Exception("Insert failed");
     }
 
     @Override
     public boolean delete(Integer id) {
-        String deleteStatement = "DELETE FROM hotel_group_hotelier WHERE id = " + id +" returning * ";
-
-        System.out.println(deleteStatement);
-        try (PreparedStatement statement = connection.prepareStatement(deleteStatement)) {
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(
+                    "DELETE FROM hotel_group_hotelier WHERE id = ? returning * ");
+            statement.setInt(1,id);
             ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
+            if(resultSet.next())
+            {
+                return true;
+            }
+            else
+                try {
+                    throw new Exception("Delete failed");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        catch (SQLException e)
-        {
-            return false;
-        }
+        return false;
     }
 }
