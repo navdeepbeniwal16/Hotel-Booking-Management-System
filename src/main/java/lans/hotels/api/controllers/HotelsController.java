@@ -1,7 +1,6 @@
 package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.exceptions.UoWException;
-import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.user.User;
@@ -9,13 +8,11 @@ import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
 import lans.hotels.use_cases.*;
 import lans.hotels.use_cases.CreateHotel;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InvalidObjectException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -35,7 +32,7 @@ public class HotelsController extends FrontCommand {
                 return;
             case HttpMethod.DELETE:
             default:
-                responder.error("invalid request", HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.error("invalid request", HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
@@ -46,13 +43,13 @@ public class HotelsController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(useCase.getResult(), statusCode);
+        responseHelper.respond(useCase.getResult(), statusCode);
         return null;
     }
 
     public Void handlePut() throws Exception {
-        if(requestBody.has("hotel")) {
-            JSONObject JSONBody = requestBody.getJSONObject("hotel");
+        if(requestHelper.body().has("hotel")) {
+            JSONObject JSONBody = requestHelper.body().getJSONObject("hotel");
             if (JSONBody.has("id")) {
                 Integer hotel_id = JSONBody.getInt("id");
                 if(JSONBody.has("is_active")) {
@@ -62,26 +59,26 @@ public class HotelsController extends FrontCommand {
                     statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                    responder.respond(useCase.getResult(), statusCode);
+                    responseHelper.respond(useCase.getResult(), statusCode);
             }
             else
-                    responder.error("PUT /hotels does must include 'id' ", HttpServletResponse.SC_BAD_REQUEST);
+                    responseHelper.error("PUT /hotels does must include 'id' ", HttpServletResponse.SC_BAD_REQUEST);
             }
         }
         else
-            responder.error("PUT /hotels does must include 'hotel' ", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("PUT /hotels does must include 'hotel' ", HttpServletResponse.SC_BAD_REQUEST);
         return null;
     }
 
     public Void handlePost() throws Exception {
-        if (requestBody.has("search")) {
-            JSONObject searchQueryBody = requestBody.getJSONObject("search");
+        if (requestHelper.body().has("search")) {
+            JSONObject searchQueryBody = requestHelper.body().getJSONObject("search");
             handleSearchQuery(searchQueryBody);
         }
-        else if (requestBody.has("hotel")) {
-            handleHotelQuery(requestBody);
+        else if (requestHelper.body().has("hotel")) {
+            handleHotelQuery(requestHelper.body());
         } else {
-            System.err.println("POST /api/hotels: " + Arrays.toString(commandPath));
+            System.err.println(requestHelper.methodAndURI());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
             return null;
         }
@@ -97,7 +94,7 @@ public class HotelsController extends FrontCommand {
                 statusCode = useCase.succeeded() ?
                         HttpServletResponse.SC_OK :
                         HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                responder.respond(useCase.getResult(), statusCode);
+                responseHelper.respond(useCase.getResult(), statusCode);
                 return;
             }
         }
@@ -112,7 +109,7 @@ public class HotelsController extends FrontCommand {
             statusCode = useCase.succeeded() ?
                     HttpServletResponse.SC_OK :
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            responder.respond(useCase.getResult(), statusCode);
+            responseHelper.respond(useCase.getResult(), statusCode);
             return;
         }
         return;
@@ -133,14 +130,14 @@ public class HotelsController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(useCase.getResult(), statusCode);
+        responseHelper.respond(useCase.getResult(), statusCode);
     }
 
     private boolean checkHotelGroupHotelierValid(Integer hg_id){
         Integer hotelier_hg_id = hotelierHotelGroupID();
 
         if(hotelier_hg_id != hg_id){
-            responder.unauthorized();
+            responseHelper.unauthorized();
             return false;
         }
         else return true;

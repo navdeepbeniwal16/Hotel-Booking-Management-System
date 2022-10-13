@@ -12,7 +12,7 @@ import java.io.InvalidObjectException;
 public class UsersController extends FrontCommand {
     @Override
     protected void concreteProcess() {
-        checkCommandPath(2);
+        requestHelper.checkCommandPath(2);
         switch (method) {
             case HttpMethod.GET:
                 asAdmin(this::handleGet);
@@ -20,18 +20,18 @@ public class UsersController extends FrontCommand {
 //                asAdmin(() -> handleGet());
                 return;
             case HttpMethod.POST:
-                if (requestBody.has("search")) {
+                if (requestHelper.body().has("search")) {
                     asAdmin(this::handleSearch);
                     return;
-                } else if (requestBody.has("hotelier")) {
+                } else if (requestHelper.body().has("hotelier")) {
                     asAdmin(this::handlePostHotelier);
                     return;
-                } else if (requestBody.has("customer")) {
+                } else if (requestHelper.body().has("customer")) {
                     asCustomer(this::handlePostCustomer);
                     return;
                 }
             default:
-                responder.unimplemented(request.getMethod() + " /users");
+                responseHelper.unimplemented(request.getMethod() + " /users");
         }
     }
     public User getUserFromJSONObject(JSONObject body) {
@@ -81,14 +81,14 @@ public class UsersController extends FrontCommand {
     private Void handleGet() throws Exception {
         useCase = new GetAllUsers(dataSource);
         useCase.execute(
-                () -> responder.respondOK(useCase.getResult()),
-                () -> responder.internalServerError());
+                () -> responseHelper.respondOK(useCase.getResult()),
+                () -> responseHelper.internalServerError());
         return null;
     }
 
     private Void handleSearch() throws Exception {
         UserSearchCriteria criteria = new UserSearchCriteria();
-        JSONObject searchQueryBody = requestBody.getJSONObject("search");
+        JSONObject searchQueryBody = requestHelper.body().getJSONObject("search");
 
         if (searchQueryBody.has("id")) {
             Integer userID = searchQueryBody.getInt("id");
@@ -116,25 +116,25 @@ public class UsersController extends FrontCommand {
             useCase = new GetAllUsers(dataSource);
         }
 
-        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError("use case error"));
+        useCase.execute(() -> responseHelper.respondOK(useCase.getResult()), () -> responseHelper.internalServerError("use case error"));
         return null;
     }
 
     private Void handlePostHotelier() throws Exception {
-        JSONObject hotelierData = (JSONObject) requestBody.get("hotelier");
+        JSONObject hotelierData = (JSONObject) requestHelper.body().get("hotelier");
         useCase = new OnboardHotelier(dataSource, (Integer) hotelierData.get("id"));
-        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError("use case error"));
+        useCase.execute(() -> responseHelper.respondOK(useCase.getResult()), () -> responseHelper.internalServerError("use case error"));
         return null;
     }
 
     private Void handlePostCustomer() throws Exception {
-        User user = getUserFromJSONObject(requestBody);
+        User user = getUserFromJSONObject(requestHelper.body());
 
         if (user == null)
             throw new InvalidObjectException("Failed to parse customer object from request body");
 
         useCase = new CreateCustomer(dataSource);
-        useCase.execute(() -> responder.respondOK(useCase.getResult()), () -> responder.internalServerError("use case error"));
+        useCase.execute(() -> responseHelper.respondOK(useCase.getResult()), () -> responseHelper.internalServerError("use case error"));
         return null;
     }
 }

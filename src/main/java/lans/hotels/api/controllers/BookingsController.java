@@ -25,20 +25,20 @@ public class BookingsController extends FrontCommand {
         switch (request.getMethod()) {
             case HttpMethod.GET:
             case HttpMethod.POST:
-                if (requestBody.has("booking")) {
+                if (requestHelper.body().has("booking")) {
                     handleCreateNewBooking();
                     break;
                 }
             {
 
-                if(requestBody.has("search"))
+                if(requestHelper.body().has("search"))
                 {
-                    JSONObject searchQuery = requestBody.getJSONObject("search");
+                    JSONObject searchQuery = requestHelper.body().getJSONObject("search");
 
                     if(searchQuery.has("hotelier_email")) {
                         String hotelier_email = searchQuery.getString("hotelier_email");
                         if (!auth.isHotelier()) {
-                            responder.unauthorized();
+                            responseHelper.unauthorized();
                             return;
                         }
                         useCase = new ViewHotelGroupBookings(dataSource, hotelier_email);
@@ -46,14 +46,14 @@ public class BookingsController extends FrontCommand {
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :
                                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        responder.respond(useCase.getResult(), statusCode);
+                        responseHelper.respond(useCase.getResult(), statusCode);
                         return;
                     }
 
                     if(searchQuery.has("customer_email")) {
                         String customer_email = searchQuery.getString("customer_email");
                         if (!auth.isCustomer()) {
-                            responder.unauthorized();
+                            responseHelper.unauthorized();
                             return;
                         }
                         useCase = new ViewCustomerBookings(dataSource, customer_email);
@@ -61,7 +61,7 @@ public class BookingsController extends FrontCommand {
                         statusCode = useCase.succeeded() ?
                                 HttpServletResponse.SC_OK :
                                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                        responder.respond(useCase.getResult(), statusCode);
+                        responseHelper.respond(useCase.getResult(), statusCode);
                         return;
                     }
                 }
@@ -72,8 +72,8 @@ public class BookingsController extends FrontCommand {
 
                 // PUT: api/bookings
                 if(commandPath.length == 2) {
-                    if(requestBody.has("booking")) {
-                        JSONObject bookingJsonBody = requestBody.getJSONObject("booking");
+                    if(requestHelper.body().has("booking")) {
+                        JSONObject bookingJsonBody = requestHelper.body().getJSONObject("booking");
 
                         if(!bookingJsonBody.has("id")) {
                             System.err.println("GET /api/bookings: " + Arrays.toString(commandPath));
@@ -168,7 +168,7 @@ public class BookingsController extends FrontCommand {
 
                                             if(isRoomBookingClashing) {
                                                 System.err.println("PUT /api/bookings: " + Arrays.toString(commandPath));
-                                                responder.error("Room Bookings are clashing",400);
+                                                responseHelper.error("Room Bookings are clashing",400);
                                                 return;
                                             } else {
                                                 DateRange dateRange = new DateRange(startDate, endDate);
@@ -241,21 +241,22 @@ public class BookingsController extends FrontCommand {
     }
 
     private void handleCreateNewBooking() throws IOException {
+//        boolean isValidCustomer = auth.isCustomer() && auth.getId() ==
         boolean allowedToCreateBookings = auth.isCustomer() || auth.isHotelier();
         if (allowedToCreateBookings) {
             executeCreateNewBooking();
         } else {
-            responder.unauthorized();
+            responseHelper.unauthorized();
         }
     }
 
     private void executeCreateNewBooking() throws IOException {
         try {
-            useCase = new CreateBooking(dataSource, requestBody.getJSONObject("booking"));
+            useCase = new CreateBooking(dataSource, requestHelper.body().getJSONObject("booking"));
             useCase.execute();
-            responder.respond(useCase.getResult(), HttpServletResponse.SC_OK);
+            responseHelper.respond(useCase.getResult(), HttpServletResponse.SC_OK);
         } catch (Exception e) {
-            responder.error(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 }

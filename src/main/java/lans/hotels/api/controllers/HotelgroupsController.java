@@ -1,6 +1,5 @@
 package lans.hotels.api.controllers;
 
-import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.utils.Address;
@@ -8,15 +7,12 @@ import lans.hotels.domain.utils.District;
 import lans.hotels.use_cases.CreateHotelGroup;
 import lans.hotels.use_cases.GetAllHotelGroupDetails;
 import lans.hotels.use_cases.GetSpecificHotelGroup;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InvalidObjectException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.*;
 
 public class HotelgroupsController extends FrontCommand {
     @Override
@@ -42,23 +38,23 @@ public class HotelgroupsController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(useCase.getResult(), statusCode);
+        responseHelper.respond(useCase.getResult(), statusCode);
         return null;
     }
 
     public Void handlePost() throws Exception {
-        if (requestBody.has("search"))
+        if (requestHelper.body().has("search"))
             handleSearchQuery();
-        else if (requestBody.has("hotel_group"))
+        else if (requestHelper.body().has("hotel_group"))
             handleHotelGroupQuery();
         else {
-            responder.error("POST /hotel_groups must include 'search' or 'hotel_group'", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("POST /hotel_groups must include 'search' or 'hotel_group'", HttpServletResponse.SC_BAD_REQUEST);
         }
         return null;
     }
 
     private void handleSearchQuery() {
-        JSONObject searchQueryBody = requestBody.getJSONObject("search");
+        JSONObject searchQueryBody = requestHelper.body().getJSONObject("search");
         if (searchQueryBody.has("id")) {
             Integer hotelGroupId = searchQueryBody.getInt("id");
 
@@ -67,12 +63,12 @@ public class HotelgroupsController extends FrontCommand {
             statusCode = useCase.succeeded() ?
                     HttpServletResponse.SC_OK :
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            responder.respond(useCase.getResult(), statusCode);
+            responseHelper.respond(useCase.getResult(), statusCode);
         }
     }
 
     private void handleHotelGroupQuery() throws Exception {
-        HotelGroup hg = getHotelGroupFromJsonObject(requestBody);
+        HotelGroup hg = getHotelGroupFromJsonObject(requestHelper.body());
 
         if (hg == null)
             throw new InvalidObjectException("Failed to parse hotel group object from request body");
@@ -82,7 +78,7 @@ public class HotelgroupsController extends FrontCommand {
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responder.respond(useCase.getResult(), statusCode);
+        responseHelper.respond(useCase.getResult(), statusCode);
     }
 
     public HotelGroup getHotelGroupFromJsonObject(JSONObject jsonObject) {

@@ -1,6 +1,7 @@
 package lans.hotels.api.controllers;
 
-import lans.hotels.api.utils.Responder;
+import lans.hotels.api.utils.RequestHelper;
+import lans.hotels.api.utils.ResponseHelper;
 import lans.hotels.api.entrypoint.IFrontCommand;
 import lans.hotels.api.auth.Auth0Adapter;
 import lans.hotels.api.exceptions.CommandException;
@@ -13,17 +14,13 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 public abstract class FrontCommand implements IFrontCommand  {
     protected IDataSource dataSource;
@@ -34,64 +31,49 @@ public abstract class FrontCommand implements IFrontCommand  {
     protected Auth0Adapter auth;
     protected UseCase useCase;
     protected DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-    protected JSONObject requestBody = new JSONObject();
     protected int statusCode;
 
-    protected String[] commandPath;
-    protected Responder responder;
+    protected ResponseHelper responseHelper;
+    protected RequestHelper requestHelper;
+
+    private boolean ready;
 
     public void init(ServletContext context,
                      HttpServletRequest request,
                      HttpServletResponse response,
-                     IDataSource dataSource,
-                     Responder responder) {
-        this.context = context;
-        this.request = request;
-        this.method = request.getMethod();
-        this.response = response;
-        this.dataSource = dataSource;
-        this.responder = responder;
-        this.auth = Auth0Adapter.getAuthorization(request);
-        this.commandPath = request.getPathInfo().split("/");
+                     IDataSource dataSource) {
+        try {
+            this.context = context;
+            this.request = request;
+            this.method = request.getMethod();
+            this.response = response;
+            this.dataSource = dataSource;
+            this.auth = Auth0Adapter.getAuthorization(request);
+            this.responseHelper = new ResponseHelper(response);
+            this.requestHelper = new RequestHelper(request);
+        } catch (Exception e) {
+            ready = false;
+        }
     }
 
     abstract protected void concreteProcess() throws Exception;
     public void process() throws ServletException, IOException, CommandException, SQLException {
         try {
-            parseRequestBody();
+            assert ready;
             concreteProcess();
         } catch (Exception e) {
-            responder.internalServerError();
+            responseHelper.internalServerError();
             e.printStackTrace();
         }
 
     }
 
-    protected void parseRequestBody() throws IOException {
-        BufferedReader requestReader = request.getReader();
-        String lines = requestReader.lines().collect(Collectors.joining(System.lineSeparator()));
-        JSONObject body = new JSONObject();
-        if (lines.length() > 0) {
-            body = new JSONObject(lines);
-        }
-        requestBody = body;
-    }
-
-    protected void checkCommandPath(Integer exactLength) {
-        assert commandPath.length == exactLength;
-    }
-
-    protected void checkCommandPath(Integer minLength, Integer maxLength) {
-        assert commandPath.length >= minLength;
-        assert commandPath.length <= maxLength;
-    }
-
 
     private <T> T delegateToAuth(List<Role> roles, Callable<T> handler) {
         try {
-            return auth.inRoles(roles, handler, responder::unauthorized);
+            return auth.inRoles(roles, handler, responseHelper::unauthorized);
         } catch (Exception e) {
-            responder.internalServerError(e.getMessage());
+            responseHelper.internalServerError(e.getMessage());
         }
         return null;
     }

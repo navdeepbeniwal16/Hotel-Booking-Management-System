@@ -1,13 +1,10 @@
 package lans.hotels.api.controllers;
 
-import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.use_cases.ViewRoomBookingsForBooking;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.SQLException;
 
 
 public class RoomBookingsController extends FrontCommand {
@@ -18,8 +15,8 @@ public class RoomBookingsController extends FrontCommand {
             case HttpMethod.GET:
             case HttpMethod.POST:
                 if(commandPath.length == 2) {
-                    if(requestBody.has("search")) {
-                        JSONObject searchQuery = requestBody.getJSONObject("search");
+                    if(requestHelper.body().has("search")) {
+                        JSONObject searchQuery = requestHelper.body().getJSONObject("search");
 
                         if(searchQuery.has("booking_id")) {
                             int bookingId;
@@ -27,7 +24,7 @@ public class RoomBookingsController extends FrontCommand {
                                 bookingId = searchQuery.getInt("booking_id");
                             } catch (JSONException e){
                                 e.printStackTrace();
-                                responder.error("booking_id needs to be integer type", HttpServletResponse.SC_BAD_REQUEST);
+                                responseHelper.error("booking_id needs to be integer type", HttpServletResponse.SC_BAD_REQUEST);
                                 return;
                             }
 
@@ -35,8 +32,8 @@ public class RoomBookingsController extends FrontCommand {
                             useCase.setBookingId(bookingId);
                             // @arman
                             useCase.execute(
-                                    () -> responder.respondOK(useCase.getResult()),
-                                    () -> responder.internalServerError());
+                                    () -> responseHelper.respondOK(useCase.getResult()),
+                                    () -> responseHelper.internalServerError());
                             // OLD CODE example
 //                            useCase.execute();
 //                            statusCode = useCase.succeeded() ?

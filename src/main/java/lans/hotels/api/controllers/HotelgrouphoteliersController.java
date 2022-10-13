@@ -32,8 +32,8 @@ public class HotelgrouphoteliersController extends FrontCommand {
     }
 
     public Void handlePost() throws Exception {
-        if (requestBody.has("hotel_group_hotelier")) {
-            HotelGroupHotelier hgh = getHotelGroupHotelierFromJsonObject(requestBody);
+        if (requestHelper.body().has("hotel_group_hotelier")) {
+            HotelGroupHotelier hgh = getHotelGroupHotelierFromJsonObject(requestHelper.body());
 
             if (hgh == null)
                 throw new InvalidObjectException("Failed to parse hotel object from request body");
@@ -43,20 +43,20 @@ public class HotelgrouphoteliersController extends FrontCommand {
             statusCode = useCase.succeeded() ?
                     HttpServletResponse.SC_OK :
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            responder.respond(useCase.getResult(), statusCode);
+            responseHelper.respond(useCase.getResult(), statusCode);
         } else {
-            responder.error("POST /hotel_group_hoteliers must include 'hotel_group_hotelier'", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("POST /hotel_group_hoteliers must include 'hotel_group_hotelier'", HttpServletResponse.SC_BAD_REQUEST);
         }
         return null;
     }
 
     public Void handleDelete() throws Exception {
-        if (requestBody.has("hotel_group_hotelier")) {
+        if (requestHelper.body().has("hotel_group_hotelier")) {
             HotelGroupHotelier hgh = null;
             ArrayList<HotelGroupHotelier> hotel_group_hoteliers = null;
             HotelGroupHotelierSearchCriteria hgh_criteria = new HotelGroupHotelierSearchCriteria();
 
-            JSONObject nestedJsonObject = requestBody.getJSONObject("hotel_group_hotelier");
+            JSONObject nestedJsonObject = requestHelper.body().getJSONObject("hotel_group_hotelier");
 
             if (nestedJsonObject.has("hotelier_id"))
                 hgh_criteria.setHotelierID(nestedJsonObject.getInt("hotelier_id"));
@@ -84,9 +84,9 @@ public class HotelgrouphoteliersController extends FrontCommand {
             statusCode = useCase.succeeded() ?
                     HttpServletResponse.SC_OK :
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            responder.respond(useCase.getResult(), statusCode);
+            responseHelper.respond(useCase.getResult(), statusCode);
         } else {
-            responder.error("DELETE/hotel_group_hoteliers must include 'hotel_group_hotelier'", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("DELETE/hotel_group_hoteliers must include 'hotel_group_hotelier'", HttpServletResponse.SC_BAD_REQUEST);
         }
         return null;
     }

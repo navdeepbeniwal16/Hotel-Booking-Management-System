@@ -6,9 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class Responder {
+public class ResponseHelper {
     HttpServletResponse response;
-    public Responder(HttpServletResponse response) {
+    public ResponseHelper(HttpServletResponse response) {
         this.response = response;
     }
 
