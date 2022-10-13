@@ -11,7 +11,7 @@ export const defaultHotelGroup: HotelGroup = {
   id: -1,
   name: '',
   address: defaultAddress,
-  phone: '+61',
+  phone: '+61412987456',
 };
 
 export default HotelGroup;

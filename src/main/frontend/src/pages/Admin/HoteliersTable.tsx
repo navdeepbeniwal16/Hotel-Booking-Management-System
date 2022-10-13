@@ -1,70 +1,109 @@
-import React, { useContext } from 'react';
+import React, { ReactNode, useContext, useState } from 'react';
 import { map } from 'lodash';
 import AppContext from '../../context/AppContext';
 import Table from 'react-bootstrap/Table';
 
-import { XCircle } from 'react-bootstrap-icons';
-import Hotelier from '../../types/HotelierType';
+import { PersonPlusFill, PersonDashFill } from 'react-bootstrap-icons';
+import Hotelier, { defaultHotelier } from '../../types/HotelierType';
+import GroupModal from './GroupModal';
+import HotelGroup from '../../types/HotelGroup';
 
 interface IHoteliersProps {
   hoteliers: Hotelier[];
-  removeHotelier: (hotelier_id: number) => void;
+  hotel_groups: HotelGroup[];
+  removeHotelier: (hotelier: Hotelier) => void;
+  addHotelierToGroup: (hotelier: Hotelier, group: HotelGroup) => void;
 }
 
-const Hoteliers = ({ hoteliers, removeHotelier }: IHoteliersProps) => {
+const Hoteliers = ({
+  hoteliers,
+  hotel_groups,
+  removeHotelier,
+  addHotelierToGroup,
+}: IHoteliersProps) => {
+  const [showModal, setShowModal] = useState(false);
+  const [editHotelier, setEditHotelier] = useState(defaultHotelier);
+  const handleClose = () => setShowModal(false);
+  const handleShow = (hotelier: Hotelier) => {
+    setEditHotelier(hotelier);
+    setShowModal(true);
+  };
+
   const { backend } = useContext(AppContext.GlobalContext);
-  const handleRemoveHotelier = async (hotelier_id: number) => {
-    const removedSuccessfully = await backend.removeHotelierFromHotelGroup(
-      hotelier_id
+
+  const handleRemoveHotelier = (hotelier: Hotelier) => {
+    backend
+      .removeHotelierFromHotelGroup(hotelier.id)
+      .then((success: boolean) => success && removeHotelier(hotelier));
+  };
+
+  const xIcon = (hotelier: Hotelier): ReactNode => {
+    return (
+      <PersonDashFill
+        className='text-danger ms-2'
+        style={{ cursor: 'pointer' }}
+        onClick={() => handleRemoveHotelier(hotelier)}
+      />
     );
-    if (removedSuccessfully) {
-      console.log(
-        'removed successfully - calling removeHotelier: ',
-        hotelier_id
-      );
-      removeHotelier(hotelier_id);
-    } else {
-      console.log('removed failed: ', hotelier_id);
-    }
+  };
+
+  const plusIcon = (hotelier: Hotelier): ReactNode => {
+    return (
+      <PersonPlusFill
+        className='text-primary ms-2'
+        style={{ cursor: 'pointer' }}
+        onClick={() => handleShow(hotelier)}
+      />
+    );
+  };
+
+  const renderGroup = (hotelier: Hotelier): ReactNode => {
+    const hasHotelGroup = !(
+      hotelier.hotel_group.name == undefined || hotelier.hotel_group.name == ''
+    );
+    return (
+      <div>
+        {hasHotelGroup ? (
+          <div>
+            {hotelier.hotel_group.name}
+            {xIcon(hotelier)}
+          </div>
+        ) : (
+          plusIcon(hotelier)
+        )}
+      </div>
+    );
   };
   return (
-    <Table>
-      <thead>
-        <tr>
-          <th>User ID</th>
-          <th>Email</th>
-          <th>Name</th>
-          <th>Hotel Group</th>
-        </tr>
-      </thead>
-      <tbody>
-        {map(hoteliers, (hotelier: Hotelier) => (
-          <tr key={hotelier.id}>
-            <td>{`${hotelier.id}`}</td>
-            <td>{`${hotelier.email}`}</td>
-            <td>{`${hotelier.name}`}</td>
-            <td>
-              <div>
-                <div>
-                  {hotelier.hotel_group.name == undefined ||
-                  hotelier.hotel_group.name == ''
-                    ? '-'
-                    : hotelier.hotel_group.name}
-                </div>
-                <XCircle
-                  style={{
-                    color: '#8b0000',
-                    marginLeft: '5px',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => handleRemoveHotelier(hotelier.id)}
-                />
-              </div>
-            </td>
+    <>
+      <Table>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Hotel Group</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {map(hoteliers, (hotelier: Hotelier) => (
+            <tr key={hotelier.id}>
+              <td>{`${hotelier.id}`}</td>
+              <td>{`${hotelier.email}`}</td>
+              <td>{`${hotelier.name}`}</td>
+              <td>{renderGroup(hotelier)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <GroupModal
+        show={showModal}
+        handleClose={handleClose}
+        hotelier={editHotelier}
+        groups={hotel_groups}
+        addHotelier={addHotelierToGroup}
+      />
+    </>
   );
 };
 

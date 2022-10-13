@@ -46,6 +46,33 @@ const Admin = () => {
     getUsersOnLoad();
   }, []);
 
+  const loadHotelGroups = async () => {
+    if (!hotelGroups.length) {
+      const fetchedHotelGroups = await backend.getHotelGroups();
+
+      setHotelGroups(fetchedHotelGroups);
+    }
+  };
+
+  const loadHoteliers = async () => {
+    if (hoteliers == undefined || !hoteliers.length) {
+      const fetchedHoteliers = await backend.getHoteliers();
+      setHoteliers(fetchedHoteliers);
+    }
+  };
+
+  const loadHotels = async () => {
+    if (hotels == undefined || !hotels.length) {
+      const fetchHotels = await backend.getAllHotels();
+      setHotels(fetchHotels);
+    }
+  };
+  const loadUsers = async () => {
+    if (!users.length) {
+      const fetchedUsers = await backend.getAllUsers();
+      setUsers(fetchedUsers);
+    }
+  };
   const loadTab = async (tabKey: string) => {
     if (
       !isLoading &&
@@ -55,29 +82,17 @@ const Admin = () => {
     ) {
       switch (tabKey) {
         case tabKeys.users:
-          if (!users.length) {
-            const fetchedUsers = await backend.getAllUsers();
-            setUsers(fetchedUsers);
-          }
+          loadUsers();
           break;
         case tabKeys.hotelGroups:
-          if (!hotelGroups.length) {
-            const fetchedHotelGroups = await backend.getHotelGroups();
-
-            setHotelGroups(fetchedHotelGroups);
-          }
+          loadHotelGroups();
           break;
         case tabKeys.hoteliers:
-          if (hoteliers == undefined || !hoteliers.length) {
-            const fetchedHoteliers = await backend.getHoteliers();
-            setHoteliers(fetchedHoteliers);
-          }
+          loadHoteliers();
+          loadHotelGroups();
           break;
         case tabKeys.hotels:
-          if (hotels == undefined || !hotels.length) {
-            const fetchHotels = await backend.getAllHotels();
-            setHotels(fetchHotels);
-          }
+          loadHotels();
           break;
         default:
       }
@@ -85,19 +100,17 @@ const Admin = () => {
     setTabKey(tabKey);
   };
 
-  const handleRemoveHotelier = (hotelier_id: number): void => {
-    const updatedHoteliers: Hotelier[] = map(
-      hoteliers,
-      (hotelier: Hotelier) => {
-        if (hotelier.id == hotelier_id) {
-          return {
-            ...hotelier,
-            hotel_group: defaultHotelGroup,
-          };
-        }
+  const handleUpdateHotelier = (
+    hotelier_id: number,
+    hotelier: Hotelier
+  ): void => {
+    const updatedHoteliers: Hotelier[] = map(hoteliers, (next: Hotelier) => {
+      if (next.id == hotelier_id) {
+        // const msg = `Updated hotelier: ${next.name} (Group=${next.hotel_group.id}) => ${hotelier.name} (Group=${hotelier.hotel_group.id})`;
         return hotelier;
       }
-    );
+      return next;
+    });
     setHoteliers(updatedHoteliers);
   };
 
@@ -162,7 +175,19 @@ const Admin = () => {
               <Col>
                 <HoteliersTable
                   hoteliers={hoteliers}
-                  removeHotelier={handleRemoveHotelier}
+                  removeHotelier={(hotelier: Hotelier) =>
+                    handleUpdateHotelier(hotelier.id, {
+                      ...hotelier,
+                      hotel_group: defaultHotelGroup,
+                    })
+                  }
+                  addHotelierToGroup={(hotelier: Hotelier, group: HotelGroup) =>
+                    handleUpdateHotelier(hotelier.id, {
+                      ...hotelier,
+                      hotel_group: group,
+                    })
+                  }
+                  hotel_groups={hotelGroups}
                 />
               </Col>
             </Row>

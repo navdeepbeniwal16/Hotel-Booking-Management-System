@@ -200,6 +200,32 @@ END
 $$
 LANGUAGE plpgsql;
 
+CREATE VIEW admins AS
+    SELECT *
+    FROM app_user
+    WHERE role = 1;
+
+CREATE VIEW hoteliers AS
+    SELECT
+        *
+    FROM app_user u
+    WHERE role = 2;
+
+CREATE VIEW assigned_hotelier AS
+    SELECT
+    h.id AS uid, h.name AS name, h2.name AS hotel, hgh.is_active
+FROM
+hoteliers h
+LEFT JOIN
+    hotel_group_hotelier hgh ON h.id = hgh.hotelier_id
+LEFT JOIN hotel h2 ON h2.id = hgh.hotel_group_id
+WHERE hgh.is_active = TRUE;
+
+CREATE VIEW customers AS
+    SELECT *
+    FROM app_user
+    WHERE role = 3;
+
 ALTER TABLE room_booking
 ADD CONSTRAINT room_available
 CHECK (check_availability(room_id, booking_id));
