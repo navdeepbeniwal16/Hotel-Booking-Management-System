@@ -151,9 +151,12 @@ public class RoomsController extends FrontCommand {
 
         Integer hotelId = parseHotelId(searchParams);
 
-        if(auth.isHotelier())
-            if(!checkHotelGroupHotelierValid(hotelId))
-                return;
+        if(!checkHotelGroupHotelierValid(hotelId))
+        {
+            responseHelper.unauthorized();
+            return;
+        }
+
 
         Utils.RoomResultsInclude include = parseInclude(searchParams);
         Date startDate = parseDate(searchParams, "start_date");

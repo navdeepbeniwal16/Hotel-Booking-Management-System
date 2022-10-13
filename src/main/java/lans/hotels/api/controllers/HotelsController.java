@@ -96,13 +96,11 @@ public class HotelsController extends FrontCommand {
                 return;
             }
         }
-        else if(searchQueryBody.has("hotel_group_id")) {
+        else if(searchQueryBody.has("hotels")) {
+            Integer hotel_group_id = auth.getUser().getHotelierHotelGroupID();
+            System.out.println("user hotel group id : "+auth.getUser().getHotelierHotelGroupID());
 
-            if(auth.isHotelier())
-                if(!checkHotelGroupHotelierValid(searchQueryBody.getInt("hotel_group_id")))
-                    return;
-
-            useCase = new ViewHotelGroupHotels(dataSource,searchQueryBody.getInt("hotel_group_id"));
+            useCase = new ViewHotelGroupHotels(dataSource,hotel_group_id);
             useCase.execute();
             statusCode = useCase.succeeded() ?
                     HttpServletResponse.SC_OK :
@@ -119,10 +117,6 @@ public class HotelsController extends FrontCommand {
         if (h == null)
             throw new InvalidObjectException("Failed to parse hotel object from request body");
 
-        if(auth.isHotelier())
-            if(!checkHotelGroupHotelierValid(h.getHotelGroupID()))
-                return;
-
         useCase = new CreateHotel(dataSource);
         useCase.execute();
         statusCode = useCase.succeeded() ?
@@ -131,43 +125,10 @@ public class HotelsController extends FrontCommand {
         responseHelper.respond(useCase.getResult(), statusCode);
     }
 
-    private boolean checkHotelGroupHotelierValid(Integer hg_id){
-        Integer hotelier_hg_id = hotelierHotelGroupID();
-
-        if(hotelier_hg_id != hg_id){
-            responseHelper.unauthorized();
-            return false;
-        }
-        else return true;
-    }
-
-    public Integer hotelierHotelGroupID()
-    {
-        Integer hotelier_hg_id = -1;
-        String hotelier_email = auth.getEmail();
-
-        ArrayList<User> hoteliers = null;
-
-        UserSearchCriteria u_criteria = new UserSearchCriteria();
-        u_criteria.setEmail(hotelier_email);
-
-        try {
-            hoteliers = dataSource.findBySearchCriteria(User.class, u_criteria);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if(hoteliers.size() > 0) {
-            User hgh = hoteliers.get(0);
-            hotelier_hg_id = hgh.getHotelierHotelGroupID();
-        }
-        return  hotelier_hg_id;
-    }
-
     public Hotel getHotelFromJsonObject(JSONObject jsonObject) {
 
         Hotel h = null;
-        int hotel_group_id = hotelierHotelGroupID();
+        int hotel_group_id = auth.getUser().getHotelierHotelGroupID();
         String h_name = "";
         String email ="";
         String l1 = "";

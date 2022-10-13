@@ -10,13 +10,13 @@ import java.util.ArrayList;
 
 public class ViewCustomerBookings extends UseCase {
 
-    String customer_email;
+    Integer customer_id;
     ArrayList<Booking> bookings;
 
 
-    public ViewCustomerBookings(IDataSource dataSource,String  customer_email) {
+    public ViewCustomerBookings(IDataSource dataSource,Integer customer_id) {
         super(dataSource);
-        this.customer_email = customer_email;
+        this.customer_id = customer_id;
         this.bookings = new ArrayList<>();
     }
 
@@ -24,7 +24,7 @@ public class ViewCustomerBookings extends UseCase {
     public void doExecute() throws Exception {
 
         BookingsSearchCriteria b_criteria= new BookingsSearchCriteria();
-        b_criteria.setCustomerEmail(customer_email);
+        b_criteria.setCustomerId(customer_id);
         try {
             bookings = dataSource.findBySearchCriteria(Booking.class,b_criteria);
             succeed();

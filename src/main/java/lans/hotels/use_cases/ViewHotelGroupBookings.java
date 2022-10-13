@@ -12,40 +12,26 @@ import java.util.ArrayList;
 
 public class ViewHotelGroupBookings extends UseCase {
 
-    String hotelier_email;
+    Integer h_id;
     ArrayList<Booking> bookings;
 
-
-    public ViewHotelGroupBookings(IDataSource dataSource,String hotelier_email) {
+    public ViewHotelGroupBookings(IDataSource dataSource,Integer h_id) {
         super(dataSource);
-        this.hotelier_email = hotelier_email;
+        this.h_id = h_id;
         this.bookings = new ArrayList<>();
     }
 
     @Override
     public void doExecute() throws Exception {
-
-        ArrayList<User> hoteliers;
-
-        UserSearchCriteria u_criteria = new UserSearchCriteria();
-        u_criteria.setEmail(hotelier_email);
-
-        hoteliers = dataSource.findBySearchCriteria(User.class, u_criteria);
-
-        if(hoteliers.size() > 0) {
-            User hgh = hoteliers.get(0);
-
-            BookingsSearchCriteria b_criteria = new BookingsSearchCriteria();
-            b_criteria.setHotelGroupId(hgh.getHotelierHotelGroupID());
-            try {
-                bookings = dataSource.findBySearchCriteria(Booking.class, b_criteria);
-                succeed();
-            } catch (Exception e) {
-                fail();
-                e.printStackTrace();
-                throw e;
-            }
-
+        BookingsSearchCriteria b_criteria = new BookingsSearchCriteria();
+        b_criteria.setHotelId(h_id);
+        try {
+            bookings = dataSource.findBySearchCriteria(Booking.class, b_criteria);
+            succeed();
+        } catch (Exception e) {
+            fail();
+            e.printStackTrace();
+            throw e;
         }
     }
 
