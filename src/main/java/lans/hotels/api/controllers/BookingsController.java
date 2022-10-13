@@ -206,6 +206,7 @@ public class BookingsController extends FrontCommand {
         try {
             auth.withGuard(this::createNewBookingGuard, this::createNewBooking);
         } catch (Exception e) {
+            e.printStackTrace();
             responseHelper.internalServerError();
         }
     }

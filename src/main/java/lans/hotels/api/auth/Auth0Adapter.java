@@ -76,8 +76,7 @@ public class Auth0Adapter {
         System.out.println(this);
     }
 
-    private Auth0Adapter(Callable<Void> onUnauthorized) {
-        this.onUnauthorized = onUnauthorized;
+    private Auth0Adapter() {
         this.authenticated = false;
         email = "";
         this.roles = new ArrayList<>();
@@ -92,9 +91,10 @@ public class Auth0Adapter {
                 " | customer=" + isCustomer() + ")";
     }
 
-    public static <T> Auth0Adapter getAuthorization(HttpServletRequest request, Callable<Void> onUnauthorized) {
+    public static Auth0Adapter getAuthorization(HttpServletRequest request, Callable<Void> onUnauthorized) {
         Auth0Adapter auth = (Auth0Adapter) request.getSession().getAttribute(Auth0Adapter.AUTHORIZATION);
-        if (auth == null) auth = new Auth0Adapter(onUnauthorized);
+        if (auth == null) auth = new Auth0Adapter();
+        auth.onUnauthorized = onUnauthorized;
         return auth;
     }
 
