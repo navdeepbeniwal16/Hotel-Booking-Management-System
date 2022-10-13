@@ -90,30 +90,24 @@ public class HotelgroupsController extends FrontCommand {
         String district = "";
         String phone = "";
 
-        if(jsonObject.has("hotel_group")) {
-            JSONObject nestedJsonObject = jsonObject.getJSONObject("hotel_group");
+        JSONObject details = requestHelper.body("hotel_group");
+        if(!details.isEmpty()) {
+            hg_name = (String) requestHelper.body("hotel_group", "name");
+            phone = (String) requestHelper.body("hotel_group", "phone");
+            JSONObject addressJson = (JSONObject) requestHelper.body("hotel_group", "address");
+            if(addressJson.has("line_1")) l1 = addressJson.getString("line_1");
+            if(addressJson.has("line_2")) l2 = addressJson.getString("line_2");
+            if(addressJson.has("city")) city = addressJson.getString("city");
+            if(addressJson.has("postcode")) postcode = addressJson.getInt("postcode");
+            if(addressJson.has("district")) district = addressJson.getString("district");
 
-            if(nestedJsonObject.has("hg_name"))
-                hg_name = nestedJsonObject.getString("hg_name");
-            if(nestedJsonObject.has("l1"))
-                l1 = nestedJsonObject.getString("l1");
-            if(nestedJsonObject.has("l2"))
-                l2 = nestedJsonObject.getString("l2");
-            if(nestedJsonObject.has("city"))
-                city = nestedJsonObject.getString("city");
-            if(nestedJsonObject.has("postcode"))
-                postcode = nestedJsonObject.getInt("postcode");
-            if(nestedJsonObject.has("district"))
-                district = nestedJsonObject.getString("district");
-            if(nestedJsonObject.has("phone"))
-                phone = nestedJsonObject.getString("phone");
 
             District district_ob = new District(district);
             Address address = new Address(l1, l2, district_ob, city, postcode);
 
             try {
                 hg = new HotelGroup(dataSource,hg_name,address,phone);
-            } catch (UoWException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

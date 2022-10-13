@@ -5,7 +5,7 @@ import Table from 'react-bootstrap/Table';
 
 import { PersonPlusFill, PersonDashFill } from 'react-bootstrap-icons';
 import Hotelier, { defaultHotelier } from '../../types/HotelierType';
-import GroupModal from './GroupModal';
+import HotelierModal from './HotelierModal';
 import HotelGroup from '../../types/HotelGroup';
 
 interface IHoteliersProps {
@@ -96,7 +96,7 @@ const Hoteliers = ({
           ))}
         </tbody>
       </Table>
-      <GroupModal
+      <HotelierModal
         show={showModal}
         handleClose={handleClose}
         hotelier={editHotelier}

@@ -8,20 +8,20 @@ import Hotelier from '../../types/HotelierType';
 import { map, find } from 'lodash';
 import AppContext from '../../context/AppContext';
 
-interface GroupModalProps {
+interface HotelierModalProps {
   show: boolean;
   handleClose: () => void;
   hotelier: Hotelier;
   groups: HotelGroup[];
   addHotelier: (hotelier: Hotelier, group: HotelGroup) => void;
 }
-function GroupModal({
+function HotelierModal({
   show,
   handleClose,
   hotelier,
   groups,
   addHotelier,
-}: GroupModalProps) {
+}: HotelierModalProps) {
   const { backend } = useContext(AppContext.GlobalContext);
   const [selectedGroup, selectGroup] = useState(defaultHotelGroup);
   const [waiting, setWaiting] = useState(false);
@@ -95,4 +95,4 @@ function GroupModal({
   );
 }
 
-export default GroupModal;
+export default HotelierModal;
