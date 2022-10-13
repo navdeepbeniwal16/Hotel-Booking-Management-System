@@ -8,8 +8,8 @@ import java.util.Objects;
 public abstract class AbstractDomainObject implements IGhost, Comparable<AbstractDomainObject> {
     protected IDataSource dataSource;
     protected Integer hashCode;
-    protected Integer id;
-    protected Boolean isNew;
+    protected Integer id = -1;
+    protected Boolean isNew = false;
 
     private LoadStatus loadStatus;
 
@@ -22,7 +22,7 @@ public abstract class AbstractDomainObject implements IGhost, Comparable<Abstrac
     }
 
     public boolean hasId() {
-        return id != null;
+        return id != -1;
     }
 
     @Override
@@ -62,7 +62,7 @@ public abstract class AbstractDomainObject implements IGhost, Comparable<Abstrac
     }
 
     public Boolean isLoaded() {
-        return loadStatus == LoadStatus.LOADED;
+        return isNew || loadStatus == LoadStatus.LOADED;
     }
 
     public Boolean isLoading() {
@@ -85,7 +85,11 @@ public abstract class AbstractDomainObject implements IGhost, Comparable<Abstrac
     }
 
     // TODO: #ghost #lazyload how do these UoW commands interact with Ghost Lazy Load?
-    protected void markNew() throws UoWException { dataSource.registerNew(this); }
+
+    protected void markNew() throws UoWException {
+        isNew = true;
+        dataSource.registerNew(this);
+    }
     protected void markClean() throws UoWException { dataSource.registerClean(this); }
     protected void markDirty() throws UoWException { dataSource.registerDirty(this); }
     protected void markRemoved() throws UoWException  { dataSource.registerRemoved(this); }

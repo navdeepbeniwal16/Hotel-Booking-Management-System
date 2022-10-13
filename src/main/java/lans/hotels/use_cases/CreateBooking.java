@@ -34,13 +34,14 @@ public class CreateBooking extends UseCase {
     }
 
     private Booking createBookingFromJson(JSONObject bookingJson) throws CommandException {
+        System.out.println("createBookingFromJson:\t" + bookingJson);
         Booking booking;
         try {
             Integer customerId = (Integer) bookingJson.get("customer_id");
             Integer hotelId = (Integer) bookingJson.get("hotel_id");
             DateRange dateRange = parseDateRange((String) bookingJson.get("start_date"), (String) bookingJson.get("end_date"));
             HashMap<Integer, RoomBooking> roomBookings = parseRoomBookings(bookingJson.getJSONArray("rooms"));
-            booking = new Booking(dataSource, hotelId, customerId, dateRange, roomBookings);
+            booking = new Booking(dataSource, customerId, hotelId, dateRange, roomBookings);
         } catch (Exception e) {
             System.err.println("Booking JSON:\n" + bookingJson);
             e.printStackTrace();

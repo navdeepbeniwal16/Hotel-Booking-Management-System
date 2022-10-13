@@ -18,11 +18,11 @@ import java.util.*;
 
 public class HotelsController extends FrontCommand {
     @Override
-    protected void concreteProcess() throws IOException, SQLException {
+    protected void concreteProcess() {
         System.out.println("HotelsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
         switch (request.getMethod()) {
             case HttpMethod.GET:
-                asAdmin(this::handleGet);
+                handleGet();
                 return;
             case HttpMethod.POST:
                 asCustomerOrHotelier(this::handlePost);
@@ -35,7 +35,7 @@ public class HotelsController extends FrontCommand {
         }
     }
 
-    public Void handleGet() throws Exception {
+    public void handleGet() {
 
         useCase = new GetAllHotels(dataSource);
         useCase.execute();
@@ -43,7 +43,6 @@ public class HotelsController extends FrontCommand {
                 HttpServletResponse.SC_OK :
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         responseHelper.respond(useCase.getResult(), statusCode);
-        return null;
     }
 
     public Void handlePut() throws Exception {

@@ -54,6 +54,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                      " VALUES ";
 
         for(RoomBooking roomBooking: booking.getRoomBookings().values()) {
+            System.out.println("ROOM BOOKING:\t" + roomBooking.toString());
             sql = sql +
                     " ( (SELECT id FROM new_booking), " + roomBooking.getRoomId() + ", " + true + ", "
                     + "'" + roomBooking.getMainGuest() + "'" +
@@ -61,7 +62,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         }
         sql = sql.substring(0, sql.length() - 2);
         sql = sql + " RETURNING * ; ";
-//        System.out.println("---- BOOKING SQL ----\n" + sql + "\n---- END SQL ----");
+        System.out.println("---- BOOKING SQL ----\n" + sql + "\n---- END SQL ----");
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet resultSet = statement.executeQuery();
         return resultSet.next() ? resultSet.getInt("id") : -1;

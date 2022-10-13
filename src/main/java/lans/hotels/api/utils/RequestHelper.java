@@ -31,6 +31,16 @@ public class RequestHelper {
         return this.data;
     }
 
+    public JSONObject body(String key) {
+        if (data.has(key)) return data.getJSONObject(key);
+        return new JSONObject();
+    }
+
+    public Object body(String parent, String child) {
+        if (body(parent).has(child)) return body(parent).get(child);
+        return null;
+    }
+
     public Void checkCommandPath(Integer exactLength) {
         assert commandPath.length == exactLength;
         return null;

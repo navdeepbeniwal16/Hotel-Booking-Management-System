@@ -77,12 +77,13 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
             statement.setBoolean(2,hotelSearchCriteria.getIsActive());
         }
 
-        System.out.println("Find by statement : \n"+statement.toString());
+        System.out.println("HotelDataMapper.findBySearchCriteria()\n\t"+statement.toString());
         ResultSet resultSet = statement.executeQuery();
         Hotel currentHotel = load(resultSet);
         while (currentHotel != null) {
             currentHotel = load(resultSet);
         }
+        System.out.println("HotelDataMapper.findBySearchCriteria() - hotels loaded = " + loadedMap.values().size());
         return new ArrayList<>(loadedMap.values());
 
     }

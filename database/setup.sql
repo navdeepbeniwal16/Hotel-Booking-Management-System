@@ -187,12 +187,12 @@ BEGIN
     LOCK hotel IN SHARE MODE;
     RETURN(
         SELECT
-            CASE WHEN b.hotel_id = h.id THEN TRUE ELSE FALSE END
+            (COUNT(*) = 1)
         FROM room AS r
         LEFT JOIN hotel AS h
             ON h.id = r.hotel_id
         LEFT JOIN booking AS b
-            ON b.id = $2
+            ON h.id = $2
         WHERE r.id = $1
     );
 END

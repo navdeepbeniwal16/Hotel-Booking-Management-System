@@ -49,7 +49,7 @@ INSERT INTO
 VALUES
     (NULL,'admin@gmail.com',NULL,1,NULL,NULL),
     ('Arman','arman@gmail.com',NULL,2,NULL,NULL),
-    ('Levi','levi@gmail.com',NULL,2,NULL,NULL),
+    ('Hotelier Levi','levimckenzie93+hotelier@gmail.com',NULL,2,NULL,NULL),
     ('Saood','saood@gmail.com',NULL,2,NULL,NULL),
     ('Navdeep','navdeep@gmail.com',NULL,2,NULL,NULL),
     ('Max','max@gmail.com',NULL,2,NULL,NULL),
@@ -66,7 +66,9 @@ VALUES
     ('David','david@gmail.com',5,3,'+618492840284',42),
     ('William','william@gmail.com',6,3,'+612387242240',75),
     ('Richard','richard@gmail.com',7,3,'+612809238924',98),
-    ('Joseph','joseph@gmail.com',8,3,'+611742681943',26)
+    ('Joseph','joseph@gmail.com',8,3,'+611742681943',26),
+    ('Admin Levi','levimckenzie93+admin@gmail.com',NULL,1,NULL,NULL),
+    ('Customer Levi','levimckenzie93+0@gmail.com',NULL,3,NULL,NULL)
 ;
 
 INSERT INTO

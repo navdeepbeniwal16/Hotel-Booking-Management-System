@@ -78,10 +78,6 @@ public class Booking extends ReferenceObject {
        markClean();
    }
 
-//   public void addRoom(RoomBooking roomBooking) {
-//        this.roomBookings.put(roomBooking.getRoomId(), roomBooking);
-//   }
-
     private void initRoomBookings() {
         this.roomBookings = new HashMap<>();
     }

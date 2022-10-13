@@ -24,11 +24,6 @@ import java.util.concurrent.Callable;
 
 public class Auth0Adapter {
     public static final String AUTHORIZATION = "Authorization";
-    private enum Roles {
-        Customer,
-        Hotelier,
-        Admin
-    }
 
     JwkProvider jwkProvider;
     String issuer;
@@ -83,11 +78,13 @@ public class Auth0Adapter {
     }
 
     public String toString() {
+        String hotelierHotelId = isHotelier() ? " ( " + hotelGroupId() + " ) " : "";
         return "auth0(authenticated=" + authenticated +
                 " | email=" + email +
-                " | role claims=" + roles.toString() +
+                " | claims/roles=" + roles.toString() +
+                " | id=" + getId() +
                 " | admin=" + isAdmin() +
-                " | hotelier=" + isHotelier() +
+                " | hotelier=" + isHotelier() + hotelierHotelId +
                 " | customer=" + isCustomer() + ")";
     }
 
@@ -103,16 +100,14 @@ public class Auth0Adapter {
     }
 
     public boolean isCustomer() {
-        return authenticated && !isHotelier() && !isAdmin();
+        return authenticated && user.getRole().isCustomer();
     }
 
     public boolean isHotelier() {
-        // TODO: refactor to user role from user
-        return authenticated && roles.contains(Roles.Hotelier.toString());
+        return authenticated && user.getRole().isHotelier();
     }
 
     public boolean isAdmin() {
-        // TODO: refactor to user role from user
         return authenticated && user.getRole().isAdmin();
     }
 
@@ -122,6 +117,7 @@ public class Auth0Adapter {
             authenticateWithHeading();
         } catch (Exception e) {
             // Override any method that may have set auth to true
+            e.printStackTrace();
             resetAuth();
         }
     }
@@ -160,18 +156,28 @@ public class Auth0Adapter {
                         "\temail: " + email +
                         "\troles: " + roles.toString());
 
-                user = roles.contains(Roles.Admin.toString()) ? User.newAdmin(dataSource, email) : User.newCustomer(dataSource, email);
+                user = roles.contains(Role.admin().getName()) ? User.newAdmin(dataSource, email) : User.newCustomer(dataSource, email);
             } else {
                 user = users.get(0);
             }
-            System.out.println("User:\t" + user.getEmail());
+        }
+    }
+
+    private String rawToken() {
+        String[] parts = rawAuth.split(" ");
+        try {
+            if (parts.length == 2) {
+                return rawAuth.split(" ")[1];
+            }
+            return "";
+        } catch (Exception e) {
+            return "";
         }
     }
 
     private void setJwt() throws JwkException {
-        rawToken = rawAuth.split(" ")[1];
-        createVerifier(rawToken);
-        jwt = verifier.verify(rawToken);
+        createVerifier(rawToken());
+        jwt = verifier.verify(rawToken());
         authenticated = true;
     }
 
@@ -186,15 +192,17 @@ public class Auth0Adapter {
         verifier = verification.build();
     }
 
-    private boolean validHeading() throws Exception {
+    private boolean validHeading() {
         if (rawAuth==null || rawAuth.equals("")) {
             authenticated = false;
+            System.out.println("rawAuth=" + rawAuth);
 //            throw new Exception("'Authorization' not on request");
             return true;
         }
         String authorizationType = rawAuth.split(" ")[0];
         if (!authorizationType.equals("Bearer")) {
             authenticated = false;
+            System.out.println("authorizationType=" + authorizationType);
             return false;
         }
         return true;
@@ -256,5 +264,9 @@ public class Auth0Adapter {
 
     public User getUser() {
         return user;
+    }
+
+    public Integer hotelGroupId() {
+        return user != null ? user.getHotelierHotelGroupID() : null;
     }
 }
