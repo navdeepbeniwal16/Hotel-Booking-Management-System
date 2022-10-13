@@ -49,6 +49,8 @@ public class Auth0Adapter {
     User user;
     String rawAuth;
     String rawToken;
+
+    Callable<Void> onUnauthorized;
     private final static Base64.Decoder decoder = Base64.getUrlDecoder();
 
     protected Auth0Adapter(JwkProvider jwkProvider,
@@ -74,7 +76,8 @@ public class Auth0Adapter {
         System.out.println(this);
     }
 
-    private Auth0Adapter() {
+    private Auth0Adapter(Callable<Void> onUnauthorized) {
+        this.onUnauthorized = onUnauthorized;
         this.authenticated = false;
         email = "";
         this.roles = new ArrayList<>();
@@ -89,9 +92,9 @@ public class Auth0Adapter {
                 " | customer=" + isCustomer() + ")";
     }
 
-    public static Auth0Adapter getAuthorization(HttpServletRequest request) {
+    public static <T> Auth0Adapter getAuthorization(HttpServletRequest request, Callable<Void> onUnauthorized) {
         Auth0Adapter auth = (Auth0Adapter) request.getSession().getAttribute(Auth0Adapter.AUTHORIZATION);
-        if (auth == null) auth = new Auth0Adapter();
+        if (auth == null) auth = new Auth0Adapter(onUnauthorized);
         return auth;
     }
 
@@ -225,11 +228,16 @@ public class Auth0Adapter {
                 roles.contains(user.getRole());
     }
 
-    public <T, U> T inRoles(List<Role> roles, Callable<T> handler, Callable<U> onUnauthorized) throws Exception {
+    public <T> T inRoles(List<Role> roles, Callable<T> handler) throws Exception {
         return withGuard(() -> inRolesGuard(roles), handler, onUnauthorized);
     }
 
-    private <T, U> T withGuard(Callable<Boolean> guard,
+    public <T> T withGuard(Callable<Boolean> guard,
+                              Callable<T> action) throws Exception {
+        return withGuard(guard, action, onUnauthorized);
+    }
+
+    public <T, U> T withGuard(Callable<Boolean> guard,
                          Callable<T> action,
                          Callable<U> onUnauthorized) throws Exception {
         if (guard.call()) {
@@ -245,4 +253,5 @@ public class Auth0Adapter {
             return user.getId();
         return -1;
     }
+
 }

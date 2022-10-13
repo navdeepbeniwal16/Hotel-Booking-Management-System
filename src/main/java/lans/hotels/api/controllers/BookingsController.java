@@ -19,14 +19,14 @@ import java.util.*;
 
 public class BookingsController extends FrontCommand {
     @Override
-    protected void concreteProcess() throws IOException {
+    protected void concreteProcess() throws Exception {
         String[] commandPath = request.getPathInfo().split("/");
         int statusCode;
         switch (request.getMethod()) {
             case HttpMethod.GET:
             case HttpMethod.POST:
                 if (requestHelper.body().has("booking")) {
-                    handleCreateNewBooking();
+                    auth.withGuard(this::createNewBookingGuard, this::handleCreateNewBooking);
                     break;
                 }
             {
@@ -203,54 +203,16 @@ public class BookingsController extends FrontCommand {
         }
     }
 
-    public JSONObject getBookingsJson(ArrayList<Booking> bookings) {
-        JSONObject jsonBookingsObject = new JSONObject();
-        JSONArray nestedBookingsArray = new JSONArray();
-        JSONObject abooking;
-        JSONArray aRoomBookingArray;
-        for (Booking booking: bookings) {
-            abooking = new JSONObject();
-            abooking.put("id", booking.getId());
-            abooking.put("hotel_id", booking.getHotelId());
-            abooking.put("hotel_name", booking.getHotelName());
-            abooking.put("customer_id", booking.getCustomerId());
-            abooking.put("start_date", booking.getDateRange().getTo().toString());
-            abooking.put("end_date", booking.getDateRange().getFrom().toString());
-            abooking.put("is_active", booking.getActive());
-
-            aRoomBookingArray = new JSONArray();
-            JSONObject aRoomBooking;
-            HashMap<Integer, RoomBooking> roomBookingHashMap = booking.getRoomBookings();
-            for (Object roomBookingKey: roomBookingHashMap.keySet()){
-                RoomBooking roomBooking = roomBookingHashMap.get(roomBookingKey);
-                aRoomBooking = new JSONObject();
-                aRoomBooking.put("id", roomBooking.getId());
-                aRoomBooking.put("is_active", roomBooking.getActive());
-                aRoomBooking.put("room_id", roomBooking.getRoomId());
-                aRoomBooking.put("main_guest", roomBooking.getMainGuest());
-                aRoomBooking.put("no_of_guests", roomBooking.getNumOfGuests());
-                aRoomBookingArray.put(aRoomBooking);
-            }
-            abooking.put("room_bookings", aRoomBookingArray);
-
-            nestedBookingsArray.put(abooking);
+    private Boolean createNewBookingGuard() {
+        Integer authId = -1;
+        String requestId = auth.isCustomer() ? "client_id" : auth.isCustomer() ? "hotelier_id" : "";
+        if (requestHelper.body().has(requestId)) {
+            authId = (Integer) requestHelper.body().get(requestId);
         }
-
-        jsonBookingsObject.put("result", nestedBookingsArray);
-        return jsonBookingsObject;
+        return authId.equals(auth.getId());
     }
 
-    private void handleCreateNewBooking() throws IOException {
-//        boolean isValidCustomer = auth.isCustomer() && auth.getId() ==
-        boolean allowedToCreateBookings = auth.isCustomer() || auth.isHotelier();
-        if (allowedToCreateBookings) {
-            executeCreateNewBooking();
-        } else {
-            responseHelper.unauthorized();
-        }
-    }
-
-    private void executeCreateNewBooking() throws IOException {
+    private Void handleCreateNewBooking() {
         try {
             useCase = new CreateBooking(dataSource, requestHelper.body().getJSONObject("booking"));
             useCase.execute();
@@ -258,5 +220,6 @@ public class BookingsController extends FrontCommand {
         } catch (Exception e) {
             responseHelper.error(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
         }
+        return null;
     }
 }

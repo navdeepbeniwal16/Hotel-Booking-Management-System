@@ -50,7 +50,7 @@ public class APIEntrypoint extends HttpServlet {
         }
     }
 
-    private void handleCommand(IDataSource dataSource, HttpServletRequest request, HttpServletResponse response) throws ServletException, SQLException, IOException, CommandException {
+    private void handleCommand(IDataSource dataSource, HttpServletRequest request, HttpServletResponse response) throws ServletException {
         // Dynamically instantiate the appropriate controller
         IFrontCommand command = getCommandWithAuth(request, dataSource);
         command.init(getServletContext(), request, response, dataSource);

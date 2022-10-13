@@ -48,16 +48,17 @@ public abstract class FrontCommand implements IFrontCommand  {
             this.method = request.getMethod();
             this.response = response;
             this.dataSource = dataSource;
-            this.auth = Auth0Adapter.getAuthorization(request);
+
             this.responseHelper = new ResponseHelper(response);
             this.requestHelper = new RequestHelper(request);
+            this.auth = Auth0Adapter.getAuthorization(request, responseHelper::unauthorized);
         } catch (Exception e) {
             ready = false;
         }
     }
 
     abstract protected void concreteProcess() throws Exception;
-    public void process() throws ServletException, IOException, CommandException, SQLException {
+    public void process() {
         try {
             assert ready;
             concreteProcess();
@@ -71,9 +72,9 @@ public abstract class FrontCommand implements IFrontCommand  {
 
     private <T> T delegateToAuth(List<Role> roles, Callable<T> handler) {
         try {
-            return auth.inRoles(roles, handler, responseHelper::unauthorized);
-        } catch (Exception e) {
-            responseHelper.internalServerError(e.getMessage());
+            return auth.inRoles(roles, handler);
+        } catch (Exception e ){
+            responseHelper.internalServerError("auth error");
         }
         return null;
     }

@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public interface IFrontCommand {
-    void process() throws ServletException, IOException, CommandException, SQLException;
+    void process();
     void init(ServletContext context,
               HttpServletRequest request,
               HttpServletResponse response,
