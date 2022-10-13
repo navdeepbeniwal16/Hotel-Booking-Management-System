@@ -28,14 +28,18 @@ public class RoomsController extends FrontCommand {
                 responseHelper.error("GET /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
                 return;
             case HttpMethod.POST:
-                asCustomerOrHotelier(this::handlePost);
+                try {
+                    handlePost();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 return;
             default:
                 responseHelper.unimplemented(request.getMethod() + " /rooms");
         }
     }
 
-    private Void handlePost() throws Exception {
+    private void handlePost() throws Exception {
         if (requestHelper.body().has("search")) {
             JSONObject searchQueryBody = requestHelper.body().getJSONObject("search");
             handleSearchQuery(searchQueryBody);
@@ -44,7 +48,6 @@ public class RoomsController extends FrontCommand {
         } else {
             responseHelper.error("POST /rooms does must include 'room' or 'search'", HttpServletResponse.SC_BAD_REQUEST);
         }
-        return null;
     }
 
     private Room getRoomFromJsonObject(JSONObject jsonObject) throws InvalidObjectException {
@@ -151,12 +154,12 @@ public class RoomsController extends FrontCommand {
 
         Integer hotelId = parseHotelId(searchParams);
 
-        if(!checkHotelGroupHotelierValid(hotelId))
-        {
-            responseHelper.unauthorized();
-            return;
+        if(auth.isHotelier()){
+            if(!checkHotelGroupHotelierValid(hotelId))
+            {
+                return;
+            }
         }
-
 
         Utils.RoomResultsInclude include = parseInclude(searchParams);
         Date startDate = parseDate(searchParams, "start_date");
