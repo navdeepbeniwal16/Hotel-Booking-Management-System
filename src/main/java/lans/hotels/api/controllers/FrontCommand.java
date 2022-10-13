@@ -4,18 +4,12 @@ import lans.hotels.api.utils.RequestHelper;
 import lans.hotels.api.utils.ResponseHelper;
 import lans.hotels.api.entrypoint.IFrontCommand;
 import lans.hotels.api.auth.Auth0Adapter;
-import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.user.Role;
 import lans.hotels.use_cases.UseCase;
-import org.json.JSONObject;
-
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;

@@ -30,14 +30,8 @@ public class RoomsController extends FrontCommand {
             case HttpMethod.POST:
                 asCustomerOrHotelier(this::handlePost);
                 return;
-            case HttpMethod.PUT:
-                responseHelper.error("PUT /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
-                return;
-            case HttpMethod.DELETE:
-                responseHelper.error("DELETE /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
-                return;
             default:
-                responseHelper.error("invalid request", HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.unimplemented(request.getMethod() + " /rooms");
         }
     }
 

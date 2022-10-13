@@ -146,7 +146,7 @@ public class User extends ReferenceObject {
         markDirty();
     }
 
-    public int getHotelierHotelGroupID() { return this.hotelier_hotel_group_id; }
+    public Integer getHotelierHotelGroupID() { return this.hotelier_hotel_group_id; }
 
     public void setHotelierHotelGroupID(Integer hotelier_hotel_group_id) throws UoWException {
         this.hotelier_hotel_group_id = hotelier_hotel_group_id;

@@ -254,4 +254,7 @@ public class Auth0Adapter {
         return -1;
     }
 
+    public User getUser() {
+        return user;
+    }
 }

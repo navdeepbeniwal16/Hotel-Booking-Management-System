@@ -25,10 +25,8 @@ public class HotelgroupsController extends FrontCommand {
             case HttpMethod.POST:
                 asAdmin(this::handlePost);
                 return;
-            case HttpMethod.PUT:
-            case HttpMethod.DELETE:
             default:
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, request.getRequestURI());
+                responseHelper.unimplemented(request.getMethod() + " /hotelgroups");
         }
     }
 

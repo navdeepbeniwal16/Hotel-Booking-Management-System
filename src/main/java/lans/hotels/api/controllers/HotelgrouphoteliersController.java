@@ -28,6 +28,8 @@ public class HotelgrouphoteliersController extends FrontCommand {
             case HttpMethod.DELETE:
                 asAdmin(this::handleDelete);
                 return;
+            default:
+                responseHelper.unimplemented(request.getMethod() + " /hotelgrouphoteliers");
         }
     }
 

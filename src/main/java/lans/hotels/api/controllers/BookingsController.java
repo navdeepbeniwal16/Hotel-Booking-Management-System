@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
 
@@ -26,7 +25,7 @@ public class BookingsController extends FrontCommand {
             case HttpMethod.GET:
             case HttpMethod.POST:
                 if (requestHelper.body().has("booking")) {
-                    auth.withGuard(this::createNewBookingGuard, this::handleCreateNewBooking);
+                    handleCreateNewBooking();
                     break;
                 }
             {
@@ -198,28 +197,38 @@ public class BookingsController extends FrontCommand {
                 }
 
                 break;
-            case HttpMethod.DELETE:
-                break;
+            default:
+                responseHelper.unimplemented(request.getMethod() + " /bookings");
+        }
+    }
+
+    private void handleCreateNewBooking() {
+        try {
+            auth.withGuard(this::createNewBookingGuard, this::createNewBooking);
+        } catch (Exception e) {
+            responseHelper.internalServerError();
         }
     }
 
     private Boolean createNewBookingGuard() {
-        Integer authId = -1;
-        String requestId = auth.isCustomer() ? "client_id" : auth.isCustomer() ? "hotelier_id" : "";
+        String requestId = auth.isCustomer() ? "client_id" : auth.isCustomer() ? "hotelier_id" : "invalid_user_type";
+        Integer authId = -99;
         if (requestHelper.body().has(requestId)) {
             authId = (Integer) requestHelper.body().get(requestId);
         }
-        return authId.equals(auth.getId());
+        boolean authCheck = Boolean.FALSE;
+        if (auth.isCustomer()) {
+            authCheck = authId.equals(auth.getId());
+        } else if (auth.isHotelier()) {
+            authCheck = authId.equals(auth.getUser().getHotelierHotelGroupID());
+        }
+        return authCheck;
     }
 
-    private Void handleCreateNewBooking() {
-        try {
-            useCase = new CreateBooking(dataSource, requestHelper.body().getJSONObject("booking"));
-            useCase.execute();
-            responseHelper.respond(useCase.getResult(), HttpServletResponse.SC_OK);
-        } catch (Exception e) {
-            responseHelper.error(e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
-        }
+    private Void createNewBooking() {
+        useCase = new CreateBooking(dataSource, requestHelper.body().getJSONObject("booking"));
+        useCase.execute();
+        responseHelper.respond(useCase.getResult(), HttpServletResponse.SC_OK);
         return null;
     }
 }

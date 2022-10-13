@@ -44,14 +44,9 @@ public class RoomBookingsController extends FrontCommand {
                         }
                     }
                 }
-
             break;
-            case HttpMethod.PUT:
-                break;
-            case HttpMethod.DELETE:
-                break;
+            default:
+                responseHelper.unimplemented(request.getMethod() + " /roombookings");
         }
-
-        return;
     }
 }

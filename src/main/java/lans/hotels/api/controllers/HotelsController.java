@@ -30,9 +30,8 @@ public class HotelsController extends FrontCommand {
             case HttpMethod.PUT:
                 asAdmin(this::handlePut);
                 return;
-            case HttpMethod.DELETE:
             default:
-                responseHelper.error("invalid request", HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.unimplemented(request.getMethod() + " /users");
         }
     }
 
