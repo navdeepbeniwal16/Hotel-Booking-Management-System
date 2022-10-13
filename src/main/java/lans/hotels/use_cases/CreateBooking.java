@@ -17,9 +17,11 @@ import java.util.HashMap;
 public class CreateBooking extends UseCase {
     JSONObject bookingJson;
     Booking booking;
-    public CreateBooking(IDataSource dataSource, JSONObject bookingJson) {
+    Integer customer_id;
+    public CreateBooking(IDataSource dataSource, JSONObject bookingJson, Integer customer_id) {
         super(dataSource);
         this.bookingJson = bookingJson;
+        this.customer_id = customer_id;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class CreateBooking extends UseCase {
         System.out.println("createBookingFromJson:\t" + bookingJson);
         Booking booking;
         try {
-            Integer customerId = (Integer) bookingJson.get("customer_id");
+            Integer customerId = customer_id;
             Integer hotelId = (Integer) bookingJson.get("hotel_id");
             DateRange dateRange = parseDateRange((String) bookingJson.get("start_date"), (String) bookingJson.get("end_date"));
             HashMap<Integer, RoomBooking> roomBookings = parseRoomBookings(bookingJson.getJSONArray("rooms"));

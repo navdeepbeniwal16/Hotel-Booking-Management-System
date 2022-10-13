@@ -212,21 +212,18 @@ public class BookingsController extends FrontCommand {
     }
 
     private Boolean createNewBookingGuard() {
-        Integer customerId = (Integer) requestHelper.body("booking", "customer_id");
         Integer hotelId = (Integer) requestHelper.body("booking", "hotel_id");
         boolean authCheck = Boolean.FALSE;
-        if (auth.isCustomer()) {
-            authCheck = customerId.equals(auth.getId());
-        } else if (auth.isHotelier()) {
+        if (auth.isHotelier()) {
             authCheck = hotelId.equals(auth.getUser().getHotelierHotelGroupID());
         }
-        System.out.println("New booking: " + customerId + " room at " + hotelId + " | authorized=" + authCheck);
+        else return true;
         return authCheck;
     }
 
     private Void createNewBooking() {
 
-        useCase = new CreateBooking(dataSource, requestHelper.body("booking"));
+        useCase = new CreateBooking(dataSource, requestHelper.body("booking"), auth.getId());
         useCase.execute();
         responseHelper.respond(useCase.getResult(), HttpServletResponse.SC_OK);
         return null;

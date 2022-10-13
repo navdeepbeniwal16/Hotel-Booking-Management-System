@@ -171,8 +171,9 @@ BEGIN
     JOIN booking AS b
     ON rb.booking_id = b.id
     WHERE rb.room_id = $1
-    AND daterange(b.start_date, b.end_date, '[]') @> (SELECT start_date FROM check_booking)
-    AND daterange(b.start_date, b.end_date, '[]') @> (SELECT end_date FROM check_booking)
+    AND daterange(b.start_date, b.end_date, '[)') @> (SELECT start_date FROM check_booking)
+    AND daterange(b.start_date, b.end_date, '(]') @> (SELECT end_date FROM check_booking)
+    AND rb.is_active = TRUE
         );
 END
 $$
