@@ -7,10 +7,11 @@ import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.room.Room;
 
 public class RoomBooking extends DomainValueObject {
-    private Integer roomId;
-    private Boolean isActive;
-    private String mainGuest;
-    private Integer numOfGuests;
+    Integer roomId;
+    Boolean isActive;
+    String mainGuest;
+    Integer numOfGuests;
+    Integer version;
 
     public RoomBooking(IDataSource dataSource) throws UoWException {
         super(dataSource);
@@ -38,12 +39,14 @@ public class RoomBooking extends DomainValueObject {
                        Integer roomId,
                        Boolean isActive,
                        String mainGuest,
-                       Integer numOfGuests) throws UoWException {
+                       Integer numOfGuests,
+                       Integer version) throws UoWException {
         super(id, dataSource);
         this.roomId = roomId;
         this.isActive = isActive;
         this.mainGuest = mainGuest;
         this.numOfGuests = numOfGuests;
+        this.version = version;
     }
 
     public Integer getRoomId() {
@@ -79,6 +82,15 @@ public class RoomBooking extends DomainValueObject {
 
     public void setNumOfGuests(Integer numOfGuests) throws UoWException {
         this.numOfGuests = numOfGuests;
+        markDirty();
+    }
+
+    public int getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(Integer version) throws UoWException {
+        this.version = version;
         markDirty();
     }
 

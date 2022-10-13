@@ -18,6 +18,7 @@ public class Booking extends ReferenceObject {
     Boolean is_active;
     String hotel_name;
     String customer_name;
+    Integer version;
     HashMap<Integer, RoomBooking> roomBookings = new HashMap<>();
 
     public Booking(IDataSource dataSource) throws UoWException {
@@ -67,7 +68,8 @@ public class Booking extends ReferenceObject {
                   DateRange date_range,
                   Boolean is_active,
                   String hotel_name,
-                  String customer_name) throws UoWException {
+                  String customer_name,
+                  Integer version) throws UoWException {
        super(id, dataSource);
        this.hotel_id = hotel_id;
        this.customer_id = customer_id;
@@ -75,6 +77,7 @@ public class Booking extends ReferenceObject {
        this.is_active = is_active;
        this.hotel_name = hotel_name;
        this.customer_name = customer_name;
+       this.version = version;
        markClean();
    }
 
@@ -133,6 +136,15 @@ public class Booking extends ReferenceObject {
 
     public void setCustomerName(String customer_name) throws UoWException {
         this.customer_name = customer_name;
+        markDirty();
+    }
+
+    public int getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(Integer version) throws UoWException {
+        this.version = version;
         markDirty();
     }
 

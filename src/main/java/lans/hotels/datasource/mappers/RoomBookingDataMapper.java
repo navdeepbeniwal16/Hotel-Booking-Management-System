@@ -2,10 +2,12 @@ package lans.hotels.datasource.mappers;
 
 import lans.hotels.datasource.search_criteria.AbstractSearchCriteria;
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.datasource.search_criteria.RoomBookingSearchCriteria;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.booking.RoomBooking;
+import lans.hotels.domain.hotel.Hotel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,44 +38,67 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
     }
 
     @Override
-    public RoomBooking update(AbstractDomainObject domainObject) {
+    public RoomBooking update(AbstractDomainObject domainObject) throws Exception {
         RoomBooking roomBooking = (RoomBooking) domainObject;
-        String updateStatement = "UPDATE room_booking SET is_active = " + roomBooking.getActive()  +  ", no_of_guests = " + roomBooking.getNumOfGuests() + " WHERE id = " + roomBooking.getId() + ";";
+        PreparedStatement updateStatement = connection.prepareStatement(
+                "UPDATE room_booking SET is_active = ?, version = ? WHERE id = ? AND version = ? ");
+        //"UPDATE room_booking SET is_active = " + roomBooking.getActive()  +  ", " +
+        //                        "no_of_guests = " + roomBooking.getNumOfGuests() + " WHERE id = " + roomBooking.getId() + ";");
 
-        System.out.println("UPDATE ROOM BOOKING QUERY : ");
-        System.out.println(updateStatement);
+        int version = roomBooking.getVersion();
+        int new_version = version + 1;
 
-        try (PreparedStatement statement = connection.prepareStatement(updateStatement)) {
-            statement.executeUpdate();
-            System.out.println("RoomBookingMapper : Booking with id " + roomBooking.getId() + " updated in DataMapper...");
+        updateStatement.setBoolean(1,roomBooking.getActive());
+        updateStatement.setInt(2,new_version);
+        updateStatement.setInt(3,roomBooking.getId());
+        updateStatement.setInt(4,version);
+        System.out.println(updateStatement.toString());
 
-            BookingsSearchCriteria criteria = new BookingsSearchCriteria();
-            criteria.setBookingId(roomBooking.getId());
-            return null;
-        } catch (Exception e) {
-            System.out.println("Exception occurred at RoomBookingDataMapper:update() execution");
-            e.printStackTrace();
-        }
+        int row_count = updateStatement.executeUpdate();
 
+        if(row_count==0)
+            System.out.println("Concurrency issue");
+        else
+            System.out.println("Room Booking updated successfully");
         return null;
     }
 
     @Override
     public boolean delete(Integer id) {
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(
+                    "DELETE FROM room_booking WHERE id = ? returning * ");
+            statement.setInt(1,id);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next())
+            {
+                return true;
+            }
+            else
+                try {
+                    throw new Exception("Delete failed");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public ArrayList<RoomBooking> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         RoomBookingSearchCriteria roomBookingSearchCriteria = (RoomBookingSearchCriteria) criteria;
-        String findByCriteriaStatement = "SELECT r.id as id,h.name as hotel_name, start_date, end_date, m.id as room_id, r.is_active, no_of_guests,main_guest\n" +
-                "FROM booking b\n" +
-                "         JOIN ( room_booking r\n" +
+        String findByCriteriaStatement = "SELECT r.id as id,h.name as hotel_name, start_date, end_date, " +
+                "m.id as room_id, r.is_active, no_of_guests,main_guest, r.version AS version " +
+                "FROM booking b " +
+                "         JOIN ( room_booking r " +
                 "    JOIN room m\n" +
-                "    ON r.room_id=m.id)\n" +
-                "              ON b.id = r.booking_id\n" +
-                "         JOIN hotel h ON h.id = b.hotel_id\n" +
-                "         JOIN app_user u ON u.id=b.customer_id\n";
+                "    ON r.room_id=m.id) " +
+                "              ON b.id = r.booking_id " +
+                "         JOIN hotel h ON h.id = b.hotel_id " +
+                "         JOIN app_user u ON u.id=b.customer_id ";
 
         if(roomBookingSearchCriteria.getBookingId()!=null) {
             findByCriteriaStatement += "WHERE b.id ='" + roomBookingSearchCriteria.getBookingId() + "';";
@@ -104,7 +129,15 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
 
     @Override
     protected RoomBooking doLoad(Integer id, ResultSet resultSet) throws Exception {
-        RoomBooking booking = new RoomBooking(id, dataSource,  resultSet.getInt("room_id"), resultSet.getBoolean("is_active"), resultSet.getString("main_guest"), resultSet.getInt("no_of_guests"));
+        RoomBooking booking = new RoomBooking(
+                id,
+                dataSource,
+                resultSet.getInt("room_id"),
+                resultSet.getBoolean("is_active"),
+                resultSet.getString("main_guest"),
+                resultSet.getInt("no_of_guests"),
+                resultSet.getInt("version")
+        );
         return booking;
     }
 

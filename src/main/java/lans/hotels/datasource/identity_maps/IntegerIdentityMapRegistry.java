@@ -4,6 +4,7 @@ import lans.hotels.datasource.facade.IIdentityMap;
 import lans.hotels.domain.AbstractDomainObject;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.booking.Booking;
+import lans.hotels.domain.booking.RoomBooking;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
@@ -19,6 +20,7 @@ public class IntegerIdentityMapRegistry extends AbstractIdentityMapRegistry {
         newRegistry.add(new HotelMap(new HashMap<>()), Hotel.class);
         newRegistry.add(new UserMap(new HashMap<>()), User.class);
         newRegistry.add(new BookingMap(new HashMap<>()), Booking.class);
+        newRegistry.add(new RoomBookingMap(new HashMap<>()), RoomBooking.class);
         newRegistry.add(new RoomMap(new HashMap<>()), Room.class);
         newRegistry.add(new HotelGroupMap(new HashMap<>()), HotelGroup.class);
         newRegistry.add(new HotelGroupHotelierMap(new HashMap<>()), HotelGroupHotelier.class);
