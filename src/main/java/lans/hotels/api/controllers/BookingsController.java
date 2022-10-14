@@ -171,23 +171,6 @@ public class BookingsController extends FrontCommand {
                     if(bookingJsonBody.has("cancel")) {
                         handleCancelBooking(booking);
                     }
-//                    else if(bookingJsonBody.has("room_bookings") && bookingJsonBody.getJSONArray("room_bookings").length() > 0) {
-//                        JSONArray roomBookingsArray = bookingJsonBody.getJSONArray("room_bookings");
-//                        for(int rbIndex=0; rbIndex < roomBookingsArray.length(); rbIndex++) {
-//                            JSONObject rbObject = roomBookingsArray.getJSONObject(rbIndex);
-//                            HashMap<Integer, RoomBooking> rBookings = booking.getRoomBookings();
-//                            for(Object rbKey: rBookings.keySet()) {
-//                                RoomBooking rBooking = rBookings.get(rbKey);
-//
-//                                System.out.println("Reaching here..."); // TODO: TBR
-//                                if(rbObject.has("id") && rbObject.getInt("id") == rBooking.getId()) {
-//                                    if(rbObject.has("no_of_guests") && rbObject.getInt("no_of_guests") != rBooking.getNumOfGuests()) {
-//                                        rBooking.setNumOfGuests(rbObject.getInt("no_of_guests"));
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
                     else if(bookingJsonBody.has("start_date") && bookingJsonBody.has("end_date")) {
                         handleDateChange(bookingJsonBody,booking);
                         System.out.println("Check point 1");

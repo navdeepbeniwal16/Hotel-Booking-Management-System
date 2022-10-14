@@ -50,6 +50,7 @@ public class ViewRoomBookingsForBooking extends UseCase {
                     roomBookingJson.put("room_id", roomBooking.getRoomId());
                     roomBookingJson.put("main_guest", roomBooking.getMainGuest());
                     roomBookingJson.put("number_of_guests", roomBooking.getNumOfGuests());
+                    roomBookingJson.put("is_active",roomBooking.getActive());
                     results.put(roomBookingJson);
                 }
             }

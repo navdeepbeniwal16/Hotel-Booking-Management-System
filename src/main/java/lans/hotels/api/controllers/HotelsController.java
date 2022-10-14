@@ -25,7 +25,11 @@ public class HotelsController extends FrontCommand {
                 handleGet();
                 return;
             case HttpMethod.POST:
-                asCustomerOrHotelier(this::handlePost);
+                try {
+                    handlePost();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 return;
             case HttpMethod.PUT:
                 asAdmin(this::handlePut);
@@ -68,7 +72,7 @@ public class HotelsController extends FrontCommand {
         return null;
     }
 
-    public Void handlePost() throws Exception {
+    private void handlePost() throws Exception {
         if (requestHelper.body().has("search")) {
             JSONObject searchQueryBody = requestHelper.body().getJSONObject("search");
             handleSearchQuery(searchQueryBody);
@@ -78,9 +82,7 @@ public class HotelsController extends FrontCommand {
         } else {
             System.err.println(requestHelper.methodAndURI());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
-            return null;
         }
-        return null;
     }
 
     public void handleSearchQuery(JSONObject searchQueryBody) throws Exception {
@@ -97,6 +99,11 @@ public class HotelsController extends FrontCommand {
             }
         }
         else if(searchQueryBody.has("hotels")) {
+            if(!auth.isHotelier())
+            {
+                responseHelper.unauthorized();
+                return;
+            }
             Integer hotel_group_id = auth.getUser().getHotelierHotelGroupID();
             System.out.println("user hotel group id : "+auth.getUser().getHotelierHotelGroupID());
 

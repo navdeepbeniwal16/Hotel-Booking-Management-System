@@ -173,6 +173,7 @@ BEGIN
     WHERE rb.room_id = $1
     AND daterange(b.start_date, b.end_date, '[)') @> (SELECT start_date FROM check_booking)
     AND daterange(b.start_date, b.end_date, '(]') @> (SELECT end_date FROM check_booking)
+    AND b.id != $2
     AND rb.is_active = TRUE
         );
 END

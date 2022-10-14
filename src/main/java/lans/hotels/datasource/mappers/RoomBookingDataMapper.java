@@ -41,7 +41,8 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
     public RoomBooking update(AbstractDomainObject domainObject) throws Exception {
         RoomBooking roomBooking = (RoomBooking) domainObject;
         PreparedStatement updateStatement = connection.prepareStatement(
-                "UPDATE room_booking SET is_active = ?, version = ? WHERE id = ? AND version = ? ");
+                "UPDATE room_booking SET is_active = ?, no_of_guests = ? , version = ? " +
+                        "WHERE id = ? AND version = ? ");
         //"UPDATE room_booking SET is_active = " + roomBooking.getActive()  +  ", " +
         //                        "no_of_guests = " + roomBooking.getNumOfGuests() + " WHERE id = " + roomBooking.getId() + ";");
 
@@ -49,9 +50,10 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
         int new_version = version + 1;
 
         updateStatement.setBoolean(1,roomBooking.getActive());
-        updateStatement.setInt(2,new_version);
-        updateStatement.setInt(3,roomBooking.getId());
-        updateStatement.setInt(4,version);
+        updateStatement.setInt(2,roomBooking.getNumOfGuests());
+        updateStatement.setInt(3,new_version);
+        updateStatement.setInt(4,roomBooking.getId());
+        updateStatement.setInt(5,version);
         System.out.println(updateStatement.toString());
 
         int row_count = updateStatement.executeUpdate();

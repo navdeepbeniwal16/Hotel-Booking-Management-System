@@ -1,26 +1,30 @@
 package lans.hotels.use_cases;
+
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
 import org.json.JSONObject;
+
 import java.util.HashMap;
 
-public class CancelBooking extends UseCase {
+public class ChangeNumberOfGuests extends UseCase {
 
     Booking booking;
+    Integer rb_id;
+    Integer no_of_guests;
 
-    public CancelBooking(IDataSource dataSource, Booking booking) {
+    public ChangeNumberOfGuests(IDataSource dataSource, Booking booking, Integer rb_id, Integer no_of_guests) {
         super(dataSource);
         this.booking = booking;
+        this.rb_id = rb_id;
+        this.no_of_guests = no_of_guests;
     }
 
     @Override
     public void doExecute() throws Exception {
-        HashMap<Integer, RoomBooking> roomBookingHashMap = booking.getRoomBookings();
-        for (Object roomBookingKey : roomBookingHashMap.keySet()) {
-            roomBookingHashMap.get(roomBookingKey).setActive(false);
-        }
-        booking.setActive(false);
+        HashMap<Integer, RoomBooking> rBookings = booking.getRoomBookings();
+        RoomBooking rBooking = rBookings.get(rb_id);
+        rBooking.setNumOfGuests(no_of_guests);
         succeed();
     }
 
