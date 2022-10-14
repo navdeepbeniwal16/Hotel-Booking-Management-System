@@ -72,16 +72,22 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
 
     @Override
     public Booking update(AbstractDomainObject domainObject) throws Exception {
+        System.out.println("Check point 6");
         Booking booking = (Booking) domainObject;
+
         PreparedStatement updateStatement = connection.prepareStatement(
-                "UPDATE booking SET is_active = ?, version = ? WHERE id = ? AND version = ? ");
+                "UPDATE booking SET version = ?, is_active = ?, start_date = ?, end_date = ? " +
+                        "WHERE id = ? AND version = ? ");
 
         Integer version = booking.getVersion();
         int new_version = version + 1;
-        updateStatement.setBoolean(1, booking.getActive());
-        updateStatement.setInt(2,new_version);
-        updateStatement.setInt(3,booking.getId());
-        updateStatement.setInt(4,version);
+        updateStatement.setInt(1,new_version);
+        updateStatement.setBoolean(2, booking.getActive());
+        updateStatement.setDate(3, booking.getDateRange().getFrom());
+        updateStatement.setDate(4, booking.getDateRange().getTo());
+        updateStatement.setInt(5,booking.getId());
+        updateStatement.setInt(6,version);
+
 
 //        int criteriasCount = 0;
 //        if(booking.getActive() != null) {
