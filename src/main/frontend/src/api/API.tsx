@@ -36,6 +36,7 @@ class LANS_API {
   private readonly hghEndpoint = this.baseURL + 'hotelgrouphoteliers';
   private readonly roomsEndpoint = this.baseURL + 'rooms';
   private readonly bookingsEndpoint = this.baseURL + 'bookings';
+  private isRegistered = false;
 
   constructor(accessToken = '') {
     this.accessToken = accessToken;
@@ -47,11 +48,31 @@ class LANS_API {
         ...this.headers,
         Authorization: `Bearer ${this.accessToken}`,
       };
-      this.getAllHotels();
+      this.triggerRegistration()
+        .then((success: boolean) => {
+          if (success) console.log('user registered in backend');
+          this.isRegistered = success;
+        })
+        .catch((e) => {
+          if (this.isRegistered) console.log('API registration:', e);
+        });
     }
   }
 
+  public compareAccessToken(other: string): boolean {
+    return this.accessToken === other;
+  }
+
   // Users
+  public async triggerRegistration(): Promise<boolean> {
+    const res = await fetch(this.usersEndpoint, {
+      headers: this.headers,
+    });
+    const data = await res.json();
+    const success: boolean = data.result.success;
+    return success;
+  }
+
   public async getAllUsers(): Promise<UserDataType[]> {
     const res = await fetch(this.usersEndpoint, {
       headers: this.headers,

@@ -28,9 +28,12 @@ export type UserMetadata = {
   roles: RoleT[];
 };
 
+const defaultRoles: RoleT[] = [];
+const defaultToken = '';
+
 const defaultUserMetadata: UserMetadata = {
-  apiAccessToken: '',
-  roles: [],
+  apiAccessToken: defaultToken,
+  roles: defaultRoles,
 };
 
 const defaultGlobalContext = {
@@ -83,18 +86,24 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         }
       }
 
-      if (process.env.REACT_APP_ENV === 'dev') {
+      if (isAuthenticated && process.env.REACT_APP_ENV === 'dev') {
         console.log('Development mode');
-        console.log('JWT:\n', apiAccessToken);
+        console.log(apiAccessToken);
       }
 
       const decodedToken: JwtT = jwtDecode(apiAccessToken);
+      let roles: RoleT[] = defaultRoles;
+      if (decodedToken['lans_hotels/roles']) {
+        roles = decodedToken['lans_hotels/roles'];
+      }
 
-      setBackend(new LANS_API(apiAccessToken));
       setUserMetadata((previousMetadata) => {
+        if (!backend.compareAccessToken(apiAccessToken)) {
+          setBackend(new LANS_API(apiAccessToken));
+        }
         const newMetadata = {
           ...previousMetadata,
-          roles: decodedToken['lans_hotels/roles'] || [],
+          roles,
           apiAccessToken,
         };
         return newMetadata;

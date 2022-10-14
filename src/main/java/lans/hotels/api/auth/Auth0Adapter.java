@@ -38,6 +38,9 @@ public class Auth0Adapter {
     Algorithm algorithm;
     JWTVerifier verifier;
     boolean authenticated;
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
     JSONObject payload;
     String email;
     ArrayList<String> roles;

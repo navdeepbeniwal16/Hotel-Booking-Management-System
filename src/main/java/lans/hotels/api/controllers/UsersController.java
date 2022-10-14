@@ -22,14 +22,16 @@ public class UsersController extends FrontCommand {
             case HttpMethod.POST:
                 if (requestHelper.body().has("search")) {
                     asAdmin(this::handleSearch);
-                    return;
                 } else if (requestHelper.body().has("hotelier")) {
                     asAdmin(this::handlePostHotelier);
-                    return;
                 } else if (requestHelper.body().has("customer")) {
                     asCustomer(this::handlePostCustomer);
-                    return;
+                } else if (requestHelper.body().has("new")) {
+                    JSONObject res = new JSONObject();
+                    res.put("success", auth.isAuthenticated());
+                    responseHelper.respondOK(res);
                 }
+                return;
             default:
                 responseHelper.unimplemented(request.getMethod() + " /users");
         }
