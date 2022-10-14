@@ -48,29 +48,28 @@ class LANS_API {
         ...this.headers,
         Authorization: `Bearer ${this.accessToken}`,
       };
-      this.triggerRegistration()
-        .then((success: boolean) => {
-          if (success) console.log('user registered in backend');
-          this.isRegistered = success;
-        })
-        .catch((e) => {
-          if (this.isRegistered) console.log('API registration:', e);
-        });
     }
   }
 
-  public compareAccessToken(other: string): boolean {
-    return this.accessToken === other;
+  public sameToken(other: string): boolean {
+    return this.accessToken == other;
   }
 
   // Users
   public async triggerRegistration(): Promise<boolean> {
     const res = await fetch(this.usersEndpoint, {
+      method: methods.POST,
       headers: this.headers,
+      body: JSON.stringify({
+        new: true,
+      }),
     });
     const data = await res.json();
-    const success: boolean = data.result.success;
-    return success;
+    if (res.status == 200) {
+      const { success } = data;
+      return success;
+    }
+    return false;
   }
 
   public async getAllUsers(): Promise<UserDataType[]> {

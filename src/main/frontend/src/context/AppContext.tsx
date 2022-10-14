@@ -80,36 +80,46 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         apiAccessToken = await getAccessTokenSilently({
           audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
         });
+        if (isAuthenticated && process.env.REACT_APP_ENV === 'dev') {
+          console.log('Development mode');
+          console.log(apiAccessToken);
+        }
+        let roles: RoleT[] = defaultRoles;
+        if (apiAccessToken !== '') {
+          const decodedToken: JwtT = jwtDecode(apiAccessToken);
+          if (decodedToken['lans_hotels/roles']) {
+            roles = decodedToken['lans_hotels/roles'];
+          }
+        }
+
+        if (isAuthenticated) {
+          console.log('authenticated');
+          const newBackendConnection = new LANS_API(apiAccessToken);
+          const success = await newBackendConnection.triggerRegistration();
+          if (success) {
+            console.log('user registered');
+            setBackend(newBackendConnection);
+          } else {
+            console.log('user registration failed');
+            setBackend(new LANS_API(''));
+          }
+        }
+
+        setUserMetadata((previousMetadata) => {
+          const newMetadata = {
+            ...previousMetadata,
+            roles,
+            apiAccessToken,
+          };
+          return newMetadata;
+        });
       } catch (e: any) {
         if (e.error !== 'consent_required') {
-          // console.log(e.message);
+          console.log(e.message);
         }
       }
-
-      if (isAuthenticated && process.env.REACT_APP_ENV === 'dev') {
-        console.log('Development mode');
-        console.log(apiAccessToken);
-      }
-
-      const decodedToken: JwtT = jwtDecode(apiAccessToken);
-      let roles: RoleT[] = defaultRoles;
-      if (decodedToken['lans_hotels/roles']) {
-        roles = decodedToken['lans_hotels/roles'];
-      }
-
-      setUserMetadata((previousMetadata) => {
-        if (!backend.compareAccessToken(apiAccessToken)) {
-          setBackend(new LANS_API(apiAccessToken));
-        }
-        const newMetadata = {
-          ...previousMetadata,
-          roles,
-          apiAccessToken,
-        };
-        return newMetadata;
-      });
     };
-    if (isAuthenticated) getUserMetadata();
+    getUserMetadata();
     return () => {
       setUserMetadata(defaultUserMetadata);
     };
