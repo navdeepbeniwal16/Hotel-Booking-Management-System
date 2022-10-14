@@ -6,7 +6,7 @@ import Room from '../types/RoomType';
 
 type Headers = {
   'Content-Type': string;
-  Authorization: string;
+  Authorization?: string;
 };
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -41,10 +41,14 @@ class LANS_API {
     this.accessToken = accessToken;
     this.headers = {
       'Content-Type': this.contentType,
-      Authorization: `Bearer ${this.accessToken}`,
     };
-
-    this.usersEndpoint = this.baseURL + 'users';
+    if (accessToken !== '') {
+      this.headers = {
+        ...this.headers,
+        Authorization: `Bearer ${this.accessToken}`,
+      };
+      this.getAllHotels();
+    }
   }
 
   // Users
@@ -146,6 +150,22 @@ class LANS_API {
     const data = await res.json();
     const hotelGroups: Array<HotelGroup> = data.result.hotel_groups;
     return hotelGroups;
+  }
+
+  public async createGroup(group: HotelGroup): Promise<boolean> {
+    if (group.id != -1) return false;
+    const res = await fetch(this.hghEndpoint, {
+      method: methods.POST,
+      headers: this.headers,
+      body: JSON.stringify({
+        hotel_group: {
+          ...group,
+        },
+      }),
+    });
+    const data = await res.json();
+    const success: boolean = data.success;
+    return success;
   }
 
   // Hotels
