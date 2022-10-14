@@ -114,7 +114,9 @@ public class Auth0Adapter {
     private void processRequestAuth() {
         rawAuth = request.getHeader("Authorization");
         try {
-            authenticateWithHeading();
+            if (rawAuth!= null) {
+                authenticateWithHeading();
+            }
         } catch (Exception e) {
             // Override any method that may have set auth to true
             e.printStackTrace();
@@ -164,8 +166,8 @@ public class Auth0Adapter {
     }
 
     private String rawToken() {
-        String[] parts = rawAuth.split(" ");
         try {
+            String[] parts = rawAuth.split(" ");
             if (parts.length == 2) {
                 return rawAuth.split(" ")[1];
             }
@@ -193,7 +195,8 @@ public class Auth0Adapter {
     }
 
     private boolean validHeading() {
-        if (rawAuth==null || rawAuth.equals("")) {
+        String[] parts = rawAuth.split(" ");
+        if (rawAuth==null || rawAuth.equals("") || parts.length != 2) {
             authenticated = false;
             System.out.println("rawAuth=" + rawAuth);
 //            throw new Exception("'Authorization' not on request");

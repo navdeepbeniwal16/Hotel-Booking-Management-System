@@ -1,36 +1,29 @@
-import React, { useState, ChangeEvent, useContext } from 'react';
+import React, { useState, useContext, ReactNode } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import HotelGroup, { defaultHotelGroup } from '../../types/HotelGroup';
-import Hotelier from '../../types/HotelierType';
 import { map, find } from 'lodash';
 import AppContext from '../../context/AppContext';
+import { ModalHeader } from 'react-bootstrap';
 
 interface GroupModalProps {
   show: boolean;
   handleClose: () => void;
-  hotelier: Hotelier;
-  groups: HotelGroup[];
-  addHotelier: (hotelier: Hotelier, group: HotelGroup) => void;
+  onCreateGroup: (group: HotelGroup) => void;
 }
-function GroupModal({
-  show,
-  handleClose,
-  hotelier,
-  groups,
-  addHotelier,
-}: GroupModalProps) {
+function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
   const { backend } = useContext(AppContext.GlobalContext);
-  const [selectedGroup, selectGroup] = useState(defaultHotelGroup);
+  const [group, setGroup] = useState(defaultHotelGroup);
   const [waiting, setWaiting] = useState(false);
+  const [phone, setPhone] = useState('');
 
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    backend.addToGroup(hotelier, selectedGroup).then((success: boolean) => {
+    backend.createGroup(group).then((success: boolean) => {
       if (success) {
-        addHotelier(hotelier, selectedGroup);
+        onCreateGroup(group);
       }
       setWaiting(false);
       handleClose();
@@ -38,28 +31,47 @@ function GroupModal({
     setWaiting(true);
   };
 
-  const renderSelect = () => {
-    return (
-      <Form.Group className='mb-3' controlId='groupForm.Select'>
-        <Form.Label>Hotel groups</Form.Label>
-        <Form.Select
-          onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-            const n: number = Number.parseInt(e.target.value);
-            if (Number.isInteger(n)) {
-              const group = find(groups, (group: HotelGroup) => group.id == n);
-              group && selectGroup(group);
-            }
-          }}
-          aria-label='Hotel groups dropdown'
-        >
-          <option>Select a hotel group</option>
+  const onPhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const { value } = event.target;
+    const phoneRegex = /^\+?\d{0,11}$/g;
+    const update = `${value}`;
+    const isValid = phoneRegex.test(update);
+    if (isValid) {
+      setPhone(update);
+    }
+  };
 
-          {map(groups, (group: HotelGroup) => (
-            <option key={group.id} value={group.id}>
-              {group.name}
-            </option>
-          ))}
-        </Form.Select>
+  const renderNameField = (): ReactNode => {
+    return (
+      <Form.Group controlId='groupName'>
+        <Form.Label>Name</Form.Label>
+        <Form.Control
+          required
+          type='text'
+          placeholder='Enter name'
+          aria-placeholder='hotel name'
+        />
+        <Form.Text className='text-muted'>Name of hotel group</Form.Text>
+      </Form.Group>
+    );
+  };
+
+  const renderPhoneField = (): ReactNode => {
+    return (
+      <Form.Group controlId='groupName'>
+        <Form.Label>Phone</Form.Label>
+        <Form.Control
+          onChange={onPhoneChange}
+          required
+          type='text'
+          placeholder='+6103789456'
+          aria-placeholder='+6103789456'
+          value={phone}
+        />
+        <Form.Text className='text-muted'>
+          Contact phone number for hotel
+        </Form.Text>
       </Form.Group>
     );
   };
@@ -69,13 +81,26 @@ function GroupModal({
       <Modal show={show} onHide={handleClose} centered>
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Add hotelier to group</Modal.Title>
+            <Modal.Title>Create a group</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <div>ID: {hotelier.id}</div>
-            <div>Name: {hotelier.name}</div>
-            <div>Email: {hotelier.email}</div>
-            {renderSelect()}
+            {renderNameField()}
+            {renderPhoneField()}
+            <Modal.Dialog>
+              <Modal.Header className='p-3'>Address</Modal.Header>
+              <Form.Group className='p-3' controlId='groupName'>
+                <Form.Label>Line 1</Form.Label>
+                <Form.Control
+                  required
+                  type='text'
+                  placeholder='Enter name'
+                  aria-placeholder='hotel name'
+                />
+                <Form.Text className='text-muted'>
+                  Name of hotel group
+                </Form.Text>
+              </Form.Group>
+            </Modal.Dialog>
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -86,7 +111,7 @@ function GroupModal({
               Close
             </Button>
             <Button disabled={waiting} type='submit' variant='primary'>
-              {waiting ? <Spinner animation='border' /> : 'Save Changes'}
+              {waiting ? <Spinner animation='border' /> : 'Create'}
             </Button>
           </Modal.Footer>
         </Form>

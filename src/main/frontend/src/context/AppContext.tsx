@@ -48,8 +48,7 @@ interface IGlobalProvider {
 }
 
 const GlobalProvider = ({ children }: IGlobalProvider) => {
-  const { isAuthenticated, getAccessTokenSilently, getAccessTokenWithPopup } =
-    useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [username, setUsername] = useState('');
   const [hotel, setHotel] = useState(defaultHotel);
   const [room, setRoom] = useState(defaultRoom);
@@ -73,22 +72,14 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
 
   useEffect(() => {
     const getUserMetadata = async () => {
-      let apiAccessToken: string;
-      let lans_api: LANS_API;
+      let apiAccessToken = '';
       try {
         apiAccessToken = await getAccessTokenSilently({
           audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
         });
-        lans_api = new LANS_API(apiAccessToken);
       } catch (e: any) {
-        if (e.error === 'consent_required') {
-          apiAccessToken = await getAccessTokenWithPopup({
-            audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
-          });
-          lans_api = new LANS_API(apiAccessToken);
-        } else {
-          console.log(e.message);
-          throw e;
+        if (e.error !== 'consent_required') {
+          // console.log(e.message);
         }
       }
 
@@ -99,7 +90,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
 
       const decodedToken: JwtT = jwtDecode(apiAccessToken);
 
-      setBackend(lans_api);
+      setBackend(new LANS_API(apiAccessToken));
       setUserMetadata((previousMetadata) => {
         const newMetadata = {
           ...previousMetadata,
@@ -109,12 +100,11 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         return newMetadata;
       });
     };
-
-    getUserMetadata();
+    if (isAuthenticated) getUserMetadata();
     return () => {
       setUserMetadata(defaultUserMetadata);
     };
-  }, [isAuthenticated, getAccessTokenSilently, getAccessTokenWithPopup]);
+  }, [isAuthenticated]);
 
   return (
     <GlobalContext.Provider

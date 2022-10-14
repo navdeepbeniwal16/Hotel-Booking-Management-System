@@ -19,7 +19,7 @@ const MainNavbar = () => {
   useEffect(() => {
     setIsAdmin(userMetadata.roles.includes(Roles.ADMIN));
     setIsHotelier(userMetadata.roles.includes(Roles.HOTELIER));
-  }, [userMetadata]);
+  }, [isAuthenticated]);
 
   return (
     <Navbar bg='dark' variant='dark' expand='lg' className='mb-4'>

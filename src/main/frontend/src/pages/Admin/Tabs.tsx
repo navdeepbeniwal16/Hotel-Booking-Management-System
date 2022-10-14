@@ -27,7 +27,7 @@ const AdminTabs = () => {
     hoteliers: 'Hoteliers',
     hotels: 'Hotels',
   };
-  const { user, isLoading, isAuthenticated } = useAuth0();
+  const { isLoading, isAuthenticated } = useAuth0();
   const {
     backend,
     userMetadata: { apiAccessToken, roles },
@@ -46,8 +46,8 @@ const AdminTabs = () => {
     getUsersOnLoad();
   }, []);
 
-  const loadHotelGroups = async () => {
-    if (!hotelGroups.length) {
+  const loadHotelGroups = async (force = false) => {
+    if (!hotelGroups.length || force) {
       const fetchedHotelGroups = await backend.getHotelGroups();
 
       setHotelGroups(fetchedHotelGroups);
@@ -128,6 +128,10 @@ const AdminTabs = () => {
     );
   };
 
+  const handleCreateGroup = (): void => {
+    loadHotelGroups(true);
+  };
+
   return (
     <>
       {isLoading ? (
@@ -153,11 +157,11 @@ const AdminTabs = () => {
           </Tab>
           <Tab eventKey={tabKeys.hotelGroups} title={tabKeys.hotelGroups}>
             <Row>
-              <Col>Create hotel group</Col>
-            </Row>
-            <Row>
               <Col>
-                <HotelGroupsTable hotel_groups={hotelGroups} />
+                <HotelGroupsTable
+                  hotel_groups={hotelGroups}
+                  refresh={handleCreateGroup}
+                />
               </Col>
             </Row>
           </Tab>
