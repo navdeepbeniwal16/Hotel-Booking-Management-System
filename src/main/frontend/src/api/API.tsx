@@ -229,7 +229,10 @@ class LANS_API {
       }),
     });
     const data = await res.json();
-    const hotels: Array<Hotel> = data.result.hotels;
+    let hotels: Array<Hotel> = [];
+    if (data.result && data.success) {
+      hotels = data.result.hotels;
+    }
     return hotels;
   }
 }
