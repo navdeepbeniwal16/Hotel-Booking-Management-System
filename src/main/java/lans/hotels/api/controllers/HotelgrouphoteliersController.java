@@ -2,7 +2,11 @@ package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.HotelGroupHotelierSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
+import lans.hotels.datasource.search_criteria.UserSearchCriteria;
+import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.hotel_group.HotelGroupHotelier;
+import lans.hotels.domain.user.User;
 import lans.hotels.use_cases.AddHotelierToHotelGroup;
 import lans.hotels.use_cases.RemoveHotelierFromHotelGroup;
 import org.json.JSONObject;
@@ -60,33 +64,35 @@ public class HotelgrouphoteliersController extends FrontCommand {
 
             JSONObject nestedJsonObject = requestHelper.body().getJSONObject("hotel_group_hotelier");
 
-            if (nestedJsonObject.has("hotelier_id"))
+            if (nestedJsonObject.has("hotelier_id")) {
                 hgh_criteria.setHotelierID(nestedJsonObject.getInt("hotelier_id"));
 
-            try {
-                hotel_group_hoteliers = dataSource.findBySearchCriteria(HotelGroupHotelier.class,hgh_criteria);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                try {
+                    hotel_group_hoteliers = dataSource.findBySearchCriteria(HotelGroupHotelier.class, hgh_criteria);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-            if(hotel_group_hoteliers.size()==0)
-            {
-                throw new Exception("Delete failed (no hotel group hotelier with id found)");
-            }
+                if (hotel_group_hoteliers.size() == 0) {
+                    responseHelper.error("DELETE /hotel_group_hoteliers entry does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                }
 
-           hgh = hotel_group_hoteliers.get(0);
-            try {
-                hgh.remove();
-            } catch (UoWException e) {
-                e.printStackTrace();
-            }
+                hgh = hotel_group_hoteliers.get(0);
+                try {
+                    hgh.remove();
+                } catch (UoWException e) {
+                    e.printStackTrace();
+                }
 
-            useCase = new RemoveHotelierFromHotelGroup(dataSource);
-            useCase.execute();
-            statusCode = useCase.succeeded() ?
-                    HttpServletResponse.SC_OK :
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            responseHelper.respond(useCase.getResult(), statusCode);
+                useCase = new RemoveHotelierFromHotelGroup(dataSource);
+                useCase.execute();
+                statusCode = useCase.succeeded() ?
+                        HttpServletResponse.SC_OK :
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                responseHelper.respond(useCase.getResult(), statusCode);
+            }
+            else
+                responseHelper.error("DELETE /hotel_group_hoteliers must include 'hotelier_id'", HttpServletResponse.SC_BAD_REQUEST);
         } else {
             responseHelper.error("DELETE/hotel_group_hoteliers must include 'hotel_group_hotelier'", HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -104,10 +110,45 @@ public class HotelgrouphoteliersController extends FrontCommand {
 
             if(nestedJsonObject.has("hotelier_id"))
                 hotelier_id = nestedJsonObject.getInt("hotelier_id");
+            else {
+                responseHelper.error("POST /hotel_group_hoteliers must include 'hotelier_id'", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
             if(nestedJsonObject.has("hotel_group_id"))
                 hotel_group_id = nestedJsonObject.getInt("hotel_group_id");
+            else {
+                responseHelper.error("POST /hotel_group_hoteliers must include 'hotel_group_id'", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
 
             try {
+
+                ArrayList<User> users = null;
+                UserSearchCriteria u_criteria = new UserSearchCriteria();
+                u_criteria.setId(hotelier_id);
+                try {
+                    users = dataSource.findBySearchCriteria(User.class, u_criteria);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (users.size()==0) {
+                    responseHelper.error("POST /hotelgrouphoteliers user id does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
+                }
+
+                ArrayList<HotelGroup> hotel_groups = null;
+                HotelGroupSearchCriteria hg_criteria = new HotelGroupSearchCriteria();
+                hg_criteria.setHotelGroupID(hotel_group_id);
+                try {
+                    hotel_groups = dataSource.findBySearchCriteria(HotelGroup.class, hg_criteria);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (hotel_groups.size()==0) {
+                    responseHelper.error("POST /hotelgrouphoteliers hotel group id does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
+                }
+
                 hg = new HotelGroupHotelier(dataSource,hotelier_id,hotel_group_id);
             } catch (UoWException e) {
                 e.printStackTrace();
