@@ -32,7 +32,7 @@ class LANS_API {
   private readonly contentType = 'application/json';
   private readonly usersEndpoint = this.baseURL + 'users';
   private readonly hotelsEndpoint = this.baseURL + 'hotels';
-  private readonly hotelGroupsEndpoint = this.baseURL + 'hotelgroups';
+  private readonly groupsEndpoint = this.baseURL + 'hotelgroups';
   private readonly hghEndpoint = this.baseURL + 'hotelgrouphoteliers';
   private readonly roomsEndpoint = this.baseURL + 'rooms';
   private readonly bookingsEndpoint = this.baseURL + 'bookings';
@@ -164,7 +164,7 @@ class LANS_API {
 
   // Hotel groups
   public async getHotelGroups(): Promise<HotelGroup[]> {
-    const res = await fetch(this.hotelGroupsEndpoint, {
+    const res = await fetch(this.groupsEndpoint, {
       headers: this.headers,
     });
     const data = await res.json();
@@ -174,7 +174,7 @@ class LANS_API {
 
   public async createGroup(group: HotelGroup): Promise<boolean> {
     if (group.id != -1) return false;
-    const res = await fetch(this.hghEndpoint, {
+    const res = await fetch(this.groupsEndpoint, {
       method: methods.POST,
       headers: this.headers,
       body: JSON.stringify({

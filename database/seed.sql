@@ -68,7 +68,7 @@ VALUES
     ('Richard','richard@gmail.com',7,3,'+612809238924',98),
     ('Joseph','joseph@gmail.com',8,3,'+611742681943',26),
     ('Admin Levi','levimckenzie93+admin@gmail.com',NULL,1,NULL,NULL),
-    ('Customer Levi','levimckenzie93+0@gmail.com',NULL,3,NULL,NULL)
+    ('Customer Levi','levimckenzie93+0@gmail.com',NULL,3,NULL,NULL),
 ;
 
 INSERT INTO

@@ -4,7 +4,7 @@ type HotelGroup = {
   id: number;
   name?: string;
   phone?: string;
-  address?: Address;
+  address: Address;
 };
 
 export const defaultHotelGroup: HotelGroup = {
