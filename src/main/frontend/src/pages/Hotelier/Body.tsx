@@ -6,16 +6,17 @@ import HotelGroup, {
   defaultHotelGroup,
   makeHotelGroup,
 } from '../../types/HotelGroup';
-import { map } from 'lodash';
-import Hotel, { defaultHotel } from '../../types/HotelType';
+import Hotel from '../../types/HotelType';
 import { Button } from 'react-bootstrap';
+import HotelsList from '../../components/molecules/HotelsList';
 
 interface HotelierBody {
   hotelier: UserDataType;
 }
 const HotelierBody = ({ hotelier }: HotelierBody) => {
   const [group, setGroup] = useState(defaultHotelGroup);
-  const [hotels, setHotels] = useState([defaultHotel]);
+  const noHotels: Array<Hotel> = [];
+  const [hotels, setHotels] = useState(noHotels);
   const { backend } = useContext(AppContext.GlobalContext);
   useEffect(() => {
     const setup = async () => {
@@ -40,7 +41,7 @@ const HotelierBody = ({ hotelier }: HotelierBody) => {
       </div>
       <div>
         <h3>Hotels</h3>
-        <div>
+        <div className='my-2'>
           <Button
             variant='primary'
             onClick={() => console.log('create a new hotel')}
@@ -48,9 +49,7 @@ const HotelierBody = ({ hotelier }: HotelierBody) => {
             Create hotel
           </Button>
         </div>
-        {map(hotels, (hotel: Hotel) => {
-          return <div key={hotel.id}>{hotel.name}</div>;
-        })}
+        <HotelsList hotels={hotels} />
       </div>
     </>
   );
