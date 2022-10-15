@@ -39,13 +39,13 @@ const MainNavbar = () => {
 
             {isHotelier && (
               <Nav.Link onClick={() => navigate('/hotelier')}>
-                Hotelier dashboard
+                Hotel Group
               </Nav.Link>
             )}
 
             {isAdmin && (
               <Nav.Link onClick={() => navigate('/admin')}>
-                Admin dashboard
+                Admin
               </Nav.Link>
             )}
           </Nav>

@@ -22,7 +22,7 @@ const HotelsList = ({ hotels }: HotelListProps) => {
       <Row  xs={1} md={2} className='gy-3 gx-2'>
       {map(hotels, (hotel: Hotel) => {
         return (
-          <Col>
+          <Col key={ hotel.id}>
             <Nav.Link key={`${hotel.id}`}
               as={Link}
               to={`/hotel/${hotel.id}`}

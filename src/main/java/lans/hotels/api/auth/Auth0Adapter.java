@@ -137,8 +137,6 @@ public class Auth0Adapter {
     private void processPayload() throws Exception {
         String decodedPayload = new String(decoder.decode(jwt.getPayload()));
         payload = new JSONObject(decodedPayload);
-        setEmail();
-        setRoles();
         setUser();
     }
 
@@ -152,11 +150,13 @@ public class Auth0Adapter {
     }
 
     private void setUser() throws Exception {
+        setEmail();
+        setRoles();
         if (authenticated) {
             UserSearchCriteria emailCriteria = new UserSearchCriteria();
             emailCriteria.setEmail(email);
             ArrayList<User> users = dataSource.findBySearchCriteria(User.class, emailCriteria);
-            if (users.isEmpty()) {
+            if ( users.isEmpty()) {
                 System.out.println("Creating new user:\n" +
                         "\temail: " + email +
                         "\troles: " + roles.toString());

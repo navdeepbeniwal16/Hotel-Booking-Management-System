@@ -3,6 +3,7 @@ import Hotelier from '../types/HotelierType';
 import UserDataType, { defaultUserData } from '../types/UserDataType';
 import HotelGroup from '../types/HotelGroup';
 import Room from '../types/RoomType';
+import Booking from '../types/BookingType';
 
 type Headers = {
   'Content-Type': string;
@@ -198,7 +199,12 @@ class LANS_API {
       headers: this.headers,
     });
     const data = await res.json();
-    const hotels: Array<Hotel> = data.result.hotels;
+    let hotels: Array<Hotel> = [];
+    if (data.success) {
+      hotels = data.result.hotels;
+    } else {
+      console.log("ERROR getAllHotels:", data.errorMessage);
+    }
     return hotels;
   }
 
@@ -234,6 +240,49 @@ class LANS_API {
       hotels = data.result.hotels;
     }
     return hotels;
+  }
+
+  // Bookings
+  public async getHotelBookings(hotel_id: number): Promise<Booking[]> {
+    const body = JSON.stringify({
+      search: {
+        hotel_id,
+      }
+    });
+    const res = await fetch(this.bookingsEndpoint, {
+      method: methods.POST,
+      headers: this.headers,
+      body,
+    });
+    const data = await res.json();
+    let bookings: Array<Booking> = [];
+    if (res.ok && data.result && data.success && data.result.bookings) {
+      bookings = data.result.bookings;
+    } else {
+      console.log("ERROR getHotelBookings:", data.errorMessage);
+    }
+    return bookings;
+  }
+
+  public async cancelBooking(booking: Booking): Promise<boolean> {
+    const body = JSON.stringify({
+      booking: {
+        id: booking.id,
+        cancel: true
+      }
+    });
+    const res = await fetch(this.bookingsEndpoint, {
+      method: methods.PUT,
+      headers: this.headers,
+      body,
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return data.success;
+    } else {
+      console.log("ERROR cancelBooking:", data.errorMessage);
+    }
+    return false;
   }
 }
 

@@ -125,12 +125,9 @@ public class HotelsController extends FrontCommand {
                     HttpServletResponse.SC_OK :
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
             responseHelper.respond(useCase.getResult(), statusCode);
-            return;
         }
         else
             responseHelper.error("POST /hotels search has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-
-        return;
     }
 
     private void handleHotelQuery(JSONObject body) throws IOException{
