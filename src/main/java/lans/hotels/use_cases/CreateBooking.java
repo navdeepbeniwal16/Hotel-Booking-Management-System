@@ -2,31 +2,32 @@ package lans.hotels.use_cases;
 
 import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
+import lans.hotels.datasource.search_criteria.RoomBookingSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
+import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.room.Room;
 import lans.hotels.domain.utils.DateRange;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.servlet.http.HttpServletResponse;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CreateBooking extends UseCase {
-    JSONObject bookingJson;
-    Booking booking;
-    Integer customer_id;
-    public CreateBooking(IDataSource dataSource, JSONObject bookingJson, Integer customer_id) {
+
+    public CreateBooking(IDataSource dataSource) {
         super(dataSource);
-        this.bookingJson = bookingJson;
-        this.customer_id = customer_id;
     }
 
     @Override
     public void doExecute() throws Exception {
-        booking = createBookingFromJson(bookingJson);
         succeed();
     }
 
@@ -38,11 +39,7 @@ public class CreateBooking extends UseCase {
     private Booking createBookingFromJson(JSONObject bookingJson) {
         Booking booking = null;
         try {
-            Integer customerId = customer_id;
-            Integer hotelId = (Integer) bookingJson.get("hotel_id");
-            DateRange dateRange = parseDateRange((String) bookingJson.get("start_date"), (String) bookingJson.get("end_date"));
-            HashMap<Integer, RoomBooking> roomBookings = parseRoomBookings(bookingJson.getJSONArray("rooms"));
-            booking = new Booking(dataSource, customerId, hotelId, dateRange, roomBookings);
+
         } catch (Exception e) {
             System.err.println("Booking JSON:\n" + bookingJson);
             e.printStackTrace();
@@ -51,29 +48,4 @@ public class CreateBooking extends UseCase {
         return booking;
     }
 
-    private DateRange parseDateRange(String startDate, String endDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        Date from = Date.valueOf(LocalDate.parse(startDate, formatter));
-        Date to = Date.valueOf(LocalDate.parse(endDate, formatter));
-        DateRange dateRange = new DateRange(from, to);
-        return dateRange;
-    }
-
-    private HashMap<Integer, RoomBooking> parseRoomBookings(JSONArray roomsJson) throws UoWException {
-        HashMap<Integer, RoomBooking> roomBookings = new HashMap<>();
-        for(int i = 0; i < roomsJson.length(); i++) {
-            JSONObject roomJson = roomsJson.getJSONObject(i);
-            RoomBooking roomBooking;
-            try {
-                roomBooking = new RoomBooking(dataSource,
-                        roomJson.getInt("room_id"),
-                        roomJson.getString("main_guest_name"),
-                        roomJson.getInt("no_of_guests"));
-            } catch (UoWException e) {
-                throw e;
-            }
-            roomBookings.put(roomBooking.getRoomId(), roomBooking);
-        }
-        return roomBookings;
-    }
 }

@@ -27,6 +27,11 @@ public class RoombookingsController extends FrontCommand {
                     JSONObject searchQuery = requestHelper.body().getJSONObject("search");
 
                     if(searchQuery.has("booking_id")) {
+                        if(!searchQuery.has("booking_id")) {
+                            responseHelper.error("POST /roombookings search must contain booking_id",HttpServletResponse.SC_BAD_REQUEST);
+                            return;
+                        }
+
                         int bookingId = searchQuery.getInt("booking_id");
 
                         BookingsSearchCriteria bookingsSearchCriteria = new BookingsSearchCriteria();
@@ -56,6 +61,8 @@ public class RoombookingsController extends FrontCommand {
                         return;
                     }
                 }
+                else
+                    responseHelper.error("POST /room bookings must contain search",HttpServletResponse.SC_BAD_REQUEST);
                 return;
             case HttpMethod.PUT:
                 asCustomer(this::handlePut);
