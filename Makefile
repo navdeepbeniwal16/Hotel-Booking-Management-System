@@ -1,12 +1,12 @@
 
 .PHONY: setup_db
-setup_db: init_schema seed_db
+setup_db: schema seed_db
 
-.PHONY: init_schema
-init_schema:
+.PHONY: schema
+schema:
 	@echo
 	@echo Initialising database schema - DB password required.
-	psql -h localhost -p 5432 -U postgres -W --dbname=lans_hotels -f ./database/setup.sql
+	psql -h localhost -p 5432 -U postgres -W --dbname=lans_hotels -f ./database/schema.sql
 	@echo
 
 .PHONY: seed_db
