@@ -19,17 +19,18 @@ const HotelsList = ({ hotels }: HotelListProps) => {
   const context = useContext(AppContext.GlobalContext);
   return (
     <Container>
+      <Row  xs={1} md={2} className='gy-3 gx-2'>
       {map(hotels, (hotel: Hotel) => {
         return (
-          <Row key={`${hotel.id}`} xs={1} md={1} className='g-4 mb-4'>
-            <Nav.Link
+          <Col>
+            <Nav.Link key={`${hotel.id}`}
               as={Link}
               to={`/hotel/${hotel.id}`}
               onClick={() => {
                 context.hotel.setHotel(hotel);
               }}
             >
-              <Col>
+              
                 <Card>
                   <Card.Body>
                     <Card.Title>{hotel.name}</Card.Title>
@@ -38,11 +39,12 @@ const HotelsList = ({ hotels }: HotelListProps) => {
                     </Card.Subtitle>
                   </Card.Body>
                 </Card>
-              </Col>
+              
             </Nav.Link>
-          </Row>
+            </Col>
         );
       })}
+      </Row>
     </Container>
   );
 };

@@ -30,14 +30,13 @@ public class CreateBooking extends UseCase {
         succeed();
     }
 
-    @Override
+    @Override // TODO? @levimk
     protected void constructResult() {
 
     }
 
-    private Booking createBookingFromJson(JSONObject bookingJson) throws CommandException {
-        System.out.println("createBookingFromJson:\t" + bookingJson);
-        Booking booking;
+    private Booking createBookingFromJson(JSONObject bookingJson) {
+        Booking booking = null;
         try {
             Integer customerId = customer_id;
             Integer hotelId = (Integer) bookingJson.get("hotel_id");
@@ -48,9 +47,7 @@ public class CreateBooking extends UseCase {
             System.err.println("Booking JSON:\n" + bookingJson);
             e.printStackTrace();
             fail();
-            throw new CommandException("internal server error");
         }
-
         return booking;
     }
 

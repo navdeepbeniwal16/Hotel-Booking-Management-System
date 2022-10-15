@@ -138,11 +138,8 @@ public class BookingsController extends FrontCommand {
             Hotel h = hotels.get(0);
             hotel_hg_id = h.getHotelGroupID();
         }
-        if(hotelier_hg_id != hotel_hg_id){
-            responseHelper.unauthorized();
-            return false;
-        }
-        else return true;
+
+        return hotelier_hg_id == hotel_hg_id;
     }
 
     public Void handlePut() throws Exception {

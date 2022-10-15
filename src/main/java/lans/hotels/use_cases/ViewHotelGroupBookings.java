@@ -37,19 +37,12 @@ public class ViewHotelGroupBookings extends UseCase {
 
     @Override
     protected void constructResult() {
-        JSONArray jsonArray = new JSONArray();
         try {
-            if (succeeded) {
-                jsonArray = createHotelGroupsJSON();
-            }
+            if (succeeded) responseData.put("bookings", createHotelGroupsJSON());
         } catch (Exception e) {
             fail();
             e.printStackTrace();
-            setResponseErrorMessage("Server Error: " + e.getMessage());
-        } finally {
-            succeeded();
-            responseData.put("success",true);
-            responseData.put("bookings", jsonArray);
+            setResponseErrorMessage("error marshalling result");
         }
     }
 

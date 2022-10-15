@@ -68,7 +68,8 @@ VALUES
     ('Richard','richard@gmail.com',7,3,'+612809238924',98),
     ('Joseph','joseph@gmail.com',8,3,'+611742681943',26),
     ('Admin Levi','levimckenzie93+admin@gmail.com',NULL,1,NULL,NULL),
-    ('Customer Levi','levimckenzie93+0@gmail.com',NULL,3,NULL,NULL)
+    ('Customer Levi','levimckenzie93+0@gmail.com',NULL,3,NULL,NULL),
+    ('Mr Hotelier','hotelier@hotelier.com',NULL,2,NULL,NULL)
 ;
 
 INSERT INTO
@@ -93,7 +94,8 @@ VALUES
        (9,3),
        (10,3),
        (11,4),
-       (12,5)
+       (12,5),
+       (23, 1)
 ;
 
 INSERT INTO
@@ -138,8 +140,8 @@ VALUES
 INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
     VALUES
            (13,DATE '2022-09-11',DATE '2022-09-15',TRUE,14),
-           (2,DATE '2022-10-17',DATE '2022-10-19',TRUE,1),
-           (2,DATE '2022-08-12',DATE '2022-08-16',TRUE,1),
+           (22,DATE '2022-10-17',DATE '2022-10-19',TRUE,1),
+           (22,DATE '2022-08-12',DATE '2022-08-16',TRUE,1),
            (3,DATE '2022-08-12',DATE '2022-08-16',TRUE,5)
 --            (3,DATE '2022-06-05',DATE '2022-06-10',TRUE,1)
 

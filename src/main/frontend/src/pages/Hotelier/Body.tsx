@@ -7,8 +7,10 @@ import HotelGroup, {
   makeHotelGroup,
 } from '../../types/HotelGroup';
 import Hotel from '../../types/HotelType';
-import { Button } from 'react-bootstrap';
+import { Button, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import HotelsList from '../../components/molecules/HotelsList';
+import { map } from 'lodash';
+import { PlusCircle } from 'react-bootstrap-icons'
 
 interface HotelierBody {
   hotelier: UserDataType;
@@ -35,21 +37,48 @@ const HotelierBody = ({ hotelier }: HotelierBody) => {
     <>
       <div>
         <h3>Group details</h3>
-        <div>Name: {group.name}</div>
-        <div>Phone: {group.phone}</div>
-        <div>Address: {`${addressToString(group.address)}`}</div>
+        <div><span className='fw-bold'>Name: </span>{group.name}</div>
+        <div><span className='fw-bold'>Phone: </span>{group.phone}</div>
+        <div><span className='fw-bold'>Address: </span>{`${addressToString(group.address)}`}</div>
       </div>
       <div>
         <h3>Hotels</h3>
-        <div className='my-2'>
-          <Button
-            variant='primary'
-            onClick={() => console.log('create a new hotel')}
-          >
-            Create hotel
-          </Button>
-        </div>
-        <HotelsList hotels={hotels} />
+        <Row className='my-2'>
+          <Col>
+            <Button
+              variant='info'
+              onClick={() => console.log('create a new hotel')}
+            >
+              Create hotel <PlusCircle />
+            </Button>
+          </Col>
+        </Row>
+        <Row xs={1} className='g-4 mb-4'>
+          <Col>
+            <ListGroup as='ul'>
+              {map(hotels, (hotel: Hotel) => {
+                return (
+                  <ListGroup.Item
+                    as='li'
+                    key={`${hotel.id}`}
+                    className="d-flex justify-content-between align-items-start">
+                    <div className='ms-2 me-auto' >
+                      <div className='fw-bold'>{hotel.name}</div>
+                      {addressToString(hotel.address)}
+                    </div>
+                    <Button
+                      variant='primary'
+                      onClick={() => console.log('create a new hotel')}
+                    >
+                      {' '}
+                      View bookings{' '} 
+                    </Button>
+                  </ListGroup.Item>
+                );
+              })}
+            </ListGroup>
+          </Col>
+        </Row>
       </div>
     </>
   );
