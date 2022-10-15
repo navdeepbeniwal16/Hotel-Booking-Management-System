@@ -115,52 +115,52 @@ public class HotelgroupsController extends FrontCommand {
             }
         }
         else{
-            responseHelper.error("POST /hotelgroups hotel_group has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 1", HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
         if(nestedJsonObject.has("phone"))
             phone = nestedJsonObject.getString("phone");
         else {
-            responseHelper.error("POST /hotelgroups hotel_group has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 2", HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
         if(nestedJsonObject.has("address"))
         {
             JSONObject addressJson = nestedJsonObject.getJSONObject("address");
 
-            if(nestedJsonObject.has("line_1"))
+            if(addressJson.has("line_1"))
                 l1 = addressJson.getString("line_1");
             else{
-                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 3", HttpServletResponse.SC_BAD_REQUEST);
                 return null;
             }
-            if(nestedJsonObject.has("line_2"))
+            if(addressJson.has("line_2"))
                 l2 = addressJson.getString("line_2");
             else{
-                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 4", HttpServletResponse.SC_BAD_REQUEST);
                 return null;
             }
-            if(nestedJsonObject.has("city"))
+            if(addressJson.has("city"))
                 city = addressJson.getString("city");
             else{
-                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 5", HttpServletResponse.SC_BAD_REQUEST);
                 return null;
             }
-            if(nestedJsonObject.has("postcode"))
+            if(addressJson.has("postcode"))
                 postcode = addressJson.getInt("postcode");
             else{
-                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 6", HttpServletResponse.SC_BAD_REQUEST);
                 return null;
             }
-            if(nestedJsonObject.has("district"))
+            if(addressJson.has("district"))
                 district = addressJson.getString("district");
             else{
-                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 7", HttpServletResponse.SC_BAD_REQUEST);
                 return null;
             }
         }
         else{
-            responseHelper.error("POST /hotelgroups hotel_group has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 8", HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
 //        hg_name = (String) requestHelper.body("hotel_group", "name");
