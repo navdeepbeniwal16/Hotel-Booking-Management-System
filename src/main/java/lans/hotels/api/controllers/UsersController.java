@@ -7,6 +7,8 @@ import lans.hotels.use_cases.GetAllHoteliers;
 import lans.hotels.use_cases.GetAllUsers;
 import lans.hotels.use_cases.OnboardHotelier;
 import org.json.JSONObject;
+
+import javax.servlet.http.HttpServletResponse;
 import java.io.InvalidObjectException;
 
 public class UsersController extends FrontCommand {
@@ -16,31 +18,36 @@ public class UsersController extends FrontCommand {
         switch (method) {
             case HttpMethod.GET:
                 asAdmin(this::handleGet);
-                // EXAMPLE: using lambda function instead of method reference
-//                asAdmin(() -> handleGet());
                 return;
             case HttpMethod.POST:
-                if (requestHelper.body().has("search")) {
-                    asAdmin(this::handleSearch);
-                } else if (requestHelper.body().has("hotelier")) {
-                    asAdmin(this::handlePostHotelier);
-                } else if (requestHelper.body().has("customer")) {
-                    asCustomer(this::handlePostCustomer);
-                } else if (requestHelper.body().has("new")) {
-                    JSONObject res = new JSONObject();
-                    res.put("success", auth.isAuthenticated());
-                    res.put("role", auth.getUser().getRole().getName());
-                    res.put("group", auth.getUser().getHotelierHotelGroupID());
-                    res.put("id", auth.getUser().getId());
-                    res.put("name", auth.getUser().getName());
-                    res.put("email", auth.getUser().getEmail());
-                    responseHelper.respondOK(res);
-                }
+                handlePost();
                 return;
             default:
                 responseHelper.unimplemented(request.getMethod() + " /users");
         }
     }
+
+    public void handlePost() {
+        if (requestHelper.body().has("search")) {
+            asAdmin(this::handleSearch);
+        } else if (requestHelper.body().has("hotelier")) {
+            asAdmin(this::handlePostHotelier);
+        } else if (requestHelper.body().has("customer")) {
+            asCustomer(this::handlePostCustomer);
+        } else if (requestHelper.body().has("new")) {
+            JSONObject res = new JSONObject();
+            res.put("success", auth.isAuthenticated());
+            res.put("role", auth.getUser().getRole().getName());
+            res.put("group", auth.getUser().getHotelierHotelGroupID());
+            res.put("id", auth.getUser().getId());
+            res.put("name", auth.getUser().getName());
+            res.put("email", auth.getUser().getEmail());
+            responseHelper.respondOK(res);
+        }
+        else
+            responseHelper.error("POST /users must contain search, hotelier, customer or new", HttpServletResponse.SC_BAD_REQUEST);
+    }
+
     public User getUserFromJSONObject(JSONObject body) {
 
         User user = null;
@@ -129,8 +136,28 @@ public class UsersController extends FrontCommand {
 
     private Void handlePostHotelier() throws Exception {
         JSONObject hotelierData = (JSONObject) requestHelper.body().get("hotelier");
-        useCase = new OnboardHotelier(dataSource, (Integer) hotelierData.get("id"));
-        useCase.execute(() -> responseHelper.respondOK(useCase.getResult()), () -> responseHelper.internalServerError("use case error"));
+
+        if(hotelierData.has("id")) {
+            Integer userID = hotelierData.getInt("id");
+
+            User user = dataSource.find(User.class, userID);
+            if (user != null) {
+                if (user.getRole().isCustomer())
+                    user.setRole(Role.hotelier());
+                else {
+                    responseHelper.error("User is not a customer", HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
+                }
+            } else{
+                responseHelper.error("User with id does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+
+            useCase = new OnboardHotelier(dataSource);
+            useCase.execute(() -> responseHelper.respondOK(useCase.getResult()), () -> responseHelper.internalServerError("use case error"));
+        }
+        else
+            responseHelper.error("POST /users hotelier must contain id", HttpServletResponse.SC_BAD_REQUEST);
         return null;
     }
 
