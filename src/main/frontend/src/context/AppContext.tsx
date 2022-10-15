@@ -8,7 +8,8 @@ import React, {
   ReactPropTypes,
 } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import UserState from '../types/UserType';
+import UserState, { defaultUserState } from '../types/UserType';
+import { defaultUserData } from '../types/UserDataType';
 import { defaultHotel, defaultHotelState } from '../types/HotelType';
 import { defaultRoom, defaultRoomState } from '../types/RoomType';
 import AppContextType from '../types/AppContextType';
@@ -16,12 +17,6 @@ import RoleT from '../types/RoleTypes';
 import JwtT from '../types/JwtType';
 import jwtDecode from 'jwt-decode';
 import LANS_API from '../api/API';
-
-const defaultUser: UserState = {
-  username: '',
-  setUsername: () =>
-    console.error('Error: cannot call setUsername() without context'),
-};
 
 export type UserMetadata = {
   apiAccessToken: string;
@@ -38,7 +33,7 @@ const defaultUserMetadata: UserMetadata = {
 
 const defaultGlobalContext = {
   backend: new LANS_API(''),
-  user: defaultUser,
+  user: defaultUserState,
   hotel: defaultHotelState,
   room: defaultRoomState,
   userMetadata: defaultUserMetadata,
@@ -52,15 +47,15 @@ interface IGlobalProvider {
 
 const GlobalProvider = ({ children }: IGlobalProvider) => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [username, setUsername] = useState('');
+  const [user, setUser] = useState(defaultUserData);
   const [hotel, setHotel] = useState(defaultHotel);
   const [room, setRoom] = useState(defaultRoom);
   const [userMetadata, setUserMetadata] = useState(defaultUserMetadata);
   const [backend, setBackend] = useState(new LANS_API(''));
 
-  const userState = {
-    username,
-    setUsername,
+  const userState: UserState = {
+    user,
+    setUser,
   };
 
   const hotelState = {
@@ -95,10 +90,12 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         if (isAuthenticated) {
           console.log('authenticated');
           const newBackendConnection = new LANS_API(apiAccessToken);
-          const success = await newBackendConnection.triggerRegistration();
+          const [success, userData] = await newBackendConnection.register();
           if (success) {
-            console.log('user registered');
             setBackend(newBackendConnection);
+            if (!roles.includes(userData.role))
+              roles = [...roles, userData.role];
+            console.log('user registered:', roles);
           } else {
             console.log('user registration failed');
             setBackend(new LANS_API(''));

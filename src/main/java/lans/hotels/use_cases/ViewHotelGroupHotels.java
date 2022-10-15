@@ -5,6 +5,7 @@ import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.user.User;
+import lans.hotels.domain.utils.Address;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,44 +41,49 @@ public class ViewHotelGroupHotels extends UseCase {
     protected void constructResult() {
         JSONArray jsonArray = new JSONArray();
         try {
-            if (succeeded) {
-                jsonArray = createHotelGroupsJSON();
-            }
+            if (succeeded) jsonArray = createHotelGroupsJSON();
         } catch (Exception e) {
             fail();
             e.printStackTrace();
             setResponseErrorMessage("Server Error: " + e.getMessage());
         } finally {
-            succeeded();
-            responseData.put("success",true);
             responseData.put("hotels", jsonArray);
         }
     }
 
     private JSONArray createHotelGroupsJSON() {
-        JSONArray jsonArray = new JSONArray();
+        JSONArray hotelsDTO = new JSONArray();
         try {
-            if (hotels == null) {
-                System.err.println("null bookings");
+            if (succeeded && hotels != null) {
+                hotels.forEach(hotel -> {
+                    JSONObject hotelDTO = new JSONObject();
+                    hotelDTO.put("id", hotel.getID());
+                    hotelDTO.put("hotel_group_id", hotel.getHotelGroupID());
+                    hotelDTO.put("name", hotel.getName());
+                    hotelDTO.put("email", hotel.getEmail());
+                    hotelDTO.put("phone", hotel.getContact());
+                    hotelDTO.put("pincode", hotel.getPinCode());
+                    hotelDTO.put("is_active", hotel.getIsActive());
+                    hotelDTO.put("version",hotel.getVersion());
+
+                    JSONObject addressJson = new JSONObject();
+                    Address address = hotel.getAddress();
+                    addressJson.put("line_1", address.getLine1() != null ? address.getLine1() : "");
+                    addressJson.put("line_2", address.getLine2() != null ? address.getLine2() : "");
+                    addressJson.put("city", address.getCity() != null ? address.getCity() : "");
+                    addressJson.put("district", address.getDistrict().toString());
+                    addressJson.put("postcode", address.getPostCode() != null ? Integer.toString(address.getPostCode()) : "");
+
+                    hotelDTO.put("address", addressJson);
+                    hotelsDTO.put(hotelDTO);
+                });
             }
-            hotels.forEach(hotel -> {
-                JSONObject b_entry;
-                b_entry = new JSONObject();
-                b_entry.put("id", hotel.getId());
-                b_entry.put("hotel_name", hotel.getName());
-                b_entry.put("hotel_email", hotel.getEmail());
-                b_entry.put("contact", hotel.getContact());
-                b_entry.put("city", hotel.getCity());
-                b_entry.put("pin_code", hotel.getPinCode());
-                b_entry.put("is_active", hotel.getIsActive());
-                jsonArray.put(b_entry);
-            });
         } catch (Exception e) {
             e.printStackTrace();
             fail();
             setResponseErrorMessage("error marshalling rooms data");
         }
-        return jsonArray;
+        return hotelsDTO;
     }
 
 }

@@ -273,6 +273,6 @@ public class Auth0Adapter {
     }
 
     public Integer hotelGroupId() {
-        return user != null ? user.getHotelierHotelGroupID() : null;
+        return user != null ? user.getHotelierHotelGroupID() : -1;
     }
 }

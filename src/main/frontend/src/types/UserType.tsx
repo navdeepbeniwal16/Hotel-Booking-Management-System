@@ -1,9 +1,15 @@
 import React, { Dispatch } from 'react';
-import { EmptyString } from './PrimitiveTypes';
+import UserDataType, { defaultUserData } from './UserDataType';
 
 type UserState = {
-  username: string | EmptyString;
-  setUsername: Dispatch<React.SetStateAction<string>>;
+  user: UserDataType;
+  setUser: Dispatch<React.SetStateAction<UserDataType>>;
+};
+
+export const defaultUserState: UserState = {
+  user: defaultUserData,
+  setUser: () =>
+    console.error('Error: cannot call setUsername() without context'),
 };
 
 export default UserState;
