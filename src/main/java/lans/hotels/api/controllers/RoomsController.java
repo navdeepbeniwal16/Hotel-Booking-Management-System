@@ -2,6 +2,7 @@ package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
+import lans.hotels.datasource.search_criteria.RoomSearchCriteria;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
@@ -34,6 +35,12 @@ public class RoomsController extends FrontCommand {
                     e.printStackTrace();
                 }
                 return;
+            case HttpMethod.PUT:
+                responseHelper.error("PUT /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                return;
+            case HttpMethod.DELETE:
+                responseHelper.error("DELETE /rooms: NOT IMPLEMENTED", HttpServletResponse.SC_NOT_IMPLEMENTED);
+                return;
             default:
                 responseHelper.unimplemented(request.getMethod() + " /rooms");
         }
@@ -43,11 +50,12 @@ public class RoomsController extends FrontCommand {
         if (requestHelper.body().has("search")) {
             JSONObject searchQueryBody = requestHelper.body().getJSONObject("search");
             handleSearchQuery(searchQueryBody);
-        } else if (requestHelper.body().has("room")) {
-            handleRoomQuery(requestHelper.body());
-        } else {
-            responseHelper.error("POST /rooms does must include 'room' or 'search'", HttpServletResponse.SC_BAD_REQUEST);
         }
+        else if (requestHelper.body().has("room")) {
+            handleRoomQuery(requestHelper.body());
+        }
+        else
+            responseHelper.error("POST /rooms does must include 'room' or 'search'", HttpServletResponse.SC_BAD_REQUEST);
     }
 
     private Room getRoomFromJsonObject(JSONObject jsonObject) throws InvalidObjectException {
@@ -66,16 +74,55 @@ public class RoomsController extends FrontCommand {
 
             if(nestedJsonObject.has("hotel_id"))
                 hotel_id = nestedJsonObject.getInt("hotel_id");
+            else{
+                responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
             if(nestedJsonObject.has("type"))
                 type = nestedJsonObject.getString("type");
+            else{
+                responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
             if(nestedJsonObject.has("max_occupancy"))
                 max_occupancy = nestedJsonObject.getInt("max_occupancy");
+            else{
+                responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
             if(nestedJsonObject.has("bed_type"))
                 bed_type = nestedJsonObject.getString("bed_type");
+            else{
+                responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
             if(nestedJsonObject.has("room_price"))
                 room_price = nestedJsonObject.getInt("room_price");
-            if(nestedJsonObject.has("number"))
+            else{
+                responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+            if(nestedJsonObject.has("number")) {
                 number = nestedJsonObject.getInt("number");
+
+                ArrayList<Room> rooms = null;
+                RoomSearchCriteria r_criteria = new RoomSearchCriteria();
+                r_criteria.setRoomNumber(number);
+                r_criteria.setHotelId(hotel_id);
+                try {
+                    rooms = dataSource.findBySearchCriteria(Room.class, r_criteria);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (rooms.size()>0){
+                    responseHelper.error("POST /rooms room number is a duplicate", HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
+                }
+            }
+            else{
+                responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
 
             try {
                 r = new Room(dataSource,
@@ -97,8 +144,12 @@ public class RoomsController extends FrontCommand {
 
     private void handleRoomQuery(JSONObject body) throws IOException {
         Room r = getRoomFromJsonObject(body);
-        if(checkHotelGroupHotelierValid(r.getHotelID()))
+        if(r!=null)
         {
+            if(!checkHotelGroupHotelierValid(r.getHotelID())){
+                return;
+            }
+
             useCase = new AddRoomToHotel(dataSource);
             useCase.execute();
             statusCode = useCase.succeeded() ?
@@ -143,6 +194,8 @@ public class RoomsController extends FrontCommand {
             Hotel h = hotels.get(0);
             hotel_hg_id = h.getHotelGroupID();
         }
+
+
         if(hotelier_hg_id != hotel_hg_id){
             responseHelper.unauthorized();
             return false;
@@ -152,27 +205,57 @@ public class RoomsController extends FrontCommand {
 
     private void handleSearchQuery(JSONObject searchParams) throws Exception {
 
-        Integer hotelId = parseHotelId(searchParams);
 
-        if(auth.isHotelier()){
-            if(!checkHotelGroupHotelierValid(hotelId))
-            {
+        if(searchParams.has("hotel_id"))
+        {
+
+            Integer hotelId = parseHotelId(searchParams);
+
+            ArrayList<Hotel> hotels = null;
+            HotelSearchCriteria h_criteria = new HotelSearchCriteria();
+            h_criteria.setId(hotelId);
+
+            try {
+                hotels = dataSource.findBySearchCriteria(Hotel.class, h_criteria);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if(hotels.size() == 0) {
+                responseHelper.error("POST /rooms search hotel_id does not exist", HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
-        }
 
-        Utils.RoomResultsInclude include = parseInclude(searchParams);
-        Date startDate = parseDate(searchParams, "start_date");
-        Date endDate =  parseDate(searchParams, "end_date");
-        ViewHotelRooms viewHotelRooms = new ViewHotelRooms(dataSource, hotelId);
-        viewHotelRooms.setInclude(include);
-        viewHotelRooms.setStartDate(startDate);
-        viewHotelRooms.setEndDate(endDate);
-        viewHotelRooms.execute();
-        statusCode = viewHotelRooms.succeeded() ?
-                HttpServletResponse.SC_OK :
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        responseHelper.respond(viewHotelRooms.getResult(), statusCode);
+            if(auth.isHotelier()){
+                if(!checkHotelGroupHotelierValid(hotelId))
+                {
+                    return;
+                }
+            }
+
+            Utils.RoomResultsInclude include = parseInclude(searchParams);
+            if(include!=Utils.RoomResultsInclude.ALL)
+            {
+                if(!(searchParams.has("start_date")&&searchParams.has("end_date")))
+                {
+                    responseHelper.error("POST /rooms search must include 'start_date' and 'end_date'", HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+            }
+            Date startDate = parseDate(searchParams, "start_date");
+            Date endDate =  parseDate(searchParams, "end_date");
+            ViewHotelRooms viewHotelRooms = new ViewHotelRooms(dataSource, hotelId);
+            viewHotelRooms.setInclude(include);
+            viewHotelRooms.setStartDate(startDate);
+            viewHotelRooms.setEndDate(endDate);
+            viewHotelRooms.execute();
+            statusCode = viewHotelRooms.succeeded() ?
+                    HttpServletResponse.SC_OK :
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            responseHelper.respond(viewHotelRooms.getResult(), statusCode);
+        }
+        else
+            responseHelper.error("POST /rooms search must include 'hotel_id'", HttpServletResponse.SC_BAD_REQUEST);
     }
 
     private Integer parseHotelId(JSONObject searchQueryBody) throws JSONException {

@@ -119,7 +119,7 @@ CREATE TABLE ROOM (
     max_occupancy INT NOT NULL,
     bed_type VARCHAR(50) NOT NULL,
     room_price INTEGER NOT NULL,
-    number INT NOT NULL UNIQUE,
+    number INT NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     version INT NOT NULL DEFAULT 1,
     PRIMARY KEY (id),

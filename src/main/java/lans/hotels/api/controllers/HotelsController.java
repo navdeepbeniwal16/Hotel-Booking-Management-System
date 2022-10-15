@@ -108,7 +108,13 @@ public class HotelsController extends FrontCommand {
                 responseHelper.unauthorized();
                 return;
             }
+
             Integer hotel_group_id = auth.getUser().getHotelierHotelGroupID();
+            if(hotel_group_id==0)
+            {
+                responseHelper.error("POST /hotels hotelier is not assigned to any hotel group ", HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
             System.out.println("user hotel group id : "+auth.getUser().getHotelierHotelGroupID());
 
             useCase = new ViewHotelGroupHotels(dataSource,hotel_group_id);
@@ -129,7 +135,7 @@ public class HotelsController extends FrontCommand {
         Hotel h = getHotelFromJsonObject(body);
 
         if (h == null)
-            throw new InvalidObjectException("Failed to parse hotel object from request body");
+            return;
 
         useCase = new CreateHotel(dataSource);
         useCase.execute();
@@ -153,78 +159,94 @@ public class HotelsController extends FrontCommand {
         String contact = "";
         boolean is_active = true;
 
-        if(jsonObject.has("hotel")) {
-            JSONObject nestedJsonObject = jsonObject.getJSONObject("hotel");
+        JSONObject nestedJsonObject = jsonObject.getJSONObject("hotel");
 
-            if(nestedJsonObject.has("h_name")) {
-                h_name = nestedJsonObject.getString("h_name");
+        if(nestedJsonObject.has("h_name")) {
+            h_name = nestedJsonObject.getString("h_name");
 
-                ArrayList<Hotel> hotels = null;
-                HotelSearchCriteria h_criteria = new HotelSearchCriteria();
-                h_criteria.setName(h_name);
-                try {
-                    hotels = dataSource.findBySearchCriteria(Hotel.class, h_criteria);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (hotels.size()>0)
-                    responseHelper.error("POST /hotels hotel name is a duplicate", HttpServletResponse.SC_BAD_REQUEST);
-            }
-            else
-                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-            if(nestedJsonObject.has("email")) {
-                email = nestedJsonObject.getString("email");
-
-                ArrayList<Hotel> hotels = null;
-                HotelSearchCriteria h_criteria = new HotelSearchCriteria();
-                h_criteria.setEmail(email);
-                try {
-                    hotels = dataSource.findBySearchCriteria(Hotel.class, h_criteria);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (hotels.size()>0)
-                    responseHelper.error("POST /hotels hotel email is a duplicate", HttpServletResponse.SC_BAD_REQUEST);
-            }
-            else
-                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-            if(nestedJsonObject.has("l1"))
-                l1 = nestedJsonObject.getString("l1");
-            else
-                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-            if(nestedJsonObject.has("l2"))
-                l2 = nestedJsonObject.getString("l2");
-            else
-                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-            if(nestedJsonObject.has("city"))
-                city = nestedJsonObject.getString("city");
-            else
-                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-            if(nestedJsonObject.has("postcode"))
-                postcode = nestedJsonObject.getInt("postcode");
-            else
-                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-            if(nestedJsonObject.has("district"))
-                district = nestedJsonObject.getString("district");
-            else
-                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-            if(nestedJsonObject.has("contact"))
-                contact = nestedJsonObject.getString("contact");
-            else
-                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-
-            District district_ob = new District(district);
-            Address address = new Address(l1, l2, district_ob, city, postcode);
-
+            ArrayList<Hotel> hotels = null;
+            HotelSearchCriteria h_criteria = new HotelSearchCriteria();
+            h_criteria.setName(h_name);
             try {
-                h = new Hotel(dataSource,hotel_group_id,h_name,email,address,contact,
-                        city,postcode,is_active);
-            } catch (UoWException e) {
+                hotels = dataSource.findBySearchCriteria(Hotel.class, h_criteria);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+            if (hotels.size()>0){
+                responseHelper.error("POST /hotels hotel name is a duplicate", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
         }
-        else
+        else{
             responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(nestedJsonObject.has("email")) {
+            email = nestedJsonObject.getString("email");
+
+            ArrayList<Hotel> hotels = null;
+            HotelSearchCriteria h_criteria = new HotelSearchCriteria();
+            h_criteria.setEmail(email);
+            try {
+                hotels = dataSource.findBySearchCriteria(Hotel.class, h_criteria);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (hotels.size()>0){
+                responseHelper.error("POST /hotels hotel email is a duplicate", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+        }
+        else{
+            responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(nestedJsonObject.has("l1"))
+            l1 = nestedJsonObject.getString("l1");
+        else{
+            responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(nestedJsonObject.has("l2"))
+            l2 = nestedJsonObject.getString("l2");
+        else{
+            responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(nestedJsonObject.has("city"))
+            city = nestedJsonObject.getString("city");
+        else{
+            responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(nestedJsonObject.has("postcode"))
+            postcode = nestedJsonObject.getInt("postcode");
+        else{
+            responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(nestedJsonObject.has("district"))
+            district = nestedJsonObject.getString("district");
+        else{
+            responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(nestedJsonObject.has("contact"))
+            contact = nestedJsonObject.getString("contact");
+        else{
+            responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+
+        District district_ob = new District(district);
+        Address address = new Address(l1, l2, district_ob, city, postcode);
+
+        try {
+            h = new Hotel(dataSource,hotel_group_id,h_name,email,address,contact,
+                    city,postcode,is_active);
+        } catch (UoWException e) {
+            e.printStackTrace();
+        }
         return h;
     }
 }
