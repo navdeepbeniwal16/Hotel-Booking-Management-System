@@ -63,6 +63,9 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
         if (hgCriteria.getHotelGroupID() != null){
             findAllStatement += "WHERE hg.id = '" + hgCriteria.getHotelGroupID() + "'";
         }
+        else if (hgCriteria.getHotelGroupName() != null){
+            findAllStatement += "WHERE hg.name = '" + hgCriteria.getHotelGroupName() + "'";
+        }
 
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();

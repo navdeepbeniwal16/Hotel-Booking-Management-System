@@ -1,5 +1,11 @@
 package lans.hotels.api.controllers;
 
+
+import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
+import lans.hotels.domain.hotel.Hotel;
+
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
@@ -10,6 +16,11 @@ import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InvalidObjectException;
+
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 
 public class HotelgroupsController extends FrontCommand {
     @Override
@@ -46,9 +57,8 @@ public class HotelgroupsController extends FrontCommand {
             handleSearchQuery();
         else if (requestHelper.body().has("hotel_group"))
             handleHotelGroupQuery();
-        else {
+        else
             responseHelper.error("POST /hotel_groups must include 'search' or 'hotel_group'", HttpServletResponse.SC_BAD_REQUEST);
-        }
         return null;
     }
 
@@ -64,13 +74,15 @@ public class HotelgroupsController extends FrontCommand {
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
             responseHelper.respond(useCase.getResult(), statusCode);
         }
+        else
+            responseHelper.error("POST /hotel_groups search must include 'id'", HttpServletResponse.SC_BAD_REQUEST);
     }
 
     private void handleHotelGroupQuery() throws Exception {
         HotelGroup hg = getHotelGroupFromJsonObject(requestHelper.body());
 
         if (hg == null)
-            throw new InvalidObjectException("Failed to parse hotel group object from request body");
+            return;
 
         useCase = new CreateHotelGroup(dataSource);
         useCase.execute();
@@ -91,26 +103,90 @@ public class HotelgroupsController extends FrontCommand {
         String district = "";
         String phone = "";
 
-        JSONObject details = requestHelper.body("hotel_group");
-        if(!details.isEmpty()) {
-            hg_name = (String) requestHelper.body("hotel_group", "name");
-            phone = (String) requestHelper.body("hotel_group", "phone");
-            JSONObject addressJson = (JSONObject) requestHelper.body("hotel_group", "address");
-            if(addressJson.has("line_1")) l1 = addressJson.getString("line_1");
-            if(addressJson.has("line_2")) l2 = addressJson.getString("line_2");
-            if(addressJson.has("city")) city = addressJson.getString("city");
-            if(addressJson.has("postcode")) postcode = addressJson.getInt("postcode");
-            if(addressJson.has("district")) district = addressJson.getString("district");
+        JSONObject nestedJsonObject = jsonObject.getJSONObject("hotel_group");
 
+        if(nestedJsonObject.has("name"))
+        {
+            hg_name = nestedJsonObject.getString("name");
 
-            District district_ob = new District(district);
-            Address address = new Address(l1, l2, district_ob, city, postcode);
-
+            ArrayList<HotelGroup> hotel_groups = null;
+            HotelGroupSearchCriteria hg_criteria = new HotelGroupSearchCriteria();
+            hg_criteria.setHotelGroupName(hg_name);
             try {
-                hg = new HotelGroup(dataSource,hg_name,address,phone);
+                hotel_groups = dataSource.findBySearchCriteria(HotelGroup.class, hg_criteria);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            if (hotel_groups.size()>0) {
+                responseHelper.error("POST /hotels hotel name is a duplicate", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+        }
+        else{
+            responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 1", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(nestedJsonObject.has("phone"))
+            phone = nestedJsonObject.getString("phone");
+        else {
+            responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 2", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(nestedJsonObject.has("address"))
+        {
+            JSONObject addressJson = nestedJsonObject.getJSONObject("address");
+
+            if(addressJson.has("line_1"))
+                l1 = addressJson.getString("line_1");
+            else{
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 3", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+            if(addressJson.has("line_2"))
+                l2 = addressJson.getString("line_2");
+            else{
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 4", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+            if(addressJson.has("city"))
+                city = addressJson.getString("city");
+            else{
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 5", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+            if(addressJson.has("postcode"))
+                postcode = addressJson.getInt("postcode");
+            else{
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 6", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+            if(addressJson.has("district"))
+                district = addressJson.getString("district");
+            else{
+                responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 7", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+        }
+        else{
+            responseHelper.error("POST /hotelgroups hotel_group has incorrect request body 8", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+//        hg_name = (String) requestHelper.body("hotel_group", "name");
+//        phone = (String) requestHelper.body("hotel_group", "phone");
+//
+//        if(addressJson.has("line_1")) l1 = addressJson.getString("line_1");
+//        if(addressJson.has("line_2")) l2 = addressJson.getString("line_2");
+//        if(addressJson.has("city")) city = addressJson.getString("city");
+//        if(addressJson.has("postcode")) postcode = addressJson.getInt("postcode");
+//        if(addressJson.has("district")) district = addressJson.getString("district");
+
+        District district_ob = new District(district);
+        Address address = new Address(l1, l2, district_ob, city, postcode);
+
+        try {
+            hg = new HotelGroup(dataSource,hg_name,address,phone);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return hg;
     }

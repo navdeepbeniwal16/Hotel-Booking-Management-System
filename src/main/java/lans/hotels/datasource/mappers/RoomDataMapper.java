@@ -61,13 +61,14 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
         String findBy = findStatement() + " WHERE ";
 
         PreparedStatement statement = null;
-        if (r_criteria.getHotelId() != null){
+        if (r_criteria.getHotelId() != null && r_criteria.getRoomNumber()==null){
             statement = connection.prepareStatement(findBy + "hotel_id = ?");
             statement.setInt(1,r_criteria.getHotelId());
         }
         else if (r_criteria.getRoomNumber() != null){
-            statement = connection.prepareStatement(findBy + "number = ?");
+            statement = connection.prepareStatement(findBy + "number = ? AND hotel_id = ? ");
             statement.setInt(1,r_criteria.getRoomNumber());
+            statement.setInt(2,r_criteria.getHotelId());
         }
 
         System.out.println("FIND BY Statement \n"+statement.toString());
