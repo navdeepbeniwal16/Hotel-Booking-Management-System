@@ -102,7 +102,7 @@ public class HotelsController extends FrontCommand {
             else
                 responseHelper.error("POST /hotels search needs to contain city name ", HttpServletResponse.SC_BAD_REQUEST);
         }
-        else if(searchQueryBody.has("group")) {
+        else if(searchQueryBody.has("hotels")) {
             if(!auth.isHotelier())
             {
                 responseHelper.unauthorized();
