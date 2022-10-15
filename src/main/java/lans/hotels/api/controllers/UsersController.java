@@ -29,6 +29,11 @@ public class UsersController extends FrontCommand {
                 } else if (requestHelper.body().has("new")) {
                     JSONObject res = new JSONObject();
                     res.put("success", auth.isAuthenticated());
+                    res.put("role", auth.getUser().getRole().getName());
+                    res.put("group", auth.getUser().getHotelierHotelGroupID());
+                    res.put("id", auth.getUser().getId());
+                    res.put("name", auth.getUser().getName());
+                    res.put("email", auth.getUser().getEmail());
                     responseHelper.respondOK(res);
                 }
                 return;

@@ -1,30 +1,34 @@
 package lans.hotels.api.controllers;
 
+
 import lans.hotels.datasource.exceptions.UoWException;
 import lans.hotels.datasource.search_criteria.HotelGroupSearchCriteria;
 import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
+
 import lans.hotels.domain.hotel_group.HotelGroup;
 import lans.hotels.domain.utils.Address;
 import lans.hotels.domain.utils.District;
 import lans.hotels.use_cases.CreateHotelGroup;
-import lans.hotels.use_cases.GetAllHotelGroupDetails;
+import lans.hotels.use_cases.GetHotelGroups;
 import lans.hotels.use_cases.GetSpecificHotelGroup;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.InvalidObjectException;
+
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+
 public class HotelgroupsController extends FrontCommand {
     @Override
-    protected void concreteProcess() throws IOException, SQLException {
+    protected void concreteProcess() {
         System.out.println("HotelGroupsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
         switch (request.getMethod()) {
             case HttpMethod.GET:
-                asAdmin(this::handleGet);
+                asHotelierOrAdmin(this::handleGet);
                 return;
             case HttpMethod.POST:
                 asAdmin(this::handlePost);
@@ -34,8 +38,12 @@ public class HotelgroupsController extends FrontCommand {
         }
     }
 
-    public Void handleGet() throws Exception {
-        useCase = new GetAllHotelGroupDetails(dataSource);
+    public Void handleGet() {
+        Integer groupId = -1;
+        if (auth.isHotelier()) {
+            groupId = auth.hotelGroupId();
+        }
+        useCase = new GetHotelGroups(dataSource, groupId);
         useCase.execute();
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :

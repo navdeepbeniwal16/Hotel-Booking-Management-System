@@ -99,7 +99,8 @@ public class User extends ReferenceObject {
 
     public String getName()
     {
-        return this.name;
+        if (this.name != null) return this.name;
+        return "";
     }
 
     public void setName(String name) throws UoWException {
@@ -146,7 +147,10 @@ public class User extends ReferenceObject {
         markDirty();
     }
 
-    public Integer getHotelierHotelGroupID() { return this.hotelier_hotel_group_id; }
+    public Integer getHotelierHotelGroupID() {
+        if (this.hotelier_hotel_group_id != null) return this.hotelier_hotel_group_id;
+        return -1;
+    }
 
     public void setHotelierHotelGroupID(Integer hotelier_hotel_group_id) throws UoWException {
         this.hotelier_hotel_group_id = hotelier_hotel_group_id;

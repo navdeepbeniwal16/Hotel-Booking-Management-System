@@ -102,7 +102,7 @@ public class HotelsController extends FrontCommand {
             else
                 responseHelper.error("POST /hotels search needs to contain city name ", HttpServletResponse.SC_BAD_REQUEST);
         }
-        else if(searchQueryBody.has("hotels")) {
+        else if(searchQueryBody.has("group")) {
             if(!auth.isHotelier())
             {
                 responseHelper.unauthorized();
@@ -110,12 +110,14 @@ public class HotelsController extends FrontCommand {
             }
 
             Integer hotel_group_id = auth.getUser().getHotelierHotelGroupID();
+
             if(hotel_group_id==0)
             {
                 responseHelper.error("POST /hotels hotelier is not assigned to any hotel group ", HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
             System.out.println("user hotel group id : "+auth.getUser().getHotelierHotelGroupID());
+
 
             useCase = new ViewHotelGroupHotels(dataSource,hotel_group_id);
             useCase.execute();

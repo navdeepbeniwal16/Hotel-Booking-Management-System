@@ -28,7 +28,7 @@ const Admin = () => {
         <Col>
           <p>
             {!isLoading && isAuthenticated && user
-              ? user?.name || user?.email || 'Admin'
+              ? user?.name || user?.email || Roles.ADMIN
               : 'Not Allowed'}
           </p>
         </Col>
@@ -48,5 +48,5 @@ const Admin = () => {
 
 export default withAuthenticationRequired(Admin, {
   // Show a message while the user waits to be redirected to the login page.
-  onRedirecting: () => <div>Please wait: checking Admin authorisation</div>,
+  onRedirecting: () => <div>Checking credentials</div>,
 });

@@ -38,11 +38,15 @@ const MainNavbar = () => {
             <Nav.Link onClick={() => navigate('/bookings')}>Bookings</Nav.Link>
 
             {isHotelier && (
-              <Nav.Link onClick={() => navigate('/hotel')}>Admin</Nav.Link>
+              <Nav.Link onClick={() => navigate('/hotelier')}>
+                Hotelier dashboard
+              </Nav.Link>
             )}
 
             {isAdmin && (
-              <Nav.Link onClick={() => navigate('/admin')}>Admin</Nav.Link>
+              <Nav.Link onClick={() => navigate('/admin')}>
+                Admin dashboard
+              </Nav.Link>
             )}
           </Nav>
           <Nav className='d-flex align-items-center'>

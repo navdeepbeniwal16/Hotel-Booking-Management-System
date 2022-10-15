@@ -1,6 +1,6 @@
 import Hotel from '../types/HotelType';
 import Hotelier from '../types/HotelierType';
-import UserDataType from '../types/UserDataType';
+import UserDataType, { defaultUserData } from '../types/UserDataType';
 import HotelGroup from '../types/HotelGroup';
 import Room from '../types/RoomType';
 
@@ -56,7 +56,7 @@ class LANS_API {
   }
 
   // Users
-  public async triggerRegistration(): Promise<boolean> {
+  public async register(): Promise<[boolean, UserDataType]> {
     const res = await fetch(this.usersEndpoint, {
       method: methods.POST,
       headers: this.headers,
@@ -66,10 +66,10 @@ class LANS_API {
     });
     const data = await res.json();
     if (res.status == 200) {
-      const { success } = data;
-      return success;
+      const user: UserDataType = data;
+      return [true, user];
     }
-    return false;
+    return [false, defaultUserData];
   }
 
   public async getAllUsers(): Promise<UserDataType[]> {
@@ -168,7 +168,11 @@ class LANS_API {
       headers: this.headers,
     });
     const data = await res.json();
-    const hotelGroups: Array<HotelGroup> = data.result.hotel_groups;
+    const success: boolean = data.success;
+    let hotelGroups: Array<HotelGroup> = [];
+    if (success && data.result && data.result.groups) {
+      hotelGroups = data.result.groups;
+    }
     return hotelGroups;
   }
 
@@ -212,6 +216,21 @@ class LANS_API {
     const data = await res.json();
     const success: boolean = data.success;
     return success;
+  }
+
+  public async getHotelsForGroup(group: HotelGroup): Promise<Hotel[]> {
+    const res = await fetch(this.hotelsEndpoint, {
+      method: methods.POST,
+      headers: this.headers,
+      body: JSON.stringify({
+        search: {
+          group: group.id,
+        },
+      }),
+    });
+    const data = await res.json();
+    const hotels: Array<Hotel> = data.result.hotels;
+    return hotels;
   }
 }
 
