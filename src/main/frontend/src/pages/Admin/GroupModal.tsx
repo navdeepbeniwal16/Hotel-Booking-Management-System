@@ -55,9 +55,6 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
     });
   };
 
-  useEffect(() => {
-    console.log(group);
-  }, [group]);
   const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setGroup({ ...group, name: event.target.value });

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { map } from 'lodash';
+import { map, filter } from 'lodash';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Tab from 'react-bootstrap/Tab';
@@ -132,6 +132,14 @@ const AdminTabs = () => {
     loadHotelGroups(true);
   };
 
+  const handleUpdateHotel = (hotel: Hotel): void => {
+    setHotels(
+      map(hotels, (next: Hotel) => {
+        return hotel.id == next.id ? hotel : next;
+      })
+    );
+  };
+
   return (
     <>
       {isLoading ? (
@@ -190,7 +198,7 @@ const AdminTabs = () => {
           <Tab eventKey={tabKeys.hotels} title={tabKeys.hotels}>
             <Row>
               <Col>
-                <HotelTable hotels={hotels} />
+                <HotelTable hotels={hotels} onRemoveHotel={handleUpdateHotel} />
               </Col>
             </Row>
           </Tab>

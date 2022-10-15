@@ -197,6 +197,22 @@ class LANS_API {
     const hotels: Array<Hotel> = data.result.hotels;
     return hotels;
   }
+
+  public async removeHotel(hotel: Hotel): Promise<boolean> {
+    const res = await fetch(this.hotelsEndpoint, {
+      method: methods.PUT,
+      headers: this.headers,
+      body: JSON.stringify({
+        hotel: {
+          id: hotel.id,
+          is_active: false,
+        },
+      }),
+    });
+    const data = await res.json();
+    const success: boolean = data.success;
+    return success;
+  }
 }
 
 export default LANS_API;
