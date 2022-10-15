@@ -82,8 +82,7 @@ public class HotelsController extends FrontCommand {
         else if (requestHelper.body().has("hotel")) {
             handleHotelQuery(requestHelper.body());
         } else {
-            System.err.println(requestHelper.methodAndURI());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, request.getRequestURI());
+            responseHelper.error("POST /hotels does must include 'search' or 'hotel' ", HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
@@ -99,6 +98,8 @@ public class HotelsController extends FrontCommand {
                 responseHelper.respond(useCase.getResult(), statusCode);
                 return;
             }
+            else
+                responseHelper.error("POST /hotels search needs to contain city name ", HttpServletResponse.SC_BAD_REQUEST);
         }
         else if(searchQueryBody.has("hotels")) {
             if(!auth.isHotelier())
@@ -117,6 +118,9 @@ public class HotelsController extends FrontCommand {
             responseHelper.respond(useCase.getResult(), statusCode);
             return;
         }
+        else
+            responseHelper.error("POST /hotels search has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+
         return;
     }
 
@@ -148,46 +152,41 @@ public class HotelsController extends FrontCommand {
         String contact = "";
         boolean is_active = true;
 
-        if(jsonObject.has("hotelier_email")) {
-            String hotelier_email = jsonObject.getString("hotelier_email");
-
-            ArrayList<User> hoteliers = null;
-
-            UserSearchCriteria u_criteria = new UserSearchCriteria();
-            u_criteria.setEmail(hotelier_email);
-
-            try {
-                hoteliers = dataSource.findBySearchCriteria(User.class, u_criteria);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if(hoteliers.size() > 0) {
-                User hgh = hoteliers.get(0);
-
-                hotel_group_id = hgh.getHotelierHotelGroupID();
-            }
-        }
-
         if(jsonObject.has("hotel")) {
             JSONObject nestedJsonObject = jsonObject.getJSONObject("hotel");
 
-           if(nestedJsonObject.has("h_name"))
+            if(nestedJsonObject.has("h_name"))
                 h_name = nestedJsonObject.getString("h_name");
+            else
+                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
             if(nestedJsonObject.has("email"))
                 email = nestedJsonObject.getString("email");
+            else
+                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
             if(nestedJsonObject.has("l1"))
                 l1 = nestedJsonObject.getString("l1");
+            else
+                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
             if(nestedJsonObject.has("l2"))
                 l2 = nestedJsonObject.getString("l2");
+            else
+                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
             if(nestedJsonObject.has("city"))
                 city = nestedJsonObject.getString("city");
+            else
+                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
             if(nestedJsonObject.has("postcode"))
                 postcode = nestedJsonObject.getInt("postcode");
+            else
+                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
             if(nestedJsonObject.has("district"))
                 district = nestedJsonObject.getString("district");
+            else
+                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
             if(nestedJsonObject.has("contact"))
                 contact = nestedJsonObject.getString("contact");
+            else
+                responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
 
             District district_ob = new District(district);
             Address address = new Address(l1, l2, district_ob, city, postcode);
@@ -199,6 +198,8 @@ public class HotelsController extends FrontCommand {
                 e.printStackTrace();
             }
         }
+        else
+            responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
         return h;
     }
 }
