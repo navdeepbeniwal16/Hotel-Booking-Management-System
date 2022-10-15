@@ -60,12 +60,14 @@ public class HotelsController extends FrontCommand {
                     useCase.execute();
                     statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
-                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                            HttpServletResponse.SC_BAD_REQUEST;
                     responseHelper.respond(useCase.getResult(), statusCode);
+                }
+                else
+                    responseHelper.error("PUT /hotels does must include 'is_active' ", HttpServletResponse.SC_BAD_REQUEST);
             }
             else
-                    responseHelper.error("PUT /hotels does must include 'id' ", HttpServletResponse.SC_BAD_REQUEST);
-            }
+                responseHelper.error("PUT /hotels does must include 'id' ", HttpServletResponse.SC_BAD_REQUEST);
         }
         else
             responseHelper.error("PUT /hotels does must include 'hotel' ", HttpServletResponse.SC_BAD_REQUEST);

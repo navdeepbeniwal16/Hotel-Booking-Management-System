@@ -24,7 +24,6 @@ public class ChangeHotelStatus extends UseCase {
         HotelSearchCriteria criteria = new HotelSearchCriteria();
         criteria.setId(hotel_id);
 
-
         try {
             hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
 
@@ -34,8 +33,13 @@ public class ChangeHotelStatus extends UseCase {
                 if (is_active == !(hotel.getIsActive())) {
                     hotel.setIs_Active(!hotel.getIsActive());
                 }
+                succeed();
             }
-            succeed();
+            else{
+                setResponseErrorMessage("No hotel found for id");
+                fail();
+            }
+
         } catch (Exception e) {
             fail();
             e.printStackTrace();
