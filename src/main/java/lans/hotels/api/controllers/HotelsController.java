@@ -1,6 +1,7 @@
 package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.exceptions.UoWException;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.user.User;
@@ -155,12 +156,36 @@ public class HotelsController extends FrontCommand {
         if(jsonObject.has("hotel")) {
             JSONObject nestedJsonObject = jsonObject.getJSONObject("hotel");
 
-            if(nestedJsonObject.has("h_name"))
+            if(nestedJsonObject.has("h_name")) {
                 h_name = nestedJsonObject.getString("h_name");
+
+                ArrayList<Hotel> hotels = null;
+                HotelSearchCriteria h_criteria = new HotelSearchCriteria();
+                h_criteria.setName(h_name);
+                try {
+                    hotels = dataSource.findBySearchCriteria(Hotel.class, h_criteria);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (hotels.size()>0)
+                    responseHelper.error("POST /hotels hotel name is a duplicate", HttpServletResponse.SC_BAD_REQUEST);
+            }
             else
                 responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
-            if(nestedJsonObject.has("email"))
+            if(nestedJsonObject.has("email")) {
                 email = nestedJsonObject.getString("email");
+
+                ArrayList<Hotel> hotels = null;
+                HotelSearchCriteria h_criteria = new HotelSearchCriteria();
+                h_criteria.setEmail(email);
+                try {
+                    hotels = dataSource.findBySearchCriteria(Hotel.class, h_criteria);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (hotels.size()>0)
+                    responseHelper.error("POST /hotels hotel email is a duplicate", HttpServletResponse.SC_BAD_REQUEST);
+            }
             else
                 responseHelper.error("POST /hotels hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
             if(nestedJsonObject.has("l1"))
