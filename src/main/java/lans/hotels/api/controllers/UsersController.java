@@ -35,17 +35,21 @@ public class UsersController extends FrontCommand {
         } else if (requestHelper.body().has("customer")) {
             asCustomer(this::handlePostCustomer);
         } else if (requestHelper.body().has("new")) {
-            JSONObject res = new JSONObject();
-            res.put("success", auth.isAuthenticated());
-            res.put("role", auth.getUser().getRole().getName());
-            res.put("group", auth.getUser().getHotelierHotelGroupID());
-            res.put("id", auth.getUser().getId());
-            res.put("name", auth.getUser().getName());
-            res.put("email", auth.getUser().getEmail());
-            responseHelper.respondOK(res);
+            handleNewUser();
         }
         else
             responseHelper.error("POST /users must contain search, hotelier, customer or new", HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    private void handleNewUser() {
+        JSONObject res = new JSONObject();
+        res.put("success", auth.isAuthenticated());
+        res.put("role", auth.getUser().getRole().getName());
+        res.put("group", auth.getUser().getHotelierHotelGroupID());
+        res.put("id", auth.getUser().getId());
+        res.put("name", auth.getUser().getName());
+        res.put("email", auth.getUser().getEmail());
+        responseHelper.respondOK(res);
     }
 
     public User getUserFromJSONObject(JSONObject body) {

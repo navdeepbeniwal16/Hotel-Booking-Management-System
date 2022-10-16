@@ -1,4 +1,6 @@
 package lans.hotels.use_cases;
+import lans.hotels.api.DTOs.AddressDTO;
+import lans.hotels.api.DTOs.HotelGroupDTO;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.domain.hotel_group.HotelGroup;
 import org.json.JSONArray;
@@ -48,21 +50,10 @@ public class GetHotelGroups extends UseCase {
         JSONArray jsonArray = new JSONArray();
         try {
             if (hotel_groups != null) {
-                hotel_groups.forEach(hotel_group -> {
-                    if (groupId == -1 || groupId.equals(hotel_group.getId())) {
-                        JSONObject hg_entry;
-                        hg_entry = new JSONObject();
-                        hg_entry.put("id", hotel_group.getId());
-                        hg_entry.put("name", hotel_group.getName());
-                        hg_entry.put("phone", hotel_group.getPhone());
-                        JSONObject address = new JSONObject();
-                        address.put("line_1", hotel_group.getAddress().getLine1());
-                        address.put("line_2", hotel_group.getAddress().getLine2());
-                        address.put("district", hotel_group.getAddress().getDistrict().toString());
-                        address.put("city", hotel_group.getAddress().getCity());
-                        address.put("postcode", hotel_group.getAddress().getPostCode());
-                        hg_entry.put("address", address);
-                        jsonArray.put(hg_entry);
+                hotel_groups.forEach(hotelGroup -> {
+                    if (groupId == -1 || groupId.equals(hotelGroup.getId())) {
+                        HotelGroupDTO hotelGroupDTO = new HotelGroupDTO(hotelGroup);
+                        jsonArray.put(hotelGroupDTO.json());
                     }
                 });
             }
