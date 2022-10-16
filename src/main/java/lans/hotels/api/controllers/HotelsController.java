@@ -50,28 +50,19 @@ public class HotelsController extends FrontCommand {
         responseHelper.respond(useCase.getResult(), statusCode);
     }
 
-    public Void handlePut() throws Exception {
-        if(requestHelper.body().has("hotel")) {
-            JSONObject JSONBody = requestHelper.body().getJSONObject("hotel");
-            if (JSONBody.has("id")) {
-                Integer hotel_id = JSONBody.getInt("id");
-                if(JSONBody.has("is_active")) {
-                    Boolean is_active = JSONBody.getBoolean("is_active");
-                    useCase = new ChangeHotelStatus(dataSource, hotel_id,is_active);
-                    useCase.execute();
-                    statusCode = useCase.succeeded() ?
-                            HttpServletResponse.SC_OK :
-                            HttpServletResponse.SC_BAD_REQUEST;
-                    responseHelper.respond(useCase.getResult(), statusCode);
-                }
-                else
-                    responseHelper.error("PUT /hotels does must include 'is_active' ", HttpServletResponse.SC_BAD_REQUEST);
-            }
-            else
-                responseHelper.error("PUT /hotels does must include 'id' ", HttpServletResponse.SC_BAD_REQUEST);
+    public Void handlePut() {
+        Integer hotelId = (Integer) requestHelper.body("hotel", "id");
+        Boolean isActive = (Boolean) requestHelper.body("hotel", "is_active");
+        if (hotelId != null && isActive != null) {
+            useCase = new ChangeHotelStatus(dataSource, hotelId,isActive);
+            useCase.execute();
+            statusCode = useCase.succeeded() ?
+                    HttpServletResponse.SC_OK :
+                    HttpServletResponse.SC_BAD_REQUEST;
+            responseHelper.respond(useCase.getResult(), statusCode);
+        } else {
+            responseHelper.error("PUT /hotels | invalid request body: hotel_id=" + hotelId + ", is_active=" + isActive, HttpServletResponse.SC_BAD_REQUEST);
         }
-        else
-            responseHelper.error("PUT /hotels does must include 'hotel' ", HttpServletResponse.SC_BAD_REQUEST);
         return null;
     }
 
