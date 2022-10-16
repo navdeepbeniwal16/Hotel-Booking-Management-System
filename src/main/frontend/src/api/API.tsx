@@ -224,6 +224,19 @@ class LANS_API {
     return success;
   }
 
+  public async createHotel(hotel: Hotel): Promise<boolean> {
+    const res = await fetch(this.hotelsEndpoint, {
+      method: methods.POST,
+      headers: this.headers,
+      body: JSON.stringify({
+        hotel
+      }),
+    });
+    const data = await res.json();
+    const success: boolean = data.success;
+    return success;
+  }
+
   public async getHotelsForGroup(group: HotelGroup): Promise<Hotel[]> {
     const res = await fetch(this.hotelsEndpoint, {
       method: methods.POST,

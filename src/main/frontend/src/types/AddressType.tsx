@@ -12,7 +12,7 @@ type Address = {
   line_2: string;
   city: string;
   district: string;
-  postcode: number;
+  postcode: number | string;
 };
 
 export const defaultAddress: Address = {
@@ -21,6 +21,14 @@ export const defaultAddress: Address = {
   city: 'Melbourne',
   district: 'VIC',
   postcode: 3000,
+};
+
+export const emptyAddress: Address = {
+  line_1: '',
+  line_2: '',
+  city: '',
+  district: '',
+  postcode: '',
 };
 
 export const toString = (address: Address): string => {

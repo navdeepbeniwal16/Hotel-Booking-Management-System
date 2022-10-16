@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { ListGroup, Button } from 'react-bootstrap';
 import { toString as addressToString } from '../../types/AddressType';
 import Hotel from '../../types/HotelType';
@@ -6,7 +6,7 @@ import { map } from 'lodash';
 import { PlusCircle } from 'react-bootstrap-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CreateHotel from './CreateHotel';
-
+import AppContext from '../../context/AppContext';
 export interface HotelListProps {
   hotels: Hotel[];
 }
@@ -14,11 +14,19 @@ export interface HotelListProps {
 
 
 const GroupHotels = ({ hotels }: HotelListProps) => {
+  const {
+    backend,
+  } = useContext(AppContext.GlobalContext);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [showModal, setShowModal] = useState(false);
-  const handleSubmitCreateHotel = () => {
+  const handleSubmitCreateHotel = (hotel: Hotel) => {
     console.log("submitted");
+    backend.createHotel(hotel).then((success: boolean) => {
+      console.log("create hotel:", success);
+      // TODO: @levim - improve alert
+      window.location.reload();
+    })
     setShowModal(false);
   }
   const handleCloseModal = () => {
