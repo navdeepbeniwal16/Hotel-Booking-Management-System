@@ -230,7 +230,7 @@ class LANS_API {
       headers: this.headers,
       body: JSON.stringify({
         search: {
-          group: group.id,
+          hotels: ""
         },
       }),
     });

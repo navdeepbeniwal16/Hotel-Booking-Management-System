@@ -87,39 +87,21 @@ public class HotelsController extends FrontCommand {
         }
     }
 
-    public void handleSearchQuery(JSONObject searchQueryBody) throws Exception {
+    public void handleSearchQuery(JSONObject searchQueryBody) {
         if (searchQueryBody.has("city")) {
             String city = searchQueryBody.getString("city");
-            if (city != null){
-                useCase = new SearchHotelsByLocation(dataSource,city);
-                useCase.execute();
-                statusCode = useCase.succeeded() ?
-                        HttpServletResponse.SC_OK :
-                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                responseHelper.respond(useCase.getResult(), statusCode);
-                return;
-            }
-            else
-                responseHelper.error("POST /hotels search needs to contain city name ", HttpServletResponse.SC_BAD_REQUEST);
+            handleCitySearch(city);
         }
         else if(searchQueryBody.has("hotels")) {
-            if(!auth.isHotelier())
-            {
-                responseHelper.unauthorized();
-                return;
-            }
+            asHotelier(this::hotelsForHotelierGroup);
+        }
+        else
+            responseHelper.error("POST /hotels | invalid incorrect request body: " + requestHelper.body(), HttpServletResponse.SC_BAD_REQUEST);
+    }
 
-            Integer hotel_group_id = auth.getUser().getHotelierHotelGroupID();
-
-            if(hotel_group_id==0)
-            {
-                responseHelper.error("POST /hotels hotelier is not assigned to any hotel group ", HttpServletResponse.SC_BAD_REQUEST);
-                return;
-            }
-            System.out.println("user hotel group id : "+auth.getUser().getHotelierHotelGroupID());
-
-
-            useCase = new ViewHotelGroupHotels(dataSource,hotel_group_id);
+    private void handleCitySearch(String city) {
+        if (city != null){
+            useCase = new SearchHotelsByLocation(dataSource,city);
             useCase.execute();
             statusCode = useCase.succeeded() ?
                     HttpServletResponse.SC_OK :
@@ -127,7 +109,24 @@ public class HotelsController extends FrontCommand {
             responseHelper.respond(useCase.getResult(), statusCode);
         }
         else
-            responseHelper.error("POST /hotels search has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("POST /hotels search needs to contain city name ", HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    private Void hotelsForHotelierGroup() {
+        Integer hotel_group_id = auth.getUser().getHotelierHotelGroupID();
+        if((hotel_group_id == 0) || (hotel_group_id == -1))
+        {
+            responseHelper.error("POST /hotels hotelier is not assigned to any hotel group ", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+
+        useCase = new ViewHotelGroupHotels(dataSource,hotel_group_id);
+        useCase.execute();
+        statusCode = useCase.succeeded() ?
+                HttpServletResponse.SC_OK :
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        responseHelper.respond(useCase.getResult(), statusCode);
+        return null;
     }
 
     private void handleHotelQuery(JSONObject body) throws IOException{
