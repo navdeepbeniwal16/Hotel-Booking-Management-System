@@ -8,7 +8,7 @@ import HotelGroup, {
 } from '../../types/HotelGroup';
 import Hotel  from '../../types/HotelType';
 import { Row, Col, Container } from 'react-bootstrap';
-import HotelsList from './HotelsList';
+import GroupHotels from './GroupHotels';
 import GroupDetails from './GroupDetails';
 interface HotelierBody {
   hotelier: UserDataType;
@@ -44,7 +44,7 @@ const HotelierBody = () => {
         </Col>
       </Row>
       <Row xs={1} className='g-4 mb-4'>
-        <Col><HotelsList hotels={hotels} /></Col>
+        <Col><GroupHotels hotels={hotels} /></Col>
       </Row>
     </Container>
   );

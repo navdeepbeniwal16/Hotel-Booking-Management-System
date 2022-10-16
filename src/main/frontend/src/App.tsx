@@ -14,7 +14,7 @@ import AppContext from './context/AppContext';
 import { Auth0Provider } from '@auth0/auth0-react';
 import HotelierPage from './pages/Hotelier/Page';
 import HotelierBody from './pages/Hotelier/Body';
-import HotelSection from './pages/Hotelier/HotelSection';
+import HotelBookings from './pages/Hotelier/HotelBookings';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 const App = (props: ReactPropTypes, context: ContextType<any>) => {
@@ -46,7 +46,7 @@ const App = (props: ReactPropTypes, context: ContextType<any>) => {
               <Route path='/hotel/:id' element={<Hotel />}></Route>
               <Route path='/hotelier' element={<HotelierPage />}>
                 <Route index element={<HotelierBody />} />
-                <Route path=":hotelId" element={<HotelSection />} />
+                <Route path=":hotelId" element={<HotelBookings />} />
                 {/* 
                 <Route path="activity" element={<Activity />} /> */}
               </Route>
