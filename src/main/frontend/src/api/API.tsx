@@ -4,6 +4,7 @@ import UserDataType, { defaultUserData } from '../types/UserDataType';
 import HotelGroup from '../types/HotelGroup';
 import Room from '../types/RoomType';
 import Booking from '../types/BookingType';
+import { find } from 'lodash';
 
 type Headers = {
   'Content-Type': string;
@@ -99,13 +100,15 @@ class LANS_API {
   }
 
   // Rooms
-  public async getAllRooms(hotel: Hotel): Promise<Room[]> {
+  public async getAllRooms(hotel: Hotel, startDate: Date = new Date(2000, 1, 1), endDate: Date = new Date(2100, 11, 30)): Promise<Room[]> {
     const res = await fetch(this.roomsEndpoint, {
       headers: this.headers,
       method: methods.POST,
       body: JSON.stringify({
         search: {
           hotel_id: hotel.id,
+          start_date: startDate.toLocaleString('en-GB'),
+          end_date: endDate.toLocaleString('en-GB'),
         },
       }),
     });
@@ -116,7 +119,7 @@ class LANS_API {
     if (res.ok && success && result.rooms) {
       rooms = result.rooms;
     } else {
-      console.log('getAllRooms():', data.errorMessage);
+      console.log('getAllRooms():', data.error);
     }
     
     return rooms;
@@ -232,6 +235,11 @@ class LANS_API {
       console.log('ERROR getAllHotels:', data.errorMessage);
     }
     return hotels;
+  }
+
+  public async getHotel(id: number): Promise<Hotel|undefined> {
+    const hotels = await this.getAllHotels();
+    return find(hotels, (hotel: Hotel) => (hotel.id == id));
   }
 
   public async removeHotel(hotel: Hotel): Promise<boolean> {

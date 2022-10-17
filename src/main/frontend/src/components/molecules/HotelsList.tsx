@@ -16,7 +16,6 @@ interface HotelListProps {
 }
 
 const HotelsList = ({ hotels }: HotelListProps) => {
-  const context = useContext(AppContext.GlobalContext);
   return (
     <Container>
       <Row  xs={1} md={2} className='gy-3 gx-2'>
@@ -26,9 +25,6 @@ const HotelsList = ({ hotels }: HotelListProps) => {
             <Nav.Link key={`${hotel.id}`}
               as={Link}
               to={`/hotel/${hotel.id}`}
-              onClick={() => {
-                context.hotel.setHotel(hotel);
-              }}
             >
               
                 <Card>

@@ -1,6 +1,6 @@
 import React from 'react';
-import Booking from '../types/BookingType';
-import BookingsList from '../components/layouts/BookingsList';
+import Booking from '../../types/BookingType';
+import BookingsList from '../../components/layouts/BookingsList';
 
 const Bookings = () => {
   const bookings: Booking[] = [];
