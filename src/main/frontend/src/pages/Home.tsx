@@ -18,7 +18,7 @@ const Home = () => {
 
   return (
     <div>
-      <SearchForm></SearchForm>
+      {/* <SearchForm /> */}
       <HotelsList hotels={hotels}></HotelsList>
     </div>
   );

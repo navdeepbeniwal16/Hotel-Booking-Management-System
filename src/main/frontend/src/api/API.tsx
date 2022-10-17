@@ -59,6 +59,34 @@ class LANS_API {
   }
 
   // Bookings
+  public async getCustomerBookings(user: UserDataType): Promise<[Booking[], string]> {
+    const res = await fetch(this.bookingsEndpoint, {
+      method: methods.POST,
+      headers: this.headers,
+      body: JSON.stringify({
+        search: {
+          customer_bookings: user.id
+        }
+      })
+      
+    })
+    let bookings: Booking[] = []
+    let message = "";
+    const data = await res.json();
+    if (res.ok && data.result) {
+        const { result } = data;
+        const success: boolean = data.success as boolean;
+        if (success) {
+          bookings = result.bookings;
+        } else {
+          message = result.error;
+        }
+    }
+    console.log(res.status, res.statusText);
+    console.log(data);
+    return [bookings, message];
+  }
+
   public async createBooking(hotel: Hotel,
     startDate: Date,
     endDate: Date,
