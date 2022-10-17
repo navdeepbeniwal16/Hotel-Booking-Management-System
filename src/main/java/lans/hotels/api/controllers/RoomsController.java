@@ -205,11 +205,10 @@ public class RoomsController extends FrontCommand {
 
     private void handleSearchQuery(JSONObject searchParams) throws Exception {
 
-
         if(searchParams.has("hotel_id"))
         {
-
             Integer hotelId = parseHotelId(searchParams);
+            Utils.RoomResultsInclude include;
 
             ArrayList<Hotel> hotels = null;
             HotelSearchCriteria h_criteria = new HotelSearchCriteria();
@@ -231,17 +230,23 @@ public class RoomsController extends FrontCommand {
                 {
                     return;
                 }
-            }
 
-            Utils.RoomResultsInclude include = parseInclude(searchParams);
-            if(include!=Utils.RoomResultsInclude.ALL)
-            {
+                include = Utils.RoomResultsInclude.ALL;
+            }
+            else{
+                if(!hotels.get(0).getIsActive()) {
+                    responseHelper.error("POST /rooms search hotel is in active", HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+
+                include = Utils.RoomResultsInclude.AVAILABLE;
                 if(!(searchParams.has("start_date")&&searchParams.has("end_date")))
                 {
                     responseHelper.error("POST /rooms search must include 'start_date' and 'end_date'", HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
             }
+
             Date startDate = parseDate(searchParams, "start_date");
             Date endDate =  parseDate(searchParams, "end_date");
             ViewHotelRooms viewHotelRooms = new ViewHotelRooms(dataSource, hotelId);
@@ -262,12 +267,6 @@ public class RoomsController extends FrontCommand {
         return searchQueryBody.getInt("hotel_id");
     }
 
-    private Utils.RoomResultsInclude parseInclude(JSONObject searchQueryBody) {
-        if (!searchQueryBody.has("is_available")) return Utils.RoomResultsInclude.ALL;
-        return searchQueryBody.getBoolean("is_available") ?
-                Utils.RoomResultsInclude.AVAILABLE :
-                Utils.RoomResultsInclude.UNAVAILABLE;
-    }
 
     private Date parseDate(JSONObject searchQueryBody, String selectDate) throws Exception {
         String dateString = null;
