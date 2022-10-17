@@ -139,8 +139,11 @@ class LANS_API {
     const res = await fetch(this.usersEndpoint, {
       headers: this.headers,
     });
-    const data = await res.json();
-    const users: Array<UserDataType> = data.result.users;
+    const data = await res.json(); 
+    let users: Array<UserDataType> = [];
+    if (res.ok && data.result.users) {
+      users = data.result.users;
+    }
     return users;
   }
 

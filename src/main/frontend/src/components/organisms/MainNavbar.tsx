@@ -12,6 +12,7 @@ const MainNavbar = () => {
   const { userMetadata } = useContext(AppContext.GlobalContext);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isHotelier, setIsHotelier] = useState(false);
+  const [isCustomer, setIsCustomer] = useState(false);
 
   const { user, loginWithRedirect, logout, isLoading, isAuthenticated } =
     useAuth0();
@@ -19,6 +20,11 @@ const MainNavbar = () => {
   useEffect(() => {
     setIsAdmin(userMetadata.roles.includes(Roles.ADMIN));
     setIsHotelier(userMetadata.roles.includes(Roles.HOTELIER));
+    setIsCustomer(
+      isAuthenticated &&
+        !userMetadata.roles.includes(Roles.ADMIN) &&
+        !userMetadata.roles.includes(Roles.HOTELIER)
+    );
   }, [isAuthenticated, userMetadata.roles]);
 
   return (
@@ -34,18 +40,22 @@ const MainNavbar = () => {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            <Nav.Link onClick={() => navigate('/')}>Home</Nav.Link>
-            <Nav.Link onClick={() => navigate('/bookings')}>Bookings</Nav.Link>
+            <Nav.Link onClick={() => navigate('/')}>Hotels</Nav.Link>
+            {isCustomer && (
+              <Nav.Link onClick={() => navigate('/bookings')}>
+                My Bookings
+              </Nav.Link>
+            )}
 
             {isHotelier && (
               <Nav.Link onClick={() => navigate('/hotelier')}>
-                Hotel Group
+                Hotelier Dashboard
               </Nav.Link>
             )}
 
             {isAdmin && (
               <Nav.Link onClick={() => navigate('/admin')}>
-                Admin
+                Admin Dashboard
               </Nav.Link>
             )}
           </Nav>
