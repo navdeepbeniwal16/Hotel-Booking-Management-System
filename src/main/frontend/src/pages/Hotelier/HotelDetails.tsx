@@ -10,13 +10,11 @@ import BookingCard from './BookingCard';
 import {
   ListGroup,
   Tab,
-  Tabs,
   Card,
   Row,
   Col,
   Container,
   Nav,
-  Button,
   Stack,
 } from 'react-bootstrap';
 import { toString } from '../../types/AddressType';
@@ -28,7 +26,7 @@ const HotelBookings = () => {
   const hotelId = Number(useParams().hotelId);
   const defaultBookings: Array<Booking> = [];
   const [bookings, setBookings] = useState(defaultBookings);
-  const [hotel, setHotel] = useState(defaultHotel);
+  const [hotel, setHotel] = useState({ ...defaultHotel, id: hotelId });
   const defaultRooms: Array<Room> = [];
   const [rooms, setRooms] = useState(defaultRooms);
 

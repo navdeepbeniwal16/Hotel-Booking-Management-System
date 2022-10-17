@@ -15,7 +15,7 @@ import javax.servlet.annotation.WebListener;
 
 @WebListener
 public class AppContext implements ServletContextListener {
-    private DBConnection dbConnection;
+    private DBConnection connectionFactory;
     private EnvironmentI environment;
     private ServletContext ctx;
     @Override
@@ -46,8 +46,8 @@ public class AppContext implements ServletContextListener {
         try {
             // Database connection based on environment (dev vs prod)
             environment = new Environment(System.getenv());
-            dbConnection = new PostgresConnection(environment.getDBConfiguration());
-            ctx.setAttribute("DBConnection", dbConnection);
+            connectionFactory = new PostgresConnection(environment.getDBConfiguration());
+            ctx.setAttribute("connectionFactory", connectionFactory);
 
             // Authentication and authorisation using Auth0
             JwkProvider jwkProvider = new JwkProviderBuilder(auth0Domain).build();

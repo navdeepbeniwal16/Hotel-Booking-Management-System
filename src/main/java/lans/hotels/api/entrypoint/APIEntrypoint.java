@@ -2,7 +2,6 @@ package lans.hotels.api.entrypoint;
 
 import lans.hotels.api.auth.AuthorizationFactory;
 import lans.hotels.api.controllers.UnknownController;
-import lans.hotels.api.exceptions.CommandException;
 import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
@@ -11,9 +10,7 @@ import lans.hotels.domain.IDataSource;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
-import java.io.IOException;
 
-import java.sql.SQLException;
 import java.util.*;
 
 @WebServlet(name = "APIFrontController", value = "/api/*")
@@ -41,21 +38,24 @@ public class APIEntrypoint extends HttpServlet {
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         IDataSource dataSourceLayer = null;
-        DBConnection database = null;
+        DBConnection connectionFactory = null;
         try {
-            database = (DBConnection) getServletContext().getAttribute("DBConnection");
-            if (database == null) {
+            connectionFactory = (DBConnection) getServletContext().getAttribute("connectionFactory");
+            if (connectionFactory == null) {
+                throw new Exception("no connection factory");
+            }
+            if (connectionFactory.getConnection() == null) {
                 throw new Exception("no connections available");
             }
-            dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
+            dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), connectionFactory.getConnection());
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                if (database != null && database.connection() != null && !database.connection().isClosed()) {
-                    database.connection().close();
+                if (dataSourceLayer != null && dataSourceLayer.isOpen()) {
+                    dataSourceLayer.commit();
                 }
-            } catch (SQLException sqlException) {
-                throw new ServletException("APIEntrypoint.handleRequest():\n" + "Method:\t" + request.getMethod() + "\nError message:\t" + e);
+            } catch (DataSourceLayerException ex) {
+                throw new RuntimeException(ex);
             }
             throw new ServletException("APIEntrypoint.handleRequest():\n" + "Method:\t" + request.getMethod() + "\nError message:\t" + e);
         }
@@ -67,10 +67,10 @@ public class APIEntrypoint extends HttpServlet {
             throw new ServletException("APIEntrypoint.handleRequest():\n" + "Method:\t" + request.getMethod() + "\nError message:\t" + e);
         } finally {
             try {
-                if (database.connection() != null && !database.connection().isClosed()) {
-                    database.connection().close();
+                if (dataSourceLayer.isOpen()) {
+                    dataSourceLayer.commit();
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 throw new ServletException("APIEntrypoint.handleRequest():\n" + "Method:\t" + request.getMethod() + "\nError message:\t" + e);
             }

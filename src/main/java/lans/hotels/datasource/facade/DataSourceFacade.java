@@ -111,9 +111,20 @@ public abstract class DataSourceFacade implements IDataSource {
 
     public void commit() throws DataSourceLayerException {
         try {
-            uow.commit(connection, dataMapperRegistry);
+            if (isOpen()) {
+                uow.commit(connection, dataMapperRegistry);
+            }
         } catch (Exception e) {
             throw new DataSourceLayerException(e.getMessage());
+        }
+    }
+
+    public boolean isOpen() {
+        try {
+            return this.connection != null && !this.connection.isClosed();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

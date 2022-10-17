@@ -84,8 +84,8 @@ public class RoomsController extends FrontCommand {
                 responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
                 return null;
             }
-            if(nestedJsonObject.has("max_occupancy"))
-                max_occupancy = nestedJsonObject.getInt("max_occupancy");
+            if(nestedJsonObject.has("occupancy"))
+                max_occupancy = nestedJsonObject.getInt("occupancy");
             else{
                 responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
                 return null;
@@ -96,8 +96,8 @@ public class RoomsController extends FrontCommand {
                 responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
                 return null;
             }
-            if(nestedJsonObject.has("room_price"))
-                room_price = nestedJsonObject.getInt("room_price");
+            if(nestedJsonObject.has("price"))
+                room_price = nestedJsonObject.getInt("price");
             else{
                 responseHelper.error("POST /rooms hotel has incorrect request body ", HttpServletResponse.SC_BAD_REQUEST);
                 return null;
@@ -115,7 +115,7 @@ public class RoomsController extends FrontCommand {
                     e.printStackTrace();
                 }
                 if (rooms.size()>0){
-                    responseHelper.error("POST /rooms room number is a duplicate", HttpServletResponse.SC_BAD_REQUEST);
+                    responseHelper.error("room number " + number + " already exists", HttpServletResponse.SC_BAD_REQUEST);
                     return null;
                 }
             }
@@ -221,7 +221,7 @@ public class RoomsController extends FrontCommand {
             }
 
             if(hotels.size() == 0) {
-                responseHelper.error("POST /rooms search hotel_id does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.error("POST /rooms: hotel " + hotelId +" does not exist", HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 

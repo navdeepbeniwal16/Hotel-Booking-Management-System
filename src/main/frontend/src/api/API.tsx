@@ -100,7 +100,7 @@ class LANS_API {
 
   // Rooms
   public async getAllRooms(hotel: Hotel): Promise<Room[]> {
-    const res = await fetch('/api/rooms', {
+    const res = await fetch(this.roomsEndpoint, {
       headers: this.headers,
       method: methods.POST,
       body: JSON.stringify({
@@ -113,11 +113,30 @@ class LANS_API {
     const { success } = data;
     const { result } = data;
     let rooms: Array<Room> = [];
-    if (success && result.rooms) {
+    if (res.ok && success && result.rooms) {
       rooms = result.rooms;
+    } else {
+      console.log('getAllRooms():', data.errorMessage);
     }
-    console.log('getAllRooms():\n', rooms);
+    
     return rooms;
+  }
+
+  public async createRoom(room: Room): Promise<[boolean, string]> {
+    const res = await fetch(this.roomsEndpoint, {
+      headers: this.headers,
+      method: methods.POST,
+      body: JSON.stringify({
+        room
+      })
+    })
+    const data = await res.json();
+    if (res.ok) {
+      const { success }: {success: boolean} = data;
+      return [success, "created"];
+    } else {
+      return [false, data.error || res.statusText];
+    }
   }
 
   // Hoteliers
@@ -251,6 +270,7 @@ class LANS_API {
       body: JSON.stringify({
         search: {
           hotels: '',
+          group_id: group.id
         },
       }),
     });

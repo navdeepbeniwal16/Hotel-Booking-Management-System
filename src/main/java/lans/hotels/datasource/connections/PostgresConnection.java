@@ -11,7 +11,7 @@ public class PostgresConnection extends DBConnection {
         super(config);
     }
 
-    public Connection connection()  {
+    public Connection getConnection()  {
         Connection conn = null;
         try {
             DriverManager.registerDriver(new org.postgresql.Driver());

@@ -1,4 +1,4 @@
-import React, { ReactNode, useState, ChangeEvent, SyntheticEvent } from 'react';
+import React, { ReactNode, useState, ChangeEvent } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import Address, { AddressField } from '../../types/AddressType';
 import Hotel, { emptyHotel, schemas } from '../../types/HotelType';
