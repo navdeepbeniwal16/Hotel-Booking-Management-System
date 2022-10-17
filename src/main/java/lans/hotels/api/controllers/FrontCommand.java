@@ -68,6 +68,7 @@ public abstract class FrontCommand implements IFrontCommand  {
         try {
             return auth.inRoles(roles, handler);
         } catch (Exception e ){
+            e.printStackTrace();
             responseHelper.internalServerError("auth error");
         }
         return null;

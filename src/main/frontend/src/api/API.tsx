@@ -78,6 +78,7 @@ class LANS_API {
       const { success }: { success: boolean } = data;
       return success;
     } else {
+      console.log(res.status, res.statusText);
       return false;
     }
   }

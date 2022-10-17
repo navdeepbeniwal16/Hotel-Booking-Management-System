@@ -5,29 +5,45 @@ import { useContext, useState } from 'react';
 import { Room, defaultRoom } from '../types/RoomType';
 import { filter, find, map } from 'lodash';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Container, Card, Form, Col, Row, Button } from 'react-bootstrap';
+import {
+  Container,
+  Card,
+  Form,
+  Col,
+  Row,
+  Button,
+  Spinner,
+  Stack,
+  CloseButton,
+  Toast,
+  ToastBody,
+} from 'react-bootstrap';
 import { toString } from '../types/AddressType';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Hotel, { defaultHotel } from '../types/HotelType';
 import RoomBooking from '../types/RoomBooking';
 
 const HotelPage = () => {
-  const { loginWithRedirect, isAuthenticated } = useAuth0();
+  const navigate = useNavigate()
   const { backend } = useContext(AppContext.GlobalContext);
   const emptyRoom: Room[] = [];
   const [rooms, setRooms] = useState(emptyRoom);
   const [hotel, setHotel] = useState(defaultHotel);
   const { id } = useParams();
   const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date(2023, 11, 30));
   const emptyRoomBookings: RoomBooking[] = [];
+  const [error, setError] = useState('');
   const [roomBookings, setRoomBookings] =
     useState<RoomBooking[]>(emptyRoomBookings);
+
   useEffect(() => {
     console.log('hotel: ', id);
     const setup = async () => {
       backend.getHotel(Number(id)).then((_hotel: Hotel | undefined) => {
+        setError('');
         console.log('hotel:', _hotel);
         if (_hotel) {
           setHotel(_hotel);
@@ -60,6 +76,7 @@ const HotelPage = () => {
           room,
         },
       ]);
+      setRooms(filter(rooms, (_room: Room) => _room.id != room.id));
     }
   };
   const renderRoom = (room: Room): ReactNode => {
@@ -124,6 +141,12 @@ const HotelPage = () => {
             </Form.Group>
           </Card.Text>
         </Card.Body>
+        <Card.Footer>
+          <Button variant="warning" onClick={() => {
+            setRoomBookings(filter(roomBookings, (rb: RoomBooking) => (rb.room_id != roomBooking.room_id)))
+            setRooms([...rooms, roomBooking.room])
+          }}>Remove room</Button>
+        </Card.Footer>
       </Card>
     );
   };
@@ -131,7 +154,15 @@ const HotelPage = () => {
   const handleDateSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('update dates:', event.currentTarget);
-    // backend.createBooking(hotel, startDate, endDate)
+    setLoading(true);
+    backend.getAllRooms(hotel, startDate, endDate).then((_rooms: Room[]) => {
+      setRooms(_rooms);
+      setRoomBookings(emptyRoomBookings);
+      setLoaded(true);
+      console.log('rooms:', rooms);
+      setLoading(false);
+      setLoaded(true);
+    });
   };
 
   const onStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,25 +178,70 @@ const HotelPage = () => {
   const handleBookingSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('booking submitted');
+    backend
+      .createBooking(hotel, startDate, endDate, roomBookings)
+      .then((success: boolean) => {
+        if (success) {
+          navigate('bookings');
+        } else {
+          setError('Something went wrong. Please try again.')
+          setTimeout(() => { window.location.reload(); }, 2000);
+        }
+      });
   };
 
   const renderBooking = (): React.ReactNode => {
     return (
       <Form onSubmit={handleBookingSubmit}>
-        <Row md='auto' className='g-4 mb-4'>
-          {roomBookings.length == 0 ? (
-            <p>You have not added any rooms to your booking</p>
-          ) : (
-            map(roomBookings, (roomBooking: RoomBooking) => (
-              <Col key={roomBooking.room.id}>
-                <div>{renderRoomBooking(roomBooking)}</div>
+        {
+          error != '' ? <Toast bg="danger"><ToastBody>{error}</ToastBody></Toast> : <Stack gap={3}>
+            <Row>
+              <Col className="d-flex flex-column align-content-stretch">
+                <Button type='submit'
+                  variant={roomBookings.length == 0 ? 'secondary' : 'success'}
+                  disabled={roomBookings.length == 0}>
+                  {roomBookings.length == 0 ? 'No rooms' : 'Book rooms'}
+                </Button>
               </Col>
-            ))
-          )}
-        </Row>
+            </Row>
+            <Row md='auto' className='g-4 mb-4'>
+              {roomBookings.length == 0 ? (
+                <p>You have not added any rooms to your booking</p>
+              ) : (
+                map(roomBookings, (roomBooking: RoomBooking) => (
+                  <Col key={roomBooking.room.id}>
+                    <div>{renderRoomBooking(roomBooking)}</div>
+                  </Col>
+                ))
+              )}
+            </Row>
+          </Stack>
+        }
+        
       </Form>
     );
   };
+
+  const renderRooms = (): React.ReactNode => {
+    return (
+      <>
+        {loading ? (
+          <Col>
+            <Spinner animation='border' />
+          </Col>
+        ) : rooms.length == 0 || rooms[0] == defaultRoom ? (
+          <p>No rooms available</p>
+        ) : (
+          map(rooms, (room: Room) => (
+            <Col key={room.id}>
+              <div>{renderRoom(room)}</div>
+            </Col>
+          ))
+        )}
+      </>
+    );
+  };
+
   return (
     <Container>
       <h1>{hotel.name}</h1>
@@ -216,22 +292,14 @@ const HotelPage = () => {
       <Row>
         <Container>
           <Row sm={12}>
-            <Col sm={3}>
+            <Col sm={3} className="bg-light border border-secondary rounded p-2">
               <h2>Booking</h2>
               {renderBooking()}
             </Col>
             <Col sm={9}>
               <h2>Rooms</h2>
               <Row md='auto' className='g-4 mb-4'>
-                {rooms.length == 0 || rooms[0] == defaultRoom ? (
-                  <p>No rooms available</p>
-                ) : (
-                  map(rooms, (room: Room) => (
-                    <Col key={room.id}>
-                      <div>{renderRoom(room)}</div>
-                    </Col>
-                  ))
-                )}
+                {renderRooms()}
               </Row>
             </Col>
           </Row>
