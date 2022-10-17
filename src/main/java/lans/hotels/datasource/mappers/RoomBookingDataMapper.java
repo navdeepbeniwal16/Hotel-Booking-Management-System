@@ -54,14 +54,9 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
         updateStatement.setInt(3,new_version);
         updateStatement.setInt(4,roomBooking.getId());
         updateStatement.setInt(5,version);
-        System.out.println(updateStatement.toString());
 
         int row_count = updateStatement.executeUpdate();
 
-        if(row_count==0)
-            System.out.println("Concurrency issue");
-        else
-            System.out.println("Room Booking updated successfully");
         return null;
     }
 
@@ -115,10 +110,7 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
             statement.setDate(2,roomBookingSearchCriteria.getDate_range().getFrom());
             statement.setDate(3,roomBookingSearchCriteria.getDate_range().getTo());
         }
-        System.out.println("RB findby \n"+statement.toString());
 
-        System.out.println("Room Booking Search Query");
-        System.out.println(findByCriteriaStatement);
 
         ResultSet resultSet = statement.executeQuery();
         RoomBooking loadedRoomBooking = load(resultSet);

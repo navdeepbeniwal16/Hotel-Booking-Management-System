@@ -184,8 +184,6 @@ public class Hotel extends ReferenceObject {
         try {
             this.rooms = dataSource.findBySearchCriteria(Room.class, criteria);
         } catch (Exception e) {
-            System.out.println("Exception occurred in Hotel: getAllRooms()");
-            System.out.println(e.getMessage());
             e.printStackTrace();
         }
         return rooms;

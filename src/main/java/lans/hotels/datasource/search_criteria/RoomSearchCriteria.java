@@ -21,8 +21,8 @@ public class RoomSearchCriteria extends AbstractSearchCriteria{
         return number;
     }
 
-    public void setRoomNumber(Integer roomID) {
-        this.roomID = roomID;
+    public void setRoomNumber(Integer number) {
+        this.number = number;
     }
 
     public Integer getHotelId() {

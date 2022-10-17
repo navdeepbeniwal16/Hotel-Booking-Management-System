@@ -39,10 +39,9 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
     @Override
     public ArrayList<Room> findAll() throws SQLException {
         String findAllStatement = "SELECT " + " * " + " FROM " + this.table +" ";
-        System.out.println("RoomDataMapper.findAll(): " + findAllStatement);
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
             ResultSet resultSet = statement.executeQuery();
-            System.out.println("RoomDataMapper.findAll(): " + resultSet.toString());
+
             while (load(resultSet) != null) {
                 load(resultSet);
             }
@@ -75,7 +74,7 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
             statement.setInt(2,r_criteria.getHotelId());
         }
 
-        System.out.println("FIND BY Statement \n"+statement.toString());
+        System.out.println("FIND BY \n"+statement);
         ResultSet resultSet = statement.executeQuery();
         Room currentRoom = load(resultSet);
         while (currentRoom != null) {
@@ -129,7 +128,6 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
         statement.setBoolean(7,r.getIsActive());
         statement.setInt(8,r.getHotelID());
 
-        System.out.println(statement.toString());
         ResultSet resultSet = statement.executeQuery();
 
         if(resultSet.next())

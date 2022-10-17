@@ -170,10 +170,8 @@ public class User extends ReferenceObject {
         ArrayList<Booking> allBookings = new ArrayList<>();
         try {
             allBookings = dataSource.findBySearchCriteria(Booking.class, bookingsSearchCriteria);
-            System.out.println("Users : Number of bookings fetched : " + allBookings.size());
         } catch (Exception e) {
-            System.out.println("Exception occured while fetching bookings for the customer");
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
         return allBookings;

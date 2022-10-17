@@ -172,7 +172,6 @@ public class Booking extends ReferenceObject {
                 markLoaded();
             }
         } catch (Exception e) {
-            System.out.println("In Booking : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -186,8 +185,6 @@ public class Booking extends ReferenceObject {
             ArrayList<Hotel> hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
             hotel_name = hotels.get(0).getName();
         } catch (Exception e) {
-            System.out.println("In Booking: Exception while fetching hotel details");
-            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }

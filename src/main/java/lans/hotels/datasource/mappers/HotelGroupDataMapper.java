@@ -119,7 +119,6 @@ public class HotelGroupDataMapper extends AbstractPostgresDataMapper<HotelGroup>
         statement.setString(6,hg.getName());
         statement.setString(7,hg.getPhone());
 
-        System.out.println(statement.toString());
         ResultSet resultSet = statement.executeQuery();
 
         if(resultSet.next())
