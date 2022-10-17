@@ -43,7 +43,7 @@ public abstract class FrontCommand implements IFrontCommand  {
             this.response = response;
             this.dataSource = dataSource;
 
-            this.responseHelper = new ResponseHelper(response);
+            this.responseHelper = new ResponseHelper(response, dataSource);
             this.requestHelper = new RequestHelper(request);
             this.auth = Auth0Adapter.getAuthorization(request, responseHelper::unauthorized);
         } catch (Exception e) {

@@ -1,4 +1,5 @@
 package lans.hotels.api.controllers;
+import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.search_criteria.UserSearchCriteria;
 import lans.hotels.domain.user.Role;
 import lans.hotels.domain.user.User;
@@ -41,15 +42,20 @@ public class UsersController extends FrontCommand {
             responseHelper.error("POST /users must contain search, hotelier, customer or new", HttpServletResponse.SC_BAD_REQUEST);
     }
 
-    private void handleNewUser() {
-        JSONObject res = new JSONObject();
-        res.put("success", auth.isAuthenticated());
-        res.put("role", auth.getUser().getRole().getName());
-        res.put("group", auth.getUser().getHotelierHotelGroupID());
-        res.put("id", auth.getUser().getId());
-        res.put("name", auth.getUser().getName());
-        res.put("email", auth.getUser().getEmail());
-        responseHelper.respondOK(res);
+    private void handleNewUser()  {
+        try {
+            JSONObject res = new JSONObject();
+            res.put("success", auth.isAuthenticated());
+            res.put("role", auth.getUser().getRole().getName());
+            res.put("group", auth.getUser().getHotelierHotelGroupID());
+            res.put("id", auth.getUser().getId());
+            res.put("name", auth.getUser().getName());
+            res.put("email", auth.getUser().getEmail());
+            dataSource.commit();
+            responseHelper.respondOK(res);
+        } catch (DataSourceLayerException e ) {
+            responseHelper.error("error registering user", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public User getUserFromJSONObject(JSONObject body) {

@@ -10,5 +10,5 @@ public abstract class DBConnection {
         this.config = config;
     }
 
-    public abstract Connection connection();
+    public abstract Connection getConnection();
 }

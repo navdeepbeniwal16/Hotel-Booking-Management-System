@@ -7,6 +7,7 @@ export type Room = {
   occupancy: number;
   bed_type?: string;
   price?: number;
+  number?: number;
 };
 
 export type RoomState = {
@@ -15,12 +16,13 @@ export type RoomState = {
 };
 
 export const defaultRoom: Room = {
-  id: -1,
-  hotel_id: -1,
-  type: 'default_type',
-  occupancy: -1,
-  bed_type: 'default_bed',
+  id: 0,
+  hotel_id: 0,
+  type: '',
+  occupancy: 0,
+  bed_type: '',
   price: 0,
+  number: 0
 };
 
 export const defaultRoomState: RoomState = {

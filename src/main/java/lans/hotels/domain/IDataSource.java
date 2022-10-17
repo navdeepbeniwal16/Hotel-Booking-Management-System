@@ -24,4 +24,5 @@ public interface IDataSource {
 
     <DomainObject extends AbstractDomainObject> Integer insert(Class<DomainObject> aClass, DomainObject object)throws Exception;
     <DomainObject extends AbstractDomainObject> Boolean delete(Class<DomainObject> aClass,Integer id)throws Exception;
+    boolean isOpen();
 }

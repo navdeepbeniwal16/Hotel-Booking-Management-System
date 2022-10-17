@@ -95,8 +95,6 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
                 load(resultSet);
             }
             return new ArrayList<>(loadedMap.values());
-        } catch (UoWException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
