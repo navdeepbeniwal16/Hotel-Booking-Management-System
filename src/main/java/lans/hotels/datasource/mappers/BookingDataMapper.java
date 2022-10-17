@@ -30,7 +30,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                         "FROM booking b " +
                         "JOIN hotel h ON h.id = b.hotel_id " +
                         "JOIN app_user u on u.id = b.customer_id ";
-        System.out.println("BookingDataMapper.findStatement(): " + statement);
+//        System.out.println("BookingDataMapper.findStatement(): " + statement);
         return statement;
     }
 

@@ -59,27 +59,33 @@ class LANS_API {
   }
 
   // Bookings
-  public async createBooking(hotel: Hotel, startDate: Date, endDate: Date, rooms: RoomBooking[]): Promise<boolean> {
+  public async createBooking(hotel: Hotel,
+    startDate: Date,
+    endDate: Date,
+    roomBookings: RoomBooking[]): Promise<[boolean, string]> {
+    const body = JSON.stringify({
+      booking: {
+        hotel_id: hotel.id,
+        start_date: startDate.toLocaleString('en-GB').split(',')[0],
+        end_date: endDate.toLocaleString('en-GB').split(',')[0],
+        rooms: roomBookings
+      }
+    })
+    console.log("book:\n", body)
     const res = await fetch(this.bookingsEndpoint, {
       method: methods.POST,
       headers: this.headers,
-      body: JSON.stringify({
-        booking: {
-          hotel_id: hotel.id,
-          start_date: startDate.toLocaleString('en-GB'),
-          end_date: endDate.toLocaleString('en-GB'),
-          rooms
-        }
-      })
+      body
     })
     
     if (res.ok) {
       const data = await res.json();
       const { success }: { success: boolean } = data;
-      return success;
+      const error = !success ? data.error : "";
+      return [success, error];
     } else {
       console.log(res.status, res.statusText);
-      return false;
+      return [false, res.statusText];
     }
   }
 

@@ -3,8 +3,7 @@ import React, { ReactNode, useEffect } from 'react';
 import AppContext from '../context/AppContext';
 import { useContext, useState } from 'react';
 import { Room, defaultRoom } from '../types/RoomType';
-import { filter, find, map } from 'lodash';
-import { useAuth0 } from '@auth0/auth0-react';
+import { filter, map } from 'lodash';
 import {
   Container,
   Card,
@@ -14,7 +13,6 @@ import {
   Button,
   Spinner,
   Stack,
-  CloseButton,
   Toast,
   ToastBody,
 } from 'react-bootstrap';
@@ -24,13 +22,12 @@ import Hotel, { defaultHotel } from '../types/HotelType';
 import RoomBooking from '../types/RoomBooking';
 
 const HotelPage = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { backend } = useContext(AppContext.GlobalContext);
   const emptyRoom: Room[] = [];
   const [rooms, setRooms] = useState(emptyRoom);
   const [hotel, setHotel] = useState(defaultHotel);
   const { id } = useParams();
-  const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date(2023, 11, 30));
@@ -42,6 +39,7 @@ const HotelPage = () => {
   useEffect(() => {
     console.log('hotel: ', id);
     const setup = async () => {
+      setLoading(true)
       backend.getHotel(Number(id)).then((_hotel: Hotel | undefined) => {
         setError('');
         console.log('hotel:', _hotel);
@@ -52,7 +50,7 @@ const HotelPage = () => {
             .getAllRooms(_hotel, startDate, endDate)
             .then((_rooms: Room[]) => {
               setRooms(_rooms);
-              setLoaded(true);
+              setLoading(false);
               console.log('rooms:', rooms);
             });
         }
@@ -64,13 +62,13 @@ const HotelPage = () => {
   const handleAddRoomBooking = (room: Room): void => {
     const current = filter(
       roomBookings,
-      (roomBooking: RoomBooking) => roomBooking.room_id == room.id
+      (roomBooking: RoomBooking) => roomBooking.id == room.id
     );
     if (current.length == 0) {
       setRoomBookings([
         ...roomBookings,
         {
-          room_id: room.id,
+          id: room.id,
           no_of_guests: 0,
           main_guest_name: '',
           room,
@@ -99,6 +97,31 @@ const HotelPage = () => {
     );
   };
 
+  const handleNumGuests = (no_of_guests: number, roomBooking: RoomBooking) => {
+    const { id } = roomBooking;
+    const {occupancy} = roomBooking.room;
+    setRoomBookings(
+      map(roomBookings, (_roomBooking: RoomBooking) => {
+        if (_roomBooking.id == id &&
+          no_of_guests <= occupancy &&
+          no_of_guests >= 0) {
+          return { ..._roomBooking, no_of_guests };
+        }
+        return _roomBooking;
+      })
+    );
+  };
+
+  const handleGuestName = (main_guest_name: string, roomId: number) => {
+    setRoomBookings(
+      map(roomBookings, (_roomBooking: RoomBooking) => {
+        if (_roomBooking.id == roomId) {
+          return { ..._roomBooking, main_guest_name };
+        }
+        return _roomBooking;
+      })
+    );
+  };
   const renderRoomBooking = (roomBooking: RoomBooking): ReactNode => {
     return (
       <Card>
@@ -111,12 +134,15 @@ const HotelPage = () => {
         </Card.Header>
         <Card.Body>
           <Card.Text>
-            <Form.Group controlId={`${roomBooking.room_id}-guests`}>
+            <Form.Group controlId={`${roomBooking.id}-guests`}>
               <Form.Label>Number of guests</Form.Label>
               <Form.Control
                 required
-                // onChange={onPhoneChange}
-                // value={hotel.phone}
+                onChange={(event) => {
+                  const n = Number(event.target.value);
+                  handleNumGuests(n, roomBooking);
+                }}
+                value={roomBooking.no_of_guests}
                 type='number'
                 placeholder='1'
                 aria-placeholder='1'
@@ -125,12 +151,12 @@ const HotelPage = () => {
                 How many guests will be staying in this room?
               </Form.Text>
             </Form.Group>
-            <Form.Group controlId={`${roomBooking.room_id}-mainGuest`}>
+            <Form.Group controlId={`${roomBooking.id}-mainGuest`}>
               <Form.Label>Primary guest name</Form.Label>
               <Form.Control
                 required
-                // onChange={onPhoneChange}
-                // value={hotel.phone}
+                onChange={(event) => handleGuestName(event.target.value, roomBooking.id)}
+                value={roomBooking.main_guest_name}
                 type='text'
                 placeholder='Guest name'
                 aria-placeholder='Guest name'
@@ -142,10 +168,20 @@ const HotelPage = () => {
           </Card.Text>
         </Card.Body>
         <Card.Footer>
-          <Button variant="warning" onClick={() => {
-            setRoomBookings(filter(roomBookings, (rb: RoomBooking) => (rb.room_id != roomBooking.room_id)))
-            setRooms([...rooms, roomBooking.room])
-          }}>Remove room</Button>
+          <Button
+            variant='warning'
+            onClick={() => {
+              setRoomBookings(
+                filter(
+                  roomBookings,
+                  (rb: RoomBooking) => rb.room.id != roomBooking.room.id
+                )
+              );
+              setRooms([...rooms, roomBooking.room]);
+            }}
+          >
+            Remove room
+          </Button>
         </Card.Footer>
       </Card>
     );
@@ -158,10 +194,8 @@ const HotelPage = () => {
     backend.getAllRooms(hotel, startDate, endDate).then((_rooms: Room[]) => {
       setRooms(_rooms);
       setRoomBookings(emptyRoomBookings);
-      setLoaded(true);
       console.log('rooms:', rooms);
       setLoading(false);
-      setLoaded(true);
     });
   };
 
@@ -180,12 +214,14 @@ const HotelPage = () => {
     console.log('booking submitted');
     backend
       .createBooking(hotel, startDate, endDate, roomBookings)
-      .then((success: boolean) => {
+      .then(([success, message]: [boolean, string]) => {
         if (success) {
-          navigate('bookings');
+          navigate('/bookings');
         } else {
-          setError('Something went wrong. Please try again.')
-          setTimeout(() => { window.location.reload(); }, 2000);
+          setError(`Something went wrong: ${message}. Please try again.`);
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 2000);
         }
       });
   };
@@ -193,13 +229,19 @@ const HotelPage = () => {
   const renderBooking = (): React.ReactNode => {
     return (
       <Form onSubmit={handleBookingSubmit}>
-        {
-          error != '' ? <Toast bg="danger"><ToastBody>{error}</ToastBody></Toast> : <Stack gap={3}>
+        {error != '' ? (
+          <Toast bg='danger'>
+            <ToastBody>{error}</ToastBody>
+          </Toast>
+        ) : (
+          <Stack gap={3}>
             <Row>
-              <Col className="d-flex flex-column align-content-stretch">
-                <Button type='submit'
+              <Col className='d-flex flex-column align-content-stretch'>
+                <Button
+                  type='submit'
                   variant={roomBookings.length == 0 ? 'secondary' : 'success'}
-                  disabled={roomBookings.length == 0}>
+                  disabled={roomBookings.length == 0}
+                >
                   {roomBookings.length == 0 ? 'No rooms' : 'Book rooms'}
                 </Button>
               </Col>
@@ -216,8 +258,7 @@ const HotelPage = () => {
               )}
             </Row>
           </Stack>
-        }
-        
+        )}
       </Form>
     );
   };
@@ -292,7 +333,10 @@ const HotelPage = () => {
       <Row>
         <Container>
           <Row sm={12}>
-            <Col sm={3} className="bg-light border border-secondary rounded p-2">
+            <Col
+              sm={3}
+              className='bg-light border border-secondary rounded p-2'
+            >
               <h2>Booking</h2>
               {renderBooking()}
             </Col>

@@ -51,12 +51,6 @@ public class RoombookingsController extends FrontCommand {
                             useCase.execute(
                                     () -> responseHelper.respondOK(useCase.getResult()),
                                     () -> responseHelper.internalServerError());
-                            // OLD CODE example
-//                            useCase.execute();
-//                            statusCode = useCase.succeeded() ?
-//                                    HttpServletResponse.SC_OK :
-//                                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-//                            responder.respond(useCase.getResult(), statusCode);
                         }
                         else
                             responseHelper.unauthorized();
