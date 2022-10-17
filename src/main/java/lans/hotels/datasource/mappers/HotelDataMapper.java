@@ -33,7 +33,6 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
                         " JOIN (address a " +
                         " JOIN district d ON a.district = d.id) " +
                         " on h.address = a.id ";
-        System.out.println("HotelDataMapper.findStatement():\n\t" + statement);
         return statement;
     }
 
@@ -85,13 +84,11 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
             statement.setString(1,hotelSearchCriteria.getEmail());
         }
 
-        System.out.println("HotelDataMapper.findBySearchCriteria()\n\t"+statement.toString());
         ResultSet resultSet = statement.executeQuery();
         Hotel currentHotel = load(resultSet);
         while (currentHotel != null) {
             currentHotel = load(resultSet);
         }
-        System.out.println("HotelDataMapper.findBySearchCriteria() - hotels loaded = " + loadedMap.values().size());
         return new ArrayList<>(loadedMap.values());
 
     }
@@ -131,14 +128,8 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
         updateStatement.setInt(2,new_version);
         updateStatement.setInt(3,hotel.getId());
         updateStatement.setInt(4,version);
-        System.out.println(updateStatement.toString());
 
         int row_count = updateStatement.executeUpdate();
-
-        if(row_count==0)
-            System.out.println("Concurrency issue");
-        else
-            System.out.println("Hotel updated successfully");
 
         HotelSearchCriteria criteria = new HotelSearchCriteria();
         criteria.setId(hotel.getId());
@@ -175,7 +166,6 @@ public class HotelDataMapper extends AbstractPostgresDataMapper<Hotel> {
         statement.setInt(11,h.getPinCode());
         statement.setBoolean(12,h.getIsActive());
 
-        System.out.println(statement.toString());
         ResultSet resultSet = statement.executeQuery();
         return resultSet.next() ? resultSet.getInt("id") : -1;
     }

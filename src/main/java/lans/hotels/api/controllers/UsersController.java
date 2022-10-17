@@ -15,7 +15,7 @@ import java.io.InvalidObjectException;
 public class UsersController extends FrontCommand {
     @Override
     protected void concreteProcess() {
-        requestHelper.checkCommandPath(2);
+        System.out.println("UsersController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
         switch (method) {
             case HttpMethod.GET:
                 asAdmin(this::handleGet);

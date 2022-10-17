@@ -44,7 +44,6 @@ public class HotelGroupHotelierDataMapper extends AbstractPostgresDataMapper<Hot
         }
 
         try (PreparedStatement statement = connection.prepareStatement(findAllStatement)) {
-            System.out.println("Find by statement :\n"+statement);
             ResultSet resultSet = statement.executeQuery();
             HotelGroupHotelier currenthgh = load(resultSet);
             while (currenthgh != null) {

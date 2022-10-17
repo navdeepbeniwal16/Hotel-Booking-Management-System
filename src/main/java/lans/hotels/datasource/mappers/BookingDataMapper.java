@@ -30,7 +30,6 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                         "FROM booking b " +
                         "JOIN hotel h ON h.id = b.hotel_id " +
                         "JOIN app_user u on u.id = b.customer_id ";
-        System.out.println("BookingDataMapper.findStatement(): " + statement);
         return statement;
     }
 
@@ -56,7 +55,6 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
                      " VALUES ";
 
         for(RoomBooking roomBooking: booking.getRoomBookings().values()) {
-            System.out.println("ROOM BOOKING:\t" + roomBooking.toString());
             sql = sql +
                     " ( (SELECT id FROM new_booking), " + roomBooking.getRoomId() + ", " + true + ", "
                     + "'" + roomBooking.getMainGuest() + "'" +
@@ -64,7 +62,6 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         }
         sql = sql.substring(0, sql.length() - 2);
         sql = sql + " RETURNING * ; ";
-        System.out.println("---- BOOKING SQL ----\n" + sql + "\n---- END SQL ----");
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet resultSet = statement.executeQuery();
         return resultSet.next() ? resultSet.getInt("id") : -1;
@@ -72,7 +69,6 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
 
     @Override
     public Booking update(AbstractDomainObject domainObject) throws Exception {
-        System.out.println("Check point 6");
         Booking booking = (Booking) domainObject;
 
         PreparedStatement updateStatement = connection.prepareStatement(
@@ -88,31 +84,7 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
         updateStatement.setInt(5,booking.getId());
         updateStatement.setInt(6,version);
 
-
-//        int criteriasCount = 0;
-//        if(booking.getActive() != null) {
-//            updateStatement = connection.prepareStatement(updateStatement + "SET is_active = ?");
-//            updateStatement.setBoolean(1, booking.getActive());
-//            criteriasCount++;
-//        }
-//
-//        if(booking.getDateRange() != null) {
-//            updateStatement = connection.prepareStatement(updateStatement + (criteriasCount > 0 ? ", " : "") + "start_date = ?");
-//            updateStatement.setDate(1, booking.getDateRange().getFrom());
-//            criteriasCount++;
-//            updateStatement = connection.prepareStatement(updateStatement + (criteriasCount > 0 ? ", " : "") + "end_date = ?");
-//            updateStatement.setDate(1, booking.getDateRange().getTo());
-//            criteriasCount++;
-//        }
-
-        System.out.println(updateStatement.toString());
-
         int row_count = updateStatement.executeUpdate();
-
-        if(row_count==0)
-            System.out.println("Concurrency issue");
-        else
-            System.out.println("Booking updated successfully");
 
         BookingsSearchCriteria criteria = new BookingsSearchCriteria();
         criteria.setBookingId(booking.getId());
@@ -165,7 +137,6 @@ public class BookingDataMapper extends AbstractPostgresDataMapper<Booking> {
             statement.setDate(6, new java.sql.Date(bookingsSearchCriteria.getEndDate().getTime()));
         }
 
-        System.out.println("Query : "+statement.toString());
 
         ResultSet resultSet = statement.executeQuery();
         Booking bookings = load(resultSet);

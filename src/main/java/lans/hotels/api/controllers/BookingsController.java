@@ -273,7 +273,6 @@ public class BookingsController extends FrontCommand {
                     }
                     else if(bookingJsonBody.has("start_date") && bookingJsonBody.has("end_date")) {
                         handleDateChange(bookingJsonBody,booking);
-                        System.out.println("Check point 1");
                     }
                     else
                         responseHelper.error("PUT /bookings search must contain cancel or start date and end_date fields",HttpServletResponse.SC_BAD_REQUEST);
@@ -394,7 +393,6 @@ public class BookingsController extends FrontCommand {
             responseHelper.error("booking dates requested clash with existing bookings",HttpServletResponse.SC_BAD_REQUEST);
             return;
         } else {
-            System.out.println("Check point 5");
             booking.setDateRange(dateRange);
         }
 

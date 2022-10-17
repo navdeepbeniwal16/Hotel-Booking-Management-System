@@ -14,7 +14,7 @@ import java.util.*;
 public class HotelsController extends FrontCommand {
     @Override
     protected void concreteProcess() {
-        System.out.println("HotelsController.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
+        System.out.println("HotelsController.ConcreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
         switch (request.getMethod()) {
             case HttpMethod.GET:
                 handleGet();

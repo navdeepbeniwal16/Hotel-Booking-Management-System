@@ -158,18 +158,6 @@ public class RoombookingsController extends FrontCommand {
         }
         return null;
 
-//        JSONObject rbObject = roomBookingsArray.getJSONObject(rbIndex);
-//        HashMap<Integer, RoomBooking> rBookings = booking.getRoomBookings();
-//        for(Object rbKey: rBookings.keySet()) {
-//            RoomBooking rBooking = rBookings.get(rbKey);
-//
-//            System.out.println("Reaching here..."); // TODO: TBR
-//            if(rbObject.has("id") && rbObject.getInt("id") == rBooking.getId()) {
-//                if(rbObject.has("no_of_guests") && rbObject.getInt("no_of_guests") != rBooking.getNumOfGuests()) {
-//                    rBooking.setNumOfGuests(rbObject.getInt("no_of_guests"));
-//                }
-//            }
-//        }
     }
 
 }
