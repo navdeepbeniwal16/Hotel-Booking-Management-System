@@ -41,8 +41,9 @@ public class HotelgrouphoteliersController extends FrontCommand {
         if (requestHelper.body().has("hotel_group_hotelier")) {
             HotelGroupHotelier hgh = getHotelGroupHotelierFromJsonObject(requestHelper.body());
 
-            if (hgh == null)
-                throw new InvalidObjectException("Failed to parse hotel object from request body");
+            if (hgh == null) {
+                return null;
+            }
 
             useCase = new AddHotelierToHotelGroup(dataSource);
             useCase.execute();
@@ -75,6 +76,7 @@ public class HotelgrouphoteliersController extends FrontCommand {
 
                 if (hotel_group_hoteliers.size() == 0) {
                     responseHelper.error("DELETE /hotel_group_hoteliers entry does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
                 }
 
                 hgh = hotel_group_hoteliers.get(0);
@@ -133,6 +135,17 @@ public class HotelgrouphoteliersController extends FrontCommand {
                 }
                 if (users.size()==0) {
                     responseHelper.error("POST /hotelgrouphoteliers user id does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
+                }
+                if(!users.get(1).getRole().isHotelier())
+                {
+                    responseHelper.error("POST /hotelgrouphoteliers user id is not a hotelier", HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
+                }
+
+                else if(users.get(1).getHotelierHotelGroupID()!=0)
+                {
+                    responseHelper.error("POST /hotelgrouphoteliers user id already associated to hotel group", HttpServletResponse.SC_BAD_REQUEST);
                     return null;
                 }
 
