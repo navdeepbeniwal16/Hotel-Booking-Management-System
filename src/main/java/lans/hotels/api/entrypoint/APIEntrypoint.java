@@ -44,10 +44,11 @@ public class APIEntrypoint extends HttpServlet {
             if (connectionFactory == null) {
                 throw new Exception("no connection factory");
             }
-            if (connectionFactory.getConnection() == null) {
+
+            dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), connectionFactory.getConnection());
+            if (!dataSourceLayer.isOpen()) {
                 throw new Exception("no connections available");
             }
-            dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), connectionFactory.getConnection());
         } catch (Exception e) {
             e.printStackTrace();
             try {
