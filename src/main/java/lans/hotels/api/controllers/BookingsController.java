@@ -101,59 +101,56 @@ public class BookingsController extends FrontCommand {
 
         HashMap<Integer, RoomBooking> roomBookings = null;
         try {
-            roomBookings = parseRoomBookings(bookingJson.getJSONArray("rooms"),dateRange,hotelId);
-        } catch (UoWException e) {
-            e.printStackTrace();
-        }
-        if(roomBookings.size()>0) {
-            try {
+            roomBookings = parseRoomBookings(bookingJson.getJSONArray("rooms") , dateRange, hotelId);
+            if (roomBookings == null) throw new Exception("invalid room bookings json");
+            if(roomBookings.size()>0) {
                 booking = new Booking(dataSource, customerId, hotelId, dateRange, roomBookings);
-            } catch (UoWException e) {
-                e.printStackTrace();
+                useCase = new CreateBooking(dataSource);
+                useCase.execute();
+                responseHelper.respond(useCase.getResult(), HttpServletResponse.SC_OK);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseHelper.error(e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        else
-            return null;
-
-        useCase = new CreateBooking(dataSource);
-        useCase.execute();
-        responseHelper.respond(useCase.getResult(), HttpServletResponse.SC_OK);
         return null;
     }
 
-    private HashMap<Integer, RoomBooking> parseRoomBookings(JSONArray roomsJson,DateRange date_range,Integer hotel_id) throws UoWException {
+    private HashMap<Integer, RoomBooking> parseRoomBookings(JSONArray roomsJson,DateRange date_range,Integer hotel_id) throws Exception {
         HashMap<Integer, RoomBooking> roomBookings = new HashMap<>();
+        System.out.println("---ROOMS JSON---\n" + roomsJson);
         for(int i = 0; i < roomsJson.length(); i++) {
             JSONObject roomJson = roomsJson.getJSONObject(i);
             RoomBooking roomBooking = null;
             try {
-                if(roomJson.has("room_id")&&roomJson.has("no_of_guests")&&roomJson.has("main_guest_name")){
+                if(roomJson.has("id") &&
+                        roomJson.has("no_of_guests") &&
+                        roomJson.has("main_guest_name")){
 
 
                     ArrayList<RoomBooking> rbs = null;
                     RoomBookingSearchCriteria r_criteria = new RoomBookingSearchCriteria();
                     r_criteria.setDate_range(date_range);
-                    r_criteria.setRoomID(roomJson.getInt("room_id"));
+                    r_criteria.setRoomID(roomJson.getInt("id"));
                     try {
                         rbs = dataSource.findBySearchCriteria(RoomBooking.class, r_criteria);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     if (rbs.size()>0){
-                        responseHelper.error("room booking dates overlap with existing booking",HttpServletResponse.SC_BAD_REQUEST);
-                        return null;
+                        throw new Exception("room booking dates overlap with existing booking");
                     }
 
                     roomBooking = new RoomBooking(dataSource,
-                            roomJson.getInt("room_id"),
+                            roomJson.getInt("id"),
                             roomJson.getString("main_guest_name"),
                             roomJson.getInt("no_of_guests"));
 
                 }
-                else
-                    responseHelper.error("room bookings must contain room id, no of guests, main guest name",HttpServletResponse.SC_BAD_REQUEST);
-
-            } catch (UoWException e) {
+                else{
+                    throw new Exception("room bookings must contain room: { id: number, no_of_guests: number, main_guest_name: string}, received\n" + roomJson.toString());
+                }
+            } catch (Exception e) {
                 throw e;
             }
             roomBookings.put(roomBooking.getRoomId(), roomBooking);
