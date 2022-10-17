@@ -10,26 +10,44 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import { toString } from '../types/AddressType';
+import { useParams } from 'react-router-dom';
+import Hotel, { defaultHotel } from '../types/HotelType';
 
-const Hotel = () => {
+const HotelPage = () => {
   const { loginWithRedirect, isAuthenticated } = useAuth0();
-  const { hotel: hotelState, backend } = useContext(AppContext.GlobalContext);
-  const [rooms, setRooms] = useState([defaultRoom]);
-
+  const { backend } = useContext(AppContext.GlobalContext);
+  const emptyRoom: Room[] = [];
+  const [rooms, setRooms] = useState(emptyRoom);
+  const [hotel, setHotel] = useState(defaultHotel);
+  const { id } = useParams();
+  const [loaded, setLoaded] = useState(false);
+  const [startDate, setStartDate] = useState(new Date(2000, 1, 1));
+  const [endDate, setEndDate] = useState(new Date(2100, 11, 30));
   useEffect(() => {
-    const fetchRooms = async () => {
-      const fetchedRooms: Room[] = await backend.getAllRooms(hotelState.hotel);
-      setRooms(fetchedRooms);
-    };
-    fetchRooms().catch(console.error);
-  }, [hotelState.hotel.id, rooms.length]);
+    console.log("hotel: ", id)
+    const setup = async () => {
+      backend.getHotel(Number(id)).then((_hotel: Hotel | undefined) => {
+        console.log("hotel:", _hotel)
+        if (_hotel) {
+          setHotel(_hotel);
+          console.log("hotel:", _hotel)
+          backend.getAllRooms(_hotel, startDate, endDate).then((_rooms: Room[]) => {
+            setRooms(_rooms);
+            setLoaded(true);
+            console.log("rooms:", rooms)
+          })
+        }
+      })
+    }
+    setup();
+  }, [id]);
 
   const renderRoom = (room: Room): ReactNode => {
     return (
       <Card style={{ width: '18rem' }}>
         <Card.Img
           variant='top'
-          src={`https://via.placeholder.com/180x100?text=${hotelState.hotel.name}`}
+          src={`https://via.placeholder.com/180x100?text=${hotel.name}`}
         />
         <Card.Body>
           <Card.Title>{room.type}</Card.Title>
@@ -50,10 +68,10 @@ const Hotel = () => {
 
   return (
     <>
-      <h1>{hotelState.hotel.name}</h1>
+      <h1>{hotel.name}</h1>
 
       <div>
-        <p>{toString(hotelState.hotel.address)}</p>
+        <p>{toString(hotel.address)}</p>
       </div>
 
       <h2>Rooms</h2>
@@ -62,8 +80,8 @@ const Hotel = () => {
           <p>No rooms available</p>
         ) : (
           map(rooms, (room: Room) => (
-            <Col>
-              <div key={`${room.id}`}>{renderRoom(room)}</div>
+            <Col key={room.id}>
+              <div>{renderRoom(room)}</div>
             </Col>
           ))
         )}
@@ -72,4 +90,4 @@ const Hotel = () => {
   );
 };
 
-export default Hotel;
+export default HotelPage;
