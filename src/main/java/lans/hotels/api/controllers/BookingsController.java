@@ -1,13 +1,12 @@
 package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.exceptions.UoWException;
-import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
-import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
-import lans.hotels.datasource.search_criteria.RoomBookingSearchCriteria;
-import lans.hotels.datasource.search_criteria.UserSearchCriteria;
+import lans.hotels.datasource.search_criteria.*;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
 import lans.hotels.domain.hotel.Hotel;
+import lans.hotels.domain.hotel_group.HotelGroup;
+import lans.hotels.domain.room.Room;
 import lans.hotels.domain.user.User;
 import lans.hotels.domain.utils.DateRange;
 import lans.hotels.use_cases.*;
@@ -16,6 +15,8 @@ import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -41,7 +42,7 @@ public class BookingsController extends FrontCommand {
 
     public Void handlePost() throws Exception {
         if (requestHelper.body().has("booking")) {
-            handleCreateNewBooking();
+            asCustomer(this::createNewBooking);
         }
         else if(requestHelper.body().has("search"))
         {
@@ -53,39 +54,54 @@ public class BookingsController extends FrontCommand {
         return null;
     }
 
-    private void handleCreateNewBooking() {
-        try {
-            auth.withGuard(this::createNewBookingGuard, this::createNewBooking);
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseHelper.internalServerError();
-        }
-    }
-
-    private Boolean createNewBookingGuard() {
-        Integer hotelId = (Integer) requestHelper.body("booking", "hotel_id");
-        boolean authCheck = Boolean.FALSE;
-        if (auth.isHotelier()) {
-            authCheck = hotelId.equals(auth.getUser().getHotelierHotelGroupID());
-        }
-        else return true;
-        return authCheck;
-    }
-
     private Void createNewBooking() {
 
         JSONObject bookingJson = requestHelper.body("booking");
         if(!(bookingJson.has("hotel_id")&&bookingJson.has("start_date")&&bookingJson.has("end_date")&&bookingJson.has("rooms"))){
             responseHelper.error("bookings must contain hotel_id, start_date, end_date, rooms",HttpServletResponse.SC_BAD_REQUEST);
+            return null;
         }
         Booking booking = null;
 
         Integer customerId = auth.getId();
         Integer hotelId = (Integer) bookingJson.get("hotel_id");
+
+        ArrayList<Hotel> hotels = null;
+        HotelSearchCriteria hg_criteria = new HotelSearchCriteria();
+        hg_criteria.setId(hotelId);
+        try {
+            hotels = dataSource.findBySearchCriteria(Hotel.class, hg_criteria);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (hotels.size()==0) {
+            responseHelper.error("POST /bookings hotel id does not exist", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if(!hotels.get(0).getIsActive())
+        {
+            responseHelper.error("POST /bookings hotel is not active", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+
+        long millis=System.currentTimeMillis();
+        java.sql.Date today_date=new java.sql.Date(millis);
+
         DateRange dateRange = parseDateRange((String) bookingJson.get("start_date"), (String) bookingJson.get("end_date"));
+        if (dateRange.getFrom().compareTo(dateRange.getTo())>0){
+            responseHelper.error("start date less than end date",HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if (today_date.compareTo(dateRange.getFrom())>0)
+        {
+            responseHelper.error("start date less than current date",HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+
+
         HashMap<Integer, RoomBooking> roomBookings = null;
         try {
-            roomBookings = parseRoomBookings(bookingJson.getJSONArray("rooms"),dateRange);
+            roomBookings = parseRoomBookings(bookingJson.getJSONArray("rooms"),dateRange,hotelId);
         } catch (UoWException e) {
             e.printStackTrace();
         }
@@ -96,6 +112,8 @@ public class BookingsController extends FrontCommand {
                 e.printStackTrace();
             }
         }
+        else
+            return null;
 
         useCase = new CreateBooking(dataSource);
         useCase.execute();
@@ -103,13 +121,14 @@ public class BookingsController extends FrontCommand {
         return null;
     }
 
-    private HashMap<Integer, RoomBooking> parseRoomBookings(JSONArray roomsJson,DateRange date_range) throws UoWException {
+    private HashMap<Integer, RoomBooking> parseRoomBookings(JSONArray roomsJson,DateRange date_range,Integer hotel_id) throws UoWException {
         HashMap<Integer, RoomBooking> roomBookings = new HashMap<>();
         for(int i = 0; i < roomsJson.length(); i++) {
             JSONObject roomJson = roomsJson.getJSONObject(i);
             RoomBooking roomBooking = null;
             try {
                 if(roomJson.has("room_id")&&roomJson.has("no_of_guests")&&roomJson.has("main_guest_name")){
+
 
                     ArrayList<RoomBooking> rbs = null;
                     RoomBookingSearchCriteria r_criteria = new RoomBookingSearchCriteria();
@@ -129,6 +148,7 @@ public class BookingsController extends FrontCommand {
                             roomJson.getInt("room_id"),
                             roomJson.getString("main_guest_name"),
                             roomJson.getInt("no_of_guests"));
+
                 }
                 else
                     responseHelper.error("room bookings must contain room id, no of guests, main guest name",HttpServletResponse.SC_BAD_REQUEST);
@@ -239,8 +259,14 @@ public class BookingsController extends FrontCommand {
                     }
                     if(bookings.size() > 0)
                         booking = bookings.get(0);
-                    else
-                        throw new Exception("No booking with id found");
+                    else {
+                        responseHelper.error("PUT /bookings booking does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                        return null;
+                    }
+                    if(!booking.getActive()) {
+                        responseHelper.error("PUT /bookings booking is cancelled", HttpServletResponse.SC_BAD_REQUEST);
+                        return null;
+                    }
 
                     if(bookingJsonBody.has("cancel")) {
                         handleCancelBooking(booking);
@@ -249,13 +275,20 @@ public class BookingsController extends FrontCommand {
                         handleDateChange(bookingJsonBody,booking);
                         System.out.println("Check point 1");
                     }
+                    else
+                        responseHelper.error("PUT /bookings search must contain cancel or start date and end_date fields",HttpServletResponse.SC_BAD_REQUEST);
                 }
             }
+            else
+                responseHelper.error("PUT /bookings search must contain id field",HttpServletResponse.SC_BAD_REQUEST);
         }
+        else
+            responseHelper.error("PUT /bookings search must contain booking field",HttpServletResponse.SC_BAD_REQUEST);
         return null;
     }
 
     private void handleCancelBooking(Booking booking) throws Exception {
+
         if (auth.isCustomer()) {
             if (booking.getCustomerId() != auth.getId()){
                 responseHelper.unauthorized();
@@ -312,7 +345,60 @@ public class BookingsController extends FrontCommand {
         java.sql.Date startDate = new Date(dateFormat.parse(startDateString).getTime());
         java.sql.Date endDate = new Date(dateFormat.parse(endDateString).getTime());
 
-        useCase = new ChangeBookingDates(dataSource,booking, startDate, endDate);
+        long millis=System.currentTimeMillis();
+        java.sql.Date today_date=new java.sql.Date(millis);
+
+        DateRange dateRange = parseDateRange((String) bookingJsonBody.getString("start_date"), bookingJsonBody.getString("end_date"));
+        if (dateRange.getFrom().compareTo(dateRange.getTo())>0){
+            responseHelper.error("start date less than end date",HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        if (today_date.compareTo(dateRange.getFrom())>0)
+        {
+            responseHelper.error("start date less than current date",HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        Hotel hotel = null;
+        HotelSearchCriteria hotelSearchCriteria = new HotelSearchCriteria();
+        hotelSearchCriteria.setId(booking.getHotelId());
+        try {
+            ArrayList<Hotel> hotels = dataSource.findBySearchCriteria(Hotel.class, hotelSearchCriteria);
+            if(hotels.size() < 1) throw new RuntimeException("No hotels found for the booking...");
+
+            hotel = hotels.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<Booking> existingBookings = hotel.getBookings(startDate, endDate);
+        HashMap<Integer, RoomBooking> customerRoomBookings = booking.getRoomBookings();
+        boolean isRoomBookingClashing = false;
+        for (Booking eBooking: existingBookings) {
+            if(eBooking.getId() == booking.getId()) continue;
+
+            HashMap<Integer, RoomBooking> existingRoomBookings = eBooking.getRoomBookings();
+            for(Object eRoomBookingKey: existingRoomBookings.keySet()) {
+                RoomBooking existingRoomBooking = existingRoomBookings.get(eRoomBookingKey);
+                for(Object cRoomBookingKey: customerRoomBookings.keySet()) {
+                    RoomBooking customerRoomBooking = customerRoomBookings.get(cRoomBookingKey);
+                    if(existingRoomBooking.getRoomId() == customerRoomBooking.getRoomId()) {
+                        isRoomBookingClashing = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(isRoomBookingClashing) {
+            responseHelper.error("booking dates requested clash with existing bookings",HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        } else {
+            System.out.println("Check point 5");
+            booking.setDateRange(dateRange);
+        }
+
+        useCase = new ChangeBookingDates(dataSource);
         useCase.execute();
         statusCode = useCase.succeeded() ?
                 HttpServletResponse.SC_OK :

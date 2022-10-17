@@ -4,20 +4,29 @@ public class RoomSearchCriteria extends AbstractSearchCriteria{
     Integer hotelId;
     Boolean isAvailable;
     Integer number;
+    Integer roomID;
 
     public RoomSearchCriteria() {
+    }
+
+    public Integer getRoomID() {
+        return this.roomID;
+    }
+
+    public void setRoomID(Integer roomID) {
+        this.roomID = roomID;
     }
 
     public Integer getRoomNumber() {
         return number;
     }
 
-    public void setRoomNumber(Integer number) {
-        this.number = number;
+    public void setRoomNumber(Integer roomID) {
+        this.roomID = roomID;
     }
 
     public Integer getHotelId() {
-        return hotelId;
+        return this.hotelId;
     }
 
     public void setHotelId(Integer hotelId) {
@@ -25,7 +34,7 @@ public class RoomSearchCriteria extends AbstractSearchCriteria{
     }
 
     public Boolean getAvailable() {
-        return isAvailable;
+        return this.isAvailable;
     }
 
     public void setAvailable(Boolean available) {

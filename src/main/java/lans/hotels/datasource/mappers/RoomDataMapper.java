@@ -65,6 +65,10 @@ public class RoomDataMapper extends AbstractPostgresDataMapper<Room> implements 
             statement = connection.prepareStatement(findBy + "hotel_id = ?");
             statement.setInt(1,r_criteria.getHotelId());
         }
+        else if (r_criteria.getRoomID() != null){
+            statement = connection.prepareStatement(findBy + "r.id = ?");
+            statement.setInt(1,r_criteria.getRoomID());
+        }
         else if (r_criteria.getRoomNumber() != null){
             statement = connection.prepareStatement(findBy + "number = ? AND hotel_id = ? ");
             statement.setInt(1,r_criteria.getRoomNumber());

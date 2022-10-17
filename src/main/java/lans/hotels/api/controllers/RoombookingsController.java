@@ -1,8 +1,10 @@
 package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
+import lans.hotels.datasource.search_criteria.RoomSearchCriteria;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
+import lans.hotels.domain.room.Room;
 import lans.hotels.use_cases.ChangeNumberOfGuests;
 import lans.hotels.use_cases.ViewHotelGroupBookings;
 import lans.hotels.use_cases.ViewRoomBookingsForBooking;
@@ -91,8 +93,14 @@ public class RoombookingsController extends FrontCommand {
                 }
                 if(bookings.size() > 0)
                     booking = bookings.get(0);
-                else
-                    throw new Exception("No booking with id found");
+                else {
+                    responseHelper.error("PUT /roombookings booking does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
+                }
+                if(!booking.getActive()) {
+                    responseHelper.error("PUT /roombookings booking is cancelled", HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
+                }
 
                 if(booking.getCustomerId()!=auth.getId())
                 {
@@ -104,7 +112,40 @@ public class RoombookingsController extends FrontCommand {
                     Integer rb_id  = rbJsonBody.getInt("rb_id");
                     Integer no_of_guests  = rbJsonBody.getInt("no_of_guests");
 
-                    useCase = new ChangeNumberOfGuests(dataSource, booking, rb_id, no_of_guests);
+                    HashMap<Integer, RoomBooking> rBookings = booking.getRoomBookings();
+                    RoomBooking rBooking = rBookings.get(rb_id);
+
+                    if(rBooking.getNumOfGuests()==no_of_guests){
+                        responseHelper.error("PUT /roombookings max guests is the same as value passed", HttpServletResponse.SC_BAD_REQUEST);
+                        return null;
+                    }
+
+                    ArrayList<Room> rooms = null;
+                    Room room = null;
+                    RoomSearchCriteria r_criteria = new RoomSearchCriteria();
+                    r_criteria.setRoomNumber(rBooking.getRoomId());
+                    r_criteria.setHotelId(booking.getHotelId());
+                    try {
+                        rooms = dataSource.findBySearchCriteria(Room.class, r_criteria);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if(rooms.size() > 0)
+                        room = rooms.get(0);
+                    else {
+                        responseHelper.error("PUT /roombookings room does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                        return null;
+                    }
+                    if(room.getMaxOccupancy()<no_of_guests)
+                    {
+                        responseHelper.error("PUT /roombookings room max occupancy requested is greater than allowed", HttpServletResponse.SC_BAD_REQUEST);
+                        return null;
+                    }
+
+                    rBooking.setNumOfGuests(no_of_guests);
+
+                    useCase = new ChangeNumberOfGuests(dataSource);
                     useCase.execute();
                     statusCode = useCase.succeeded() ?
                             HttpServletResponse.SC_OK :
