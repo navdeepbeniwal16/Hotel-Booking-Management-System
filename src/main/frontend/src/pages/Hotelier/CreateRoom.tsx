@@ -169,7 +169,7 @@ const CreateRoom = ({ hotel }: CreateRoomProps) => {
         </Toast.Header>
         <Toast.Body>
           {success
-            ? 'New room created. Please wait while we redirect you to the room listings'
+            ? 'New room created. Redirecting you to hotel room now.'
             : `Sorry, something went wrong: \n\t${responseMessage}\n\nPlease try again.`}
         </Toast.Body>
       </Toast>
