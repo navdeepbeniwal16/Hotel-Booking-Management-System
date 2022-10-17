@@ -158,6 +158,7 @@ public class ServletUoW implements IUnitOfWork {
             cleanObjects.clear();
 
             // Close the connection
+            System.out.println("closing connection");
             connection.close();
         }
     }

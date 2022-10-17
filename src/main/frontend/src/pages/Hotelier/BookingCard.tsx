@@ -20,8 +20,8 @@ const BookingCard = ({
   return (
     <ListGroupItem
       as='li'
-      className='d-flex justify-content-between align-items-start'
-      variant={dark ? 'dark' : ''}
+      variant={ dark ? "dark" : "light"}
+      className={`d-flex justify-content-between align-items-end`}
     >
       <div className='ms-2 me-auto'>
         <h4>{booking.customer_name}</h4>

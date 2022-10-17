@@ -92,6 +92,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
           const newBackendConnection = new LANS_API(apiAccessToken);
           const [success, userData] = await newBackendConnection.register();
           if (success) {
+            setUser(userData);
             setBackend(newBackendConnection);
             if (!roles.includes(userData.role))
               roles = [...roles, userData.role];

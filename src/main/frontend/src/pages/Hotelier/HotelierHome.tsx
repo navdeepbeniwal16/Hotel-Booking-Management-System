@@ -6,48 +6,47 @@ import HotelGroup, {
   defaultHotelGroup,
   makeHotelGroup,
 } from '../../types/HotelGroup';
-import Hotel  from '../../types/HotelType';
+import Hotel from '../../types/HotelType';
 import { Row, Col, Container } from 'react-bootstrap';
+import { useAuth0 } from '@auth0/auth0-react';
 import GroupHotels from './GroupHotels';
-import GroupDetails from './GroupDetails';
-interface HotelierBody {
-  hotelier: UserDataType;
-}
-const HotelierBody = () => {
+
+
+const HotelierHome = () => {
   const {
     backend,
     user: { user },
   } = useContext(AppContext.GlobalContext);
-  const [group, setGroup] = useState(defaultHotelGroup);
   const noHotels: Array<Hotel> = [];
   const [hotels, setHotels] = useState(noHotels);
-
+  const [group, setGroup] = useState(defaultHotelGroup);
+  const { isAuthenticated } = useAuth0();
   useEffect(() => {
     const setup = async () => {
-      backend.getHotelGroups().then((groups: HotelGroup[]) => {
-        if (groups.length == 1) setGroup(groups[0]);
-      });
       backend
         .getHotelsForGroup(makeHotelGroup(user.group))
         .then((hotels: Hotel[]) => {
           setHotels(hotels);
         });
+      backend.getHotelGroups().then((groups: HotelGroup[]) => {
+        if (groups.length == 1) setGroup(groups[0]);
+      });
     };
-    setup();
-  }, [user]);
+    if (user.id != -1 && isAuthenticated) setup();
+  }, [user.id, isAuthenticated]);
 
   return (
-    <Container>
+    <Container fluid> 
+      <Row>
+        <Col><h3>{group.id != -1 && group.name ? `${group.name} hotels` : 'Hotels'}</h3></Col>
+      </Row>
       <Row>
         <Col>
-          <GroupDetails group={group} />
+          <GroupHotels  hotels={hotels} />
         </Col>
-      </Row>
-      <Row xs={1} className='g-4 mb-4'>
-        <Col><GroupHotels hotels={hotels} /></Col>
       </Row>
     </Container>
   );
 };
 
-export default HotelierBody;
+export default HotelierHome;

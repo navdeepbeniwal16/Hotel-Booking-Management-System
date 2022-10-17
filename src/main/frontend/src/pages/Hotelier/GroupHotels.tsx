@@ -3,10 +3,11 @@ import { ListGroup, Button } from 'react-bootstrap';
 import { toString as addressToString } from '../../types/AddressType';
 import Hotel from '../../types/HotelType';
 import { map } from 'lodash';
-import { PlusCircle } from 'react-bootstrap-icons';
+import { HouseHeart, ListCheck } from 'react-bootstrap-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CreateHotel from './CreateHotel';
 import AppContext from '../../context/AppContext';
+import HotelGroup from '../../types/HotelGroup';
 export interface HotelListProps {
   hotels: Hotel[];
 }
@@ -36,9 +37,9 @@ const GroupHotels = ({ hotels }: HotelListProps) => {
   return (
     <>
       <div className="my-2">
-        <h3>Hotels</h3>
-        <Button variant='info' onClick={()=>setShowModal(true)}>
-          Create hotel <PlusCircle />
+        
+        <Button variant='success' onClick={()=>setShowModal(true)}>
+          <HouseHeart /> Create hotel
         </Button>
       </div>
       <CreateHotel
@@ -61,8 +62,8 @@ const GroupHotels = ({ hotels }: HotelListProps) => {
                 variant='primary'
                 onClick={() => navigate(`${pathname}/${hotel.id}`)}
               >
-                {' '}
-                View bookings{' '}
+                <ListCheck />
+                {' '}Bookings
               </Button>
             </ListGroup.Item>
           );

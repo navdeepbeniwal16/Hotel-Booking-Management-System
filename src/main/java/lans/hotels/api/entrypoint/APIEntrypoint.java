@@ -3,6 +3,7 @@ package lans.hotels.api.entrypoint;
 import lans.hotels.api.auth.AuthorizationFactory;
 import lans.hotels.api.controllers.UnknownController;
 import lans.hotels.api.exceptions.CommandException;
+import lans.hotels.datasource.exceptions.DataSourceLayerException;
 import lans.hotels.datasource.facade.PostgresFacade;
 import lans.hotels.datasource.connections.DBConnection;
 import lans.hotels.domain.IDataSource;
@@ -39,14 +40,40 @@ public class APIEntrypoint extends HttpServlet {
     }
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        IDataSource dataSourceLayer = null;
+        DBConnection database = null;
         try {
-            DBConnection database = (DBConnection) getServletContext().getAttribute("DBConnection");
-            IDataSource dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
+            database = (DBConnection) getServletContext().getAttribute("DBConnection");
+            if (database == null) {
+                throw new Exception("no connections available");
+            }
+            dataSourceLayer = PostgresFacade.newInstance(request.getSession(true), database.connection());
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                if (database != null && database.connection() != null && !database.connection().isClosed()) {
+                    database.connection().close();
+                }
+            } catch (SQLException sqlException) {
+                throw new ServletException("APIEntrypoint.handleRequest():\n" + "Method:\t" + request.getMethod() + "\nError message:\t" + e);
+            }
+            throw new ServletException("APIEntrypoint.handleRequest():\n" + "Method:\t" + request.getMethod() + "\nError message:\t" + e);
+        }
+        try {
             handleCommand(dataSourceLayer, request, response);
         } catch (Exception e) {
             System.out.println("APIFrontController.handleRequest(): " + e.getMessage());
             e.printStackTrace();
             throw new ServletException("APIEntrypoint.handleRequest():\n" + "Method:\t" + request.getMethod() + "\nError message:\t" + e);
+        } finally {
+            try {
+                if (database.connection() != null && !database.connection().isClosed()) {
+                    database.connection().close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new ServletException("APIEntrypoint.handleRequest():\n" + "Method:\t" + request.getMethod() + "\nError message:\t" + e);
+            }
         }
     }
 

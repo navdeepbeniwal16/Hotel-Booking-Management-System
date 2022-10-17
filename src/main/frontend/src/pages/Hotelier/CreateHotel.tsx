@@ -242,7 +242,7 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
       onEnter={handleOnEnter}
       onExit={handleOnExit}
     >
-      <Modal.Header>
+      <Modal.Header closeButton>
         <Modal.Title>Create a new hotel</Modal.Title>
       </Modal.Header>
       <Modal.Body>

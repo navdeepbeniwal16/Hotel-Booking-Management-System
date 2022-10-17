@@ -37,7 +37,7 @@ class LANS_API {
   private readonly hghEndpoint = this.baseURL + 'hotelgrouphoteliers';
   private readonly roomsEndpoint = this.baseURL + 'rooms';
   private readonly bookingsEndpoint = this.baseURL + 'bookings';
-  private isRegistered = false;
+  public isRegistered = false;
 
   constructor(accessToken = '') {
     this.accessToken = accessToken;
@@ -68,6 +68,7 @@ class LANS_API {
     const data = await res.json();
     if (res.status == 200) {
       const user: UserDataType = data;
+      this.isRegistered = true;
       return [true, user];
     }
     return [false, defaultUserData];
@@ -109,7 +110,12 @@ class LANS_API {
       }),
     });
     const data = await res.json();
-    const rooms: Array<Room> = data.result.rooms;
+    const { success } = data;
+    const { result } = data;
+    let rooms: Array<Room> = [];
+    if (success && result.rooms) {
+      rooms = result.rooms;
+    }
     console.log('getAllRooms():\n', rooms);
     return rooms;
   }
@@ -174,6 +180,7 @@ class LANS_API {
     if (success && data.result && data.result.groups) {
       hotelGroups = data.result.groups;
     }
+    console.log("getHotelGroups:", hotelGroups);
     return hotelGroups;
   }
 
@@ -203,7 +210,7 @@ class LANS_API {
     if (data.success) {
       hotels = data.result.hotels;
     } else {
-      console.log("ERROR getAllHotels:", data.errorMessage);
+      console.log('ERROR getAllHotels:', data.errorMessage);
     }
     return hotels;
   }
@@ -229,7 +236,7 @@ class LANS_API {
       method: methods.POST,
       headers: this.headers,
       body: JSON.stringify({
-        hotel
+        hotel,
       }),
     });
     const data = await res.json();
@@ -243,7 +250,7 @@ class LANS_API {
       headers: this.headers,
       body: JSON.stringify({
         search: {
-          hotels: ""
+          hotels: '',
         },
       }),
     });
@@ -260,7 +267,7 @@ class LANS_API {
     const body = JSON.stringify({
       search: {
         hotel_id,
-      }
+      },
     });
     const res = await fetch(this.bookingsEndpoint, {
       method: methods.POST,
@@ -272,7 +279,7 @@ class LANS_API {
     if (res.ok && data.result && data.success && data.result.bookings) {
       bookings = data.result.bookings;
     } else {
-      console.log("ERROR getHotelBookings:", data.errorMessage);
+      console.log('ERROR getHotelBookings:', data.errorMessage);
     }
     return bookings;
   }
@@ -281,8 +288,8 @@ class LANS_API {
     const body = JSON.stringify({
       booking: {
         id: booking.id,
-        cancel: true
-      }
+        cancel: true,
+      },
     });
     const res = await fetch(this.bookingsEndpoint, {
       method: methods.PUT,
@@ -293,7 +300,7 @@ class LANS_API {
     if (res.ok && data.success) {
       return data.success;
     } else {
-      console.log("ERROR cancelBooking:", data.errorMessage);
+      console.log('ERROR cancelBooking:', data.errorMessage);
     }
     return false;
   }
