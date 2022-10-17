@@ -5,6 +5,7 @@ import HotelGroup from '../types/HotelGroup';
 import Room from '../types/RoomType';
 import Booking from '../types/BookingType';
 import { find } from 'lodash';
+import RoomBooking from '../types/RoomBooking';
 
 type Headers = {
   'Content-Type': string;
@@ -55,6 +56,30 @@ class LANS_API {
 
   public sameToken(other: string): boolean {
     return this.accessToken == other;
+  }
+
+  // Bookings
+  public async createBooking(hotel: Hotel, startDate: Date, endDate: Date, rooms: RoomBooking[]): Promise<boolean> {
+    const res = await fetch(this.bookingsEndpoint, {
+      method: methods.POST,
+      headers: this.headers,
+      body: JSON.stringify({
+        booking: {
+          hotel_id: hotel.id,
+          start_date: startDate.toLocaleString('en-GB'),
+          end_date: endDate.toLocaleString('en-GB'),
+          rooms
+        }
+      })
+    })
+    
+    if (res.ok) {
+      const data = await res.json();
+      const { success }: { success: boolean } = data;
+      return success;
+    } else {
+      return false;
+    }
   }
 
   // Users
