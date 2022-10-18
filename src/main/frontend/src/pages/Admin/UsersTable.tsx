@@ -1,6 +1,6 @@
 import React, { useContext, ReactNode, useState } from 'react';
 import { map } from 'lodash';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Toast } from 'react-bootstrap';
 
 import UserDataType from '../../types/UserDataType';
 import AppContext from '../../context/AppContext';
@@ -15,6 +15,7 @@ const UsersTable = ({ users, makeHotelier }: UserTableProps) => {
   const { backend } = useContext(AppContext.GlobalContext);
   const defaultLoading: number[] = [];
   const [loading, setLoading] = useState<number[]>(defaultLoading);
+  const [error, setError] = useState('');
 
   const renderButton = (user: UserDataType) => {
     return (
@@ -27,7 +28,14 @@ const UsersTable = ({ users, makeHotelier }: UserTableProps) => {
               }
             : () => {
                 backend.makeHotelier(user).then((success: boolean) => {
-                  if (success) makeHotelier(user.id);
+                  if (success) {
+                    makeHotelier(user.id);
+                  } else {
+                    setError('Something wen wrong. Please try again.');
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 2000)
+                  }
                   setLoading(loading.filter((id: number) => id != user.id));
                 });
                 setLoading([...loading, user.id]);
@@ -48,26 +56,35 @@ const UsersTable = ({ users, makeHotelier }: UserTableProps) => {
     );
   };
   return (
-    <Table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-        </tr>
-      </thead>
-      <tbody>
-        {map(users, (user: UserDataType) => (
-          <tr key={user.id}>
-            <td>{`${user.id}`}</td>
-            <td>{`${user.name}`}</td>
-            <td>{`${user.email}`}</td>
-            <td>{renderRole(user)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
+    <>
+      {error != '' ? (
+        <Toast bg='danger'>
+          <Toast.Header>Error</Toast.Header>
+          <Toast.Body>{error}</Toast.Body>
+        </Toast>
+      ) : (
+        <Table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            {map(users, (user: UserDataType) => (
+              <tr key={user.id}>
+                <td>{`${user.id}`}</td>
+                <td>{`${user.name}`}</td>
+                <td>{`${user.email}`}</td>
+                <td>{renderRole(user)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
+    </>
   );
 };
 
