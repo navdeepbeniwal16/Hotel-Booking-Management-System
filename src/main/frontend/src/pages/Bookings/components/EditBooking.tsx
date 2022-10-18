@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  Form,
+  Form, Stack,
   Card,
   Button,
   Container,
@@ -13,7 +13,6 @@ import BookingContext from '../context';
 import { useNavigate, useParams } from 'react-router-dom';
 import Booking, { defaultBooking } from '../../../types/BookingType';
 import { map } from 'lodash';
-import Room from '../../../types/RoomType';
 import RoomBooking from '../../../types/RoomBooking';
 import AppContext from '../../../context/AppContext';
 
@@ -29,6 +28,8 @@ const EditBooking = () => {
   const [originalEnd, setOriginalEnd] = useState(
     new Date(booking.end_date).toLocaleDateString()
   );
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date(2023, 11, 30));
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -45,11 +46,27 @@ const EditBooking = () => {
     setup();
   }, [bookingId, loading]);
 
-  const startDate = (): React.ReactNode => {
+  const onStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('start date:', event.target.value);
+    setStartDate(new Date(event.target.value));
+  };
+
+  const onEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('end date:', event.target.value);
+    setEndDate(new Date(event.target.value));
+  };
+
+  const renderStartDate = (): React.ReactNode => {
     return (
-      <Form.Group controlId=''>
+      <Form.Group>
         <Form.Label>Check-in date</Form.Label>
-        <Form.Control type='date' placeholder='' />
+        <Form.Control
+          required
+          onChange={onStartDateChange}
+          value={startDate.toISOString().split('T')[0]}
+          type='date'
+          placeholder='01/01/2021'
+          aria-placeholder='01/01/2021'/>
         <Form.Text className='text-muted'>
           What date are you checking in?
         </Form.Text>
@@ -57,11 +74,17 @@ const EditBooking = () => {
     );
   };
 
-  const endDate = (): React.ReactNode => {
+  const renderEndDate = (): React.ReactNode => {
     return (
-      <Form.Group controlId=''>
+      <Form.Group controlId='endDAte'>
         <Form.Label>Check-out date</Form.Label>
-        <Form.Control type='date' placeholder='' />
+        <Form.Control
+          required
+          onChange={onEndDateChange}
+          value={endDate.toISOString().split('T')[0]}
+          type='date'
+          placeholder='01/01/2021'
+          aria-placeholder='01/01/2021' />
         <Form.Text className='text-muted'>
           What date are you checking out?
         </Form.Text>
@@ -100,6 +123,11 @@ const EditBooking = () => {
             </Form.Text>
           </Form.Group>
         </Card.Body>
+        <Card.Footer className="d-flex justify-content-end">
+          <Button variant="primary" onClick={() => {
+            console.log("update room")
+          }}>Update room</Button>
+        </Card.Footer>
       </Card>
     );
   };
@@ -120,10 +148,10 @@ const EditBooking = () => {
         <Form.Label>Cancel your booking</Form.Label>
         <div>
           <Button variant='danger' onClick={() => handleCancelBooking()}>
-            Cancel booking
+            Cancel
           </Button>
         </div>
-        <Form.Text className='text-muted'>
+        <Form.Text className='text-danger'>
           Warning: this action cannot be undone.
         </Form.Text>
       </Form.Group>
@@ -141,16 +169,15 @@ const EditBooking = () => {
 
 
 
-  const buttons = (): React.ReactNode => {
+  const updateButton = (): React.ReactNode => {
     return (
       <>
-        {backButton()}
         <Button
           variant='primary'
           className='mx-2'
-          onClick={() => console.log('update')}
+          type="submit"
         >
-          Update
+          Update book
         </Button>
       </>
     );
@@ -158,19 +185,20 @@ const EditBooking = () => {
 
   const handleChangeDates = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // console.log('booking submitted');
-    // backend
-    //   .createBooking(hotel, startDate, endDate, roomBookings)
-    //   .then(([success, message]: [boolean, string]) => {
-    //     if (success) {
-    //       navigate('/bookings');
-    //     } else {
-    //       setError(`Something went wrong: ${message}. Please try again.`);
-    //       // setTimeout(() => {
-    //       //   window.location.reload();
-    //       // }, 2000);
-    //     }
-    //   });
+    backend
+      .changeDates(booking, startDate, endDate)
+      .then(([success, error]: [boolean, string]) => {
+        if (success) {
+          setError('');
+          setSuccess(`Dates updated! Taking you back to your bookings now.`);
+        } else {
+          setSuccess('');
+          setError(`Something went wrong: ${error}. Please try again.`);
+        }
+        setTimeout(() => {
+          navigate('/bookings');
+        }, 3000);
+      })
   };
 
   const handleCancelBooking = () => {
@@ -214,12 +242,25 @@ const EditBooking = () => {
 
       <Card.Body>
         {!error && !success && (
-          <>
-            <Form>
-              {startDate()}
-              {endDate()}
-              {cancel()}
-            </Form>
+          <Stack gap={3}>
+            <Container>
+              <Row>
+                <Col>
+                  <Form onSubmit={handleChangeDates}>
+                    <Card>
+                      <Card.Body>
+                        {renderStartDate()}
+                        {renderEndDate()}
+                      </Card.Body>
+                      <Card.Footer className="d-flex justify-content-end">
+                        {updateButton()}
+                      </Card.Footer>
+                    </Card>
+                  </Form>
+                </Col>
+              </Row>
+            </Container>
+            
             <Container>
               <Row>
                 <Col>
@@ -229,12 +270,25 @@ const EditBooking = () => {
                 </Col>
               </Row>
             </Container>
-          </>
+            <Container>
+              <Row>
+                <Col>
+                  <Form>
+                    <Card className="border-danger" >
+                      <Card.Body>
+                        {cancel()}
+                      </Card.Body>
+                    </Card>
+                  </Form>
+                </Col>
+              </Row>
+            </Container>
+          </Stack>
         )}
         {toast()}
       </Card.Body>
-      <Card.Footer className='d-flex justify-content-between'>
-        {buttons()}
+      <Card.Footer className='d-flex justify-content-start'>
+        {backButton()}
       </Card.Footer>
     </Card>
   );

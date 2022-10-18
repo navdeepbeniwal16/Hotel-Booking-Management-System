@@ -419,6 +419,28 @@ class LANS_API {
     }
     return false;
   }
+
+  public async changeDates(booking: Booking, start: Date, end: Date): Promise<[boolean, string]> {
+    const body = JSON.stringify({
+      booking: {
+        id: booking.id,
+        start_date: start.toLocaleString('en-GB').split(',')[0],
+        end_date: end.toLocaleString('en-GB').split(',')[0]
+      },
+    });
+    const res = await fetch(this.bookingsEndpoint, {
+      method: methods.PUT,
+      headers: this.headers,
+      body,
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return [data.success, data.error];
+    } else {
+      console.log('ERROR changing dates:', res.status, res.statusText, data);
+    }
+    return [data.success, data.error];
+  }
 }
 
 export default LANS_API;
