@@ -44,17 +44,41 @@ public class HotelsController extends FrontCommand {
         responseHelper.respond(useCase.getResult(), statusCode);
     }
 
-    public Void handlePut() {
+    public Void handlePut() throws Exception {
         Integer hotelId = (Integer) requestHelper.body("hotel", "id");
         Boolean isActive = (Boolean) requestHelper.body("hotel", "is_active");
         if (hotelId != null && isActive != null) {
-            useCase = new ChangeHotelStatus(dataSource, hotelId,isActive);
+
+            ArrayList<Hotel> hotels;
+            HotelSearchCriteria criteria = new HotelSearchCriteria();
+            criteria.setId(hotelId);
+
+            hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
+
+            if (hotels.size() > 0) {
+                Hotel hotel = hotels.get(0);
+
+                if(!hotel.getIsActive())
+                {
+                    responseHelper.error("PUT /hotels hotel already delisted: " + requestHelper.body(), HttpServletResponse.SC_BAD_REQUEST);
+                    return null;
+                }
+                hotel.setIs_Active(false);
+            }
+            else
+            {
+                responseHelper.error("PUT /hotels hotel with id does not exist: " + requestHelper.body(), HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+
+            useCase = new ChangeHotelStatus(dataSource);
             useCase.execute();
             statusCode = useCase.succeeded() ?
                     HttpServletResponse.SC_OK :
                     HttpServletResponse.SC_BAD_REQUEST;
             responseHelper.respond(useCase.getResult(), statusCode);
-        } else {
+        }
+        else {
             responseHelper.error("PUT /hotels | invalid request body: hotel_id=" + hotelId + ", is_active=" + isActive, HttpServletResponse.SC_BAD_REQUEST);
         }
         return null;
