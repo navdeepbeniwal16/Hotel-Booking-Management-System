@@ -122,7 +122,7 @@ public class RoombookingsController extends FrontCommand {
                     ArrayList<Room> rooms = null;
                     Room room = null;
                     RoomSearchCriteria r_criteria = new RoomSearchCriteria();
-                    r_criteria.setRoomNumber(rBooking.getRoomId());
+                    r_criteria.setRoomID(rBooking.getRoomId());
                     r_criteria.setHotelId(booking.getHotelId());
                     try {
                         rooms = dataSource.findBySearchCriteria(Room.class, r_criteria);
