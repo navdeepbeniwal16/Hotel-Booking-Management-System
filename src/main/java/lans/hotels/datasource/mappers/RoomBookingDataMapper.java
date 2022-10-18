@@ -88,7 +88,7 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
     public ArrayList<RoomBooking> findBySearchCriteria(AbstractSearchCriteria criteria) throws Exception {
         RoomBookingSearchCriteria roomBookingSearchCriteria = (RoomBookingSearchCriteria) criteria;
         String findByCriteriaStatement = "SELECT r.id as id,h.name as hotel_name, start_date, end_date, " +
-                "m.id as room_id, r.is_active, no_of_guests,main_guest, r.version AS version " +
+                "m.id as room_id, r.is_active, no_of_guests,main_guest, b.id as booking_id, r.version AS version " +
                 "FROM booking b " +
                 "         JOIN ( room_booking r " +
                 "    JOIN room m" +
@@ -117,6 +117,15 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
         while (loadedRoomBooking != null) {
             loadedRoomBooking = load(resultSet);
         }
+        ArrayList<RoomBooking> result = new ArrayList<>();
+        if (roomBookingSearchCriteria.getBookingId()!=null) {
+            loadedMap.values().forEach(roomBooking -> {
+                if (roomBooking.getBookingId().equals(roomBookingSearchCriteria.getBookingId())) {
+                    result.add(roomBooking);
+                }
+            });
+            return result;
+        }
         return new ArrayList<>(loadedMap.values());
     }
 
@@ -131,10 +140,12 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
                 id,
                 dataSource,
                 resultSet.getInt("room_id"),
+                resultSet.getInt("booking_id"),
                 resultSet.getBoolean("is_active"),
                 resultSet.getString("main_guest"),
                 resultSet.getInt("no_of_guests"),
                 resultSet.getInt("version")
+
         );
         return booking;
     }

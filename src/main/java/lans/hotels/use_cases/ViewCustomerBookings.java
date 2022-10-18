@@ -27,7 +27,7 @@ public class ViewCustomerBookings extends UseCase {
         b_criteria.setCustomerId(customer_id);
         try {
             bookings = dataSource.findBySearchCriteria(Booking.class,b_criteria);
-            bookings.forEach(Booking::getRoomBookings);
+            bookings.forEach(booking -> booking.getRoomBookings());
             succeed();
         } catch (Exception e) {
             fail();
