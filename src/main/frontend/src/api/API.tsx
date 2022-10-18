@@ -74,6 +74,7 @@ class LANS_API {
     let message = "";
     const data = await res.json();
     if (res.ok && data.result) {
+        console.log("getCustomerBookings", data);
         const { result } = data;
         const success: boolean = data.success as boolean;
         if (success) {

@@ -62,7 +62,7 @@ public abstract class AbstractDomainObject implements IGhost, Comparable<Abstrac
     }
 
     public Boolean isLoaded() {
-        return isNew || loadStatus == LoadStatus.LOADED;
+        return isNew || (loadStatus == LoadStatus.LOADED && !isGhost() && !isLoading());
     }
 
     public Boolean isLoading() {

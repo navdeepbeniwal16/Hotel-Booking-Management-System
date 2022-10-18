@@ -79,6 +79,7 @@ public class Booking extends ReferenceObject {
        this.customer_name = customer_name;
        this.version = version;
        markClean();
+       markGhost();
    }
 
     private void initRoomBookings() {
@@ -150,12 +151,10 @@ public class Booking extends ReferenceObject {
 
     // Fetching room-bookings on the go, either locally from the object, or from the backend if not present locally
     public HashMap<Integer, RoomBooking> getRoomBookings() {
-        if(isLoaded()) {
-            return roomBookings;
-        } else {
+        if (!isLoaded()) {
             loadRemainingData();
-            return roomBookings;
         }
+        return roomBookings;
     }
 
     // Lazy load the roomBookings pertaining to object of this booking class
