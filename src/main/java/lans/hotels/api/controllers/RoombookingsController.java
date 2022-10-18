@@ -109,6 +109,11 @@ public class RoombookingsController extends FrontCommand {
                     HashMap<Integer, RoomBooking> rBookings = booking.getRoomBookings();
                     RoomBooking rBooking = rBookings.get(rb_id);
 
+                    if (rBooking == null) {
+                        responseHelper.error("PUT /roombookings: room booking " + rb_id + " does not exist on booking " + booking.getId(), HttpServletResponse.SC_BAD_REQUEST);
+                        return null;
+                    }
+
                     if(rBooking.getNumOfGuests()==no_of_guests){
                         responseHelper.error("PUT /roombookings max guests is the same as value passed", HttpServletResponse.SC_BAD_REQUEST);
                         return null;

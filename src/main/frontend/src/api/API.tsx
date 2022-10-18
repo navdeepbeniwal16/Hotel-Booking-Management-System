@@ -39,6 +39,7 @@ class LANS_API {
   private readonly hghEndpoint = this.baseURL + 'hotelgrouphoteliers';
   private readonly roomsEndpoint = this.baseURL + 'rooms';
   private readonly bookingsEndpoint = this.baseURL + 'bookings';
+  private readonly roomBookingsEndpoint = this.baseURL + 'roombookings';
   public isRegistered = false;
 
   constructor(accessToken = '') {
@@ -438,6 +439,38 @@ class LANS_API {
       return [data.success, data.error];
     } else {
       console.log('ERROR changing dates:', res.status, res.statusText, data);
+    }
+    return [data.success, data.error];
+  }
+
+  public async changeGuests(booking: Booking, roomBooking: RoomBooking): Promise<[boolean, string]> {
+    // {
+    //   "room_booking" : {
+    //     "booking_id" : 5,
+    //       "rb_id" : 7,
+    //         "no_of_guests": 8
+    //   }
+    // }
+    console.log("changeGuests:");
+    console.log(booking);
+    console.log(roomBooking);
+    const body = JSON.stringify({
+      room_booking: {
+        booking_id: booking.id,
+        rb_id: roomBooking.id,
+        no_of_guests: roomBooking.no_of_guests
+      },
+    });
+    const res = await fetch(this.roomBookingsEndpoint, {
+      method: methods.PUT,
+      headers: this.headers,
+      body,
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return [data.success, data.error];
+    } else {
+      console.log('ERROR change number of guests for room booking:', res.status, res.statusText, data);
     }
     return [data.success, data.error];
   }

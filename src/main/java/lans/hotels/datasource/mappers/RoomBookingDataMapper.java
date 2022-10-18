@@ -91,7 +91,7 @@ public class RoomBookingDataMapper extends AbstractPostgresDataMapper<RoomBookin
                 "m.id as room_id, r.is_active, no_of_guests,main_guest, r.version AS version " +
                 "FROM booking b " +
                 "         JOIN ( room_booking r " +
-                "    JOIN room m\n" +
+                "    JOIN room m" +
                 "    ON r.room_id=m.id) " +
                 "              ON b.id = r.booking_id " +
                 "         JOIN hotel h ON h.id = b.hotel_id " +
