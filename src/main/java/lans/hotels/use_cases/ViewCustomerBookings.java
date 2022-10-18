@@ -65,8 +65,9 @@ public class ViewCustomerBookings extends UseCase {
                 JSONArray rooms = new JSONArray();
                 booking.getRoomBookings().values().forEach(roomBooking -> {
                     JSONObject room = new JSONObject();
-                    room.put("main_guest", roomBooking.getMainGuest());
-                    room.put("guests", roomBooking.getNumOfGuests());
+                    room.put("main_guest_name", roomBooking.getMainGuest());
+                    room.put("no_of_guests", roomBooking.getNumOfGuests());
+                    room.put("id", roomBooking.getId());
                     rooms.put(room);
                 });
                 b_entry.put("rooms", rooms);

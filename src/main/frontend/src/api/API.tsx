@@ -88,6 +88,29 @@ class LANS_API {
     return [bookings, message];
   }
 
+  // public async cancelBooking(booking: Booking): Promise<[boolean, string]> {
+  //   const res = await fetch(this.bookingsEndpoint, {
+  //     method: methods.PUT,
+  //     headers: this.headers,
+  //     body: JSON.stringify({
+  //       booking: {
+  //         id: booking.id,
+  //         cancel: true
+  //       }
+  //     })
+  //   })
+
+  //   if (res.ok) {
+  //     const data = await res.json();
+  //     const { success }: { success: boolean } = data;
+  //     const error = !success ? data.error : "";
+  //     return [success, error];
+  //   } else {
+  //     console.log(res.status, res.statusText);
+  //     return [false, res.statusText];
+  //   }
+  // }
+
   public async createBooking(hotel: Hotel,
     startDate: Date,
     endDate: Date,
@@ -392,7 +415,7 @@ class LANS_API {
     if (res.ok && data.success) {
       return data.success;
     } else {
-      console.log('ERROR cancelBooking:', data.errorMessage);
+      console.log('ERROR cancelBooking:', res.status, res.statusText, data);
     }
     return false;
   }

@@ -1,3 +1,5 @@
+import RoomBooking from "./RoomBooking";
+
 type Booking = {
   id: number;
   hotel_id: number;
@@ -7,6 +9,7 @@ type Booking = {
   start_date: string;
   end_date: string;
   is_active: boolean;
+  rooms?: RoomBooking[]
 };
 
 export const defaultBooking: Booking = {
@@ -18,5 +21,6 @@ export const defaultBooking: Booking = {
   start_date: '01/01/2022',
   end_date: '03/01/2022',
   is_active: false,
+  rooms: []
 }
 export default Booking;

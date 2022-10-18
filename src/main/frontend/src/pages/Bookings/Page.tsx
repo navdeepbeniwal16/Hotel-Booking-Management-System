@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import Booking from '../../types/BookingType';
 import AppContext from '../../context/AppContext';
 import BookingContext from './context';
 const BookingsPage = () => {
+  const location = useLocation();
   const emptyBookings: Booking[] = [];
   const [bookings, setBookings] = useState(emptyBookings);
   const { backend, user } = useContext(AppContext.GlobalContext);
@@ -22,7 +23,7 @@ const BookingsPage = () => {
         });
     };
     setup();
-  }, [user.user.id]);
+  }, [user.user.id, location.pathname]);
 
   return (
     <BookingContext.Provider value={{bookings, loading, setLoading}}>
