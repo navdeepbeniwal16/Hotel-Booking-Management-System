@@ -21,7 +21,6 @@ public class HotelgrouphoteliersController extends FrontCommand {
     @Override
     protected void concreteProcess() throws IOException, SQLException {
         System.out.println("HotelGroupHoteliers.concreteProcess(): " + request.getMethod() + " " + request.getRequestURI());
-
         switch(request.getMethod()) {
             case HttpMethod.GET:
             case HttpMethod.POST:
@@ -137,16 +136,20 @@ public class HotelgrouphoteliersController extends FrontCommand {
                     responseHelper.error("POST /hotelgrouphoteliers user id does not exist", HttpServletResponse.SC_BAD_REQUEST);
                     return null;
                 }
-                if(!users.get(1).getRole().isHotelier())
+                for (int i=0;i<users.size();i++)
                 {
-                    responseHelper.error("POST /hotelgrouphoteliers user id is not a hotelier", HttpServletResponse.SC_BAD_REQUEST);
-                    return null;
-                }
-
-                else if(users.get(1).getHotelierHotelGroupID()!=0)
-                {
-                    responseHelper.error("POST /hotelgrouphoteliers user id already associated to hotel group", HttpServletResponse.SC_BAD_REQUEST);
-                    return null;
+                    if(users.get(i).getId()==hotelier_id){
+                        if(!users.get(i).getRole().isHotelier())
+                        {
+                            responseHelper.error("POST /hotelgrouphoteliers user id is not a hotelier", HttpServletResponse.SC_BAD_REQUEST);
+                            return null;
+                        }
+                        else if(users.get(i).getHotelierHotelGroupID()!=0)
+                        {
+                            responseHelper.error("POST /hotelgrouphoteliers user id already associated to hotel group", HttpServletResponse.SC_BAD_REQUEST);
+                            return null;
+                        }
+                    }
                 }
 
                 ArrayList<HotelGroup> hotel_groups = null;
