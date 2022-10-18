@@ -142,7 +142,8 @@ public class HotelsController extends FrontCommand {
         try {
             Hotel hotel = getHotelFromJsonObject();
             if (hotel == null) {
-                throw new Error("error with json: " + requestHelper.body());
+                System.out.println("Check 1");
+                return;
             }
             useCase = new CreateHotel(dataSource);
             useCase.execute();
@@ -168,11 +169,14 @@ public class HotelsController extends FrontCommand {
             name = (String) requestHelper.body("hotel", "name");
             email = (String) requestHelper.body("hotel", "email");
         } else {
-            throw new Exception("invalid request body: " + requestHelper.body());
+            responseHelper.error("POST /hotels hotel does not have required fields", HttpServletResponse.SC_BAD_REQUEST);
+            return null;
         }
 
         if (isNewHotelDuplicate()) {
-            throw new Exception("no duplicate hotels: " + name + " | " + email);
+            responseHelper.error("POST /hotels has duplicate name or email", HttpServletResponse.SC_BAD_REQUEST);
+            System.out.println("here");
+            return null;
         }
 
         AddressDTO addressDTO = new AddressDTO((JSONObject) requestHelper.body("hotel", "address"));
@@ -206,8 +210,6 @@ public class HotelsController extends FrontCommand {
     }
 
     private boolean isNewHotelDuplicate() {
-        if (!hasRequiredFields()) return false;
-
         try {
             HotelSearchCriteria nameCriteria = new HotelSearchCriteria();
             nameCriteria.setName(requestHelper.body("hotel").getString("name"));
