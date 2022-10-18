@@ -12,40 +12,36 @@ export interface HotelListProps {
   hotels: Hotel[];
 }
 
-
-
 const GroupHotels = ({ hotels }: HotelListProps) => {
-  const {
-    backend,
-  } = useContext(AppContext.GlobalContext);
+  const { backend } = useContext(AppContext.GlobalContext);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [showModal, setShowModal] = useState(false);
   const handleSubmitCreateHotel = (hotel: Hotel) => {
-    console.log("submitted");
+    console.log('submitted');
     backend.createHotel(hotel).then((success: boolean) => {
-      console.log("create hotel:", success);
+      console.log('create hotel:', success);
       // TODO: @levim - improve alert
       window.location.reload();
-    })
+    });
     setShowModal(false);
-  }
+  };
   const handleCloseModal = () => {
-    console.log("modal closed");
+    console.log('modal closed');
     setShowModal(false);
-  }
+  };
   return (
     <>
-      <div className="my-2">
-        
-        <Button variant='success' onClick={()=>setShowModal(true)}>
+      <div className='my-2'>
+        <Button variant='success' onClick={() => setShowModal(true)}>
           <HouseHeart /> Create hotel
         </Button>
       </div>
       <CreateHotel
         show={showModal}
         onSubmit={handleSubmitCreateHotel}
-        onClose={handleCloseModal} />
+        onClose={handleCloseModal}
+      />
       <ListGroup as='ul'>
         {map(hotels, (hotel: Hotel, index: number) => {
           return (
@@ -56,14 +52,20 @@ const GroupHotels = ({ hotels }: HotelListProps) => {
             >
               <div className='ms-2 me-auto'>
                 <div className='fw-bold'>{hotel.name}</div>
+                <div>
+                  Status:{' '}
+                  <span className={hotel.is_active ? 'text-success' : 'text-danger'}>
+                    {hotel.is_active ? 'Active' : 'Delisted'}
+                  </span>
+                  
+                </div>
                 {addressToString(hotel.address)}
               </div>
               <Button
                 variant='primary'
                 onClick={() => navigate(`${pathname}/${hotel.id}`)}
               >
-                <ListCheck />
-                {' '}Bookings
+                <ListCheck /> Bookings
               </Button>
             </ListGroup.Item>
           );

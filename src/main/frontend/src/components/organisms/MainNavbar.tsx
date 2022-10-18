@@ -40,7 +40,7 @@ const MainNavbar = () => {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            <Nav.Link onClick={() => navigate('/')}>Hotels</Nav.Link>
+            <Nav.Link onClick={() => navigate('/')}>Home</Nav.Link>
             {isCustomer && (
               <Nav.Link onClick={() => navigate('/bookings')}>
                 My Bookings

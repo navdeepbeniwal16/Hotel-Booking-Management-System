@@ -39,6 +39,7 @@ class LANS_API {
   private readonly hghEndpoint = this.baseURL + 'hotelgrouphoteliers';
   private readonly roomsEndpoint = this.baseURL + 'rooms';
   private readonly bookingsEndpoint = this.baseURL + 'bookings';
+  private readonly roomBookingsEndpoint = this.baseURL + 'roombookings';
   public isRegistered = false;
 
   constructor(accessToken = '') {
@@ -74,6 +75,7 @@ class LANS_API {
     let message = "";
     const data = await res.json();
     if (res.ok && data.result) {
+        console.log("getCustomerBookings", data);
         const { result } = data;
         const success: boolean = data.success as boolean;
         if (success) {
@@ -86,6 +88,29 @@ class LANS_API {
     console.log(data);
     return [bookings, message];
   }
+
+  // public async cancelBooking(booking: Booking): Promise<[boolean, string]> {
+  //   const res = await fetch(this.bookingsEndpoint, {
+  //     method: methods.PUT,
+  //     headers: this.headers,
+  //     body: JSON.stringify({
+  //       booking: {
+  //         id: booking.id,
+  //         cancel: true
+  //       }
+  //     })
+  //   })
+
+  //   if (res.ok) {
+  //     const data = await res.json();
+  //     const { success }: { success: boolean } = data;
+  //     const error = !success ? data.error : "";
+  //     return [success, error];
+  //   } else {
+  //     console.log(res.status, res.statusText);
+  //     return [false, res.statusText];
+  //   }
+  // }
 
   public async createBooking(hotel: Hotel,
     startDate: Date,
@@ -391,9 +416,63 @@ class LANS_API {
     if (res.ok && data.success) {
       return data.success;
     } else {
-      console.log('ERROR cancelBooking:', data.errorMessage);
+      console.log('ERROR cancelBooking:', res.status, res.statusText, data);
     }
     return false;
+  }
+
+  public async changeDates(booking: Booking, start: Date, end: Date): Promise<[boolean, string]> {
+    const body = JSON.stringify({
+      booking: {
+        id: booking.id,
+        start_date: start.toLocaleString('en-GB').split(',')[0],
+        end_date: end.toLocaleString('en-GB').split(',')[0]
+      },
+    });
+    const res = await fetch(this.bookingsEndpoint, {
+      method: methods.PUT,
+      headers: this.headers,
+      body,
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return [data.success, data.error];
+    } else {
+      console.log('ERROR changing dates:', res.status, res.statusText, data);
+    }
+    return [data.success, data.error];
+  }
+
+  public async changeGuests(booking: Booking, roomBooking: RoomBooking): Promise<[boolean, string]> {
+    // {
+    //   "room_booking" : {
+    //     "booking_id" : 5,
+    //       "rb_id" : 7,
+    //         "no_of_guests": 8
+    //   }
+    // }
+    console.log("changeGuests:");
+    console.log(booking);
+    console.log(roomBooking);
+    const body = JSON.stringify({
+      room_booking: {
+        booking_id: booking.id,
+        rb_id: roomBooking.id,
+        no_of_guests: roomBooking.no_of_guests
+      },
+    });
+    const res = await fetch(this.roomBookingsEndpoint, {
+      method: methods.PUT,
+      headers: this.headers,
+      body,
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return [data.success, data.error];
+    } else {
+      console.log('ERROR change number of guests for room booking:', res.status, res.statusText, data);
+    }
+    return [data.success, data.error];
   }
 }
 

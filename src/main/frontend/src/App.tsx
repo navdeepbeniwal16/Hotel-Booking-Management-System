@@ -6,8 +6,15 @@ import MainNavbar from './components/organisms/MainNavbar';
 
 import Home from './pages/Home';
 import Admin from './pages/Admin/Admin';
+
+// BOOKINGS
 import BookingsPage from './pages/Bookings/Page';
-import HotelPage from './pages/HotelPage';
+import BookingsList from './pages/Bookings/components/BookingsList';
+import EditBooking from './pages/Bookings/components/EditBooking';
+
+// HOTEL
+import HotelPage from './pages/Hotel/Page';
+
 import { Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import AppContext from './context/AppContext';
@@ -15,6 +22,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import HotelierPage from './pages/Hotelier/Page';
 import HotelierHome from './pages/Hotelier/HotelierHome';
 import HotelDetails from './pages/Hotelier/HotelDetails';
+
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 const App = (props: ReactPropTypes, context: ContextType<any>) => {
@@ -42,7 +50,10 @@ const App = (props: ReactPropTypes, context: ContextType<any>) => {
           <Container>
             <Routes>
               <Route path='/' element={<Home />}></Route>
-              <Route path='/bookings' element={<BookingsPage />}></Route>
+              <Route path='/bookings' element={<BookingsPage />}>
+                <Route index element={<BookingsList />} />
+                <Route path=":bookingId" element={<EditBooking />} />
+              </Route>
               <Route path='/hotel/:id' element={<HotelPage />}></Route>
               <Route path='/hotelier' element={<HotelierPage />}>
                 <Route index element={<HotelierHome />} />

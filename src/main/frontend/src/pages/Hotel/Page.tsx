@@ -1,8 +1,8 @@
 import React, { ReactNode, useEffect } from 'react';
 
-import AppContext from '../context/AppContext';
+import AppContext from '../../context/AppContext';
 import { useContext, useState } from 'react';
-import { Room, defaultRoom } from '../types/RoomType';
+import { Room, defaultRoom } from '../../types/RoomType';
 import { filter, map } from 'lodash';
 import {
   Container,
@@ -16,10 +16,10 @@ import {
   Toast,
   ToastBody,
 } from 'react-bootstrap';
-import { toString } from '../types/AddressType';
+import { toString } from '../../types/AddressType';
 import { useNavigate, useParams } from 'react-router-dom';
-import Hotel, { defaultHotel } from '../types/HotelType';
-import RoomBooking from '../types/RoomBooking';
+import Hotel, { defaultHotel } from '../../types/HotelType';
+import RoomBooking from '../../types/RoomBooking';
 
 const HotelPage = () => {
   const navigate = useNavigate();

@@ -27,6 +27,7 @@ public class ViewCustomerBookings extends UseCase {
         b_criteria.setCustomerId(customer_id);
         try {
             bookings = dataSource.findBySearchCriteria(Booking.class,b_criteria);
+            bookings.forEach(booking -> booking.getRoomBookings());
             succeed();
         } catch (Exception e) {
             fail();
@@ -61,6 +62,15 @@ public class ViewCustomerBookings extends UseCase {
                 b_entry.put("start_date", booking.getDateRange().getFrom().toString());
                 b_entry.put("end_date", booking.getDateRange().getTo().toString());
                 b_entry.put("is_active", booking.getActive());
+                JSONArray rooms = new JSONArray();
+                booking.getRoomBookings().values().forEach(roomBooking -> {
+                    JSONObject room = new JSONObject();
+                    room.put("main_guest_name", roomBooking.getMainGuest());
+                    room.put("no_of_guests", roomBooking.getNumOfGuests());
+                    room.put("id", roomBooking.getId());
+                    rooms.put(room);
+                });
+                b_entry.put("rooms", rooms);
                 jsonArray.put(b_entry);
             });
         } catch (Exception e) {
