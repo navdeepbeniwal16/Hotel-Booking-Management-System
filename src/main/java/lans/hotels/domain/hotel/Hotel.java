@@ -205,7 +205,7 @@ public class Hotel extends ReferenceObject {
                 for(Object key: roomBookingMap.keySet()) {
                     RoomBooking rb = roomBookingMap.get(key);
                     for(Room room: getAllRooms()) {
-                        if(rb.getRoomId() == room.getId()) {
+                        if(rb.getRoomId() == room.getId() && rb.getActive()) {
                             unAvailableRooms.add(room);
                         }
                     }

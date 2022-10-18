@@ -81,6 +81,7 @@ public class BookingsController extends FrontCommand {
         if(!hotels.get(0).getIsActive())
         {
             responseHelper.error("POST /bookings hotel is not active", HttpServletResponse.SC_BAD_REQUEST);
+            System.out.println("here");
             return null;
         }
 
@@ -92,7 +93,7 @@ public class BookingsController extends FrontCommand {
             responseHelper.error("start date less than end date",HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
-        if (today_date.compareTo(dateRange.getFrom())>0)
+        if (dateRange.getFrom().compareTo(today_date)>=0)
         {
             responseHelper.error("start date less than current date",HttpServletResponse.SC_BAD_REQUEST);
             return null;
@@ -349,7 +350,7 @@ public class BookingsController extends FrontCommand {
             responseHelper.error("start date less than end date",HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        if (today_date.compareTo(dateRange.getFrom())>0)
+        if (dateRange.getFrom().compareTo(today_date)>=0)
         {
             responseHelper.error("start date less than current date",HttpServletResponse.SC_BAD_REQUEST);
             return;
@@ -363,6 +364,12 @@ public class BookingsController extends FrontCommand {
             if(hotels.size() < 1) throw new RuntimeException("No hotels found for the booking...");
 
             hotel = hotels.get(0);
+
+            if(!hotels.get(0).getIsActive())
+            {
+                responseHelper.error("hotel is delisted",HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

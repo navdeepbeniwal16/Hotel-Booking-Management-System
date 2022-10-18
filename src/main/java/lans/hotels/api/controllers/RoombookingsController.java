@@ -1,9 +1,11 @@
 package lans.hotels.api.controllers;
 
 import lans.hotels.datasource.search_criteria.BookingsSearchCriteria;
+import lans.hotels.datasource.search_criteria.HotelSearchCriteria;
 import lans.hotels.datasource.search_criteria.RoomSearchCriteria;
 import lans.hotels.domain.booking.Booking;
 import lans.hotels.domain.booking.RoomBooking;
+import lans.hotels.domain.hotel.Hotel;
 import lans.hotels.domain.room.Room;
 import lans.hotels.use_cases.ChangeNumberOfGuests;
 import lans.hotels.use_cases.ViewHotelGroupBookings;
@@ -85,8 +87,28 @@ public class RoombookingsController extends FrontCommand {
                 catch (Exception e) {
                     e.printStackTrace();
                 }
-                if(bookings.size() > 0)
+                if(bookings.size() > 0) {
                     booking = bookings.get(0);
+
+                    Hotel hotel = null;
+                    HotelSearchCriteria hotelSearchCriteria = new HotelSearchCriteria();
+                    hotelSearchCriteria.setId(booking.getHotelId());
+                    try {
+                        ArrayList<Hotel> hotels = dataSource.findBySearchCriteria(Hotel.class, hotelSearchCriteria);
+                        if(hotels.size() < 1) throw new RuntimeException("No hotels found for the booking...");
+
+                        hotel = hotels.get(0);
+
+                        if(!hotels.get(0).getIsActive())
+                        {
+                            responseHelper.error("hotel is delisted",HttpServletResponse.SC_BAD_REQUEST);
+                            return null;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
                 else {
                     responseHelper.error("PUT /roombookings booking does not exist", HttpServletResponse.SC_BAD_REQUEST);
                     return null;

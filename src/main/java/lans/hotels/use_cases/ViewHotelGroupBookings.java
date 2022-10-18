@@ -61,7 +61,7 @@ public class ViewHotelGroupBookings extends UseCase {
                 b_entry.put("hotel_id", booking.getHotelId());
                 b_entry.put("hotel_name", booking.getHotelName());
                 b_entry.put("start_date", booking.getDateRange().getFrom().toString());
-                b_entry.put("end_date", booking.getDateRange().getFrom().toString());
+                b_entry.put("end_date", booking.getDateRange().getTo().toString());
                 b_entry.put("is_active", booking.getActive());
                 jsonArray.put(b_entry);
             });
