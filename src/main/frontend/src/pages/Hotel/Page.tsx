@@ -48,7 +48,10 @@ const HotelPage = () => {
           console.log('hotel:', _hotel);
           backend
             .getAllRooms(_hotel, startDate, endDate)
-            .then((_rooms: Room[]) => {
+            .then(([_rooms, success, error]: [Room[], boolean, string]) => {
+              if (success != undefined && !success) {
+                setError(error);
+              }
               setRooms(_rooms);
               setLoading(false);
               console.log('rooms:', rooms);
@@ -191,10 +194,10 @@ const HotelPage = () => {
     event.preventDefault();
     console.log('update dates:', event.currentTarget);
     setLoading(true);
-    backend.getAllRooms(hotel, startDate, endDate).then((_rooms: Room[]) => {
+    backend.getAllRooms(hotel, startDate, endDate).then(([_rooms, success, error]: [Room[], boolean, string]) => {
       setRooms(_rooms);
       setRoomBookings(emptyRoomBookings);
-      console.log('rooms:', rooms);
+      if (success != undefined && !success) setError(error);
       setLoading(false);
     });
   };
@@ -219,9 +222,6 @@ const HotelPage = () => {
           navigate('/bookings');
         } else {
           setError(`Something went wrong: ${message}. Please try again.`);
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 2000);
         }
       });
   };

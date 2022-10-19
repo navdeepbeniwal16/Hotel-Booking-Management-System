@@ -89,33 +89,11 @@ class LANS_API {
     return [bookings, message];
   }
 
-  // public async cancelBooking(booking: Booking): Promise<[boolean, string]> {
-  //   const res = await fetch(this.bookingsEndpoint, {
-  //     method: methods.PUT,
-  //     headers: this.headers,
-  //     body: JSON.stringify({
-  //       booking: {
-  //         id: booking.id,
-  //         cancel: true
-  //       }
-  //     })
-  //   })
-
-  //   if (res.ok) {
-  //     const data = await res.json();
-  //     const { success }: { success: boolean } = data;
-  //     const error = !success ? data.error : "";
-  //     return [success, error];
-  //   } else {
-  //     console.log(res.status, res.statusText);
-  //     return [false, res.statusText];
-  //   }
-  // }
-
   public async createBooking(hotel: Hotel,
     startDate: Date,
     endDate: Date,
     roomBookings: RoomBooking[]): Promise<[boolean, string]> {
+    if (endDate <= startDate) return [false, "start date must come before end date"];
     const body = JSON.stringify({
       booking: {
         hotel_id: hotel.id,
@@ -188,7 +166,9 @@ class LANS_API {
   }
 
   // Rooms
-  public async getAllRooms(hotel: Hotel, startDate: Date = new Date(2000, 1, 1), endDate: Date = new Date(2100, 11, 30)): Promise<Room[]> {
+  public async getAllRooms(hotel: Hotel, startDate: Date = new Date(2000, 1, 1), endDate: Date = new Date(2100, 11, 30)): Promise<[Room[], boolean, string]> {
+    let rooms: Array<Room> = [];
+    if (endDate <= startDate) return [rooms, false, "start date must come before end date"];
     const res = await fetch(this.roomsEndpoint, {
       headers: this.headers,
       method: methods.POST,
@@ -202,15 +182,15 @@ class LANS_API {
     });
     const data = await res.json();
     const { success } = data;
+    const { error } = data;
     const { result } = data;
-    let rooms: Array<Room> = [];
     if (res.ok && success && result.rooms) {
       rooms = result.rooms;
     } else {
       console.log('getAllRooms():', data.error);
     }
     
-    return rooms;
+    return [rooms, success, error];
   }
 
   public async createRoom(room: Room): Promise<[boolean, string]> {
@@ -421,7 +401,9 @@ class LANS_API {
     return false;
   }
 
-  public async changeDates(booking: Booking, start: Date, end: Date): Promise<[boolean, string]> {
+  public async changeBookingDates(booking: Booking, start: Date, end: Date): Promise<[boolean, string]> {
+    if (end <= start) return [false, "start date must come before end date"];
+
     const body = JSON.stringify({
       booking: {
         id: booking.id,

@@ -217,7 +217,7 @@ const EditBooking = () => {
     return (
       <>
         <Button variant='primary' className='mx-2' type='submit'>
-          Update book
+          Update booking
         </Button>
       </>
     );
@@ -226,7 +226,7 @@ const EditBooking = () => {
   const handleChangeDates = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     backend
-      .changeDates(booking, startDate, endDate)
+      .changeBookingDates(booking, startDate, endDate)
       .then(([success, error]: [boolean, string]) => {
         if (success) {
           setError('');

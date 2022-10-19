@@ -30,6 +30,8 @@ const HotelBookings = () => {
   const defaultRooms: Array<Room> = [];
   const [rooms, setRooms] = useState(defaultRooms);
 
+  const [error, setError] = useState("");
+
   useEffect(() => {
     const setup = async () => {
       if (hotelId) {
@@ -43,7 +45,10 @@ const HotelBookings = () => {
             }
           });
         });
-        backend.getAllRooms(hotel).then((_rooms: Room[]) => {
+        backend.getAllRooms(hotel).then(([_rooms, success, error]: [Room[], boolean, string]) => {
+          if (success != undefined && !success) {
+            setError(error);
+          }
           setRooms(_rooms);
         });
       }
