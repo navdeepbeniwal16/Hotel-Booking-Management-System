@@ -22,7 +22,7 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
   const FRESH: modalStates = 'FRESH';
   const SUCCESS: modalStates = 'SUCCESS';
   const FAIL: modalStates = 'FAIL';
-  const [error, setError] = useState(error);
+  const [error, setError] = useState("");
   const [modalState, setModalState] = useState<modalStates>(FRESH);
   const [districtSelect, setDistrictSelect] = useState('VIC');
   const closeIfNotWaiting = () => {
