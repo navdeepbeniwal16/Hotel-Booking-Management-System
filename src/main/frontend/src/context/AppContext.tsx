@@ -75,7 +75,7 @@ const GlobalProvider = ({ children }: IGlobalProvider) => {
         apiAccessToken = await getAccessTokenSilently({
           audience: `${process.env.REACT_APP_AUTH0_AUDIENCE}`,
         });
-        if (isAuthenticated && process.env.REACT_APP_SHOW_JWT === "true") {
+        if (process.env.REACT_APP_SHOW_JWT === "true") {
           console.log('Development mode');
           console.log(apiAccessToken);
         }
