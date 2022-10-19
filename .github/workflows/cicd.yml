@@ -33,8 +33,5 @@ jobs:
         run: mvn install
       - name: Build project with Maven
         run: mvn -B package --file pom.xml -e -X
-      - name: Deploy mvn
-        run: mvn deploy
-
-#      - name: Test project with Maven
-#        run: mvn test -f pom.xml
+      - name: Test project with Maven
+        run: mvn test -f pom.xml
