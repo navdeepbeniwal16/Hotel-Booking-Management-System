@@ -23,7 +23,7 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
   const SUCCESS: modalStates = 'SUCCESS';
   const FAIL: modalStates = 'FAIL';
   const [modalState, setModalState] = useState<modalStates>(FRESH);
-
+  const [districtSelect, setDistrictSelect] = useState('VIC');
   const closeIfNotWaiting = () => {
     if (!waiting) handleClose();
   };
@@ -107,14 +107,10 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
 
   const onAddressFieldChange = (field: AddressField) => {
     return (event: React.ChangeEvent<HTMLInputElement>) =>
-      onAddressChange(field, event);
+      onAddressChange(field, event.target.value);
   };
 
-  const onAddressChange = (
-    field: AddressField,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { value } = event.target;
+  const onAddressChange = (field: AddressField, value: string) => {
     const postcodeRegex = /^\d{0,4}$/g;
     const validPostcode = postcodeRegex.test(value);
     if (field == 'postcode' && !validPostcode) {
@@ -171,13 +167,31 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
         <Form.Group controlId='districtField'>
           <Form.Label>District</Form.Label>
           <Form.Control
-            onChange={onAddressFieldChange('district')}
+            hidden
+            // onChange={onAddressFieldChange('district')}
             required
             type='text'
             placeholder='VIC'
             aria-placeholder='VIC'
-            value={`${group.address.district}`}
+            value={`${districtSelect}`}
           />
+          <Form.Select
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+              setDistrictSelect(event.target.value);
+              onAddressChange('district', event.target.value);
+            }}
+            aria-label='Default select example'
+          >
+            <option>District</option>
+            <option value='VIC'>VIC</option>
+            <option value='NSW'>NSW</option>
+            <option value='NT'>NT</option>
+            <option value='QLD'>QLD</option>
+            <option value='SA'>SA</option>
+            <option value='ACT'>ACT</option>
+            <option value='WA'>WA</option>
+            <option value='TAS'>TAS</option>
+          </Form.Select>
           <Form.Text className='text-muted'>State or territory</Form.Text>
         </Form.Group>
         <Form.Group controlId='postcodeField'>
@@ -207,7 +221,7 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
                 {renderPhoneField()}
                 <Modal.Dialog>
                   <Modal.Header className='p-3'>Address</Modal.Header>
-                  {renderAddressSection()}
+                  <Modal.Body>{renderAddressSection()}</Modal.Body>
                 </Modal.Dialog>
               </>
             </Fade>
@@ -244,16 +258,20 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              disabled={waiting}
-              variant='secondary'
-              onClick={closeIfNotWaiting}
-            >
-              Close
-            </Button>
-            <Button disabled={waiting} type='submit' variant='primary'>
-              {waiting ? <Spinner animation='border' /> : 'Create'}
-            </Button>
+            {!waiting && modalState == FRESH ? (
+              <>
+                <Button
+                  disabled={waiting}
+                  variant='secondary'
+                  onClick={closeIfNotWaiting}
+                >
+                  Close
+                </Button>
+                <Button disabled={waiting} type='submit' variant='primary'>
+                  {waiting ? <Spinner animation='border' /> : 'Create'}
+                </Button>
+              </>
+            ) : null}
           </Modal.Footer>
         </Form>
       </Modal>

@@ -11,6 +11,7 @@ interface CreateHotelProps {
 const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
   const [hotel, setHotel] = useState(emptyHotel);
   const [validated, setValidated] = useState(false);
+  const [districtSelect, setDistrictSelect] = useState("VIC")
 
   const handleOnEnter = () => {
     console.log('onEnter');
@@ -137,14 +138,14 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
 
   const onAddressFieldChange = (field: AddressField) => {
     return (event: React.ChangeEvent<HTMLInputElement>) =>
-      onAddressChange(field, event);
+      onAddressChange(field, event.target.value);
   };
 
   const onAddressChange = (
     field: AddressField,
-    event: React.ChangeEvent<HTMLInputElement>
+    value: string
   ) => {
-    const { value } = event.target;
+    console.log(value);
 
 
     if (Object.keys(hotel.address).includes(field)) {
@@ -206,13 +207,30 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
         <Form.Group controlId='districtField'>
           <Form.Label>District</Form.Label>
           <Form.Control
-            onChange={onAddressFieldChange('district')}
+            hidden
+            // onChange={onAddressFieldChange('district')}
             required
             type='text'
             placeholder='VIC'
             aria-placeholder='VIC'
-            value={`${hotel.address.district}`}
+            value={`${districtSelect}`}
           />
+          <Form.Select
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+              setDistrictSelect(event.target.value);
+              onAddressChange('district', event.target.value)
+            }}
+            aria-label="Default select example">
+            <option>District</option>
+            <option value="VIC">VIC</option>
+            <option value="NSW">NSW</option>
+            <option value="NT">NT</option>
+            <option value="QLD">QLD</option>
+            <option value="SA">SA</option>
+            <option value="ACT">ACT</option>
+            <option value="WA">WA</option>
+            <option value="TAS">TAS</option>
+          </Form.Select>
           <Form.Text className='text-muted'>District, state or territory</Form.Text>
           {validateField("address.district")}
         </Form.Group>
