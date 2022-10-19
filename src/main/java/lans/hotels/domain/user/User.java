@@ -19,6 +19,7 @@ public class User extends ReferenceObject {
     Integer age;
     Integer hotelier_hotel_group_id;
     String hotelier_hotel_group_name;
+    Integer version;
 
     public User(IDataSource dataSource, String email) throws UoWException {
         super(dataSource);
@@ -82,7 +83,8 @@ public class User extends ReferenceObject {
                 String contact,
                 Integer age,
                 Integer hotelier_hotel_group_id,
-                String hotelier_hotel_group_name
+                String hotelier_hotel_group_name,
+                Integer version
                 ) throws Exception {
         super(id, dataSource);
         this.name = name;
@@ -93,6 +95,7 @@ public class User extends ReferenceObject {
         this.age = age;
         this.hotelier_hotel_group_id = hotelier_hotel_group_id;
         this.hotelier_hotel_group_name = hotelier_hotel_group_name;
+        this.version = version;
         markClean();
         markLoaded();
     }
@@ -161,6 +164,15 @@ public class User extends ReferenceObject {
 
     public void getHotelierHotelGroupName(String hotelier_hotel_group_name) throws UoWException {
         this.hotelier_hotel_group_name = hotelier_hotel_group_name;
+        markDirty();
+    }
+
+    public int getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(Integer version) throws UoWException {
+        this.version = version;
         markDirty();
     }
 

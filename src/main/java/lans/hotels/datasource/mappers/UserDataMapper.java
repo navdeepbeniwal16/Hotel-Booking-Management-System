@@ -25,7 +25,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     @Override
     protected String findStatement() {
         String statement =
-                "SELECT u.id AS id, u.name AS name, u.email, line_1 AS address_l1, line_2 AS address_l2, \n" +
+                "SELECT u.id AS id, u.name AS name, u.email, u.version AS version, line_1 AS address_l1, line_2 AS address_l2, \n" +
                 "d.name AS district_name, postcode, city, r.id AS rid, r.name AS role_name, contact, age, \n" +
                 "hg.id AS hotelier_hotel_group_id, hg.name AS hotelier_hotel_group_name\n" +
                 "FROM app_user u \n" +
@@ -110,6 +110,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
         Integer age;
         Integer hotelier_hotel_group_id;
         String hotelier_hotel_group_name;
+        Integer version;
 
         uid = rs.getInt("id");
         name = rs.getString("name");
@@ -124,6 +125,7 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
         age = rs.getInt("age");
         hotelier_hotel_group_id = rs.getInt("hotelier_hotel_group_id");
         hotelier_hotel_group_name = rs.getString("hotelier_hotel_group_name");
+        version = rs.getInt("version");
 
         District district = new District(district_name);
         Address address = new Address(address_l1,
@@ -144,7 +146,8 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
                     contact,
                     age,
                     hotelier_hotel_group_id,
-                    hotelier_hotel_group_name
+                    hotelier_hotel_group_name,
+                    version
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -156,7 +159,9 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
     @Override
     public User update(AbstractDomainObject domainObject) throws Exception {
         User user = (User) domainObject;
-        String updatedName = " SET name='" + user.getName() + "'";
+        Integer version = user.getVersion();
+        Integer new_version = version +1;
+        String updatedName = " SET version = "+new_version+" , name='" + user.getName() + "'";
         String updatedEmail = ", email='" + user.getEmail() + "'";
         String updatedRole = ", role=" + user.getRole().getId();
         Integer id = user.getId() != null ?  user.getId() : -1;
@@ -164,9 +169,10 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
                 updatedName +
                 updatedEmail +
                 updatedRole +
-                " WHERE id=" + id +
+                " WHERE id = " + id + " AND version = "+version+
                 " RETURNING *";
 
+        System.out.println("Update statement\n"+updateStatement);
         PreparedStatement statement = connection.prepareStatement(updateStatement);
         ResultSet resultSet = statement.executeQuery();
         assert resultSet.getFetchSize() != 0;
