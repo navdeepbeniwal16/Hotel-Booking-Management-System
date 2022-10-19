@@ -3,6 +3,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
   http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
+    <display-name>LANS Hotels</display-name>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/spa.jsp</location>
+    </error-page>
     <context-param>
         <param-name>com.auth0.domain</param-name>
         <param-value>dev-easqepri.us.auth0.com</param-value>
