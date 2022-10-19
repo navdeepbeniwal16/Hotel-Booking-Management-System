@@ -8,6 +8,7 @@ interface BookingCardProps {
   onCancel: (booking: Booking) => void;
   showToast: number;
   onToastClose: () => void;
+  toastError: string;
 }
 
 const BookingCard = ({
@@ -16,11 +17,12 @@ const BookingCard = ({
   onCancel,
   showToast,
   onToastClose,
+  toastError,
 }: BookingCardProps) => {
   return (
     <ListGroupItem
       as='li'
-      variant={ dark ? "dark" : "light"}
+      variant={dark ? 'dark' : 'light'}
       className={`d-flex justify-content-between align-items-end`}
     >
       <div className='ms-2 me-auto'>
@@ -46,24 +48,40 @@ const BookingCard = ({
           )}
         </div>
       </div>
-      {booking.is_active ? (
+      {booking.is_active && showToast != booking.id && (
         <Button onClick={() => onCancel(booking)} variant='danger'>
           Cancel booking
         </Button>
-      ) : (
+      )}
+      {
         <Toast
           show={showToast == booking.id}
+          bg={showToast == booking.id && toastError ? 'danger' : 'success'}
+          className={showToast == booking.id && toastError ? 'text-dark' : 'text-white'}
           onClose={onToastClose}
           delay={3000}
           autohide
-          className='bg-success text-white'
         >
-          <Toast.Header>
-            <strong className='me-auto'>Success!</strong>
-            </Toast.Header>
-            <Toast.Body>{booking.customer_name}{"'"}s booking has been cancelled</Toast.Body>
+          <Toast.Body>
+            <div>
+              {showToast == booking.id && toastError ? (
+                <Toast.Body>
+                  <strong className='me-auto'>Something went wrong: </strong>{' '}
+                  {toastError}
+                </Toast.Body>
+              ) : (
+                showToast == booking.id && (
+                  <Toast.Body>
+                    <strong className='me-auto'>Success: </strong>
+                    {booking.customer_name}
+                    {"'"}s booking has been cancelled
+                  </Toast.Body>
+                )
+              )}
+            </div>
+          </Toast.Body>
         </Toast>
-      )}
+      }
     </ListGroupItem>
   );
 };

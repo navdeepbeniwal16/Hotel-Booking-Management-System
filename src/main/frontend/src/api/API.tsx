@@ -58,67 +58,7 @@ class LANS_API {
   public sameToken(other: string): boolean {
     return this.accessToken == other;
   }
-
-  // Bookings
-  public async getCustomerBookings(user: UserDataType): Promise<[Booking[], string]> {
-    const res = await fetch(this.bookingsEndpoint, {
-      method: methods.POST,
-      headers: this.headers,
-      body: JSON.stringify({
-        search: {
-          customer_bookings: user.id
-        }
-      })
-      
-    })
-    let bookings: Booking[] = []
-    let message = "";
-    const data = await res.json();
-    if (res.ok && data.result) {
-        console.log("getCustomerBookings", data);
-        const { result } = data;
-        const success: boolean = data.success as boolean;
-        if (success) {
-          bookings = result.bookings;
-        } else {
-          message = result.error;
-        }
-    }
-    console.log(res.status, res.statusText);
-    console.log(data);
-    return [bookings, message];
-  }
-
-  public async createBooking(hotel: Hotel,
-    startDate: Date,
-    endDate: Date,
-    roomBookings: RoomBooking[]): Promise<[boolean, string]> {
-    if (endDate <= startDate) return [false, "start date must come before end date"];
-    const body = JSON.stringify({
-      booking: {
-        hotel_id: hotel.id,
-        start_date: startDate.toLocaleString('en-GB').split(',')[0],
-        end_date: endDate.toLocaleString('en-GB').split(',')[0],
-        rooms: roomBookings
-      }
-    })
-    console.log("book:\n", body)
-    const res = await fetch(this.bookingsEndpoint, {
-      method: methods.POST,
-      headers: this.headers,
-      body
-    })
-    
-    if (res.ok) {
-      const data = await res.json();
-      const { success }: { success: boolean } = data;
-      const error = !success ? data.error : "";
-      return [success, error];
-    } else {
-      console.log(res.status, res.statusText);
-      return [false, res.statusText];
-    }
-  }
+  
 
   // Users
   public async register(): Promise<[boolean, UserDataType]> {
@@ -368,6 +308,66 @@ class LANS_API {
   }
 
   // Bookings
+  public async getCustomerBookings(user: UserDataType): Promise<[Booking[], string]> {
+    const res = await fetch(this.bookingsEndpoint, {
+      method: methods.POST,
+      headers: this.headers,
+      body: JSON.stringify({
+        search: {
+          customer_bookings: user.id
+        }
+      })
+
+    })
+    let bookings: Booking[] = []
+    let message = "";
+    const data = await res.json();
+    if (res.ok && data.result) {
+      console.log("getCustomerBookings", data);
+      const { result } = data;
+      const success: boolean = data.success as boolean;
+      if (success) {
+        bookings = result.bookings;
+      } else {
+        message = result.error;
+      }
+    }
+    console.log(res.status, res.statusText);
+    console.log(data);
+    return [bookings, message];
+  }
+
+  public async createBooking(hotel: Hotel,
+    startDate: Date,
+    endDate: Date,
+    roomBookings: RoomBooking[]): Promise<[boolean, string]> {
+    if (endDate <= startDate) return [false, "start date must come before end date"];
+    const body = JSON.stringify({
+      booking: {
+        hotel_id: hotel.id,
+        start_date: startDate.toLocaleString('en-GB').split(',')[0],
+        end_date: endDate.toLocaleString('en-GB').split(',')[0],
+        rooms: roomBookings
+      }
+    })
+    const res = await fetch(this.bookingsEndpoint, {
+      method: methods.POST,
+      headers: this.headers,
+      body
+    })
+
+    if (res.ok) {
+      const data = await res.json();
+      
+      const { success }: { success: boolean } = data;
+      const error = !success ? data.error : "";
+      return [success, error];
+    } else {
+      console.log(res.status, res.statusText);
+      return [false, res.statusText];
+    }
+  }
+
   public async getHotelBookings(hotel_id: number): Promise<Booking[]> {
     const body = JSON.stringify({
       search: {
@@ -383,16 +383,17 @@ class LANS_API {
     let bookings: Array<Booking> = [];
     if (res.ok && data.result && data.success && data.result.bookings) {
       bookings = data.result.bookings;
+      console.log("getHotelBookings", data);
     } else {
       console.log('ERROR getHotelBookings:', data.errorMessage);
     }
     return bookings;
   }
 
-  public async cancelBooking(booking: Booking): Promise<boolean> {
+  public async cancelBooking(booking: Booking): Promise<[boolean, string]> {
     const body = JSON.stringify({
       booking: {
-        id: booking.id,
+        ...booking,
         cancel: true,
       },
     });
@@ -402,12 +403,13 @@ class LANS_API {
       body,
     });
     const data = await res.json();
-    if (res.ok && data.success) {
-      return data.success;
+    if (res.ok) {
+      return [data.success, data.error];
     } else {
       console.log('ERROR cancelBooking:', res.status, res.statusText, data);
     }
-    return false;
+    const msg = data.error ? data.error : `${res.status} ${res.statusText}`
+    return [false, msg];
   }
 
   public async changeBookingDates(booking: Booking, start: Date, end: Date): Promise<[boolean, string]> {
@@ -415,9 +417,9 @@ class LANS_API {
 
     const body = JSON.stringify({
       booking: {
-        id: booking.id,
+        ...booking,
         start_date: start.toLocaleString('en-GB').split(',')[0],
-        end_date: end.toLocaleString('en-GB').split(',')[0]
+        end_date: end.toLocaleString('en-GB').split(',')[0],
       },
     });
     const res = await fetch(this.bookingsEndpoint, {
@@ -435,13 +437,6 @@ class LANS_API {
   }
 
   public async changeGuests(booking: Booking, roomBooking: RoomBooking): Promise<[boolean, string]> {
-    // {
-    //   "room_booking" : {
-    //     "booking_id" : 5,
-    //       "rb_id" : 7,
-    //         "no_of_guests": 8
-    //   }
-    // }
     console.log("changeGuests:");
     console.log(booking);
     console.log(roomBooking);
