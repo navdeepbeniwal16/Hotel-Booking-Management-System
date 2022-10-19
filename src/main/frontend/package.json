@@ -32,7 +32,6 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "postinstall": "npm run production",
     "lint": "yarn run eslint ./.eslintrc.json",
     "start": "react-scripts start",
     "build": "CI=false react-scripts build",
