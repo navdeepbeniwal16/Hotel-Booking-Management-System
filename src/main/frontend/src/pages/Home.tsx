@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
-import SearchForm from '../components/layouts/SearchForm';
 import HotelsList from '../components/molecules/HotelsList';
 import { useEffect, useState } from 'react';
 import Hotel from '../types/HotelType';
 import AppContext from '../context/AppContext';
-import { filter, forEach, map } from 'lodash';
+import { forEach } from 'lodash';
 
 const Home = () => {
   const emptyHotels: Hotel[] = [];
@@ -18,7 +17,6 @@ const Home = () => {
         if (hotel.is_active) activeHotels.push(hotel);
       })
       setHotels(activeHotels);
-      // setHotels([..._hotels]);
     };
     fetchHotels().catch(console.error);
   }, []);

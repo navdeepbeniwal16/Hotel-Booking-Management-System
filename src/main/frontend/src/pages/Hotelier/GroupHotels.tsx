@@ -16,14 +16,22 @@ const GroupHotels = ({ hotels }: HotelListProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [showModal, setShowModal] = useState(false);
+  const [createMessage, setCreateMessage] = useState('');
   const handleSubmitCreateHotel = (hotel: Hotel) => {
     console.log('submitted');
-    backend.createHotel(hotel).then((success: boolean) => {
+    backend.createHotel(hotel).then(([success, error]: [boolean, string]) => {
       console.log('create hotel:', success);
       // TODO: @levim - improve alert
-      window.location.reload();
+      if (success) {
+        setCreateMessage("Success!")
+      } else {
+        setCreateMessage(`${error} Please refresh the page and try again.`)
+      }
+      setTimeout(() => {
+        setShowModal(false);
+        window.location.reload();
+      }, 2000)
     });
-    setShowModal(false);
   };
   const handleCloseModal = () => {
     console.log('modal closed');
@@ -37,6 +45,7 @@ const GroupHotels = ({ hotels }: HotelListProps) => {
         </Button>
       </div>
       <CreateHotel
+        message={createMessage}
         show={showModal}
         onSubmit={handleSubmitCreateHotel}
         onClose={handleCloseModal}

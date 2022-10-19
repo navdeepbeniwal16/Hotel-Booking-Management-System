@@ -326,7 +326,7 @@ class LANS_API {
     return success;
   }
 
-  public async createHotel(hotel: Hotel): Promise<boolean> {
+  public async createHotel(hotel: Hotel): Promise<[boolean, string]> {
     const res = await fetch(this.hotelsEndpoint, {
       method: methods.POST,
       headers: this.headers,
@@ -335,8 +335,12 @@ class LANS_API {
       }),
     });
     const data = await res.json();
-    const success: boolean = data.success;
-    return success;
+    if (res.ok && data.success) {
+      return [data.success, data.error];
+    } else {
+      console.log('Error creating hotel', res.status, res.statusText, data);
+    }
+    return [data.success, data.error];
   }
 
   public async getHotelsForGroup(group: HotelGroup): Promise<Hotel[]> {

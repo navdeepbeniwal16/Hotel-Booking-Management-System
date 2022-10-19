@@ -1,17 +1,19 @@
 import React, { ReactNode, useState, ChangeEvent } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Toast } from 'react-bootstrap';
 import Address, { AddressField } from '../../types/AddressType';
 import Hotel, { emptyHotel, schemas } from '../../types/HotelType';
 interface CreateHotelProps {
   show: boolean;
+  message: string;
   onSubmit: (hotel: Hotel) => void;
   onClose: () => void;
 }
 
-const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
+const CreateHotel = ({ show, onSubmit, onClose, message }: CreateHotelProps) => {
   const [hotel, setHotel] = useState(emptyHotel);
   const [validated, setValidated] = useState(false);
-  const [districtSelect, setDistrictSelect] = useState("VIC")
+  const [districtSelect, setDistrictSelect] = useState('VIC');
+  const [error, setError] = useState('');
 
   const handleOnEnter = () => {
     console.log('onEnter');
@@ -29,11 +31,9 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
     schemas.create.schema.isValid({ ...hotel }).then((valid: boolean) => {
       setValidated(true);
       if (valid) {
-        console.log('submitting');
         onSubmit(hotel);
       } else {
         event.stopPropagation();
-        console.log("invalid - can't submit");
       }
     });
   };
@@ -53,11 +53,11 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
         <Form.Control.Feedback tooltip type='valid'>
           Looks good!
         </Form.Control.Feedback>
-      )
+      );
     } catch (error) {
       return null;
     }
-  }
+  };
 
   const renderName = (): ReactNode => {
     return (
@@ -72,7 +72,7 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
           aria-placeholder='Name of hotel'
         />
         <Form.Text className='text-muted'>Enter name of hotel</Form.Text>
-        {validateField("name")}
+        {validateField('name')}
       </Form.Group>
     );
   };
@@ -104,7 +104,7 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
           aria-placeholder='+6103789456'
         />
         <Form.Text className='text-muted'>Enter contact phone number</Form.Text>
-        {validateField("phone")}
+        {validateField('phone')}
       </Form.Group>
     );
   };
@@ -131,7 +131,7 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
         <Form.Text className='text-muted'>
           Enter email address for hotel
         </Form.Text>
-        {validateField("email")}
+        {validateField('email')}
       </Form.Group>
     );
   };
@@ -141,12 +141,8 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
       onAddressChange(field, event.target.value);
   };
 
-  const onAddressChange = (
-    field: AddressField,
-    value: string
-  ) => {
+  const onAddressChange = (field: AddressField, value: string) => {
     console.log(value);
-
 
     if (Object.keys(hotel.address).includes(field)) {
       const updatedAddress: Record<string, string | number> = {
@@ -177,7 +173,7 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
             value={hotel.address.line_1}
           />
           <Form.Text className='text-muted'>First address line</Form.Text>
-          {validateField("address.line_1")}
+          {validateField('address.line_1')}
         </Form.Group>
         <Form.Group controlId='line2Field'>
           <Form.Label>Line 2</Form.Label>
@@ -202,7 +198,7 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
             value={hotel.address.city}
           />
           <Form.Text className='text-muted'>City, town or suburb</Form.Text>
-          {validateField("address.city")}
+          {validateField('address.city')}
         </Form.Group>
         <Form.Group controlId='districtField'>
           <Form.Label>District</Form.Label>
@@ -218,21 +214,24 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
           <Form.Select
             onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
               setDistrictSelect(event.target.value);
-              onAddressChange('district', event.target.value)
+              onAddressChange('district', event.target.value);
             }}
-            aria-label="Default select example">
+            aria-label='Default select example'
+          >
             <option>District</option>
-            <option value="VIC">VIC</option>
-            <option value="NSW">NSW</option>
-            <option value="NT">NT</option>
-            <option value="QLD">QLD</option>
-            <option value="SA">SA</option>
-            <option value="ACT">ACT</option>
-            <option value="WA">WA</option>
-            <option value="TAS">TAS</option>
+            <option value='VIC'>VIC</option>
+            <option value='NSW'>NSW</option>
+            <option value='NT'>NT</option>
+            <option value='QLD'>QLD</option>
+            <option value='SA'>SA</option>
+            <option value='ACT'>ACT</option>
+            <option value='WA'>WA</option>
+            <option value='TAS'>TAS</option>
           </Form.Select>
-          <Form.Text className='text-muted'>District, state or territory</Form.Text>
-          {validateField("address.district")}
+          <Form.Text className='text-muted'>
+            District, state or territory
+          </Form.Text>
+          {validateField('address.district')}
         </Form.Group>
         <Form.Group controlId='postcodeField'>
           <Form.Label>Postcode</Form.Label>
@@ -245,7 +244,7 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
             value={`${hotel.address.postcode}`}
           />
           <Form.Text className='text-muted'>Postcode</Form.Text>
-          {validateField("address.postcode")}
+          {validateField('address.postcode')}
         </Form.Group>
       </>
     );
@@ -264,20 +263,26 @@ const CreateHotel = ({ show, onSubmit, onClose }: CreateHotelProps) => {
         <Modal.Title>Create a new hotel</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={handleSubmit} noValidate validated={validated}>
-          {renderName()}
-          {renderEmail()}
-          {renderPhone()}
-          {renderAddressSection()}
-          <Modal.Footer>
-            <Button variant='secondary' onClick={onClose}>
-              Close
-            </Button>
-            <Button type='submit' variant='primary'>
-              Create
-            </Button>
-          </Modal.Footer>
-        </Form>
+        {error != '' || message != '' ? (
+          <Toast bg={message == "Success!" ? "success" : "danger"}>
+            <Toast.Body>{error ? error : message ? message : ""}</Toast.Body>
+          </Toast>
+        ) : (
+          <Form onSubmit={handleSubmit} noValidate validated={validated}>
+            {renderName()}
+            {renderEmail()}
+            {renderPhone()}
+            {renderAddressSection()}
+            <Modal.Footer>
+              <Button variant='secondary' onClick={onClose}>
+                Close
+              </Button>
+              <Button type='submit' variant='primary'>
+                Create
+              </Button>
+            </Modal.Footer>
+          </Form>
+        )}
       </Modal.Body>
     </Modal>
   );
