@@ -274,8 +274,8 @@ class LANS_API {
     return hotelGroups;
   }
 
-  public async createGroup(group: HotelGroup): Promise<boolean> {
-    if (group.id != -1) return false;
+  public async createGroup(group: HotelGroup): Promise<[boolean, string]> {
+    if (group.id != -1) return [false, "cannot create hotel using an id"];
     const res = await fetch(this.groupsEndpoint, {
       method: methods.POST,
       headers: this.headers,
@@ -286,8 +286,13 @@ class LANS_API {
       }),
     });
     const data = await res.json();
+    console.log(res.status, res.statusText)
     const success: boolean = data.success;
-    return success;
+    const error: string = data.error;
+    if (res.ok && success) {
+      return [success, error]
+    }
+    return [false, `${res.status} ${res.statusText}`];
   }
 
   // Hotels

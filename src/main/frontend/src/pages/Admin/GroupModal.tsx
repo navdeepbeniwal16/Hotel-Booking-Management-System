@@ -22,6 +22,7 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
   const FRESH: modalStates = 'FRESH';
   const SUCCESS: modalStates = 'SUCCESS';
   const FAIL: modalStates = 'FAIL';
+  const [error, setError] = useState(error);
   const [modalState, setModalState] = useState<modalStates>(FRESH);
   const [districtSelect, setDistrictSelect] = useState('VIC');
   const closeIfNotWaiting = () => {
@@ -32,6 +33,7 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
     setGroup(defaultHotelGroup);
     setWaiting(false);
     setModalState('FRESH');
+    setError("");
   };
 
   useEffect(() => {
@@ -41,16 +43,17 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     setWaiting(true);
-    backend.createGroup(group).then((success: boolean) => {
+    backend.createGroup(group).then(([success, error]: [boolean, string]) => {
       setWaiting(false);
       if (success) {
         setModalState(SUCCESS);
         onCreateGroup(group);
       } else {
         setModalState(FAIL);
+        setError(error);
       }
       return setTimeout(() => {
-        if (success) handleClose();
+        handleClose();
       }, 1500);
     });
   };
@@ -251,8 +254,12 @@ function GroupModal({ show, handleClose, onCreateGroup }: GroupModalProps) {
               </Fade>
             ) : (
               <Fade in={modalState == FAIL}>
-                <Alert variant='success'>
-                  Failed to create hotel group: {group.name}
+                <Alert variant='danger'>
+                      <div>
+                        Failed to create hotel group: {group.name}.
+                      </div><div>
+                        {error}
+                  </div>
                 </Alert>
               </Fade>
             )}
