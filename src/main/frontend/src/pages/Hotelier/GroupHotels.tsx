@@ -3,11 +3,10 @@ import { ListGroup, Button } from 'react-bootstrap';
 import { toString as addressToString } from '../../types/AddressType';
 import Hotel from '../../types/HotelType';
 import { map } from 'lodash';
-import { HouseHeart, ListCheck } from 'react-bootstrap-icons';
+import { HouseHeart } from 'react-bootstrap-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CreateHotel from './CreateHotel';
 import AppContext from '../../context/AppContext';
-import HotelGroup from '../../types/HotelGroup';
 export interface HotelListProps {
   hotels: Hotel[];
 }
@@ -65,7 +64,7 @@ const GroupHotels = ({ hotels }: HotelListProps) => {
                 variant='primary'
                 onClick={() => navigate(`${pathname}/${hotel.id}`)}
               >
-                <ListCheck /> Bookings
+                Hotel Details
               </Button>
             </ListGroup.Item>
           );
