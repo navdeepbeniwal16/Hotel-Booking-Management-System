@@ -6,6 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Roles } from '../../types/RoleTypes';
 import AppContext from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from 'react-bootstrap';
 
 const MainNavbar = () => {
   const navigate = useNavigate();
@@ -40,24 +41,33 @@ const MainNavbar = () => {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            <Nav.Link onClick={() => navigate('/')}>Home</Nav.Link>
-            {isCustomer && (
-              <Nav.Link onClick={() => navigate('/bookings')}>
-                My Bookings
-              </Nav.Link>
-            )}
+            {
+              !isAuthenticated && <Nav.Link onClick={() => navigate('/')}>Search</Nav.Link>
+            }
+            {
+              isLoading ? <Spinner animation="border" /> : isAuthenticated && <>
+                {isCustomer && (
+                  <>
+                    <Nav.Link onClick={() => navigate('/')}>Search</Nav.Link>
+                    <Nav.Link onClick={() => navigate('/bookings')}>
+                      My Bookings
+                    </Nav.Link>
+                  </>
+                )}
 
-            {isHotelier && (
-              <Nav.Link onClick={() => navigate('/hotelier')}>
-                Hotelier Dashboard
-              </Nav.Link>
-            )}
+                {isHotelier && (
+                  <Nav.Link onClick={() => navigate('/hotelier')}>
+                    Hotelier Dashboard
+                  </Nav.Link>
+                )}
 
-            {isAdmin && (
-              <Nav.Link onClick={() => navigate('/admin')}>
-                Admin Dashboard
-              </Nav.Link>
-            )}
+                {isAdmin && (
+                  <Nav.Link onClick={() => navigate('/admin')}>
+                    Admin Dashboard
+                  </Nav.Link>
+                )}
+              </>
+            }
           </Nav>
           <Nav className='d-flex align-items-center'>
             {!isLoading && isAuthenticated && user ? (
