@@ -4,11 +4,17 @@ import { useEffect, useState } from 'react';
 import Hotel from '../types/HotelType';
 import AppContext from '../context/AppContext';
 import { forEach } from 'lodash';
+import Map from '../components/map/Map';
+import { Col, Container, Row } from 'react-bootstrap';
+
 
 const Home = () => {
   const emptyHotels: Hotel[] = [];
   const [hotels, setHotels] = useState(emptyHotels);
   const { backend } = useContext(AppContext.GlobalContext);
+
+  
+
   useEffect(() => {
     const fetchHotels = async () => {
       const _hotels = await backend.getAllHotels();
@@ -22,10 +28,11 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
-      {/* <SearchForm /> */}
-      <HotelsList hotels={hotels}></HotelsList>
-    </div>
+    <Container>
+      <Row xs={12}>
+          <HotelsList hotels={hotels}></HotelsList>
+      </Row>
+    </Container>
   );
 };
 
