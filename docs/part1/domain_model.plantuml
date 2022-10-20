@@ -1,0 +1,103 @@
+@startuml
+    PlatformAdmin "1" -- "0..*" HotelGroupAdmin: manage >
+    PlatformAdmin "1" -- "0..*" Customer: manage >
+
+    HotelGroupAdmin "1" -- "1..*" Hotel: owns >
+    HotelGroupAdmin "1" -- "1..*" Hotelier: employs >
+    Hotelier "1" -- "1" Hotel: manages >
+
+    Hotel "1" -- "*" Room: contains >
+    RoomSpecification "1" -- "1..*" Room: describes >
+    RoomSpecification "1" -- "1..*" Feature: includes >
+
+    Hotel "1" -- "*" Amenity: has >
+    Hotel "1" -- "1..*" Policy: has >
+    Hotelier "1" -- "1..*" RoomSpecification: curates >
+
+    Customer "1" -- "0..*" Itinerary: builds >
+    Itinerary "1" -- "1..*" Booking: includes >
+    Booking "1" -- "1" Room: reserves >
+    Booking "1" -- "1..*" Guest: for >
+    Booking "1" -- "0..*" Addon: includes >
+
+    class "PlatformAdmin" as PlatformAdmin {
+        credentials
+    }
+
+    class "HotelGroupAdmin" as HotelGroupAdmin {
+        name
+        businessDetails
+        credentials
+    }
+
+    class "Customer" as Customer {
+        name
+        address
+        creditCardDetails
+        documentation
+        phoneNumber
+        email
+        age
+    }
+
+    class "Guest" as Guest {
+        firstName
+        lastName
+        mobileNumber
+        email
+        accessibilityRequirements
+        dietaryRequirements
+    }
+
+    class "Hotelier" as Hotelier {
+        name
+        email
+        phoneNumber
+    }
+
+    class "Room" as Room {
+        floorNumber
+        roomNumber
+    }
+
+    class "RoomSpecification" as RoomSpecification {
+        roomDescription
+        occupancy
+    }
+
+    class "Itinerary" as Itinerary {
+        checkInDate
+        checkOutDate
+    }
+
+    class "Booking" as Booking {
+    }
+
+    class "Addon" as Addon {
+        descr
+        price
+    }
+
+    class "Amenity" as Amenity {
+        label
+    }
+
+    class "Policy" as Policy {
+        policyID
+        versionNumber
+        policyDescription
+    }
+
+    class "Feature" as Feature {
+        label
+    }
+
+    class "Hotel" as Hotel {
+        name
+        address
+        phoneNumber
+        email
+        fax
+    }
+@enduml
+
