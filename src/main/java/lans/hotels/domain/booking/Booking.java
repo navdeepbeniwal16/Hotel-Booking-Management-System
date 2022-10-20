@@ -182,7 +182,7 @@ public class Booking extends ReferenceObject {
         criteria.setId(this.getHotelId());
         try {
             ArrayList<Hotel> hotels = dataSource.findBySearchCriteria(Hotel.class, criteria);
-            hotel_name = hotels.get(0).getName();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

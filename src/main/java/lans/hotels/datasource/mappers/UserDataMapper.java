@@ -172,7 +172,6 @@ public class UserDataMapper extends AbstractPostgresDataMapper<User> {
                 " WHERE id = " + id + " AND version = "+version+
                 " RETURNING *";
 
-        System.out.println("Update statement\n"+updateStatement);
         PreparedStatement statement = connection.prepareStatement(updateStatement);
         ResultSet resultSet = statement.executeQuery();
         assert resultSet.getFetchSize() != 0;
