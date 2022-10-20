@@ -88,7 +88,7 @@ const MainNavbar = () => {
               </Nav.Item>
             ) : null}
             {!isLoading && !isAuthenticated ? (
-              <Nav.Link onClick={() => loginWithRedirect()}>Log in</Nav.Link>
+              <Nav.Link onClick={() => loginWithRedirect()}>Log in/Sign up</Nav.Link>
             ) : null}
           </Nav>
         </Navbar.Collapse>
