@@ -95,7 +95,7 @@ public class BookingsController extends FrontCommand {
         }
         if (today_date.compareTo(dateRange.getFrom())>0)
         {
-            responseHelper.error("start date less than current date",HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("start date less than tomorrow's date",HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
 
@@ -366,7 +366,7 @@ public class BookingsController extends FrontCommand {
         }
         if (today_date.compareTo(dateRange.getFrom())>0)
         {
-            responseHelper.error("start date less than current date",HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("start date less than tomorrow's date",HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
