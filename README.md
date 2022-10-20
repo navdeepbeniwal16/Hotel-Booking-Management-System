@@ -24,7 +24,7 @@ Software Architecture and Design Report: /docs/part3/Part_3_LANS.pdf
 Database explanation and Data Entry Document: /docs/part3/data-sample.pdf
 Testing Document: /docs/part3/testing-document.pdf
 Non-concurrent tests: /docs/part3/NonConcurrentTestCases.xlsx
-
+Class diagrams: see /docs/class-diagrams
 # Instructions
 The navbar is the primary mode of navigation. The navbar will render different options for each user depending on their assigned role (Admin, Hotelier, and Customer).
 
@@ -34,15 +34,16 @@ Use the admin dashboard to:
 1.	Elevate customers to hoteliers
 2.	Add and remove hoteliers to/from groups.
       a.	Relevant data will not be displayed in a hotelier’s dashboard until they are added to a group.
-3.	Delisted hotels
+3.	Delist hotels
 4.	Create hotel groups
 
 ## Hotelier
 Navigate to the Hotelier Dashboard via the navbar at the top of the page.
 Use the hotelier dashboard to:
-1.	View and modify hotels of a hotel group
-2.	Add rooms to a hotel
-3.	View and cancel bookings for each hotel in the hotel group
+1.	View hotels in a hotel group 
+2.  Create new hotels for a hotel group
+3.  Add rooms to a hotel
+4.  View and cancel bookings for each hotel in the hotel group
 
 ## Customer
 Search for stays on the home page or manage your bookings via My Bookings, which can be found in the navbar at the top of the page.
