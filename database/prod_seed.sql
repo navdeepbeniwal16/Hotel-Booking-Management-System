@@ -445,7 +445,7 @@ INSERT INTO booking(customer_id,start_date,end_date,is_active,hotel_id)
 
 INSERT INTO room_booking(booking_id,room_id,is_active,main_guest,no_of_guests)
     VALUES
-           (1,1,TRUE,'Donald Glover',2);
+           (1,1,TRUE,'Donald Glover',2),
            (1,2,TRUE,'George Glover',2),
            (2,24,TRUE,'Robin Carmichael',2),
            (3,59,TRUE,'Anna Hawthorne',2),

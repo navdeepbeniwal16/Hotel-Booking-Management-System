@@ -188,7 +188,7 @@ BEGIN
     LOCK hotel IN SHARE MODE;
     RETURN(
         SELECT
-            (COUNT(*) = 1)
+            (COUNT(*) != 0)
         FROM room AS r
                  LEFT JOIN hotel AS h
                            ON h.id = r.hotel_id
