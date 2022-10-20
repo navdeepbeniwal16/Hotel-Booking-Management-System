@@ -55,13 +55,19 @@ const EditBooking = () => {
   useEffect(() => { console.log("EditBooking:", booking); }, [booking])
 
   const onStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('start date:', event.target.value);
-    setStartDate(new Date(event.target.value));
+    try {
+      setStartDate(new Date(event.target.value));
+    } catch (err) {
+      setStartDate(startDate);
+    }
   };
 
   const onEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('end date:', event.target.value);
-    setEndDate(new Date(event.target.value));
+    try {
+      setEndDate(new Date(event.target.value));
+    } catch (err) {
+      setEndDate(startDate);
+    }
   };
 
   const renderStartDate = (): React.ReactNode => {

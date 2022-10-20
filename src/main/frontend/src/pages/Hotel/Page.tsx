@@ -204,13 +204,19 @@ const HotelPage = () => {
   };
 
   const onStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('start date:', event.target.value);
-    setStartDate(new Date(event.target.value));
+    try {
+      setStartDate(new Date(event.target.value));
+    } catch (err) {
+      setEndDate(startDate);
+    }
   };
 
   const onEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('end date:', event.target.value);
-    setEndDate(new Date(event.target.value));
+    try {
+      setEndDate(new Date(event.target.value));
+    } catch (err) {
+      setEndDate(endDate);
+    }
   };
 
   const handleBookingSubmit = (event: React.FormEvent<HTMLFormElement>) => {
