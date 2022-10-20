@@ -26,7 +26,7 @@ const BookingsList = () => {
               Loading your bookings<div>
                 <Spinner animation="border" />
               </div>
-            </div> : bookings.length == 0 && <h3>You do not have any bookings.</h3>
+            </div> : bookings.length == 0 && <div><h3>You do not have any bookings.</h3></div>
           }
           <ListGroup as='ul' variant='flush'>
             {map(bookings, (booking: Booking) => (
