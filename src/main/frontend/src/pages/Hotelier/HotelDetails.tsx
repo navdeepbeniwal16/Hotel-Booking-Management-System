@@ -140,6 +140,12 @@ const HotelBookings = () => {
                                 <Card.Body>
                                   <div>
                                     <span className='fw-bold'>
+                                      Room number:{' '}
+                                    </span>
+                                    {room.number ? room.number : "-"}
+                                  </div>
+                                  <div>
+                                    <span className='fw-bold'>
                                       Max guests:{' '}
                                     </span>
                                     {room.occupancy}
