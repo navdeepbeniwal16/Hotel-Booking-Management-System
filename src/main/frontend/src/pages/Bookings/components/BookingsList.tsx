@@ -21,6 +21,13 @@ const BookingsList = () => {
     return (
       <Container>
         <Row xs={1} md={1} className='g-4'>
+          {
+            loading && bookings.length == 0 ? <div>
+              Loading your bookings<div>
+                <Spinner animation="border" />
+              </div>
+            </div> : bookings.length == 0 && <h3>You do not have any bookings.</h3>
+          }
           <ListGroup as='ul' variant='flush'>
             {map(bookings, (booking: Booking) => (
               <ListGroupItem as='li' key={booking.id}>
