@@ -31,6 +31,10 @@ const BookingsList = () => {
                   <Card.Body>
                     <Card.Text>
                       <div>
+                        <span className='fw-bold'>Booking ID: </span>
+                        {booking.id}
+                      </div>
+                      <div>
                         <span className='fw-bold'>From: </span>
                         {booking.start_date}
                       </div>
