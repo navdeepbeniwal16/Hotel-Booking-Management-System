@@ -36,7 +36,7 @@ public abstract class UseCase {
         } catch (DataSourceLayerException dataSourceException) {
             dataSourceException.printStackTrace();
             fail();
-            setResponseErrorMessage("data source error");
+            setResponseErrorMessage("Data integrity violation");
             dataSourceException.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();

@@ -11,6 +11,7 @@ type Hotel = {
   address: Address;
   is_active?: boolean;
   pincode?: number;
+  version?: number;
 };
 
 export type HotelState = {

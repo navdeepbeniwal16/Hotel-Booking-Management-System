@@ -50,7 +50,7 @@ public class BookingsController extends FrontCommand {
             handleSearchQuery(searchQuery);
         }
         else
-            responseHelper.error("POST /bookings must contain booking or search",HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("Must contain booking or search",HttpServletResponse.SC_BAD_REQUEST);
         return null;
     }
 
@@ -75,12 +75,12 @@ public class BookingsController extends FrontCommand {
             e.printStackTrace();
         }
         if (hotels.size()==0) {
-            responseHelper.error("POST /bookings hotel id does not exist", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("Hotel does not exist", HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
         if(!hotels.get(0).getIsActive())
         {
-            responseHelper.error("POST /bookings hotel is not active", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("Hotel is not actively listed", HttpServletResponse.SC_BAD_REQUEST);
             System.out.println("here");
             return null;
         }
@@ -241,8 +241,17 @@ public class BookingsController extends FrontCommand {
         if(requestHelper.body().has("booking")) {
             JSONObject bookingJsonBody = requestHelper.body().getJSONObject("booking");
 
+            if (!bookingJsonBody.has("version")) {
+                responseHelper.error("Updating a booking must include a version number", HttpServletResponse.SC_BAD_REQUEST);
+                return null;
+            }
+            Integer version = bookingJsonBody.getInt("version");
+
             if(bookingJsonBody.has("id")) {
                 Integer bookingId = bookingJsonBody.getInt("id");
+
+
+
 
                 if(bookingId != null) {
                     ArrayList<Booking> bookings = null;
@@ -258,11 +267,16 @@ public class BookingsController extends FrontCommand {
                     if(bookings.size() > 0)
                         booking = bookings.get(0);
                     else {
-                        responseHelper.error("PUT /bookings booking does not exist", HttpServletResponse.SC_BAD_REQUEST);
+                        responseHelper.error("Booking does not exist", HttpServletResponse.SC_BAD_REQUEST);
                         return null;
                     }
                     if(!booking.getActive()) {
-                        responseHelper.error("PUT /bookings booking is cancelled", HttpServletResponse.SC_BAD_REQUEST);
+                        responseHelper.error("Booking cancelled.", HttpServletResponse.SC_BAD_REQUEST);
+                        return null;
+                    }
+
+                    if (version != booking.getVersion()) {
+                        responseHelper.error("Attempting to update booking using outdated version", HttpServletResponse.SC_CONFLICT);
                         return null;
                     }
 
@@ -273,14 +287,14 @@ public class BookingsController extends FrontCommand {
                         handleDateChange(bookingJsonBody,booking);
                     }
                     else
-                        responseHelper.error("PUT /bookings search must contain cancel or start date and end_date fields",HttpServletResponse.SC_BAD_REQUEST);
+                        responseHelper.error("Booking search must contain cancel, or start date and end_date fields",HttpServletResponse.SC_BAD_REQUEST);
                 }
             }
             else
-                responseHelper.error("PUT /bookings search must contain id field",HttpServletResponse.SC_BAD_REQUEST);
+                responseHelper.error("Booking search must contain id field",HttpServletResponse.SC_BAD_REQUEST);
         }
         else
-            responseHelper.error("PUT /bookings search must contain booking field",HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("Booking search must contain booking field",HttpServletResponse.SC_BAD_REQUEST);
         return null;
     }
 

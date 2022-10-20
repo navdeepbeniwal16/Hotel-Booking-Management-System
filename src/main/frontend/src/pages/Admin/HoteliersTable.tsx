@@ -39,9 +39,9 @@ const Hoteliers = ({
       .then((success: boolean) => {
         if (success) {
           removeHotelier(hotelier);
-          setError("");
+          setError('');
         } else {
-          setError("Something went wrong. Please try again.");
+          setError('Something went wrong. Please try again.');
           setTimeout(() => {
             window.location.reload();
           }, 2000);
@@ -88,38 +88,42 @@ const Hoteliers = ({
   };
   return (
     <>
-      {
-        error != "" ? <Toast bg='danger'>
+      {error != '' ? (
+        <Toast bg='danger'>
           <Toast.Header>Error</Toast.Header>
           <Toast.Body>{error}</Toast.Body>
-        </Toast> : <><Table>
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Email</th>
-              <th>Name</th>
-              <th>Hotel Group</th>
-            </tr>
-          </thead>
-          <tbody>
-            {map(hoteliers, (hotelier: Hotelier) => (
-              <tr key={hotelier.id}>
-                <td>{`${hotelier.id}`}</td>
-                <td>{`${hotelier.email}`}</td>
-                <td>{`${hotelier.name}`}</td>
-                <td>{renderGroup(hotelier)}</td>
+        </Toast>
+      ) : (
+        <>
+          <Table>
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Hotel Group</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {map(hoteliers, (hotelier: Hotelier) => (
+                <tr key={hotelier.id}>
+                  <td>{`${hotelier.id}`}</td>
+                  <td>{`${hotelier.email}`}</td>
+                  <td>{`${hotelier.name}`}</td>
+                  <td>{renderGroup(hotelier)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
           <HotelierModal
             show={showModal}
             handleClose={handleClose}
             hotelier={editHotelier}
             groups={hotel_groups}
             addHotelier={addHotelierToGroup}
-          /></>
-      }
+          />
+        </>
+      )}
     </>
   );
 };

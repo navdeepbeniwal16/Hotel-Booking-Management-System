@@ -2,6 +2,7 @@ package lans.hotels.use_cases;
 import lans.hotels.domain.IDataSource;
 import lans.hotels.use_cases.UseCase;
 import org.json.JSONObject;
+import org.postgresql.util.PSQLException;
 
 public class CreateHotel extends UseCase {
 
@@ -18,11 +19,10 @@ public class CreateHotel extends UseCase {
     protected void constructResult() {
         JSONObject aHG = new JSONObject();
         try {
-            if (succeeded) {
-                aHG.put("created", succeeded);
-            }
-        } catch (Exception e) {
             aHG.put("created", succeeded);
+        } catch (Exception e) {
+            fail();
+            aHG.put("created", false);
             e.printStackTrace();
             setResponseErrorMessage("Server Error: " + e.getMessage());
         }

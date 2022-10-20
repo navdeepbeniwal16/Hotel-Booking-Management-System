@@ -242,14 +242,14 @@ const EditBooking = () => {
   };
 
   const handleCancelBooking = () => {
-    backend.cancelBooking(booking).then((success: boolean) => {
+    backend.cancelBooking(booking).then(([success, error]: [boolean, string]) => {
       if (success) {
         setError('');
         setSuccess(`Booking cancelled! Taking you back to your bookings now.`);
       } else {
         setSuccess('');
         setError(
-          `Something went wrong: cancellation failed. Please try again.`
+          `Something went wrong: ${error}. Please try again.`
         );
       }
       setTimeout(() => {

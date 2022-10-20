@@ -125,7 +125,7 @@ public class HotelsController extends FrontCommand {
         Integer hotel_group_id = auth.getUser().getHotelierHotelGroupID();
         if((hotel_group_id == 0) || (hotel_group_id == -1))
         {
-            responseHelper.error("POST /hotels hotelier is not assigned to any hotel group ", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("Hotelier is not assigned to any hotel group ", HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
 

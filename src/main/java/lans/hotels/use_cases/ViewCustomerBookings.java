@@ -62,6 +62,7 @@ public class ViewCustomerBookings extends UseCase {
                 b_entry.put("start_date", booking.getDateRange().getFrom().toString());
                 b_entry.put("end_date", booking.getDateRange().getTo().toString());
                 b_entry.put("is_active", booking.getActive());
+                b_entry.put("version", booking.getVersion());
                 JSONArray rooms = new JSONArray();
                 booking.getRoomBookings().values().forEach(roomBooking -> {
                     JSONObject room = new JSONObject();

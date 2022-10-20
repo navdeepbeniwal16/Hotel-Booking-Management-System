@@ -37,6 +37,7 @@ const HotelBookings = () => {
       if (hotelId) {
         backend.getHotelBookings(hotelId).then((_bookings: Booking[]) => {
           setBookings(_bookings);
+          console.log('getHotelBookings', _bookings);
         });
         backend.getAllHotels().then((hotels: Hotel[]) => {
           map(hotels, (_hotel: Hotel) => {
@@ -59,7 +60,7 @@ const HotelBookings = () => {
   const [toast, showToast] = useState(-1);
 
   const handleCancel = (booking: Booking) => {
-    backend.cancelBooking(booking).then((success: boolean) => {
+    backend.cancelBooking(booking).then(([success, error]: [boolean, string]) => {
       if (success) {
         setBookings(
           map(bookings, (next: Booking) => {
@@ -69,10 +70,12 @@ const HotelBookings = () => {
             return next;
           })
         );
-        showToast(booking.id);
+        setError('')
       } else {
         console.log('Error cancelling booking:', booking);
+        setError(error);
       }
+      showToast(booking.id);
     });
   };
 
@@ -168,6 +171,7 @@ const HotelBookings = () => {
                               dark={index % 2 == 0}
                               onCancel={handleCancel}
                               showToast={toast}
+                              toastError={ error}
                               onToastClose={handleToastClose}
                             />
                           );
