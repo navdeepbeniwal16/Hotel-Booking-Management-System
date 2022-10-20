@@ -50,7 +50,7 @@ public class BookingsController extends FrontCommand {
             handleSearchQuery(searchQuery);
         }
         else
-            responseHelper.error("POST /bookings must contain booking or search",HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("Must contain booking or search",HttpServletResponse.SC_BAD_REQUEST);
         return null;
     }
 
@@ -75,12 +75,12 @@ public class BookingsController extends FrontCommand {
             e.printStackTrace();
         }
         if (hotels.size()==0) {
-            responseHelper.error("POST /bookings hotel id does not exist", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("Hotel does not exist", HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
         if(!hotels.get(0).getIsActive())
         {
-            responseHelper.error("POST /bookings hotel is not active", HttpServletResponse.SC_BAD_REQUEST);
+            responseHelper.error("Hotel is not actively listed", HttpServletResponse.SC_BAD_REQUEST);
             System.out.println("here");
             return null;
         }

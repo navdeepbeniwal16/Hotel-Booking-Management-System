@@ -355,16 +355,15 @@ class LANS_API {
       headers: this.headers,
       body
     })
+    const data = await res.json();
 
+    const { success }: { success: boolean } = data;
+    const error = !success ? data.error : "";
     if (res.ok) {
-      const data = await res.json();
-      
-      const { success }: { success: boolean } = data;
-      const error = !success ? data.error : "";
       return [success, error];
     } else {
       console.log(res.status, res.statusText);
-      return [false, res.statusText];
+      return [false, error ? error : `${res.status} ${res.statusText}`];
     }
   }
 
