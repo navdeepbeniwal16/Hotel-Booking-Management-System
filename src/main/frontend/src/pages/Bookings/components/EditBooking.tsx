@@ -11,7 +11,7 @@ import {
   CardGroup,
 } from 'react-bootstrap';
 import BookingContext from '../context';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useNavigation, useParams } from 'react-router-dom';
 import Booking, { defaultBooking } from '../../../types/BookingType';
 import { map } from 'lodash';
 import RoomBooking from '../../../types/RoomBooking';
@@ -44,13 +44,14 @@ const EditBooking = () => {
       map(bookings, (_booking: Booking) => {
         if (_booking.id == Number(bookingId)) {
           setBooking({..._booking});
+          setOriginalStart(new Date(_booking.start_date).toLocaleDateString());
+          setOriginalEnd(new Date(_booking.end_date).toLocaleDateString());
         }
-        setOriginalStart(new Date(_booking.start_date).toLocaleDateString());
-        setOriginalEnd(new Date(_booking.end_date).toLocaleDateString());
       });
     };
     setup();
   }, [bookingId, loading]);
+
   useEffect(() => { console.log("EditBooking:", booking); }, [booking])
 
   const onStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
