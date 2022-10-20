@@ -41,7 +41,7 @@ const HotelierHome = () => {
       </Row>
       <Row>
         <Col>
-          <GroupHotels  hotels={hotels} />
+          <GroupHotels group={ group} hotels={hotels} />
         </Col>
       </Row>
     </Container>
