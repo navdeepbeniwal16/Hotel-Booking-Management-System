@@ -167,7 +167,7 @@ class LANS_API {
   // HGH
   public async removeHotelierFromHotelGroup(
     hotelier_id: number
-  ): Promise<boolean> {
+  ): Promise<[boolean, string]> {
     const res = await fetch(this.hghEndpoint, {
       method: methods.DELETE,
       headers: this.headers,
@@ -177,7 +177,12 @@ class LANS_API {
     });
     const data = await res.json();
     const success: boolean = data.success;
-    return success;
+    const error: string = data.error;
+    if (res.ok) {
+      return [success, error];
+
+    }
+    return [false, error ? error : `${res.status} ${res.statusText}`];
   }
 
   public async addToGroup(

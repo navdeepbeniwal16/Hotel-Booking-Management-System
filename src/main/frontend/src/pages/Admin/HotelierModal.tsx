@@ -44,7 +44,6 @@ function HotelierModal({
           }, 2500);
         }
         setWaiting(false);
-        
       });
     setWaiting(true);
   };

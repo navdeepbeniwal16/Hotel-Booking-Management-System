@@ -36,12 +36,12 @@ const Hoteliers = ({
   const handleRemoveHotelier = (hotelier: Hotelier) => {
     backend
       .removeHotelierFromHotelGroup(hotelier.id)
-      .then((success: boolean) => {
+      .then(([success, error]: [boolean, string]) => {
         if (success) {
           removeHotelier(hotelier);
           setError('');
         } else {
-          setError('Something went wrong. Please try again.');
+          setError(error ? error : 'Something went wrong. Please try again.');
           setTimeout(() => {
             window.location.reload();
           }, 2000);
