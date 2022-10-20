@@ -93,7 +93,7 @@ public class BookingsController extends FrontCommand {
             responseHelper.error("start date less than end date",HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
-        if (dateRange.getFrom().compareTo(today_date)>=0)
+        if (today_date.compareTo(dateRange.getFrom())>0)
         {
             responseHelper.error("start date less than current date",HttpServletResponse.SC_BAD_REQUEST);
             return null;
@@ -359,12 +359,12 @@ public class BookingsController extends FrontCommand {
         long millis=System.currentTimeMillis();
         java.sql.Date today_date=new java.sql.Date(millis);
 
-        DateRange dateRange = parseDateRange((String) bookingJsonBody.getString("start_date"), bookingJsonBody.getString("end_date"));
+        DateRange dateRange = parseDateRange((String) bookingJsonBody.get("start_date"), (String) bookingJsonBody.get("end_date"));
         if (dateRange.getFrom().compareTo(dateRange.getTo())>0){
             responseHelper.error("start date less than end date",HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        if (dateRange.getFrom().compareTo(today_date)>=0)
+        if (today_date.compareTo(dateRange.getFrom())>0)
         {
             responseHelper.error("start date less than current date",HttpServletResponse.SC_BAD_REQUEST);
             return;
