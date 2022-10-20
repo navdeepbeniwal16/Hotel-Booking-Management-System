@@ -183,7 +183,7 @@ class LANS_API {
   public async addToGroup(
     hotelier: Hotelier,
     group: HotelGroup
-  ): Promise<boolean> {
+  ): Promise<[boolean, string]> {
     const res = await fetch(this.hghEndpoint, {
       method: methods.POST,
       headers: this.headers,
@@ -196,7 +196,13 @@ class LANS_API {
     });
     const data = await res.json();
     const success: boolean = data.success;
-    return success;
+    const error: string = data.error;
+    if (res.ok) {
+      return [success, error];
+
+    }
+    return [false, error ? error : `${res.status} ${res.statusText}`];
+    
   }
 
   // Hotel groups

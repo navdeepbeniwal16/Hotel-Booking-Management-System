@@ -7,6 +7,7 @@ import HotelGroup, { defaultHotelGroup } from '../../types/HotelGroup';
 import Hotelier from '../../types/HotelierType';
 import { map, find } from 'lodash';
 import AppContext from '../../context/AppContext';
+import { Toast } from 'react-bootstrap';
 
 interface HotelierModalProps {
   show: boolean;
@@ -25,16 +26,26 @@ function HotelierModal({
   const { backend } = useContext(AppContext.GlobalContext);
   const [selectedGroup, selectGroup] = useState(defaultHotelGroup);
   const [waiting, setWaiting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    backend.addToGroup(hotelier, selectedGroup).then((success: boolean) => {
-      if (success) {
-        addHotelier(hotelier, selectedGroup);
-      }
-      setWaiting(false);
-      handleClose();
-    });
+    backend
+      .addToGroup(hotelier, selectedGroup)
+      .then(([success, _error]: [boolean, string]) => {
+        if (success) {
+          addHotelier(hotelier, selectedGroup);
+          handleClose();
+        } else {
+          setError(_error);
+          setTimeout(() => {
+            handleClose();
+            window.location.reload();
+          }, 2500);
+        }
+        setWaiting(false);
+        
+      });
     setWaiting(true);
   };
 
@@ -65,33 +76,36 @@ function HotelierModal({
   };
 
   return (
-    <>
-      <Modal show={show} onHide={handleClose} centered>
-        <Form onSubmit={handleSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add hotelier to group</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div>ID: {hotelier.id}</div>
-            <div>Name: {hotelier.name}</div>
-            <div>Email: {hotelier.email}</div>
-            {renderSelect()}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              disabled={waiting}
-              variant='secondary'
-              onClick={handleClose}
-            >
-              Close
-            </Button>
-            <Button disabled={waiting} type='submit' variant='primary'>
-              {waiting ? <Spinner animation='border' /> : 'Save Changes'}
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-    </>
+    <Modal show={show} onHide={handleClose} centered>
+      <Form onSubmit={handleSubmit}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add hotelier to group</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {error ? (
+            <Toast bg='danger' className='text-white'>
+              <Toast.Header>Error</Toast.Header>
+              <Toast.Body>Somthing went wrong: {error}</Toast.Body>
+            </Toast>
+          ) : (
+            <>
+              <div>ID: {hotelier.id}</div>
+              <div>Name: {hotelier.name}</div>
+              <div>Email: {hotelier.email}</div>
+              {renderSelect()}
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button disabled={waiting} variant='secondary' onClick={handleClose}>
+            Close
+          </Button>
+          <Button disabled={waiting} type='submit' variant='primary'>
+            {waiting ? <Spinner animation='border' /> : 'Save Changes'}
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
   );
 }
 
