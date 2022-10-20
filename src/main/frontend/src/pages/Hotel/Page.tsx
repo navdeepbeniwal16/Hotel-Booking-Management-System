@@ -89,6 +89,7 @@ const HotelPage = () => {
         />
         <Card.Body>
           <Card.Title>{room.type}</Card.Title>
+          <Card.Text>Room number: {`${room.number ? room.number : "-"}`}</Card.Text>
           <Card.Text>Guests: {`${room.occupancy}`}</Card.Text>
           <Card.Text>Bed: {`${room.bed_type}`}</Card.Text>
           <Card.Text>Price: ${`${room.price} / night`}</Card.Text>
