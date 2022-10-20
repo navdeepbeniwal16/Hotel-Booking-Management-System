@@ -32,10 +32,10 @@ const UsersTable = ({ users, makeHotelier }: UserTableProps) => {
                     makeHotelier(user.id);
                   } else {
                     setError('Something wen wrong. Please try again.');
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 2000)
                   }
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 2500)
                   setLoading(loading.filter((id: number) => id != user.id));
                 });
                 setLoading([...loading, user.id]);
